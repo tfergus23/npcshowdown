@@ -1,0 +1,64 @@
+#pragma once
+#include "battle/Trainer.hpp"
+#include "battle/Pokemon.hpp"
+#include "battle/Weather.hpp"
+#include <random>
+
+class Battle{
+public:
+    Trainer* getPlayer1();
+    Trainer* getPlayer2();
+    std::array<Pokemon,6> trainer1Team;
+    std::array<Pokemon,6> trainer2Team;
+    Pokemon* player1ActivePokemon;
+    Pokemon* player2ActivePokemon;
+    bool player1Switching = false;
+    bool player2Switching = false;
+    bool isTurnOver = false;
+    const Weather* weather;
+    int turns = 1;
+    bool isBattleOver = false;
+    Trainer* winner;
+    std::string battleLog = "";
+    //Field effects
+    int weatherSuppressors = 0;
+    int moveNumber = 0;
+    int randInt(int min, int max);
+    int getSeed();
+
+    Battle();
+    Battle(int seed);
+    void setTrainer1(Trainer trainer);
+    void setTrainer2(Trainer trainer);
+    void addMoves(std::vector<MoveUse> actions);
+    MoveUse* doMove();
+    Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
+    void log(const std::string& str);
+    void debug(const std::string& str);
+
+    void raiseBeforeMove(MoveUse* moveUse);
+    void killTheDead();
+    void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
+    bool checkForOver();
+    std::string currentStatus();
+private:
+    Trainer m_Player1;
+    Trainer m_Player2;
+    std::default_random_engine m_Generator;
+    std::uniform_int_distribution<int> m_Distribution;
+    int m_Seed;
+    Pokemon* m_FasterPokemon;
+    Pokemon* m_SlowerPokemon;
+    std::vector<MoveUse> m_Turn;
+    void setPokemonSpeedOrder();
+
+    void raiseAfterMove(MoveUse* moveUse);
+    void raiseEndOfTurn();
+    void raisePokemonEnter(Pokemon* enteringPokemon);
+    void raisePokemonSwitch(Pokemon* switchingPokemon);
+    void raisePokemonDeath(Pokemon* dyingPokemon);
+};
+
+inline const bool DEBUG_MODE = false;
+
+void simulateBattle(Battle* battle);
