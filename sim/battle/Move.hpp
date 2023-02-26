@@ -10,7 +10,6 @@
 
 class Move{
 public:
-    int id;
     int maxPP;
     std::string name;
     int power;
@@ -41,7 +40,7 @@ public:
     bool dealsFlatDamage = false;
     bool skillLink = false;
     bool soundBased = false;
-    
+
     virtual void beforeChecks(MoveUse* myMove, MoveUse* opponentMove){}
     virtual void afterChecks(MoveUse* myMove, MoveUse* opponentMove){}
 

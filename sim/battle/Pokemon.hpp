@@ -16,15 +16,6 @@
 #include "data/Statuses.hpp"
 #include "battle/Move.hpp"
 
-class Move{
-    public:
-        Move(int id);
-        const int id;
-        int getPP();
-        void usePP(int ppUsage = 1);
-    private:
-        int m_PP;
-};
 
 class Pokemon{
     public:
