@@ -31,10 +31,8 @@ public:
     int randInt(int min, int max);
     int getSeed();
 
-    Battle();
-    Battle(int seed);
-    void setTrainer1(Trainer trainer);
-    void setTrainer2(Trainer trainer);
+    Battle(Trainer trainer1, Trainer trainer2);
+    Battle(Trainer trainer1, Trainer trainer2, int seed);
     void addMoves(std::vector<MoveUse> actions);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
