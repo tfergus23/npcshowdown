@@ -1,4 +1,4 @@
 #pragma once
-#include "sim/battle/Status.hpp"
+#include "battle/Status.hpp"
 
 inline const Status* STATUS_NONE = nullptr;

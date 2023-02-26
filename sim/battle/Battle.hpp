@@ -8,8 +8,8 @@ class Battle{
 public:
     Trainer* getPlayer1();
     Trainer* getPlayer2();
-    std::array<Pokemon,6> trainer1Team;
-    std::array<Pokemon,6> trainer2Team;
+    std::array<Pokemon,6> player1Team;
+    std::array<Pokemon,6> player2Team;
     Pokemon* player1ActivePokemon;
     Pokemon* player2ActivePokemon;
     bool player1Switching = false;
@@ -23,6 +23,11 @@ public:
     //Field effects
     int weatherSuppressors = 0;
     int moveNumber = 0;
+
+    //Used by the Use2MovesThenSwitch AI to count how many moves it used so far
+    int player1SwitchCounter = 0;
+    int player2SwitchCounter = 0;
+
     int randInt(int min, int max);
     int getSeed();
 

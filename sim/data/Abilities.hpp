@@ -1,7 +1,7 @@
 #pragma once
-#include "sim/battle/Ability.hpp"
+#include "battle/Ability.hpp"
 #include <cmath>
-#include "sim/data/Statuses.hpp"
+#include "data/Statuses.hpp"
 
 //Guts
 inline const std::string ABILITY_GUTS_NAME = "Guts";

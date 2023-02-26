@@ -14,6 +14,7 @@
 #include <array>
 #include "battle/Effect.hpp"
 #include "data/Statuses.hpp"
+#include "battle/Move.hpp"
 
 class Move{
     public:
@@ -35,7 +36,7 @@ class Pokemon{
         const std::array<int,6> ivs;
         const Ability* getBaseAbility();
         const Item* getBaseItem();
-        const std::array<int,4> baseMoves;
+        const std::array<const Move*,4> baseMoves;
         const Gender gender;
         const Nature nature;
 
@@ -54,7 +55,7 @@ class Pokemon{
         void removeEffect(const Effect* effect);
         void applyEffect(const Effect* effect);
         EffectState* getEffectState(const Effect* effect);
-        std::array<Move,4> currentMoves;
+        std::array<const Move*,4> currentMoves;
         int currentHealth;
         bool isDead = false;
         std::unordered_map<Stat,int> boosts = {
@@ -80,12 +81,14 @@ class Pokemon{
         int lastMoveIndex = -1;
         MoveUse* lastMoveUsedAgainstMe = nullptr;
         Battle* battle;
+        bool empty = true;
 
         //Species data
         float getWeight();
         float getPercentMale();
         std::array<Type,2> getBaseType();
 
+        Pokemon();
         Pokemon(const PokemonBlueprint* blueprint, Battle* battle);
         int getStat(Stat stat, bool crit = false);
         int getStatRaw(Stat stat);

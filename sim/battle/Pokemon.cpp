@@ -2,19 +2,22 @@
 #include "data/Abilities.hpp"
 #include "battle/Gender.hpp"
 #include "battle/Nature.hpp"
+#include "data/Moves.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
 level{blueprint->level},
 evs{blueprint->evs},
 ivs{blueprint->ivs},
-baseMoves{blueprint->moves},
+baseMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}},
 gender{genders[blueprint->gender]},
 nature{natures[blueprint->nature]},
-currentMoves{{Move(blueprint->moves[0]),Move(blueprint->moves[1]),Move(blueprint->moves[2]),Move(blueprint->moves[3])}}
+currentMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}}
 {
     m_BaseAbility = abilities[blueprint->abilityName];
     m_CurrentAbility = abilities[blueprint->abilityName];
     this->battle = battle;
+    empty = false;
+    //TODO: much more
 }
 
 const Ability* Pokemon::getBaseAbility(){
