@@ -3,6 +3,8 @@
 #include "battle/Gender.hpp"
 #include "battle/Nature.hpp"
 #include "data/Moves.hpp"
+#include <iostream>
+#include"utils/stage_multipliers.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
 level{blueprint->level},
@@ -61,8 +63,34 @@ std::array<Type,2> Pokemon::getBaseType(){
 }
 
 
-int getStat(Stat stat, bool crit = false){
-    
+int Pokemon::getStat(Stat stat, bool crit = false){
+    int finalStatValue;
+    switch (stat)
+    {
+    case HP:
+        finalStatValue = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + floor(evs[stat] / 4.0f)) * level)/100.0f) + level + 10;
+        break;
+    case ATTACK:
+    case SPATTACK:
+        int div1 = (int) floor(evs[stat] / 4.0f);
+        int div2 = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature, stat));
+        int boost = (crit && boosts[stat] < 0) ? 0 : boosts[stat];
+        finalStatValue = (int) floor((float) unboostedStat * statStageMultiplier(boost));
+        break;
+    case DEFENSE:
+    case SPDEFENSE:
+    //TODO
+        break;
+    case SPEED:
+    //TODO
+        break;
+    default:
+        std::cerr << "Unhandled stat.\n";
+        throw 1;
+    }
+    finalStatValue = m_CurrentAbility->modifySubjectStat(stat, finalStatValue, this);
+    return finalStatValue;
 }
 int getStatRaw(Stat stat);
 void resetBoosts();
