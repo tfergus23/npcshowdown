@@ -11,6 +11,7 @@ const Move* getMove(const std::string& moveName);
 
 inline const std::string MOVE_POUND_NAME = "Pound";
 class Pound: public Move{
+public:
     Pound(){
         name = MOVE_POUND_NAME;
         type = Normal;

@@ -28,7 +28,7 @@ class Pokemon{
         const Ability* getBaseAbility();
         const Item* getBaseItem();
         const std::array<const Move*,4> baseMoves;
-        const Gender gender;
+        Gender getGender();
         const Nature nature;
 
 
@@ -105,7 +105,10 @@ class Pokemon{
         int m_BaseStats[6];
         const Status* m_Status = STATUS_NONE;
         std::unordered_map<const Effect*,EffectState> m_Effects;
+        std::vector<const Effect*> m_EffectsToRemove;
+        void removeMarkedEffects();
         float m_Weight;
-        float m_PercentMale;
+        int m_PercentMale;
         std::array<Type,2> m_BaseType;
+        Gender m_Gender;
 };

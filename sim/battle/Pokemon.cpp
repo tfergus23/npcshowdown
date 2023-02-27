@@ -5,21 +5,49 @@
 #include "data/Moves.hpp"
 #include <iostream>
 #include"utils/stage_multipliers.hpp"
+#include "data/Items.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
+species{blueprint->species},
+nickname{blueprint->nickname},
 level{blueprint->level},
 evs{blueprint->evs},
 ivs{blueprint->ivs},
 baseMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}},
-gender{genders[blueprint->gender]},
 nature{natures[blueprint->nature]},
-currentMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}}
+currentMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}},
+m_BaseAbility{abilities[blueprint->abilityName]},
+m_CurrentAbility{abilities[blueprint->abilityName]},
+m_CurrentItem{items[blueprint->itemName]},
+m_BaseItem{items[blueprint->itemName]},
+battle{battle}
 {
-    m_BaseAbility = abilities[blueprint->abilityName];
-    m_CurrentAbility = abilities[blueprint->abilityName];
-    this->battle = battle;
+    //TODO: Set species data
+
+
     empty = false;
-    //TODO: much more
+    for (int i = 0; i < 4; i++){
+        if (baseMoves[i] != nullptr){
+            currentPP[i] = baseMoves[i]->maxPP;
+        }
+    }
+    
+    switch (m_PercentMale)
+    {
+    case -1:
+        m_Gender = GENDERLESS;
+        break;
+    case 0:
+        m_Gender = FEMALE;
+        break;
+    case 100:
+        m_Gender = MALE;
+        break;
+    default:
+        m_Gender = genders[blueprint->gender];
+        break;
+    }
+    currentHealth = getStatRaw(HP);
 }
 
 const Ability* Pokemon::getBaseAbility(){
@@ -50,8 +78,15 @@ bool Pokemon::hasEffect(const Effect* effect){
     return m_Effects.count(effect) > 0;
 }
 void Pokemon::removeEffect(const Effect* effect){
-    m_Effects.erase(effect);
+    m_EffectsToRemove.push_back(effect);
 }
+void Pokemon::removeMarkedEffects(){
+    for (auto effect : m_EffectsToRemove){
+        m_Effects.erase(effect);
+    }
+    m_EffectsToRemove.clear();
+}
+
 void Pokemon::applyEffect(const Effect* effect){
     m_Effects[effect] = EffectState();
 }
@@ -62,8 +97,12 @@ std::array<Type,2> Pokemon::getBaseType(){
     return m_BaseType;
 }
 
+Gender Pokemon::getGender(){
+    return m_Gender;
+}
 
 int Pokemon::getStat(Stat stat, bool crit = false){
+    int unboostedStat = getStatRaw(stat);
     int finalStatValue;
     switch (stat)
     {
@@ -72,18 +111,18 @@ int Pokemon::getStat(Stat stat, bool crit = false){
         break;
     case ATTACK:
     case SPATTACK:
-        int div1 = (int) floor(evs[stat] / 4.0f);
-        int div2 = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
-        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature, stat));
         int boost = (crit && boosts[stat] < 0) ? 0 : boosts[stat];
         finalStatValue = (int) floor((float) unboostedStat * statStageMultiplier(boost));
         break;
     case DEFENSE:
     case SPDEFENSE:
-    //TODO
+        int boost = (crit && boosts[stat] > 0) ? 0 : boosts[stat];
+        finalStatValue = (int) floor((float)unboostedStat * statStageMultiplier(boost));
         break;
     case SPEED:
-    //TODO
+        float paralysisMod = 1.0f;
+        if (m_Status == STATUS_PARALYSIS) paralysisMod = 0.5f;
+        finalStatValue = (int) floor((float)unboostedStat * paralysisMod* statStageMultiplier(boosts[stat]));
         break;
     default:
         std::cerr << "Unhandled stat.\n";
@@ -92,9 +131,65 @@ int Pokemon::getStat(Stat stat, bool crit = false){
     finalStatValue = m_CurrentAbility->modifySubjectStat(stat, finalStatValue, this);
     return finalStatValue;
 }
-int getStatRaw(Stat stat);
-void resetBoosts();
-void onSwitch();
+int Pokemon::getStatRaw(Stat stat){
+    switch (stat)
+    {
+    case HP:
+        return (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + floor(evs[stat] / 4.0f)) * level)/100.0f) + level + 10;
+    case ATTACK:
+    case SPATTACK:
+        int div1 = (int) floor(evs[stat] / 4.0f);
+        int div2 = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature, stat));
+        return unboostedStat;
+    case DEFENSE:
+    case SPDEFENSE:
+        int div1 = (int) floor(evs[stat] / 4.0f);
+        int div2 = (int) floor(((2 * m_BaseStats[stat] + evs[stat] + div1) * level) / 100.0f);
+        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature,stat));
+        return unboostedStat;
+    case SPEED:
+        int div1 = (int) floor(evs[stat] / 4.0f);
+        int div2 = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature,stat));
+        return unboostedStat;
+    default:
+        std::cerr << "Unhandled stat.\n";
+        throw 1;
+    }
+}
+void Pokemon::resetBoosts(){
+    int size = boosts.size();
+    for (int i = 0; i < size; i++){
+        boosts[(Stat) i] = 0;
+    }
+}
+void Pokemon::onSwitch(){
+    battle->debug(nickname + "'s onSwitch called");
+    if (!abilityState.suppressed) m_CurrentAbility->onSubjectSwitch(this);
+    if (m_CurrentItem != nullptr) m_CurrentItem->onSubjectSwitch(this);
+    if (m_Status != nullptr) m_Status->onSubjectSwitch(this);
+    //TODO maybe do this differently??
+    for (auto effect : m_Effects){
+        effect.first->onSubjectSwitch(this);
+    }
+    removeMarkedEffects();
+    m_CurrentAbility = m_BaseAbility;
+    resetBoosts();
+    choiceLockedMove = -1;
+    isTrapped = false;
+    lastMoveIndex = -1;
+    triggeredCritMod = 0;
+    lastMoveUsedAgainstMe = nullptr;
+    currentType[0] = m_BaseType[0];
+    currentType[1] = m_BaseType[1];
+    currentMoves = baseMoves; // Does this copy the whole array? IDK
+    if (storedPP >= 0 && storedPPIndex >= 0){
+        currentPP[storedPPIndex] = storedPP;
+        storedPP = -1;
+        storedPPIndex = -1;
+    }
+}
 void onEnter();
 void onDeath();
 void onAttack(MoveUse &move);

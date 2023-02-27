@@ -31,7 +31,6 @@ public:
     int randInt(int min, int max);
     int getSeed();
 
-    Battle(Trainer trainer1, Trainer trainer2);
     Battle(Trainer trainer1, Trainer trainer2, int seed);
     void addMoves(std::vector<MoveUse> actions);
     MoveUse* doMove();

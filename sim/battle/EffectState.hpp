@@ -2,4 +2,5 @@
 
 struct EffectState{
     int remainingTurns;
+    bool suppressed;
 };

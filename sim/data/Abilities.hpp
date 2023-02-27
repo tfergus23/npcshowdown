@@ -3,6 +3,10 @@
 #include <cmath>
 #include "data/Statuses.hpp"
 
+inline const std::string ABILITY_NONE_NAME = "";
+inline const Ability* ABILITY_NONE = nullptr;
+
+
 //Guts
 inline const std::string ABILITY_GUTS_NAME = "Guts";
 class Guts: public Ability{
@@ -40,6 +44,7 @@ inline const Torrent ABILITY_TORRENT;
 
 //Mapping string of name to ability
 std::unordered_map<std::string,const Ability*> abilities = {
+    {ABILITY_NONE_NAME, ABILITY_NONE},
     {ABILITY_GUTS_NAME, &ABILITY_GUTS},
     {ABILITY_TORRENT_NAME, &ABILITY_TORRENT}
 };
