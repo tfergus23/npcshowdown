@@ -109,7 +109,7 @@ int Pokemon::getStat(Stat stat, bool crit = false){
     switch (stat)
     {
     case HP:
-        finalStatValue = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + floor(evs[stat] / 4.0f)) * level)/100.0f) + level + 10;
+        finalStatValue = unboostedStat;
         break;
     case ATTACK:
     case SPATTACK:

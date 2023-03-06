@@ -31,7 +31,7 @@ public:
     int randInt(int min, int max);
     int getSeed();
 
-    Battle(Trainer trainer1, Trainer trainer2, int seed);
+    Battle(const Trainer& trainer1, const Trainer& trainer2, int seed);
     void addMoves(std::vector<MoveUse> actions);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
@@ -60,7 +60,5 @@ private:
     void raisePokemonSwitch(Pokemon* switchingPokemon);
     void raisePokemonDeath(Pokemon* dyingPokemon);
 };
-
-inline const bool DEBUG_MODE = false;
 
 void simulateBattle(Battle* battle);
