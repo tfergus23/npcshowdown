@@ -69,7 +69,7 @@ class Pokemon{
         Type currentType[2];
         bool isTrapped = false;
         int disabledIndex = -1;
-        int lastMoveIndex = -1;
+        const Move* lastMoveUsed = nullptr;
         MoveUse* lastMoveUsedAgainstMe = nullptr;
         Battle* battle;
         bool empty = true;
@@ -79,7 +79,6 @@ class Pokemon{
         float getPercentMale();
         std::array<Type,2> getBaseType();
 
-        Pokemon();
         Pokemon(const PokemonBlueprint* blueprint, Battle* battle);
         int getStat(Stat stat, bool crit = false);
         int getStatRaw(Stat stat);

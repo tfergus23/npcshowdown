@@ -4,7 +4,7 @@
 #include "battle/Nature.hpp"
 #include "data/Moves.hpp"
 #include <iostream>
-#include"utils/stage_multipliers.hpp"
+#include "utils/stage_multipliers.hpp"
 #include "data/Items.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
@@ -23,6 +23,7 @@ m_BaseItem{items[blueprint->itemName]},
 battle{battle}
 {
     //TODO: Set species data
+    if (blueprint->empty) return;
 
 
     empty = false;
@@ -180,7 +181,7 @@ void Pokemon::onSwitch(){
     resetBoosts();
     choiceLockedMove = -1;
     isTrapped = false;
-    lastMoveIndex = -1;
+    lastMoveUsed = nullptr;
     triggeredCritMod = 0;
     lastMoveUsedAgainstMe = nullptr;
     currentType[0] = m_BaseType[0];
@@ -200,7 +201,7 @@ void Pokemon::onEnter(){
         effect.first->onSubjectEnter(this);
     }
     removeMarkedEffects();
-    lastMoveIndex = -1;
+    lastMoveUsed = nullptr;
 }
 void Pokemon::onDeath(){
     if (!abilityState.suppressed) m_CurrentAbility->onSubjectDeath(this);

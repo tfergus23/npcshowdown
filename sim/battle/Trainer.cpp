@@ -4,36 +4,21 @@
 #include "data/Moves.hpp"
 
 
-std::string Trainer::getTrainerClass(){
-    return m_TrainerClass;
-}
-std::string Trainer::getName(){
-    return m_Name;
-}
-std::array<PokemonBlueprint, 6> Trainer::getTeamBlueprint(){
-    return m_TeamBlueprint;
-}
-TrainerLevel Trainer::getTrainerLevel(){
-    return m_TrainerLevel;
-}
 
 Trainer::Trainer(std::string trainerClass, std::string name, std::array<PokemonBlueprint, 6> teamBlueprint, TrainerLevel trainerLevel) : 
-m_TeamBlueprint{teamBlueprint},
-m_TrainerClass{trainerClass},
-m_Name{name},
-m_TrainerLevel{trainerLevel}
+teamBlueprint{teamBlueprint},
+trainerClass{trainerClass},
+name{name},
+trainerLevel{trainerLevel}
 {
 }
 
-Trainer::Trainer(std::string filePath){
-    //TODO
-}
 
 std::string Trainer::getFullName(){
-    if (m_TrainerClass == ""){
-        return m_Name;
+    if (trainerClass == ""){
+        return name;
     }
-    return m_TrainerClass + " " + m_Name;
+    return trainerClass + " " + name;
 }
 
 const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battle){
@@ -49,7 +34,7 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
 
 
     //TODO: The rest of these
-    switch (m_TrainerLevel)
+    switch (trainerLevel)
     {
     case FIRST_MOVE:
         if (validMoves.size() <= 0){

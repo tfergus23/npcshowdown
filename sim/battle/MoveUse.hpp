@@ -20,7 +20,7 @@ public:
     bool canRaiseStats = true;
     bool loggedFailure = false;
     int damageDone = 0;
-    bool changeLastMoveIndex = true;
+    bool changeLastMoveUsed = true;
     const Move* move;
 
     //Flags
@@ -38,3 +38,5 @@ public:
 private:
     float m_EffectiveAccuracy;
 };
+
+bool compareMoves(const MoveUse& move1, const MoveUse& move2);

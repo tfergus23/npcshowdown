@@ -32,7 +32,7 @@ public:
     int getSeed();
 
     Battle(const Trainer& trainer1, const Trainer& trainer2, int seed);
-    void addMoves(std::vector<MoveUse> actions);
+    void addMoves(std::vector<MoveUse>& actions);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
     void log(const std::string& str);
