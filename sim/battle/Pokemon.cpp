@@ -161,12 +161,39 @@ int Pokemon::getStatRaw(Stat stat){
         throw 1;
     }
 }
+
+
 void Pokemon::resetBoosts(){
     int size = boosts.size();
     for (int i = 0; i < size; i++){
         boosts[(Stat) i] = 0;
     }
 }
+
+void Pokemon::beforeMove(MoveUse* moveUse){
+    if (getCurrentItem() != ITEM_NONE) getCurrentItem()->beforeMove(moveUse, this);
+    if (getStatus() != STATUS_NONE) getStatus()->beforeMove(moveUse, this);
+    if (!abilityState.suppressed) getCurrentAbility()->beforeMove(moveUse, this);
+    for (auto effect : m_Effects){
+        effect.first->beforeMove(moveUse, this);
+    }
+    removeMarkedEffects();
+}
+void Pokemon::afterMove(MoveUse* moveUse){
+    Battle* battle = moveUse->battle;
+    if (getCurrentItem() != ITEM_NONE) getCurrentItem()->afterMove(moveUse, this);
+    battle->killTheDead();
+    if (getStatus() != STATUS_NONE) getStatus()->afterMove(moveUse, this);
+    battle->killTheDead();
+    if (!abilityState.suppressed) getCurrentAbility()->afterMove(moveUse, this);
+    battle->killTheDead();
+    for (auto effect : m_Effects){
+        effect.first->afterMove(moveUse, this);
+        battle->killTheDead();
+    }
+    removeMarkedEffects();
+}
+
 void Pokemon::onSwitch(){
     battle->debug(nickname + "'s onSwitch called");
     if (!abilityState.suppressed) m_CurrentAbility->onSubjectSwitch(this);

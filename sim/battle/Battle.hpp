@@ -2,6 +2,7 @@
 #include "battle/Trainer.hpp"
 #include "battle/Pokemon.hpp"
 #include "battle/Weather.hpp"
+#include "battle/FieldEffect.hpp"
 #include <random>
 
 class Battle{
@@ -20,7 +21,6 @@ public:
     bool isBattleOver = false;
     Trainer* winner;
     std::string battleLog = "";
-    //Field effects
     int weatherSuppressors = 0;
     int moveNumber = 0;
 
@@ -35,6 +35,10 @@ public:
     void addMoves(std::vector<MoveUse>& actions);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
+    void addFieldEffect(bool side, const FieldEffect* fieldEffect);
+    bool sideHasFieldEffect(bool side, const FieldEffect* fieldEffect);
+    EffectState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
+    void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
     void log(const std::string& str);
     void debug(const std::string& str);
 
@@ -52,6 +56,10 @@ private:
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;
     std::vector<MoveUse> m_Turn;
+    std::unordered_map<const FieldEffect*, EffectState> m_Player1FieldEffects;
+    std::unordered_map<const FieldEffect*, EffectState> m_Player2FieldEffects;
+    std::vector<const FieldEffect*> m_EffectsToRemove1;
+    std::vector<const FieldEffect*> m_EffectsToRemove2;
     void setPokemonSpeedOrder();
 
     void raiseAfterMove(MoveUse* moveUse);

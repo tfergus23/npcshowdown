@@ -3,10 +3,10 @@
 
 class FieldEffect{
 public:
-    virtual void beforeMove(MoveUse* moveUse,Pokemon* subject) const {}
-    virtual void endOfTurn(Pokemon* subject) const {}
-    virtual void priorityEndOfTurn(Pokemon* subject) const {}
-    virtual void afterMove(MoveUse* moveUse, Pokemon* subject) const {}
+    virtual void beforeMove(MoveUse* moveUse) const {}
+    virtual void endOfTurn(Battle* battle) const {}
+    virtual void priorityEndOfTurn(Battle* battle) const {}
+    virtual void afterMove(MoveUse* moveUse) const {}
     virtual void onSubjectSwitch(Pokemon* subject) const {}
     virtual void onSubjectEnter(Pokemon* subject) const {}
     virtual void onSubjectDeath(Pokemon* subject) const {}

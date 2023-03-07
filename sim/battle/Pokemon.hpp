@@ -83,6 +83,8 @@ class Pokemon{
         int getStat(Stat stat, bool crit = false);
         int getStatRaw(Stat stat);
         void resetBoosts();
+        void beforeMove(MoveUse* moveUse);
+        void afterMove(MoveUse* moveUse);
         void onSwitch();
         void onEnter();
         void onDeath();

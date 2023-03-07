@@ -2,6 +2,8 @@
 #include <random>
 #include "data/Moves.hpp"
 #include "assert.h"
+#include "data/Weathers.hpp"
+#include "data/Items.hpp"
 #define DEBUG_LOG 1
 
 Battle::Battle(const Trainer& trainer1, const Trainer& trainer2, int seed) :
@@ -77,8 +79,88 @@ Pokemon* Battle::switchPokemon(bool isPlayer1, int newPokePosition){
     return newPoke;
 }
 
-void raiseBeforeMove(MoveUse* moveUse);
-void raiseAfterMove(MoveUse* moveUse);
+void Battle::addFieldEffect(bool side, const FieldEffect* fieldEffect){
+    auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
+    list[fieldEffect];
+}
+bool Battle::sideHasFieldEffect(bool side, const FieldEffect* fieldEffect){
+    auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
+}
+EffectState* Battle::getFieldEffectState(bool side, const FieldEffect* fieldEffect){
+    auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
+    return &list[fieldEffect];
+}
+void Battle::removeFieldEffect(bool side, const FieldEffect* fieldEffect){
+    auto& list = side ? m_EffectsToRemove1 : m_EffectsToRemove2;
+    list.push_back(fieldEffect);
+}
+
+void Battle::removeMarkedFieldEffects(bool side){
+    auto& toRemoveList = side ? m_EffectsToRemove1 : m_EffectsToRemove2;
+    auto& fieldEffectList = side ? m_Player1FieldEffects : m_Player2FieldEffects;
+    for (auto fieldEffect : toRemoveList){
+        fieldEffectList.erase(fieldEffect);
+    }
+}
+
+void Battle::raiseBeforeMove(MoveUse* moveUse){
+    bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
+    auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
+    auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
+
+    if (weather != WEATHER_NONE && weatherSuppressors <= 0) weather->beforeMove(moveUse);
+
+    m_FasterPokemon->beforeMove(moveUse);
+    for (auto effect : fasterPokemonFieldEffects){
+        effect.first->beforeMove(moveUse);
+    }
+    removeMarkedFieldEffects(fasterPokemonIsPlayer1);
+
+
+    m_SlowerPokemon->beforeMove(moveUse);
+    for (auto effect: slowerPokemonFieldEffects){
+        effect.first->beforeMove(moveUse);
+    }
+    removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
+
+}
+void Battle::raiseAfterMove(MoveUse* moveUse){
+    bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
+    auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
+    auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
+
+    if (weather != WEATHER_NONE && weatherSuppressors <= 0) weather->afterMove(moveUse);
+    killTheDead();
+
+    m_FasterPokemon->afterMove(moveUse);
+    for (auto effect : fasterPokemonFieldEffects){
+        effect.first->afterMove(moveUse);
+        killTheDead();
+    }
+    removeMarkedFieldEffects(fasterPokemonIsPlayer1);
+
+
+    m_SlowerPokemon->afterMove(moveUse);
+    for (auto effect: slowerPokemonFieldEffects){
+        effect.first->afterMove(moveUse);
+        killTheDead();
+    }
+    removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
+
+    for (int i = 0; i < 4; i++){
+        if (moveUse->move->maxPP > 0 && moveUse->user->currentMoves[i] == moveUse->move && moveUse->usesPP){
+            moveUse->user->currentPP[i] -= moveUse->ppUsage;
+        }
+    }
+
+    if (moveUse->target != moveUse->user){
+        moveUse->target->lastMoveUsedAgainstMe = moveUse; //TODO this will probably need to change
+    }
+    else{
+        Pokemon* opponent = moveUse->user == player1ActivePokemon ? player2ActivePokemon : player1ActivePokemon;
+        opponent->lastMoveUsedAgainstMe = nullptr;
+    }
+}
 void raiseEndOfTurn();
 void raisePokemonEnter(Pokemon* enteringPokemon);
 void raisePokemonSwitch(Pokemon* switchingPokemon);
