@@ -22,7 +22,7 @@ public:
         priority = 0;
         critRatio = 0;
         targetType = OPPONENT;
-        secondaryEffect = None;
+        secondaryEffect = NOEFFECT;
         secondaryEffectChance = -1;
         secondaryEffectValue = -1;
 

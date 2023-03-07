@@ -38,5 +38,5 @@ int main(){
     Battle battle(trainer1, trainer2, 69);
 
     simulateBattle(&battle);
-    std::cout << battle.battleLog << std::endl;
+    std::cout << battle.battleLog << '\n';
 }

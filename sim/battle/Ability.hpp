@@ -11,6 +11,7 @@ public:
     bool ignorable = false;
     float accuracyMultiplier = 1.0f;
 
+    virtual void initializeState(EffectState* state) const {}
     virtual void beforeMove(MoveUse* moveUse,Pokemon* subject) const {}
     virtual int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const {return statVal;}
     virtual void endOfTurn(Pokemon* subject) const {}

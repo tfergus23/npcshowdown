@@ -5,7 +5,7 @@
 
 
 
-Trainer::Trainer(std::string trainerClass, std::string name, std::array<PokemonBlueprint, 6> teamBlueprint, TrainerLevel trainerLevel) : 
+Trainer::Trainer(std::string trainerClass, std::string name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel) : 
 teamBlueprint{teamBlueprint},
 trainerClass{trainerClass},
 name{name},

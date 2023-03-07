@@ -22,11 +22,13 @@ player2Team{{Pokemon(&(trainer2.teamBlueprint[0]), this),Pokemon(&(trainer2.team
 }
 
 void Battle::log(const std::string& message){
+    if (doLogging)
     battleLog += message + "\n";
 }
 
 void Battle::debug(const std::string& message){
-#if DEBUG_LOG
+#ifdef DEBUG_LOG
+    if (doLogging)
     battleLog += message + "\n";
 #endif
 }
@@ -44,13 +46,26 @@ int Battle::getSeed(){
     return m_Seed;
 }
 
-void Battle::addMoves(std::vector<MoveUse>& actions){
+void Battle::addMoves(const MoveUse& move1, const MoveUse& move2){
     isTurnOver = false;
-    m_Turn = actions;
-    std::sort(m_Turn.begin(), m_Turn.end(), compareMoves);
+    m_Turn[0] = move1;
+    m_Turn[1] = move2;
+    setMoveOrder();
     m_FasterPokemon = m_Turn[0].user;
     m_SlowerPokemon = m_Turn[1].user;
     
+}
+
+void Battle::setMoveOrder(){
+    if (!compareMoves(m_Turn[0], m_Turn[1])){
+        swapMoves();
+    }
+}
+
+void Battle::swapMoves(){
+    MoveUse temp = m_Turn[0];
+    m_Turn[0] = m_Turn[1];
+    m_Turn[1] = temp;
 }
 
 MoveUse* Battle::doMove(){
@@ -101,6 +116,7 @@ void Battle::removeMarkedFieldEffects(bool side){
     for (auto fieldEffect : toRemoveList){
         fieldEffectList.erase(fieldEffect);
     }
+    toRemoveList.clear();
 }
 
 void Battle::raiseBeforeMove(MoveUse* moveUse){
@@ -152,7 +168,7 @@ void Battle::raiseAfterMove(MoveUse* moveUse){
             moveUse->user->currentPP[i] -= moveUse->ppUsage;
         }
     }
-
+    /*
     if (moveUse->target != moveUse->user){
         moveUse->target->lastMoveUsedAgainstMe = moveUse; //TODO this will probably need to change
     }
@@ -160,6 +176,7 @@ void Battle::raiseAfterMove(MoveUse* moveUse){
         Pokemon* opponent = moveUse->user == player1ActivePokemon ? player2ActivePokemon : player1ActivePokemon;
         opponent->lastMoveUsedAgainstMe = nullptr;
     }
+    */
 }
 void raiseEndOfTurn();
 void raisePokemonEnter(Pokemon* enteringPokemon);

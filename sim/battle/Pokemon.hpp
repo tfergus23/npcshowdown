@@ -70,7 +70,7 @@ class Pokemon{
         bool isTrapped = false;
         int disabledIndex = -1;
         const Move* lastMoveUsed = nullptr;
-        MoveUse* lastMoveUsedAgainstMe = nullptr;
+        //MoveUse* lastMoveUsedAgainstMe = nullptr;
         Battle* battle;
         bool empty = true;
 

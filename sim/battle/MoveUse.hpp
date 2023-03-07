@@ -28,7 +28,7 @@ public:
     bool cantSelfDestruct = false;
     bool sun = false;
 
-
+    MoveUse();
     MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle);
     void doMove(MoveUse* opponentMove);
     void fail(const std::string& message);

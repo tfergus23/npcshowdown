@@ -1,3 +1,3 @@
 #pragma once
 
-enum SecondaryEffect {None,Poison,Paralyze,Sleep,Burn,Freeze,BadPoison,Attack,Defense,SpAttack,SpDefense,Speed,Flinch,Confuse,TriAttack};
+enum SecondaryEffect {NOEFFECT,POISON,PARALYZE,SLEEP,BURN,FREEZE,BAD_POISON,ATTACK_CHANGE,DEFENSE_CHANGE,SP_ATTACK_CHANGE,SP_DEFENSE_CHANGE,SPEED_CHANGE,FLINCH,CONFUSE,TRI_ATTACK};

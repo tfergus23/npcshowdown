@@ -62,12 +62,16 @@ const Ability* Pokemon::getCurrentAbility(){
 }
 void Pokemon::setCurrentAbility(const Ability* ability){
     m_CurrentAbility = ability;
+    abilityState.reset();
+    m_CurrentAbility->initializeState(&abilityState);
 }
 const Item* Pokemon::getCurrentItem(){
     return m_CurrentItem;
 }
 void Pokemon::setCurrentItem(const Item* item){
     m_CurrentItem = item;
+    itemState.reset();
+    m_CurrentItem->initializeState(&itemState);
 }
 const Status* Pokemon::getStatus(){
     return m_Status;
@@ -75,6 +79,8 @@ const Status* Pokemon::getStatus(){
 void Pokemon::applyStatus(const Status* status){
     //TODO Implement the MoveEffects version here
     m_Status = status;
+    statusState.reset();
+    m_Status->initializeState(&statusState);
 }
 bool Pokemon::hasEffect(const Effect* effect){
     return m_Effects.count(effect) > 0;
@@ -91,7 +97,8 @@ void Pokemon::removeMarkedEffects(){
 
 void Pokemon::applyEffect(const Effect* effect){
     //TODO Implement the MoveEffects version here
-    m_Effects[effect] = EffectState();
+    m_Effects[effect];
+    effect->initializeState(&m_Effects[effect]);
 }
 EffectState* Pokemon::getEffectState(const Effect* effect){
     return &m_Effects[effect];
@@ -210,7 +217,7 @@ void Pokemon::onSwitch(){
     isTrapped = false;
     lastMoveUsed = nullptr;
     triggeredCritMod = 0;
-    lastMoveUsedAgainstMe = nullptr;
+    //lastMoveUsedAgainstMe = nullptr;
     currentType[0] = m_BaseType[0];
     currentType[1] = m_BaseType[1];
     currentMoves = baseMoves; // Does this copy the whole array? IDK

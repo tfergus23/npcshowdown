@@ -23,6 +23,7 @@ public:
     std::string battleLog = "";
     int weatherSuppressors = 0;
     int moveNumber = 0;
+    bool doLogging = true;
 
     //Used by the Use2MovesThenSwitch AI to count how many moves it used so far
     int player1SwitchCounter = 0;
@@ -32,7 +33,7 @@ public:
     int getSeed();
 
     Battle(const Trainer& trainer1, const Trainer& trainer2, int seed);
-    void addMoves(std::vector<MoveUse>& actions);
+    void addMoves(const MoveUse& move1, const MoveUse& move2);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
     void addFieldEffect(bool side, const FieldEffect* fieldEffect);
@@ -55,11 +56,12 @@ private:
     int m_Seed;
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;
-    std::vector<MoveUse> m_Turn;
+    MoveUse m_Turn[2];
     std::unordered_map<const FieldEffect*, EffectState> m_Player1FieldEffects;
     std::unordered_map<const FieldEffect*, EffectState> m_Player2FieldEffects;
     std::vector<const FieldEffect*> m_EffectsToRemove1;
     std::vector<const FieldEffect*> m_EffectsToRemove2;
+    void removeMarkedFieldEffects(bool side);
     void setPokemonSpeedOrder();
 
     void raiseAfterMove(MoveUse* moveUse);
@@ -67,6 +69,9 @@ private:
     void raisePokemonEnter(Pokemon* enteringPokemon);
     void raisePokemonSwitch(Pokemon* switchingPokemon);
     void raisePokemonDeath(Pokemon* dyingPokemon);
+
+    void setMoveOrder();
+    void swapMoves();
 };
 
 void simulateBattle(Battle* battle);
