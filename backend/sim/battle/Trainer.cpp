@@ -27,7 +27,7 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
     auto& myTeam = isPlayer1 ?  battle->player1Team : battle->player2Team;
     int& switchCounter = isPlayer1 ? battle->player1SwitchCounter : battle->player2SwitchCounter;
     for (int i = 0; i < myPoke->currentMoves.size(); i++){
-        if (myPoke->currentMoves[i] != nullptr && myPoke->currentPP[i] > 0 && i != myPoke->disabledIndex){
+        if (myPoke->currentMoves[i] != MOVE_NONE && myPoke->currentPP[i] > 0 && i != myPoke->disabledIndex){
             validMoves.push_back(myPoke->currentMoves[i]);
         }
     }
@@ -42,7 +42,7 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
         }
         return validMoves[0];
     case SWITCHER:
-        if (getValidSwitches(myPoke, battle).size() > 0){
+        if (getValidSwitchesCount(myPoke, battle) > 0){
             return &MOVE_SWITCH;
         }
         if (validMoves.size() <= 0){
@@ -56,7 +56,7 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
         return validMoves[battle->randInt(0, validMoves.size())];
     case USE_2_MOVES_THEN_SWITCH:
         if (switchCounter > 2){
-            if (getValidSwitches(myPoke, battle).size() > 0){
+            if (getValidSwitchesCount(myPoke, battle) > 0){
                 switchCounter = 0;
                 return &MOVE_SWITCH;
             }
@@ -88,21 +88,32 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
 
 int Trainer::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Battle* battle){
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
-    auto validSlots = getValidSwitches(currentlyActivePokemon, battle);
+    std::vector<int> validSlots;
+    getValidSwitches(currentlyActivePokemon, battle, validSlots);
     assert(validSlots.size() > 0);
     return validSlots[battle->randInt(0, validSlots.size())];
 }
 
-std::vector<int> Trainer::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle){
+void Trainer::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, std::vector<int>& outVec){
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
-    std::vector<int> validSlots;
-    if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return validSlots;
+    if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return;
     for (int i = 0; i < myTeam.size(); i++){
         if (!myTeam[i].empty && !myTeam[i].isDead && currentlyActivePokemon != &(myTeam[i])){
-            validSlots.push_back(i);
+            outVec.push_back(i);
         }
     }
-    return validSlots;
+}
+
+int Trainer::getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* battle){
+    auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
+    if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return 0;
+    int result = 0;
+    for (int i = 0; i < myTeam.size(); i++){
+        if (!myTeam[i].empty && !myTeam[i].isDead && currentlyActivePokemon != &(myTeam[i])){
+            result++;
+        }
+    }
+    return result;
 }
 
 std::string Trainer::toJSON(){

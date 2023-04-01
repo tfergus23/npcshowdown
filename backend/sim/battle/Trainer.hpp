@@ -30,7 +30,8 @@ public:
 
     int pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Battle* battle);
 
-    std::vector<int> getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle);
+    void getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, std::vector<int>& outVec);
+    int getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* battle);
 
     std::string toJSON();
 private:

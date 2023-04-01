@@ -42,5 +42,5 @@ public:
 inline const Pound MOVE_POUND;
 
 inline const std::unordered_map<std::string, const Move*> moves = {
-    {MOVE_POUND_NAME, &MOVE_POUND}
+    {MOVE_POUND.name, &MOVE_POUND}
 };

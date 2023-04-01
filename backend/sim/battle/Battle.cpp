@@ -1,7 +1,6 @@
 #include "sim/battle/Battle.hpp"
 #include <random>
 #include "sim/data/Moves.hpp"
-#include "assert.h"
 #include "sim/data/Weathers.hpp"
 #include "sim/data/Items.hpp"
 #define DEBUG_LOG 1
@@ -14,8 +13,8 @@ player1Team{{Pokemon(&(trainer1.teamBlueprint[0]), this),Pokemon(&(trainer1.team
 player2Team{{Pokemon(&(trainer2.teamBlueprint[0]), this),Pokemon(&(trainer2.teamBlueprint[1]), this),Pokemon(&(trainer2.teamBlueprint[2]), this),Pokemon(&(trainer2.teamBlueprint[3]), this),Pokemon(&(trainer2.teamBlueprint[4]), this),Pokemon(&(trainer2.teamBlueprint[5]), this)}}
 {
     log("Seed: " + std::to_string(seed));
-    setActivePokemon(true, &(player1Team[0]));
-    setActivePokemon(false, &(player2Team[0]));
+    setActivePokemon(IS_PLAYER_ONE, &(player1Team[0]));
+    setActivePokemon(IS_PLAYER_TWO, &(player2Team[0]));
     setPokemonSpeedOrder();
     raisePokemonEnter(m_FasterPokemon);
     raisePokemonEnter(m_SlowerPokemon);
@@ -31,6 +30,16 @@ void Battle::debug(const std::string& message){
     if (doLogging)
     battleLog += message + "\n";
 #endif
+}
+
+void Battle::assert(bool condition){
+    if (!condition){
+        log("Assertion failed! Stopping battle.");
+        invalid = true;
+        isTurnOver = true;
+        isBattleOver = true;
+        winner = &m_Player1;
+    }
 }
 
 

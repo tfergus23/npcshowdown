@@ -24,6 +24,7 @@ public:
     int weatherSuppressors = 0;
     int moveNumber = 0;
     bool doLogging = true;
+    bool invalid = false;
 
     //Used by the Use2MovesThenSwitch AI to count how many moves it used so far
     int player1SwitchCounter = 0;
@@ -42,6 +43,7 @@ public:
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
     void log(const std::string& str);
     void debug(const std::string& str);
+    void assert(bool condition);
 
     void raiseBeforeMove(MoveUse* moveUse);
     void killTheDead();
@@ -75,3 +77,6 @@ private:
 };
 
 void simulateBattle(Battle* battle);
+
+const bool IS_PLAYER_ONE = true;
+const bool IS_PLAYER_TWO = false;
