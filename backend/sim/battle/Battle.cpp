@@ -46,13 +46,13 @@ int Battle::getSeed(){
     return m_Seed;
 }
 
-void Battle::addMoves(const MoveUse& move1, const MoveUse& move2){
+void Battle::addMoves(MoveUse* move1, MoveUse* move2){
     isTurnOver = false;
     m_Turn[0] = move1;
     m_Turn[1] = move2;
     setMoveOrder();
-    m_FasterPokemon = m_Turn[0].user;
-    m_SlowerPokemon = m_Turn[1].user;
+    m_FasterPokemon = m_Turn[0]->user;
+    m_SlowerPokemon = m_Turn[1]->user;
     
 }
 
@@ -63,16 +63,16 @@ void Battle::setMoveOrder(){
 }
 
 void Battle::swapMoves(){
-    MoveUse temp = m_Turn[0];
+    MoveUse* temp = m_Turn[0];
     m_Turn[0] = m_Turn[1];
     m_Turn[1] = temp;
 }
 
 MoveUse* Battle::doMove(){
-    MoveUse* move = &m_Turn[moveNumber];
+    MoveUse* move = m_Turn[moveNumber];
     if (moveNumber == 0) log("----------------------Turn " + std::to_string(turns) + "----------------------");
     if (!move->user->isDead && (move->user == player1ActivePokemon || move->user == player2ActivePokemon)){
-        move->doMove(&m_Turn[moveNumber == 0 ? 1 : 0]);
+        move->doMove(m_Turn[moveNumber == 0 ? 1 : 0]);
         if (move->changeLastMoveUsed){
             move->user->lastMoveUsed = move->move;
         }
@@ -88,7 +88,7 @@ Pokemon* Battle::switchPokemon(bool isPlayer1, int newPokePosition){
     raisePokemonSwitch(currentPoke);
     setActivePokemon(isPlayer1, newPoke);
     raisePokemonEnter(newPoke);
-    if (m_Turn[1].move != &MOVE_SWITCH && m_Turn[1].target == currentPoke) m_Turn[1].target = newPoke;
+    if (m_Turn[1]->move != &MOVE_SWITCH && m_Turn[1]->target == currentPoke) m_Turn[1]->target = newPoke;
     if (isPlayer1) player1Switching = false;
     else player2Switching = false;
     return newPoke;
@@ -100,6 +100,7 @@ void Battle::addFieldEffect(bool side, const FieldEffect* fieldEffect){
 }
 bool Battle::sideHasFieldEffect(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
+    return list.count(fieldEffect) > 0;
 }
 EffectState* Battle::getFieldEffectState(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;

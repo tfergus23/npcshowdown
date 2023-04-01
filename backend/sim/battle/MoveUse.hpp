@@ -39,4 +39,4 @@ private:
     float m_EffectiveAccuracy;
 };
 
-bool compareMoves(const MoveUse& move1, const MoveUse& move2);
+bool compareMoves(const MoveUse* move1, const MoveUse* move2);

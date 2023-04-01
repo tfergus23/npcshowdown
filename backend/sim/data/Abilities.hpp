@@ -43,7 +43,7 @@ inline const Torrent ABILITY_TORRENT;
 
 
 //Mapping string of name to ability
-std::unordered_map<std::string,const Ability*> abilities = {
+inline std::unordered_map<std::string,const Ability*> abilities = {
     {ABILITY_NONE_NAME, ABILITY_NONE},
     {ABILITY_GUTS_NAME, &ABILITY_GUTS},
     {ABILITY_TORRENT_NAME, &ABILITY_TORRENT}

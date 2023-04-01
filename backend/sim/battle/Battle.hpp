@@ -33,7 +33,7 @@ public:
     int getSeed();
 
     Battle(const Trainer& trainer1, const Trainer& trainer2, int seed);
-    void addMoves(const MoveUse& move1, const MoveUse& move2);
+    void addMoves(MoveUse* move1, MoveUse* move2);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
     void addFieldEffect(bool side, const FieldEffect* fieldEffect);
@@ -56,7 +56,7 @@ private:
     int m_Seed;
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;
-    MoveUse m_Turn[2];
+    MoveUse* m_Turn[2];
     std::unordered_map<const FieldEffect*, EffectState> m_Player1FieldEffects;
     std::unordered_map<const FieldEffect*, EffectState> m_Player2FieldEffects;
     std::vector<const FieldEffect*> m_EffectsToRemove1;

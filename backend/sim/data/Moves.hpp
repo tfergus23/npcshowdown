@@ -2,6 +2,8 @@
 #include "battle/Move.hpp"
 #include "utils/move_functions.hpp"
 
+inline const Move* MOVE_NONE = nullptr;
+
 //TODO: implement these
 inline const Move MOVE_SWITCH;
 inline const Move MOVE_STRUGGLE;
@@ -39,6 +41,6 @@ public:
 };
 inline const Pound MOVE_POUND;
 
-std::unordered_map<std::string, const Move*> moves = {
+inline const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_POUND_NAME, &MOVE_POUND}
 };

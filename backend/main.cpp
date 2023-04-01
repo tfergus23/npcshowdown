@@ -1,8 +1,8 @@
 #include <iostream>
-#include "battle/Trainer.hpp"
-#include "battle/Pokemon.hpp"
-#include "battle/Battle.hpp"
-#include "battle/PokemonBlueprint.hpp"
+#include "sim/battle/Trainer.hpp"
+#include "sim/battle/Pokemon.hpp"
+#include "sim/battle/Battle.hpp"
+#include "sim/battle/PokemonBlueprint.hpp"
 
 int main(){
     PokemonBlueprint poke1(

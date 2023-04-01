@@ -4,6 +4,6 @@
 
 enum Nature {};
 
-std::unordered_map<std::string, const Nature> natures;
+inline std::unordered_map<std::string, const Nature> natures;
 
 float natureBoost(Nature nature, Stat stat);
