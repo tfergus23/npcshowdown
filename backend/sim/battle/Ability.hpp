@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
-#include "battle/MoveUse.hpp"
+#include "sim/battle/MoveUse.hpp"
 #include <functional>
-#include "battle/Pokemon.hpp"
+#include "sim/battle/Pokemon.hpp"
 
 class Ability{
 public:

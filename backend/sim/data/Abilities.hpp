@@ -1,7 +1,7 @@
 #pragma once
-#include "battle/Ability.hpp"
+#include "sim/battle/Ability.hpp"
 #include <cmath>
-#include "data/Statuses.hpp"
+#include "sim/data/Statuses.hpp"
 
 inline const std::string ABILITY_NONE_NAME = "";
 inline const Ability* ABILITY_NONE = nullptr;

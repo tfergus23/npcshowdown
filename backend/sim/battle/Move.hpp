@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
-#include "battle/Type.hpp"
-#include "battle/DamageCategory.hpp"
-#include "battle/TargetType.hpp"
-#include "battle/SecondaryEffect.hpp"
-#include "battle/MoveUse.hpp"
+#include "sim/battle/Type.hpp"
+#include "sim/battle/DamageCategory.hpp"
+#include "sim/battle/TargetType.hpp"
+#include "sim/battle/SecondaryEffect.hpp"
+#include "sim/battle/MoveUse.hpp"
 
 
 

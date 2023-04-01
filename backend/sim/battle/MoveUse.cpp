@@ -1,4 +1,4 @@
-#include "battle/MoveUse.hpp"
+#include "sim/battle/MoveUse.hpp"
 #include "Stat.hpp"
 
 bool compareMoves(const MoveUse* move1, const MoveUse* move2){

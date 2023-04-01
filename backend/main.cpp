@@ -1,10 +1,14 @@
 #include <iostream>
+
 #include "sim/battle/Trainer.hpp"
 #include "sim/battle/Pokemon.hpp"
 #include "sim/battle/Battle.hpp"
 #include "sim/battle/PokemonBlueprint.hpp"
 
+#include "api/NPCS_API_Server.hpp"
+
 int main(){
+    
     PokemonBlueprint poke1(
         "Squirtle",
         100,
@@ -39,4 +43,10 @@ int main(){
 
     simulateBattle(&battle);
     std::cout << battle.battleLog << '\n';
+    
+
+   /*
+    NPCS_API_Server server;
+    return server.run();
+   */
 }

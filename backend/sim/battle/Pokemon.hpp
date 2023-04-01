@@ -1,20 +1,20 @@
 #pragma once
 #include <string>
-#include "battle/Ability.hpp"
-#include "battle/Item.hpp"
-#include "battle/Gender.hpp"
-#include "battle/Nature.hpp"
-#include "battle/Status.hpp"
-#include "battle/Type.hpp"
-#include "battle/Stat.hpp"
-#include "battle/Battle.hpp"
-#include "battle/MoveUse.hpp"
-#include "battle/PokemonBlueprint.hpp"
-#include "battle/EffectState.hpp"
+#include "sim/battle/Ability.hpp"
+#include "sim/battle/Item.hpp"
+#include "sim/battle/Gender.hpp"
+#include "sim/battle/Nature.hpp"
+#include "sim/battle/Status.hpp"
+#include "sim/battle/Type.hpp"
+#include "sim/battle/Stat.hpp"
+#include "sim/battle/Battle.hpp"
+#include "sim/battle/MoveUse.hpp"
+#include "sim/battle/PokemonBlueprint.hpp"
+#include "sim/battle/EffectState.hpp"
 #include <array>
-#include "battle/Effect.hpp"
-#include "data/Statuses.hpp"
-#include "battle/Move.hpp"
+#include "sim/battle/Effect.hpp"
+#include "sim/data/Statuses.hpp"
+#include "sim/battle/Move.hpp"
 
 
 class Pokemon{

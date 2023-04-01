@@ -1,4 +1,4 @@
 #pragma once
-#include "battle/Weather.hpp"
+#include "sim/battle/Weather.hpp"
 
 inline const Weather* WEATHER_NONE = nullptr;

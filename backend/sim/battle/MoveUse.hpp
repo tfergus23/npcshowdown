@@ -1,5 +1,5 @@
 #pragma once
-#include "battle/Move.hpp"
+#include "sim/battle/Move.hpp"
 
 class MoveUse{
 public:

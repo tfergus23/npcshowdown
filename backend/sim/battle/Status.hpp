@@ -1,5 +1,5 @@
 #pragma once
-#include "battle/Battle.hpp"
+#include "sim/battle/Battle.hpp"
 
 class Status{
 public:

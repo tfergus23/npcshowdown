@@ -1,7 +1,7 @@
-#include "battle/Trainer.hpp"
+#include "sim/battle/Trainer.hpp"
 #include <iostream>
 #include <assert.h>
-#include "data/Moves.hpp"
+#include "sim/data/Moves.hpp"
 
 
 

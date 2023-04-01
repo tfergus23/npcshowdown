@@ -1,8 +1,8 @@
 #pragma once
-#include "battle/Trainer.hpp"
-#include "battle/Pokemon.hpp"
-#include "battle/Weather.hpp"
-#include "battle/FieldEffect.hpp"
+#include "sim/battle/Trainer.hpp"
+#include "sim/battle/Pokemon.hpp"
+#include "sim/battle/Weather.hpp"
+#include "sim/battle/FieldEffect.hpp"
 #include <random>
 
 class Battle{

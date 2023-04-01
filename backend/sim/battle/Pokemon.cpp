@@ -1,11 +1,11 @@
 #include "Pokemon.hpp"
-#include "data/Abilities.hpp"
-#include "battle/Gender.hpp"
-#include "battle/Nature.hpp"
-#include "data/Moves.hpp"
+#include "sim/data/Abilities.hpp"
+#include "sim/battle/Gender.hpp"
+#include "sim/battle/Nature.hpp"
+#include "sim/data/Moves.hpp"
 #include <iostream>
-#include "utils/stage_multipliers.hpp"
-#include "data/Items.hpp"
+#include "sim/utils/stage_multipliers.hpp"
+#include "sim/data/Items.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
 species{blueprint->species},

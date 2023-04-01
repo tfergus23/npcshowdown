@@ -1,9 +1,9 @@
-#include "battle/Battle.hpp"
+#include "sim/battle/Battle.hpp"
 #include <random>
-#include "data/Moves.hpp"
+#include "sim/data/Moves.hpp"
 #include "assert.h"
-#include "data/Weathers.hpp"
-#include "data/Items.hpp"
+#include "sim/data/Weathers.hpp"
+#include "sim/data/Items.hpp"
 #define DEBUG_LOG 1
 
 Battle::Battle(const Trainer& trainer1, const Trainer& trainer2, int seed) :

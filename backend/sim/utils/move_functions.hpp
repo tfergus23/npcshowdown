@@ -1,4 +1,4 @@
 #pragma once
-#include "battle/MoveUse.hpp"
+#include "sim/battle/MoveUse.hpp"
 
 int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness = true);

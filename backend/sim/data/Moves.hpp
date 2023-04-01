@@ -1,6 +1,6 @@
 #pragma once
-#include "battle/Move.hpp"
-#include "utils/move_functions.hpp"
+#include "sim/battle/Move.hpp"
+#include "sim/utils/move_functions.hpp"
 
 inline const Move* MOVE_NONE = nullptr;
 
