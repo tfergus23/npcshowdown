@@ -5,7 +5,7 @@
 enum Gender{MALE, FEMALE, GENDERLESS};
 
 
-inline std::unordered_map<std::string, const Gender> genders = {
+inline const std::unordered_map<std::string, const Gender> genders = {
     {"Male", MALE},
     {"Female", FEMALE},
     {"Genderless", GENDERLESS}

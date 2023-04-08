@@ -8,11 +8,10 @@ inline const Ability* ABILITY_NONE = nullptr;
 
 
 //Guts
-inline const std::string ABILITY_GUTS_NAME = "Guts";
 class Guts: public Ability{
 public:
     Guts(){
-        name = ABILITY_GUTS_NAME;
+        name = "Guts";
     }
     int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const {
         if (stat == ATTACK && subject->getStatus() != STATUS_NONE){
@@ -25,15 +24,17 @@ public:
 inline const Guts ABILITY_GUTS;
 
 //Torrent
-inline const std::string ABILITY_TORRENT_NAME = "Torrent";
 class Torrent: public Ability{
 public:
     Torrent(){
-        name = ABILITY_TORRENT_NAME;
+        name = "Torrent";
     }
 
     void beforeMove(MoveUse* moveUse,Pokemon* subject) const {
         //TODO
+        if (moveUse->user == subject && (float) moveUse->user->currentHealth / (float) moveUse->user->getStat(HP, subject->battle) <= (1.0f / 3.0f) && moveUse->move->type == WATER){
+            moveUse->damageMod *= 1.5f;
+        }
     }
 };
 inline const Torrent ABILITY_TORRENT;
@@ -43,8 +44,8 @@ inline const Torrent ABILITY_TORRENT;
 
 
 //Mapping string of name to ability
-inline std::unordered_map<std::string,const Ability*> abilities = {
+inline const std::unordered_map<std::string,const Ability*> abilities = {
     {ABILITY_NONE_NAME, ABILITY_NONE},
-    {ABILITY_GUTS_NAME, &ABILITY_GUTS},
-    {ABILITY_TORRENT_NAME, &ABILITY_TORRENT}
+    {ABILITY_GUTS.name, &ABILITY_GUTS},
+    {ABILITY_TORRENT.name, &ABILITY_TORRENT}
 };

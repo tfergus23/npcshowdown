@@ -13,8 +13,8 @@ public:
     std::array<Pokemon,6> player2Team;
     Pokemon* player1ActivePokemon;
     Pokemon* player2ActivePokemon;
-    bool player1Switching = false;
-    bool player2Switching = false;
+    int player1Switching = -1; //-1 indicates no switch. >= 0 indicates position of pokemon
+    int player2Switching = -1;
     bool isTurnOver = false;
     const Weather* weather;
     int turns = 1;
@@ -33,32 +33,35 @@ public:
     int randInt(int min, int max);
     int getSeed();
 
-    Battle(const Trainer& trainer1, const Trainer& trainer2, int seed);
-    void addMoves(MoveUse* move1, MoveUse* move2);
+    Battle(Trainer& trainer1, Trainer& trainer2, int seed);
+    void addMoves(const Move* move1, const Move* move2);
     MoveUse* doMove();
-    Pokemon* switchPokemon(bool isPlayer1, int newPokePosition);
+    Pokemon* switchPokemon(bool isPlayer1);
+    void switchIfNecessary();
     void addFieldEffect(bool side, const FieldEffect* fieldEffect);
     bool sideHasFieldEffect(bool side, const FieldEffect* fieldEffect);
     EffectState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
     void log(const std::string& str);
     void debug(const std::string& str);
-    void assert(bool condition);
+    void assert(bool condition, const std::string& message = "");
 
     void raiseBeforeMove(MoveUse* moveUse);
+    void raiseEndOfTurn();
     void killTheDead();
     void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
     bool checkForOver();
     std::string currentStatus();
 private:
-    Trainer m_Player1;
-    Trainer m_Player2;
+    Trainer* m_Player1;
+    Trainer* m_Player2;
+    void setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, Trainer* trainer);
     std::default_random_engine m_Generator;
     std::uniform_int_distribution<int> m_Distribution;
     int m_Seed;
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;
-    MoveUse* m_Turn[2];
+    MoveUse m_Turn[2];
     std::unordered_map<const FieldEffect*, EffectState> m_Player1FieldEffects;
     std::unordered_map<const FieldEffect*, EffectState> m_Player2FieldEffects;
     std::vector<const FieldEffect*> m_EffectsToRemove1;
@@ -67,7 +70,6 @@ private:
     void setPokemonSpeedOrder();
 
     void raiseAfterMove(MoveUse* moveUse);
-    void raiseEndOfTurn();
     void raisePokemonEnter(Pokemon* enteringPokemon);
     void raisePokemonSwitch(Pokemon* switchingPokemon);
     void raisePokemonDeath(Pokemon* dyingPokemon);
@@ -80,3 +82,13 @@ void simulateBattle(Battle* battle);
 
 const bool IS_PLAYER_ONE = true;
 const bool IS_PLAYER_TWO = false;
+
+
+class BattleAssertionFailedException : public std::exception {
+public:
+	BattleAssertionFailedException(const std::string& message) : m_Message{message} {}
+
+	const char* what() const noexcept override;
+private:
+	const std::string m_Message;
+};

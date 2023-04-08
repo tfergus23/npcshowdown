@@ -3,6 +3,7 @@
 #include "sim/utils/move_functions.hpp"
 
 inline const Move* MOVE_NONE = nullptr;
+inline const std::string MOVE_NONE_NAME = "";
 
 //TODO: implement these
 inline const Move MOVE_SWITCH;
@@ -16,7 +17,7 @@ class Pound: public Move{
 public:
     Pound(){
         name = MOVE_POUND_NAME;
-        type = Normal;
+        type = NORMAL;
         damageCategory = PHYSICAL;
         power = 40;
         accuracy = 100;
@@ -42,5 +43,6 @@ public:
 inline const Pound MOVE_POUND;
 
 inline const std::unordered_map<std::string, const Move*> moves = {
+    {MOVE_NONE_NAME, MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND}
 };

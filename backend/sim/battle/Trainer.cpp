@@ -1,6 +1,5 @@
 #include "sim/battle/Trainer.hpp"
 #include <iostream>
-#include <assert.h>
 #include "sim/data/Moves.hpp"
 
 
@@ -90,7 +89,7 @@ int Trainer::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Ba
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
     std::vector<int> validSlots;
     getValidSwitches(currentlyActivePokemon, battle, validSlots);
-    assert(validSlots.size() > 0);
+    battle->assert(validSlots.size() > 0, "pickPokemon called without any valid pokemon to switch to.");
     return validSlots[battle->randInt(0, validSlots.size())];
 }
 

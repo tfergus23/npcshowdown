@@ -64,7 +64,7 @@ class Pokemon{
         int storedPP = -1; //Meant to be used by mimic to store the PP the user had before using Mimic
         int storedPPIndex = -1;
         int currentPP[4];
-        int nextMove = -1;
+        const Move* nextMove = nullptr;
         int nextMoveCounter = -1;
         Type currentType[2];
         bool isTrapped = false;

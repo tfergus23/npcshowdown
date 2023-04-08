@@ -40,8 +40,8 @@ int main(){
     Trainer trainer2("Youngster", "Ben", trainer2Team, WILD);
 
     Battle battle(trainer1, trainer2, 69);
-
     simulateBattle(&battle);
+
     std::cout << battle.battleLog << '\n';
     
 

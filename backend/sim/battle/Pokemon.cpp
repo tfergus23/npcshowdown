@@ -14,17 +14,22 @@ level{blueprint->level},
 evs{blueprint->evs},
 ivs{blueprint->ivs},
 baseMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}},
-nature{natures[blueprint->nature]},
+nature{natures.at(blueprint->nature)},
 currentMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}},
-m_BaseAbility{abilities[blueprint->abilityName]},
-m_CurrentAbility{abilities[blueprint->abilityName]},
-m_CurrentItem{items[blueprint->itemName]},
-m_BaseItem{items[blueprint->itemName]},
+m_BaseAbility{abilities.at(blueprint->abilityName)},
+m_CurrentAbility{abilities.at(blueprint->abilityName)},
+m_CurrentItem{items.at(blueprint->itemName)},
+m_BaseItem{items.at(blueprint->itemName)},
 battle{battle}
 {
-    //TODO: Set species data
     if (blueprint->empty) return;
 
+    //TODO: Set species data
+
+    battle->assert(m_CurrentAbility != nullptr, nickname + " doesn't have an ability.");
+    m_CurrentAbility->initializeState(&abilityState);
+    if (m_CurrentItem != ITEM_NONE)
+        m_CurrentItem->initializeState(&itemState);
 
     empty = false;
     for (int i = 0; i < 4; i++){
@@ -45,7 +50,7 @@ battle{battle}
         m_Gender = MALE;
         break;
     default:
-        m_Gender = genders[blueprint->gender];
+        m_Gender = genders.at(blueprint->gender);
         break;
     }
     currentHealth = getStatRaw(HP);
@@ -71,7 +76,9 @@ const Item* Pokemon::getCurrentItem(){
 void Pokemon::setCurrentItem(const Item* item){
     m_CurrentItem = item;
     itemState.reset();
-    m_CurrentItem->initializeState(&itemState);
+    if (m_CurrentItem != ITEM_NONE)
+        m_CurrentItem->initializeState(&itemState);
+
 }
 const Status* Pokemon::getStatus(){
     return m_Status;
@@ -80,7 +87,8 @@ void Pokemon::applyStatus(const Status* status){
     //TODO Implement the MoveEffects version here
     m_Status = status;
     statusState.reset();
-    m_Status->initializeState(&statusState);
+    if (m_Status != STATUS_NONE)
+        m_Status->initializeState(&statusState);
 }
 bool Pokemon::hasEffect(const Effect* effect){
     return m_Effects.count(effect) > 0;
@@ -97,6 +105,7 @@ void Pokemon::removeMarkedEffects(){
 
 void Pokemon::applyEffect(const Effect* effect){
     //TODO Implement the MoveEffects version here
+    battle->assert(!hasEffect(effect), "Tried to apply effect " + effect->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
     m_Effects[effect];
     effect->initializeState(&m_Effects[effect]);
 }
@@ -135,8 +144,7 @@ int Pokemon::getStat(Stat stat, bool crit = false){
         finalStatValue = (int) floor((float)unboostedStat * paralysisMod* statStageMultiplier(boosts[stat]));
         break;
     default:
-        std::cerr << "Unhandled stat.\n";
-        throw 1;
+        battle->assert(false, "Unhandled stat: " + std::to_string(stat));
     }
     finalStatValue = m_CurrentAbility->modifySubjectStat(stat, finalStatValue, this);
     return finalStatValue;
@@ -164,8 +172,8 @@ int Pokemon::getStatRaw(Stat stat){
         int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature,stat));
         return unboostedStat;
     default:
-        std::cerr << "Unhandled stat.\n";
-        throw 1;
+        battle->assert(false, "Unhandled stat: " + std::to_string(stat));
+        return -1;
     }
 }
 
@@ -181,8 +189,8 @@ void Pokemon::beforeMove(MoveUse* moveUse){
     if (getCurrentItem() != ITEM_NONE) getCurrentItem()->beforeMove(moveUse, this);
     if (getStatus() != STATUS_NONE) getStatus()->beforeMove(moveUse, this);
     if (!abilityState.suppressed) getCurrentAbility()->beforeMove(moveUse, this);
-    for (auto effect : m_Effects){
-        effect.first->beforeMove(moveUse, this);
+    for (auto [effect,state] : m_Effects){
+        effect->beforeMove(moveUse, this);
     }
     removeMarkedEffects();
 }

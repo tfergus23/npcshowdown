@@ -1,6 +1,6 @@
 #pragma once
 
-enum Type{Normal,Fire,Water,Electric,Grass,Ice,Fighting,Poison,Ground,Flying,Psychic,Bug,Rock,Ghost,Dragon,Dark,Steel,None,Fairy};
+enum Type{NORMAL,FIRE,WATER,ELECTRIC,GRASS,ICE,FIGHTING,POISON,GROUND,FLYING,PSYCHIC,BUG,ROCK,GHOST,DRAGON,DARK,STEEL,NONE,FAIRY};
 
 float typeMatchup(Type attackingType, Type defendingType1, Type defendingType2);
 
