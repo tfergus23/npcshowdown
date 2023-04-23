@@ -85,6 +85,7 @@ class Pokemon{
         void resetBoosts();
         void beforeMove(MoveUse* moveUse);
         void afterMove(MoveUse* moveUse);
+        void onEndOfTurn();
         void onSwitch();
         void onEnter();
         void onDeath();

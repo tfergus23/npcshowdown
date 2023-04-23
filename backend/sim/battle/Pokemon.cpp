@@ -202,8 +202,26 @@ void Pokemon::afterMove(MoveUse* moveUse){
     battle->killTheDead();
     if (!abilityState.suppressed) getCurrentAbility()->afterMove(moveUse, this);
     battle->killTheDead();
-    for (auto effect : m_Effects){
-        effect.first->afterMove(moveUse, this);
+    for (auto [effect, effectState] : m_Effects){
+        if (!effectState.suppressed) effect->afterMove(moveUse, this);
+        battle->killTheDead();
+    }
+    removeMarkedEffects();
+}
+
+void Pokemon::onEndOfTurn(){
+    if (getCurrentItem() != ITEM_NONE) {
+        if (!itemState.suppressed) getCurrentItem()->endOfTurn(this);
+        getCurrentItem()->priorityEndOfTurn(this);
+    }
+    battle->killTheDead();
+    if (getStatus() != STATUS_NONE) getStatus()->endOfTurn(this);
+    battle->killTheDead();
+    if (!abilityState.suppressed) getCurrentAbility()->endOfTurn(this);
+    getCurrentAbility()->priorityEndOfTurn(this);
+    battle->killTheDead();
+    for (auto [effect, effectState] : m_Effects){
+        if (!effectState.suppressed) effect->endOfTurn(this);
         battle->killTheDead();
     }
     removeMarkedEffects();
@@ -215,8 +233,8 @@ void Pokemon::onSwitch(){
     if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectSwitch(this);
     if (m_Status != STATUS_NONE) m_Status->onSubjectSwitch(this);
     //TODO maybe do this differently??
-    for (auto effect : m_Effects){
-        effect.first->onSubjectSwitch(this);
+    for (auto [effect, effectState] : m_Effects){
+        if (!effectState.suppressed) effect->onSubjectSwitch(this);
     }
     removeMarkedEffects();
     m_CurrentAbility = m_BaseAbility;
@@ -239,8 +257,8 @@ void Pokemon::onEnter(){
     if (!abilityState.suppressed) m_CurrentAbility->onSubjectEnter(this);
     if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectEnter(this);
     if (m_Status != STATUS_NONE) m_Status->onSubjectEnter(this);
-    for (auto effect : m_Effects){
-        effect.first->onSubjectEnter(this);
+    for (auto [effect, effectState] : m_Effects){
+        if (!effectState.suppressed) effect->onSubjectEnter(this);
     }
     removeMarkedEffects();
     lastMoveUsed = nullptr;
@@ -248,8 +266,8 @@ void Pokemon::onEnter(){
 void Pokemon::onDeath(){
     if (!abilityState.suppressed) m_CurrentAbility->onSubjectDeath(this);
     if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectDeath(this);
-    for (auto effect : m_Effects){
-        effect.first->onSubjectDeath(this);
+    for (auto [effect, effectState] : m_Effects){
+        if (!effectState.suppressed) effect->onSubjectDeath(this);
     }
     removeMarkedEffects();
     m_Status = STATUS_NONE;
@@ -258,16 +276,16 @@ void Pokemon::onDeath(){
 void Pokemon::onAttack(MoveUse* move){
     if (!abilityState.suppressed) m_CurrentAbility->onSubjectAttack(move);
     if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectAttack(move);
-    for (auto effect : m_Effects){
-        effect.first->onSubjectAttack(move);
+    for (auto [effect, effectState] : m_Effects){
+        if (!effectState.suppressed) effect->onSubjectAttack(move);
     }
     removeMarkedEffects();
 }
 void Pokemon::onAttacked(MoveUse* move){
     if (!abilityState.suppressed) m_CurrentAbility->onSubjectAttacked(move);
     if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectAttacked(move);
-    for (auto effect : m_Effects){
-        effect.first->onSubjectAttacked(move);
+    for (auto [effect, effectState] : m_Effects){
+        if (!effectState.suppressed) effect->onSubjectAttacked(move);
     }
     removeMarkedEffects();
 }

@@ -166,15 +166,15 @@ void Battle::raiseBeforeMove(MoveUse* moveUse){
     if (weather != WEATHER_NONE && weatherSuppressors <= 0) weather->beforeMove(moveUse);
 
     m_FasterPokemon->beforeMove(moveUse);
-    for (auto effect : fasterPokemonFieldEffects){
-        effect.first->beforeMove(moveUse);
+    for (auto [effect, effectState] : fasterPokemonFieldEffects){
+        if (!effectState.suppressed) effect->beforeMove(moveUse);
     }
     removeMarkedFieldEffects(fasterPokemonIsPlayer1);
 
 
     m_SlowerPokemon->beforeMove(moveUse);
-    for (auto effect: slowerPokemonFieldEffects){
-        effect.first->beforeMove(moveUse);
+    for (auto [effect, effectState]: slowerPokemonFieldEffects){
+        if (!effectState.suppressed) effect->beforeMove(moveUse);
     }
     removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
 
@@ -188,16 +188,16 @@ void Battle::raiseAfterMove(MoveUse* moveUse){
     killTheDead();
 
     m_FasterPokemon->afterMove(moveUse);
-    for (auto effect : fasterPokemonFieldEffects){
-        effect.first->afterMove(moveUse);
+    for (auto [effect, effectState] : fasterPokemonFieldEffects){
+        if (!effectState.suppressed) effect->afterMove(moveUse);
         killTheDead();
     }
     removeMarkedFieldEffects(fasterPokemonIsPlayer1);
 
 
     m_SlowerPokemon->afterMove(moveUse);
-    for (auto effect: slowerPokemonFieldEffects){
-        effect.first->afterMove(moveUse);
+    for (auto [effect, effectState] : slowerPokemonFieldEffects){
+        if (!effectState.suppressed) effect->afterMove(moveUse);
         killTheDead();
     }
     removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
@@ -217,7 +217,31 @@ void Battle::raiseAfterMove(MoveUse* moveUse){
     }
     */
 }
-void raiseEndOfTurn();
+void Battle::raiseEndOfTurn(){
+    bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
+    auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
+    auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
+
+    if (weather != WEATHER_NONE && weatherSuppressors <= 0) weather->endOfTurn(this);
+    weather->priorityEndOfTurn(this);
+    killTheDead();
+
+    m_FasterPokemon->onEndOfTurn();
+    for (auto [effect, effectState] : fasterPokemonFieldEffects){
+        if (!effectState.suppressed) effect->endOfTurn(this);
+        effect->priorityEndOfTurn(this);
+        killTheDead();
+    }
+    removeMarkedFieldEffects(fasterPokemonIsPlayer1);
+
+
+    m_SlowerPokemon->onEndOfTurn();
+    for (auto effect: slowerPokemonFieldEffects){
+        effect.first->endOfTurn(this);
+        killTheDead();
+    }
+    removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
+}
 void raisePokemonEnter(Pokemon* enteringPokemon);
 void raisePokemonSwitch(Pokemon* switchingPokemon);
 void raisePokemonDeath(Pokemon* dyingPokemon);
