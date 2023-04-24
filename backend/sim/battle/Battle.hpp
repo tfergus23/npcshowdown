@@ -16,7 +16,7 @@ public:
     int player1Switching = -1; //-1 indicates no switch. >= 0 indicates position of pokemon
     int player2Switching = -1;
     bool isTurnOver = false;
-    const Weather* weather;
+    const Weather* weather = WEATHER_NONE;
     int turns = 1;
     bool isBattleOver = false;
     bool isDraw = false;

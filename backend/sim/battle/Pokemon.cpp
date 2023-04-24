@@ -8,7 +8,7 @@
 #include "sim/data/Items.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
-species{blueprint->species},
+species{speciesMap.at(blueprint->species)},
 nickname{blueprint->nickname},
 level{blueprint->level},
 evs{blueprint->evs},
@@ -38,7 +38,7 @@ battle{battle}
         }
     }
     
-    switch (m_PercentMale)
+    switch ((int) species->percentMale)
     {
     case -1:
         m_Gender = GENDERLESS;
@@ -112,9 +112,6 @@ void Pokemon::applyEffect(const Effect* effect){
 EffectState* Pokemon::getEffectState(const Effect* effect){
     return &m_Effects[effect];
 }
-std::array<Type,2> Pokemon::getBaseType(){
-    return m_BaseType;
-}
 
 Gender Pokemon::getGender(){
     return m_Gender;
@@ -153,22 +150,22 @@ int Pokemon::getStatRaw(Stat stat){
     switch (stat)
     {
     case HP:
-        return (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + floor(evs[stat] / 4.0f)) * level)/100.0f) + level + 10;
+        return (int) floor(((2 * species->baseStats[stat] + ivs[stat] + floor(evs[stat] / 4.0f)) * level)/100.0f) + level + 10;
     case ATTACK:
     case SPATTACK:
         int div1 = (int) floor(evs[stat] / 4.0f);
-        int div2 = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int div2 = (int) floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
         int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
     case DEFENSE:
     case SPDEFENSE:
         int div1 = (int) floor(evs[stat] / 4.0f);
-        int div2 = (int) floor(((2 * m_BaseStats[stat] + evs[stat] + div1) * level) / 100.0f);
+        int div2 = (int) floor(((2 * species->baseStats[stat] + evs[stat] + div1) * level) / 100.0f);
         int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature,stat));
         return unboostedStat;
     case SPEED:
         int div1 = (int) floor(evs[stat] / 4.0f);
-        int div2 = (int) floor(((2 * m_BaseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int div2 = (int) floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
         int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature,stat));
         return unboostedStat;
     default:
@@ -225,8 +222,8 @@ void Pokemon::onSwitch(){
     isTrapped = false;
     lastMoveUsed = nullptr;
     triggeredCritMod = 0;
-    currentType[0] = m_BaseType[0];
-    currentType[1] = m_BaseType[1];
+    currentType[0] = species->type[0];
+    currentType[1] = species->type[1];
     currentMoves = baseMoves; // Does this copy the whole array? IDK
     if (storedPP >= 0 && storedPPIndex >= 0){
         currentPP[storedPPIndex] = storedPP;

@@ -15,12 +15,13 @@
 #include "sim/battle/Effect.hpp"
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/Move.hpp"
+#include "sim/data/Species.hpp"
 
 
 class Pokemon{
     public:
         //Blueprint
-        const std::string species;
+        const Species* species;
         const std::string nickname;
         const int level;
         const std::array<int,6> evs;
@@ -73,11 +74,6 @@ class Pokemon{
         Battle* battle;
         bool empty = true;
 
-        //Species data
-        float getWeight();
-        float getPercentMale();
-        std::array<Type,2> getBaseType();
-
         Pokemon(const PokemonBlueprint* blueprint, Battle* battle);
         int getStat(Stat stat, bool crit = false);
         int getStatRaw(Stat stat);
@@ -95,15 +91,11 @@ class Pokemon{
         void onSwitch();
         const Ability* m_BaseAbility;
         const Ability* m_CurrentAbility;
-        const Item* m_BaseItem;
-        const Item* m_CurrentItem;
-        int m_BaseStats[6];
+        const Item* m_BaseItem = ITEM_NONE;
+        const Item* m_CurrentItem = ITEM_NONE;
         const Status* m_Status = STATUS_NONE;
         std::unordered_map<const Effect*,EffectState> m_Effects;
         std::vector<const Effect*> m_EffectsToRemove;
         void removeMarkedEffects();
-        float m_Weight;
-        int m_PercentMale;
-        std::array<Type,2> m_BaseType;
         Gender m_Gender;
 };
