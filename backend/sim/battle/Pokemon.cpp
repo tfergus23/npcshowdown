@@ -186,32 +186,33 @@ void Pokemon::resetBoosts(){
 }
 
 void Pokemon::handleEvent(Event event, const EventArgs& args){
-    //TODO: Priotity end of turn somehow....
     if (getCurrentItem() != ITEM_NONE && !itemState.suppressed) getCurrentItem()->handleEvent(event,this, battle, args);
+    if (getCurrentItem() != ITEM_NONE && event == END_OF_TURN) getCurrentItem()->handleEvent(PRIORITY_END_OF_TURN,this, battle, args);
+
     if (getStatus() != STATUS_NONE && !statusState.suppressed) getStatus()->handleEvent(event,this, battle, args);
+    if (getStatus() != STATUS_NONE && event == END_OF_TURN) getStatus()->handleEvent(PRIORITY_END_OF_TURN,this, battle, args);
+
+
     if (!abilityState.suppressed) getCurrentAbility()->handleEvent(event,this, battle, args);
+    if (event == END_OF_TURN) getCurrentAbility()->handleEvent(PRIORITY_END_OF_TURN, this, battle, args);
     for (auto [effect,state] : m_Effects){
         if (!state.suppressed) effect->handleEvent(event, this, battle, args);
+        if (event == END_OF_TURN) effect->handleEvent(PRIORITY_END_OF_TURN, this, battle, args);
     }
     removeMarkedEffects();
 
+    if (args.eventSubject != this) return;
     switch (event)
     {
     case POKEMON_SWITCH:
-        if (args.eventSubject == this){
-            onSwitch();
-        }
+        onSwitch();
         break;
     case POKEMON_ENTER:
-        if (args.eventSubject == this){
-            lastMoveUsed = nullptr;
-        }
+        lastMoveUsed = nullptr;
         break;
     case POKEMON_DEATH:
-        if (args.eventSubject == this){
-            m_Status = STATUS_NONE;
-            onSwitch();
-        }
+        m_Status = STATUS_NONE;
+        onSwitch();
     default:
         break;
     }

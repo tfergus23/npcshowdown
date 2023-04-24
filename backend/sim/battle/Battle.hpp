@@ -70,14 +70,6 @@ private:
     std::vector<const FieldEffect*> m_EffectsToRemove2;
     void removeMarkedFieldEffects(bool side);
     void setPokemonSpeedOrder();
-
-    /*
-    void raiseAfterMove(MoveUse* moveUse);
-    void raisePokemonEnter(Pokemon* enteringPokemon);
-    void raisePokemonSwitch(Pokemon* switchingPokemon);
-    void raisePokemonDeath(Pokemon* dyingPokemon);
-    */
-
     void setMoveOrder();
     void swapMoves();
 };

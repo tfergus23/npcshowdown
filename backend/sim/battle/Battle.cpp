@@ -159,16 +159,20 @@ void Battle::removeMarkedFieldEffects(bool side){
 }
 
 void Battle::raiseEvent(Event event, const EventArgs& args){
-    //TODO: Priority end of turn somehow....
+    if (event == PRIORITY_END_OF_TURN){
+        assert(false, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
+    }
     bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
     auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
     auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
 
     if (weather != WEATHER_NONE && weatherSuppressors <= 0) weather->handleEvent(event, nullptr, this, args);
+    if (weather != WEATHER_NONE && event == END_OF_TURN) weather->handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
 
     m_FasterPokemon->handleEvent(event, args);
     for (auto [effect, effectState] : fasterPokemonFieldEffects){
         if (!effectState.suppressed) effect->handleEvent(event, nullptr, this, args);
+        if (event == END_OF_TURN) effect->handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
     }
     removeMarkedFieldEffects(fasterPokemonIsPlayer1);
 
@@ -176,6 +180,7 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
     m_SlowerPokemon->handleEvent(event, args);
     for (auto [effect, effectState]: slowerPokemonFieldEffects){
         if (!effectState.suppressed) effect->handleEvent(event, nullptr, this, args);
+        if (event == END_OF_TURN) effect->handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
     }
     removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
 

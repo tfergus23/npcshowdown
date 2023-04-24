@@ -70,7 +70,6 @@ class Pokemon{
         bool isTrapped = false;
         int disabledIndex = -1;
         const Move* lastMoveUsed = nullptr;
-        //MoveUse* lastMoveUsedAgainstMe = nullptr;
         Battle* battle;
         bool empty = true;
 
@@ -84,16 +83,6 @@ class Pokemon{
         int getStatRaw(Stat stat);
         void resetBoosts();
         void handleEvent(Event event, const EventArgs& args);
-        /*
-        void beforeMove(MoveUse* moveUse);
-        void afterMove(MoveUse* moveUse);
-        void onEndOfTurn();
-        void onSwitch();
-        void onEnter();
-        void onDeath();
-        void onAttack(MoveUse* move);
-        void onAttacked(MoveUse* move);
-        */
         bool shouldDie();
         bool outOfPP();
         bool isType(Type type);

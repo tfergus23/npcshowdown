@@ -13,7 +13,7 @@ public:
     Guts(){
         name = "Guts";
     }
-    int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const {
+    int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const override{
         if (stat == ATTACK && subject->getStatus() != STATUS_NONE){
             float newVal = (float) statVal * 1.5f;
             return (int) floor(statVal);
@@ -30,7 +30,7 @@ public:
         name = "Torrent";
     }
 protected:
-    void beforeMove(Pokemon* subject, Battle* battle, const EventArgs& args) const {
+    void beforeMove(Pokemon* subject, Battle* battle, const EventArgs& args) const override{
         //TODO
         if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(HP, subject->battle) <= (1.0f / 3.0f) && args.moveUse->move->type == WATER){
             args.moveUse->damageMod *= 1.5f;
