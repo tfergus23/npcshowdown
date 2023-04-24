@@ -13,7 +13,5 @@ public:
     int critMod = 0;
     bool ignorable = false;
     float accuracyMultiplier = 1.0f;
-
-    Ability();
     virtual int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const {return statVal;}
 };

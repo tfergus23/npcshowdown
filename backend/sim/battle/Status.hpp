@@ -3,6 +3,6 @@
 #include "sim/battle/Observer.hpp"
 
 class Status : public Observer{
-public:    
-    Status();
+public:
+    std::string was;
 };

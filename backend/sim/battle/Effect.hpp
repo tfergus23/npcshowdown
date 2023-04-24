@@ -5,5 +5,4 @@
 class Effect : public Observer{
 public:
     std::string name;
-    Effect();
 };

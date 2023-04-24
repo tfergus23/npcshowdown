@@ -117,8 +117,6 @@ Pokemon* Battle::switchPokemon(bool isPlayer1){
     setActivePokemon(isPlayer1, newPoke);
     raiseEvent(POKEMON_ENTER, EventArgs(newPoke, nullptr));
     if (m_Turn[1].move != &MOVE_SWITCH && m_Turn[1].target == currentPoke) m_Turn[1].target = newPoke;
-    if (isPlayer1) player1Switching = false;
-    else player2Switching = false;
     newPokePosition = -1;
     setPokemonHandlerOrder();
     return newPoke;
@@ -160,28 +158,31 @@ void Battle::removeMarkedFieldEffects(bool side){
 }
 
 void Battle::raiseEvent(Event event, const EventArgs& args){
-    if (event == PRIORITY_END_OF_TURN){
-        assert(false, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
-    }
+    assert(event != PRIORITY_END_OF_TURN, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
     bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
     auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
     auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
 
     if (weather != WEATHER_NONE && weatherSuppressors <= 0) weather->handleEvent(event, nullptr, this, args);
     if (weather != WEATHER_NONE && event == END_OF_TURN) weather->handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
+    killTheDead();
 
     m_FasterPokemon->handleEvent(event, args);
+    killTheDead();
     for (auto [effect, effectState] : fasterPokemonFieldEffects){
         if (!effectState.suppressed) effect->handleEvent(event, nullptr, this, args);
         if (event == END_OF_TURN) effect->handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
+        killTheDead();
     }
     removeMarkedFieldEffects(fasterPokemonIsPlayer1);
 
 
     m_SlowerPokemon->handleEvent(event, args);
+    killTheDead();
     for (auto [effect, effectState]: slowerPokemonFieldEffects){
         if (!effectState.suppressed) effect->handleEvent(event, nullptr, this, args);
         if (event == END_OF_TURN) effect->handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
+        killTheDead();
     }
     removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
 
