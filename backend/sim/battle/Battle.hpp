@@ -19,6 +19,7 @@ public:
     const Weather* weather;
     int turns = 1;
     bool isBattleOver = false;
+    bool isDraw = false;
     Trainer* winner;
     std::string battleLog = "";
     int weatherSuppressors = 0;
@@ -46,15 +47,16 @@ public:
     void debug(const std::string& str);
     void assert(bool condition, const std::string& message = "");
 
-    void raiseBeforeMove(MoveUse* moveUse);
-    void raiseEndOfTurn();
+    //void raiseBeforeMove(MoveUse* moveUse);
+    //void raiseEndOfTurn();
+    void raiseEvent(Event event, const EventArgs& args = EventArgs(nullptr, nullptr));
     void killTheDead();
     void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
-    bool checkForOver();
     std::string currentStatus();
 private:
     Trainer* m_Player1;
     Trainer* m_Player2;
+    bool trainerBlackedOut(bool player);
     void setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, Trainer* trainer);
     std::default_random_engine m_Generator;
     std::uniform_int_distribution<int> m_Distribution;
@@ -69,10 +71,12 @@ private:
     void removeMarkedFieldEffects(bool side);
     void setPokemonSpeedOrder();
 
+    /*
     void raiseAfterMove(MoveUse* moveUse);
     void raisePokemonEnter(Pokemon* enteringPokemon);
     void raisePokemonSwitch(Pokemon* switchingPokemon);
     void raisePokemonDeath(Pokemon* dyingPokemon);
+    */
 
     void setMoveOrder();
     void swapMoves();

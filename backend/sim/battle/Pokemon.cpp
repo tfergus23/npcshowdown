@@ -185,65 +185,45 @@ void Pokemon::resetBoosts(){
     }
 }
 
-void Pokemon::beforeMove(MoveUse* moveUse){
-    if (getCurrentItem() != ITEM_NONE) getCurrentItem()->beforeMove(moveUse, this);
-    if (getStatus() != STATUS_NONE) getStatus()->beforeMove(moveUse, this);
-    if (!abilityState.suppressed) getCurrentAbility()->beforeMove(moveUse, this);
+void Pokemon::handleEvent(Event event, const EventArgs& args){
+    //TODO: Priotity end of turn somehow....
+    if (getCurrentItem() != ITEM_NONE && !itemState.suppressed) getCurrentItem()->handleEvent(event,this, battle, args);
+    if (getStatus() != STATUS_NONE && !statusState.suppressed) getStatus()->handleEvent(event,this, battle, args);
+    if (!abilityState.suppressed) getCurrentAbility()->handleEvent(event,this, battle, args);
     for (auto [effect,state] : m_Effects){
-        effect->beforeMove(moveUse, this);
+        if (!state.suppressed) effect->handleEvent(event, this, battle, args);
     }
     removeMarkedEffects();
-}
-void Pokemon::afterMove(MoveUse* moveUse){
-    Battle* battle = moveUse->battle;
-    if (getCurrentItem() != ITEM_NONE) getCurrentItem()->afterMove(moveUse, this);
-    battle->killTheDead();
-    if (getStatus() != STATUS_NONE) getStatus()->afterMove(moveUse, this);
-    battle->killTheDead();
-    if (!abilityState.suppressed) getCurrentAbility()->afterMove(moveUse, this);
-    battle->killTheDead();
-    for (auto [effect, effectState] : m_Effects){
-        if (!effectState.suppressed) effect->afterMove(moveUse, this);
-        battle->killTheDead();
-    }
-    removeMarkedEffects();
-}
 
-void Pokemon::onEndOfTurn(){
-    if (getCurrentItem() != ITEM_NONE) {
-        if (!itemState.suppressed) getCurrentItem()->endOfTurn(this);
-        getCurrentItem()->priorityEndOfTurn(this);
+    switch (event)
+    {
+    case POKEMON_SWITCH:
+        if (args.eventSubject == this){
+            onSwitch();
+        }
+        break;
+    case POKEMON_ENTER:
+        if (args.eventSubject == this){
+            lastMoveUsed = nullptr;
+        }
+        break;
+    case POKEMON_DEATH:
+        if (args.eventSubject == this){
+            m_Status = STATUS_NONE;
+            onSwitch();
+        }
+    default:
+        break;
     }
-    battle->killTheDead();
-    if (getStatus() != STATUS_NONE) getStatus()->endOfTurn(this);
-    battle->killTheDead();
-    if (!abilityState.suppressed) getCurrentAbility()->endOfTurn(this);
-    getCurrentAbility()->priorityEndOfTurn(this);
-    battle->killTheDead();
-    for (auto [effect, effectState] : m_Effects){
-        if (!effectState.suppressed) effect->endOfTurn(this);
-        battle->killTheDead();
-    }
-    removeMarkedEffects();
 }
 
 void Pokemon::onSwitch(){
-    battle->debug(nickname + "'s onSwitch called");
-    if (!abilityState.suppressed) m_CurrentAbility->onSubjectSwitch(this);
-    if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectSwitch(this);
-    if (m_Status != STATUS_NONE) m_Status->onSubjectSwitch(this);
-    //TODO maybe do this differently??
-    for (auto [effect, effectState] : m_Effects){
-        if (!effectState.suppressed) effect->onSubjectSwitch(this);
-    }
-    removeMarkedEffects();
     m_CurrentAbility = m_BaseAbility;
     resetBoosts();
     choiceLockedMove = -1;
     isTrapped = false;
     lastMoveUsed = nullptr;
     triggeredCritMod = 0;
-    //lastMoveUsedAgainstMe = nullptr;
     currentType[0] = m_BaseType[0];
     currentType[1] = m_BaseType[1];
     currentMoves = baseMoves; // Does this copy the whole array? IDK
@@ -253,42 +233,7 @@ void Pokemon::onSwitch(){
         storedPPIndex = -1;
     }
 }
-void Pokemon::onEnter(){
-    if (!abilityState.suppressed) m_CurrentAbility->onSubjectEnter(this);
-    if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectEnter(this);
-    if (m_Status != STATUS_NONE) m_Status->onSubjectEnter(this);
-    for (auto [effect, effectState] : m_Effects){
-        if (!effectState.suppressed) effect->onSubjectEnter(this);
-    }
-    removeMarkedEffects();
-    lastMoveUsed = nullptr;
-}
-void Pokemon::onDeath(){
-    if (!abilityState.suppressed) m_CurrentAbility->onSubjectDeath(this);
-    if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectDeath(this);
-    for (auto [effect, effectState] : m_Effects){
-        if (!effectState.suppressed) effect->onSubjectDeath(this);
-    }
-    removeMarkedEffects();
-    m_Status = STATUS_NONE;
-    onSwitch();
-}
-void Pokemon::onAttack(MoveUse* move){
-    if (!abilityState.suppressed) m_CurrentAbility->onSubjectAttack(move);
-    if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectAttack(move);
-    for (auto [effect, effectState] : m_Effects){
-        if (!effectState.suppressed) effect->onSubjectAttack(move);
-    }
-    removeMarkedEffects();
-}
-void Pokemon::onAttacked(MoveUse* move){
-    if (!abilityState.suppressed) m_CurrentAbility->onSubjectAttacked(move);
-    if (m_CurrentItem != ITEM_NONE) m_CurrentItem->onSubjectAttacked(move);
-    for (auto [effect, effectState] : m_Effects){
-        if (!effectState.suppressed) effect->onSubjectAttacked(move);
-    }
-    removeMarkedEffects();
-}
+
 bool Pokemon::shouldDie(){
     return currentHealth <= 0 && !isDead;
 }

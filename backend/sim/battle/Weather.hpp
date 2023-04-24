@@ -1,12 +1,9 @@
 #pragma once
 #include "sim/battle/Battle.hpp"
+#include "sim/battle/Observer.hpp"
 
-class Weather{
+class Weather : public Observer{
 public:
     std::string beginText;
-    virtual void initializeState(EffectState* state) const {}
-    virtual void beforeMove(MoveUse* moveUse) const {}
-    virtual void endOfTurn(Battle* battle) const {}
-    virtual void priorityEndOfTurn(Battle* battle) const {}
-    virtual void afterMove(MoveUse* moveUse) const {}
+    Weather();
 };

@@ -29,11 +29,11 @@ public:
     Torrent(){
         name = "Torrent";
     }
-
-    void beforeMove(MoveUse* moveUse,Pokemon* subject) const {
+protected:
+    void beforeMove(Pokemon* subject, Battle* battle, const EventArgs& args) const {
         //TODO
-        if (moveUse->user == subject && (float) moveUse->user->currentHealth / (float) moveUse->user->getStat(HP, subject->battle) <= (1.0f / 3.0f) && moveUse->move->type == WATER){
-            moveUse->damageMod *= 1.5f;
+        if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(HP, subject->battle) <= (1.0f / 3.0f) && args.moveUse->move->type == WATER){
+            args.moveUse->damageMod *= 1.5f;
         }
     }
 };

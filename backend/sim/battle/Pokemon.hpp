@@ -83,6 +83,8 @@ class Pokemon{
         int getStat(Stat stat, bool crit = false);
         int getStatRaw(Stat stat);
         void resetBoosts();
+        void handleEvent(Event event, const EventArgs& args);
+        /*
         void beforeMove(MoveUse* moveUse);
         void afterMove(MoveUse* moveUse);
         void onEndOfTurn();
@@ -91,6 +93,7 @@ class Pokemon{
         void onDeath();
         void onAttack(MoveUse* move);
         void onAttacked(MoveUse* move);
+        */
         bool shouldDie();
         bool outOfPP();
         bool isType(Type type);
@@ -100,6 +103,7 @@ class Pokemon{
 
 
     private:
+        void onSwitch();
         const Ability* m_BaseAbility;
         const Ability* m_CurrentAbility;
         const Item* m_BaseItem;
