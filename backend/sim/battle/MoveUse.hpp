@@ -22,6 +22,7 @@ public:
     int damageDone = 0;
     bool changeLastMoveUsed = true;
     const Move* move;
+    bool logUsed = true;
 
     //Flags
     bool isSelfDestruct = false;
@@ -32,7 +33,7 @@ public:
     MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle);
     void doMove(MoveUse* opponentMove);
     void fail(const std::string& message);
-    void failDontStart(const std::string& message);
+    void dontStart(const std::string& message);
     void failOnDirectDamage(const std::string& message);
     void failOnSemiInvulnerable(const std::string& message);
 private:

@@ -41,7 +41,7 @@ public:
     bool skillLink = false;
     bool soundBased = false;
 
-    virtual void despiteChecks(MoveUse* myMove, MoveUse* opponentMove){}
-    virtual void afterChecks(MoveUse* myMove, MoveUse* opponentMove){}
+    virtual void beforeChecks(MoveUse* myMove, MoveUse* opponentMove) const{}
+    virtual void afterChecks(MoveUse* myMove, MoveUse* opponentMove) const{}
 
 };

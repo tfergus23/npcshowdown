@@ -9,3 +9,4 @@ const float SUPER_EFFECTIVE = 2.0f;
 const float NORMAL_EFFECTIVE = 1.0f;
 const float NOT_VERY_EFFECTIVE = 0.5f;
 const float BARELY_EFFECTIVE = 0.25f;
+const float NOT_EFFECTIVE = 0.0f;
