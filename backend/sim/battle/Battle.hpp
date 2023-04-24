@@ -52,7 +52,7 @@ public:
     void raiseEvent(Event event, const EventArgs& args = EventArgs(nullptr, nullptr));
     void killTheDead();
     void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
-    std::string currentStatus();
+    void logCurrentStatus();
 private:
     Trainer* m_Player1;
     Trainer* m_Player2;
@@ -69,9 +69,10 @@ private:
     std::vector<const FieldEffect*> m_EffectsToRemove1;
     std::vector<const FieldEffect*> m_EffectsToRemove2;
     void removeMarkedFieldEffects(bool side);
-    void setPokemonSpeedOrder();
+    void setPokemonHandlerOrder();
     void setMoveOrder();
     void swapMoves();
+    void killPokemon(Pokemon* pokemon);
 };
 
 void simulateBattle(Battle* battle);
