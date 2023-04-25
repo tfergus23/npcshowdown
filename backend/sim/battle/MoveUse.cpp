@@ -1,3 +1,4 @@
+#include "sim/Sim.hpp"
 #include "sim/battle/MoveUse.hpp"
 #include "Stat.hpp"
 #include "sim/battle/Battle.hpp"
@@ -6,7 +7,7 @@
 
 
 MoveUse::MoveUse(){}
-MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{move->accuracy}, effectivePower{move->power}{
+MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{(float) move->accuracy}, effectivePower{move->power}{
     if (move->targetType == SELF) this->target = user;
 }
 void MoveUse::doMove(MoveUse* opponentMove){
@@ -39,7 +40,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
     int accuracyStage = user->boosts[ACCURACY] - target->boosts[EVASION];
     if (accuracyStage > 6) accuracyStage = 6;
     if (accuracyStage < -6) accuracyStage = -6;
-    float accuracyMultiplier = accuracyStageMultiplier(accuracyMultiplier);
+    float accuracyMultiplier = accuracyStageMultiplier(accuracyStage);
     m_EffectiveAccuracy = move->accuracy * accuracyMultiplier * user->getCurrentAbility()->accuracyMultiplier;
     battle->debug("Accuracy: " + std::to_string(m_EffectiveAccuracy));
     if (move->accuracy != 0 && m_EffectiveAccuracy < (float) battle->randInt(1,101) && move->targetType == OPPONENT){

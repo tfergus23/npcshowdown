@@ -4,8 +4,8 @@
 #include "sim/battle/DamageCategory.hpp"
 #include "sim/battle/TargetType.hpp"
 #include "sim/battle/SecondaryEffect.hpp"
-#include "sim/battle/MoveUse.hpp"
 
+class MoveUse;
 
 class Move{
 public:

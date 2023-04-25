@@ -1,5 +1,10 @@
 #pragma once
-
+#include <vector>
+#include <string>
+#include "sim/battle/PokemonBlueprint.hpp"
+#include "sim/battle/Move.hpp"
+#include "sim/battle/Pokemon.hpp"
+#include "sim/battle/Battle.hpp"
 
 enum TrainerLevel{FIRST_MOVE, USE_2_MOVES_THEN_SWITCH, SWITCHER, WILD, TRAINER, BOSS};
 

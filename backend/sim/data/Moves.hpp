@@ -6,8 +6,17 @@ inline const Move* MOVE_NONE = nullptr;
 inline const std::string MOVE_NONE_NAME = "";
 
 //TODO: implement these
-inline const Move MOVE_SWITCH;
-inline const Move MOVE_STRUGGLE;
+class Switch : public Move {
+public:
+    Switch() {}
+};
+class Struggle : public Move {
+public:
+    Struggle() {}
+};
+
+inline const Switch MOVE_SWITCH;
+inline const Struggle MOVE_STRUGGLE;
 
 const Move* getMove(const std::string& moveName);
 

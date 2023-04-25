@@ -1,5 +1,5 @@
 #pragma once
-#include "sim/battle/Battle.hpp"
+#include <string>
 #include "sim/battle/Observer.hpp"
 
 

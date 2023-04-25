@@ -1,6 +1,7 @@
 #pragma once
+#include "sim/battle/Pokemon.hpp"
 #include "sim/battle/Move.hpp"
-#include "sim/battle/Battle.hpp"
+#include <string>
 
 
 class MoveUse{

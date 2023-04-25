@@ -1,3 +1,4 @@
+#include "sim/Sim.hpp"
 #include "move_functions.hpp"
 #include "sim/data/FieldEffects.hpp"
 #include "sim/data/Items.hpp"
@@ -42,7 +43,7 @@ DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
     return result;
 }
 
-int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness = true){
+int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     if (!moveUse->canDealDamage){
         if (!moveUse->loggedFailure){
             moveUse->battle->log(moveUse->failMessage);
@@ -99,22 +100,27 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
     case SPEED_CHANGE:
         return changeStatModifier(SPEED, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
     case CONFUSE:
-        if (moveUse->target->hasEffect(&EFFECT_CONFUSED)){
+    {
+        if (moveUse->target->hasEffect(&EFFECT_CONFUSED)) {
             return false;
         }
         bool success = applyEffect(&EFFECT_CONFUSED, moveUse);
-        if (success){
+        if (success) {
             moveUse->battle->log(moveUse->target->nickname + " became confused!");
         }
         return success;
+    }
     case FLINCH:
-        if (opponentMove->move != &MOVE_SWITCH){
+    {
+        if (opponentMove->move != &MOVE_SWITCH) {
             opponentMove->dontStart(moveUse->target->nickname + " flinched!");
             return true;
         }
         return false;
+    }
     case TRI_ATTACK:
-        int random = moveUse->battle->randInt(0,3);
+    {
+        int random = moveUse->battle->randInt(0, 3);
         switch (random)
         {
         case 0:
@@ -124,6 +130,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
         case 2:
             return applyStatus(&STATUS_PARALYSIS, moveUse, false);
         }
+    }
     default:
         return false;
     }

@@ -1,3 +1,4 @@
+#include "sim/Sim.hpp"
 #include "Pokemon.hpp"
 #include "sim/data/Abilities.hpp"
 #include "sim/battle/Gender.hpp"
@@ -6,6 +7,7 @@
 #include <iostream>
 #include "sim/utils/stage_multipliers.hpp"
 #include "sim/data/Items.hpp"
+#include "sim/battle//Stat.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
 species{speciesMap.at(blueprint->species)},
@@ -119,7 +121,7 @@ Gender Pokemon::getGender(){
     return m_Gender;
 }
 
-int Pokemon::getStat(Stat stat, bool crit = false){
+int Pokemon::getStat(Stat stat, bool crit){
     int unboostedStat = getStatRaw(stat);
     int finalStatValue;
     switch (stat)
@@ -129,19 +131,25 @@ int Pokemon::getStat(Stat stat, bool crit = false){
         break;
     case ATTACK:
     case SPATTACK:
+    {
         int boost = (crit && boosts[stat] < 0) ? 0 : boosts[stat];
-        finalStatValue = (int) floor((float) unboostedStat * statStageMultiplier(boost));
+        finalStatValue = (int)floor((float)unboostedStat * statStageMultiplier(boost));
         break;
+    }
     case DEFENSE:
     case SPDEFENSE:
+    {
         int boost = (crit && boosts[stat] > 0) ? 0 : boosts[stat];
-        finalStatValue = (int) floor((float)unboostedStat * statStageMultiplier(boost));
+        finalStatValue = (int)floor((float)unboostedStat * statStageMultiplier(boost));
         break;
+    }
     case SPEED:
+    {
         float paralysisMod = 1.0f;
         if (m_Status == &STATUS_PARALYSIS) paralysisMod = 0.5f;
-        finalStatValue = (int) floor((float)unboostedStat * paralysisMod* statStageMultiplier(boosts[stat]));
+        finalStatValue = (int)floor((float)unboostedStat * paralysisMod * statStageMultiplier(boosts[stat]));
         break;
+    }
     default:
         battle->assert(false, "Unhandled stat: " + std::to_string(stat));
     }
@@ -155,21 +163,27 @@ int Pokemon::getStatRaw(Stat stat){
         return (int) floor(((2 * species->baseStats[stat] + ivs[stat] + floor(evs[stat] / 4.0f)) * level)/100.0f) + level + 10;
     case ATTACK:
     case SPATTACK:
-        int div1 = (int) floor(evs[stat] / 4.0f);
-        int div2 = (int) floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
-        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature, stat));
+    {
+        int div1 = (int)floor(evs[stat] / 4.0f);
+        int div2 = (int)floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int unboostedStat = (int)floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
+    }
     case DEFENSE:
     case SPDEFENSE:
-        int div1 = (int) floor(evs[stat] / 4.0f);
-        int div2 = (int) floor(((2 * species->baseStats[stat] + evs[stat] + div1) * level) / 100.0f);
-        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature,stat));
+    {
+        int div1 = (int)floor(evs[stat] / 4.0f);
+        int div2 = (int)floor(((2 * species->baseStats[stat] + evs[stat] + div1) * level) / 100.0f);
+        int unboostedStat = (int)floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
+    }
     case SPEED:
-        int div1 = (int) floor(evs[stat] / 4.0f);
-        int div2 = (int) floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
-        int unboostedStat = (int) floor((div2 + 5) * natureBoost(nature,stat));
+    {
+        int div1 = (int)floor(evs[stat] / 4.0f);
+        int div2 = (int)floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int unboostedStat = (int)floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
+    }
     default:
         battle->assert(false, "Unhandled stat: " + std::to_string(stat));
         return -1;

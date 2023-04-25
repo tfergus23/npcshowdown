@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-
+#include "sim/battle/Nature.hpp"
+#include "sim/battle/Stat.hpp"
 
 enum Nature {HARDY,LONELY,BRAVE,ADAMANT,NAUGHTY,BOLD,DOCILE,RELAXED,IMPISH,LAX,TIMID,HASTY,SERIOUS,JOLLY,NAIVE,MODEST,MILD,QUIET,BASHFUL,RASH,CALM,GENTLE,SASSY,CAREFUL,QUIRKY};
 
@@ -32,7 +33,7 @@ inline const std::unordered_map<std::string, Nature> natures = {
     {"Quirky", QUIRKY}
 };
 
-float natureChart[25][5] = {
+inline const float natureChart[25][5] = {
     {1.0f,1.0f,1.0f,1.0f,1.0f},
     {1.1f,0.9f,1.0f,1.0f,1.0f},
     {1.1f,1.0f,1.0f,1.0f,0.9f},

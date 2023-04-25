@@ -1,4 +1,6 @@
+#include "sim/Sim.hpp"
 #include "Observer.hpp"
+#include "sim/battle/Battle.hpp"
 
 void Observer::handleEvent(Event event, Pokemon* subject, Battle* battle, const EventArgs& args) const {
     switch (event)

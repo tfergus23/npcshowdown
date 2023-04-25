@@ -1,6 +1,18 @@
 #pragma once
+#include "sim/battle/Observer.hpp"
 #include "sim/battle/Trainer.hpp"
+#include "sim/battle/Pokemon.hpp"
+#include "sim/battle/Weather.hpp"
+#include "sim/data/Weathers.hpp"
 #include "sim/battle/FieldEffect.hpp"
+#include "sim/battle/MoveUse.hpp"
+#include "sim/battle/EffectState.hpp"
+#include "sim/battle/Event.hpp"
+#include "sim/battle/EventArgs.hpp"
+#include <random>
+#include <unordered_map>
+
+
 
 class Battle{
 public:

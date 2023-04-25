@@ -4,7 +4,7 @@ enum Type{NORMAL,FIRE,WATER,ELECTRIC,GRASS,ICE,FIGHTING,POISON,GROUND,FLYING,PSY
 
 float typeMatchup(Type attackingType, Type defendingType1, Type defendingType2);
 
-float typeChart[19][19] = {
+inline const float typeChart[19][19] = {
     {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,0.5f,0.0f,1.0f,1.0f,0.5f,1.0f,1.0f},
     {1.0f,0.5f,0.5f,1.0f,2.0f,2.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,0.5f,1.0f,2.0f,1.0f,1.0f},
     {1.0f,2.0f,0.5f,1.0f,0.5f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,1.0f,1.0f,1.0f},

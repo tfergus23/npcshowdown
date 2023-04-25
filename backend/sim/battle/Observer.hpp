@@ -1,10 +1,7 @@
 #pragma once
-#include "sim/battle/Pokemon.hpp"
-#include "sim/battle/Battle.hpp"
-#include "sim/battle/MoveUse.hpp"
-#include "sim/battle/EffectState.hpp"
+#include "sim/battle/Event.hpp"
 #include "sim/battle/EventArgs.hpp"
-
+#include "sim/battle/EffectState.hpp"
 
 class Observer{
 public:

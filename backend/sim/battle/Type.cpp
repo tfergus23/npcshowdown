@@ -1,3 +1,4 @@
+#include "sim/Sim.hpp"
 #include "sim/battle/Type.hpp"
 
 float typeMatchup(Type attackingType, Type defendingType1, Type defendingType2){

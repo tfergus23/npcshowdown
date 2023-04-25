@@ -1,6 +1,5 @@
 #pragma once
-#include "sim/battle/Battle.hpp"
-#include "sim/battle/Observer.hpp"
+#include <string>
 
 
 class Status : public Observer{

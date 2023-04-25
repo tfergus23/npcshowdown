@@ -1,14 +1,7 @@
 #pragma once
-#include <string>
-#include "sim/battle/MoveUse.hpp"
-#include <functional>
-#include "sim/battle/Pokemon.hpp"
-#include "sim/battle/Event.hpp"
-#include "sim/battle/EventArgs.hpp"
 #include "sim/battle/Observer.hpp"
 #include "sim/battle/Stat.hpp"
-
-
+#include "sim/battle/Pokemon.hpp"
 
 class Ability : public Observer{
 public:

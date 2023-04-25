@@ -1,3 +1,4 @@
+#include "sim/Sim.hpp"
 #include "sim/battle/Battle.hpp"
 #include <random>
 #include "sim/data/Moves.hpp"
@@ -196,29 +197,30 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
         }
         break;
     case END_OF_TURN:
+    {
         moveNumber = 0;
         turns++;
 
         //Check if the battle is over
         bool player1Dead = trainerBlackedOut(IS_PLAYER_ONE);
         bool player2Dead = trainerBlackedOut(IS_PLAYER_TWO);
-        if (player1Dead || player2Dead){
+        if (player1Dead || player2Dead) {
             isBattleOver = true;
-            if (player1Dead && player2Dead){ 
+            if (player1Dead && player2Dead) {
                 isDraw = true;
                 log("It's a draw!");
             }
-            else { 
+            else {
                 winner = player1Dead ? m_Player2 : m_Player1;
                 log("The winner is " + winner->getFullName() + "!");
             }
         }
-        if (!isBattleOver){
+        if (!isBattleOver) {
             if (player1ActivePokemon->isDead) player1Switching = m_Player1->pickPokemon(player1ActivePokemon, player2ActivePokemon, this);
             if (player2ActivePokemon->isDead) player2Switching = m_Player2->pickPokemon(player2ActivePokemon, player1ActivePokemon, this);
         }
         break;
-    
+    }
     default:
         break;
     }

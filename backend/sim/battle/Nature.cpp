@@ -1,3 +1,4 @@
+#include "sim/Sim.hpp"
 #include "sim/battle/Nature.hpp"
 #include "sim/battle/Stat.hpp"
 

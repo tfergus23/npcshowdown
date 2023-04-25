@@ -2,6 +2,7 @@
 #include "sim/battle/Ability.hpp"
 #include <cmath>
 #include "sim/data/Statuses.hpp"
+#include "sim/battle/MoveUse.hpp"
 
 inline const std::string ABILITY_NONE_NAME = "";
 inline const Ability* ABILITY_NONE = nullptr;
