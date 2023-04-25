@@ -8,4 +8,5 @@ EffectState::EffectState(){
 void EffectState::reset(){
     remainingTurns = 0;
     suppressed = false;
+    substituteHealth = 0;
 }

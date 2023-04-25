@@ -35,7 +35,7 @@ public:
             onPokemonDeath(subject,battle,args);
             break;
         case POKEMON_ATTACKED:
-            battle->assert(args.eventSubject != nullptr, "Incorrect args for POKEMON_ATTACKED event - eventSubject is nullptr");
+            battle->assert(args.moveUse != nullptr, "Incorrect args for POKEMON_ATTACKED event - moveUse is nullptr");
             onPokemonAttacked(subject,battle,args);
             break;
         

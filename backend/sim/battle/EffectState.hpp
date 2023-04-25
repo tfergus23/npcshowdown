@@ -4,6 +4,7 @@ struct EffectState{
     //Any time you add a new var, initialize it in the reset function
     int remainingTurns;
     bool suppressed;
+    int substituteHealth;
 
     EffectState();
     void reset();

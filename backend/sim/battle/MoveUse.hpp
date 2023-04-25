@@ -23,6 +23,7 @@ public:
     bool changeLastMoveUsed = true;
     const Move* move;
     bool logUsed = true;
+    int effectivePower = 0;
 
     //Flags
     bool isSelfDestruct = false;

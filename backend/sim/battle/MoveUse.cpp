@@ -6,7 +6,7 @@
 
 
 MoveUse::MoveUse(){}
-MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{move->accuracy}{
+MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{move->accuracy}, effectivePower{move->power}{
     if (move->targetType == SELF) this->target = user;
 }
 void MoveUse::doMove(MoveUse* opponentMove){

@@ -2,6 +2,8 @@
 
 #include "sim/battle/Effect.hpp"
 
-inline const std::unordered_map<std::string, const Effect*> effects = {
-    
+//TODO
+class Confused: public Effect{
+
 };
+inline const Confused EFFECT_CONFUSED;

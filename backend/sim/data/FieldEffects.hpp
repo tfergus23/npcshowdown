@@ -2,6 +2,8 @@
 
 #include "sim/battle/FieldEffect.hpp"
 
-inline const std::unordered_map<std::string, const FieldEffect*> fieldEffects = {
-    
+
+class Substitute : public FieldEffect{
+
 };
+inline const Substitute FIELD_EFFECT_SUBSTITUTE;

@@ -12,7 +12,7 @@ constexpr float accuracyStageMultiplier(int accuracyStage){
     int index = accuracyStage + 6;
     return accuracyMultipliers[index];
 }
-constexpr float critChance(int stage){
+constexpr float critChanceFromStage(int stage){
     if (stage < 4) return critChances[stage] * 100.0f;
     return 50.0f;
 }

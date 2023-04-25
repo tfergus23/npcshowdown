@@ -14,4 +14,6 @@ public:
     bool ignorable = false;
     float accuracyMultiplier = 1.0f;
     virtual int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const {return statVal;}
+protected:
+    //virtual void beforeMove(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
 };

@@ -1,5 +1,5 @@
-#pragma oncestatic
+#pragma once
 
 constexpr float statStageMultiplier(int stage);
 constexpr float accuracyStageMultiplier(int accuracyStage);
-constexpr float critChance(int stage);
+constexpr float critChanceFromStage(int stage);

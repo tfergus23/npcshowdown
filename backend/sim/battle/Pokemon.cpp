@@ -25,6 +25,8 @@ battle{battle}
     if (blueprint->empty) return;
 
     //TODO: Set species data
+    currentType[0] = species->type[0];
+    currentType[1] = species->type[1];
 
     battle->assert(m_CurrentAbility != nullptr, nickname + " doesn't have an ability.");
     m_CurrentAbility->initializeState(&abilityState);
@@ -137,7 +139,7 @@ int Pokemon::getStat(Stat stat, bool crit = false){
         break;
     case SPEED:
         float paralysisMod = 1.0f;
-        if (m_Status == STATUS_PARALYSIS) paralysisMod = 0.5f;
+        if (m_Status == &STATUS_PARALYSIS) paralysisMod = 0.5f;
         finalStatValue = (int) floor((float)unboostedStat * paralysisMod* statStageMultiplier(boosts[stat]));
         break;
     default:
