@@ -4,6 +4,7 @@
 #include "sim/battle/Weather.hpp"
 #include "sim/battle/FieldEffect.hpp"
 #include <random>
+#include "sim/data/Weathers.hpp"
 
 class Battle{
 public:

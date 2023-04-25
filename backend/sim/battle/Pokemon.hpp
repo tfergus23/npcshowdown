@@ -16,6 +16,7 @@
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/Move.hpp"
 #include "sim/data/Species.hpp"
+#include "sim/data/Items.hpp"
 
 
 class Pokemon{

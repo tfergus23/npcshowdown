@@ -3,6 +3,7 @@
 #include "sim/battle/Battle.hpp"
 #include "sim/battle/MoveUse.hpp"
 
+//class Pokemon;
 class Observer{
 public:
     void handleEvent(Event event, Pokemon* subject, Battle* battle, const EventArgs& args) const {

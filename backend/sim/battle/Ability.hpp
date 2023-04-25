@@ -6,6 +6,7 @@
 #include "sim/battle/Event.hpp"
 #include "sim/battle/EventArgs.hpp"
 #include "sim/battle/Observer.hpp"
+#include "sim/battle/Stat.hpp"
 
 class Ability : public Observer{
 public:
