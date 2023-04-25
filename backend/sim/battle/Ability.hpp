@@ -8,6 +8,8 @@
 #include "sim/battle/Observer.hpp"
 #include "sim/battle/Stat.hpp"
 
+
+
 class Ability : public Observer{
 public:
     std::string name;

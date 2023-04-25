@@ -6,7 +6,12 @@ cmake_minimum_required (VERSION 3.8)
 project ("NPCShowdown")
 
 # Add source to this project's executable.
-add_executable (npcs_sim main.cpp)
+FILE(GLOB battle ${PROJECT_SOURCE_DIR}/sim/battle/*.cpp)
+FILE(GLOB data ${PROJECT_SOURCE_DIR}/sim/data/*.cpp)
+FILE(GLOB tournament ${PROJECT_SOURCE_DIR}/sim/tournament/*.cpp)
+FILE(GLOB utils ${PROJECT_SOURCE_DIR}/sim/utils/*.cpp)
+
+add_executable (npcs_sim main.cpp ${battle} ${data} ${tournament} ${utils})
 include_directories(${PROJECT_SOURCE_DIR})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

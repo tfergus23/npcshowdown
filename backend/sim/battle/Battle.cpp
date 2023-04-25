@@ -298,7 +298,7 @@ void simulateBattle(Battle* battle){
                 battle->doMove();
                 battle->switchIfNecessary();
                 if (battle->moveNumber == 1){
-                    battle->raiseEvent(END_OF_TURN);
+                    battle->raiseEvent(END_OF_TURN, EventArgs(nullptr, nullptr));
                     battle->switchIfNecessary();
                     battle->logCurrentStatus();
                 }

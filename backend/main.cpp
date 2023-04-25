@@ -1,10 +1,6 @@
 #include <iostream>
 
-#include "sim/battle/Trainer.hpp"
-#include "sim/battle/Pokemon.hpp"
 #include "sim/battle/Battle.hpp"
-#include "sim/battle/PokemonBlueprint.hpp"
-
 #include "api/NPCS_API_Server.hpp"
 
 int main(){

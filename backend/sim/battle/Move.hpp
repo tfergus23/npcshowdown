@@ -7,7 +7,6 @@
 #include "sim/battle/MoveUse.hpp"
 
 
-
 class Move{
 public:
     int maxPP;

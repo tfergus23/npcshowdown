@@ -1,10 +1,6 @@
 #pragma once
 #include "sim/battle/Trainer.hpp"
-#include "sim/battle/Pokemon.hpp"
-#include "sim/battle/Weather.hpp"
 #include "sim/battle/FieldEffect.hpp"
-#include <random>
-#include "sim/data/Weathers.hpp"
 
 class Battle{
 public:
@@ -50,7 +46,7 @@ public:
 
     //void raiseBeforeMove(MoveUse* moveUse);
     //void raiseEndOfTurn();
-    void raiseEvent(Event event, const EventArgs& args = EventArgs(nullptr, nullptr));
+    void raiseEvent(Event event, const EventArgs& args);
     void killTheDead();
     void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
     void logCurrentStatus();

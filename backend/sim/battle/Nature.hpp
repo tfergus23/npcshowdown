@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 
+
 enum Nature {HARDY,LONELY,BRAVE,ADAMANT,NAUGHTY,BOLD,DOCILE,RELAXED,IMPISH,LAX,TIMID,HASTY,SERIOUS,JOLLY,NAIVE,MODEST,MILD,QUIET,BASHFUL,RASH,CALM,GENTLE,SASSY,CAREFUL,QUIRKY};
 
 inline const std::unordered_map<std::string, Nature> natures = {

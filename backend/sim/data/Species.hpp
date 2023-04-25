@@ -682,7 +682,7 @@ inline const Species SPECIES_SPEWPA(665, "Spewpa", {BUG, NONE}, 8.4f, 50.0f, {45
 inline const Species SPECIES_VIVILLON(666, "Vivillon", {BUG, FLYING}, 17.0f, 50.0f, {80, 52, 50, 90, 50, 89});
 inline const Species SPECIES_LITLEO(667, "Litleo", {FIRE, NORMAL}, 13.5f, 12.5f, {62, 50, 58, 73, 54, 72});
 inline const Species SPECIES_PYROAR(668, "Pyroar", {FIRE, NORMAL}, 81.5f, 12.5f, {86, 68, 72, 109, 66, 106});
-inline const Species SPECIES_FLABÉBÉ(669, "Flabébé", {FAIRY, NONE}, 0.1f, 0.0f, {44, 38, 39, 61, 79, 42});
+inline const Species SPECIES_FLABEBE(669, "Flabébé", {FAIRY, NONE}, 0.1f, 0.0f, {44, 38, 39, 61, 79, 42});
 inline const Species SPECIES_FLOETTE(670, "Floette", {FAIRY, NONE}, 0.9f, 0.0f, {54, 45, 47, 75, 98, 52});
 inline const Species SPECIES_FLORGES(671, "Florges", {FAIRY, NONE}, 10.0f, 0.0f, {78, 65, 68, 112, 154, 75});
 inline const Species SPECIES_SKIDDO(672, "Skiddo", {GRASS, NONE}, 31.0f, 50.0f, {66, 65, 48, 62, 57, 52});
@@ -1494,7 +1494,7 @@ inline const std::unordered_map<std::string, const Species*> speciesMap = {
     {SPECIES_VIVILLON.name, &SPECIES_VIVILLON},
     {SPECIES_LITLEO.name, &SPECIES_LITLEO},
     {SPECIES_PYROAR.name, &SPECIES_PYROAR},
-    {SPECIES_FLABÉBÉ.name, &SPECIES_FLABÉBÉ},
+    {SPECIES_FLABEBE.name, &SPECIES_FLABEBE},
     {SPECIES_FLOETTE.name, &SPECIES_FLOETTE},
     {SPECIES_FLORGES.name, &SPECIES_FLORGES},
     {SPECIES_SKIDDO.name, &SPECIES_SKIDDO},

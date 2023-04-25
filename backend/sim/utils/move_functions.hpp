@@ -2,6 +2,7 @@
 #include "sim/battle/MoveUse.hpp"
 #include "sim/battle/Battle.hpp"
 
+
 struct DealtDamage{
     int damage;
     bool crit;
