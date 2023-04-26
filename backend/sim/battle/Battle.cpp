@@ -45,6 +45,7 @@ void Battle::debug(const std::string& message){
 void Battle::assert(bool condition, const std::string& message){
     if (!condition){
         log("Assertion failed! Stopping battle.");
+        std::cerr << message << '\n';
         throw BattleAssertionFailedException(message);
     }
 }

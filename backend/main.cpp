@@ -3,7 +3,7 @@
 #include "sim/battle/Battle.hpp"
 #include "api/NPCS_API_Server.hpp"
 #include <chrono>
-#define STRESS_TEST 0
+#define STRESS_TEST 1
 
 
 

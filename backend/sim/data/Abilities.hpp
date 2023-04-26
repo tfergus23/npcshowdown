@@ -3,6 +3,7 @@
 #include <cmath>
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/MoveUse.hpp"
+#include "sim/battle/Battle.hpp"
 
 inline const std::string ABILITY_NONE_NAME = "";
 inline const Ability* ABILITY_NONE = nullptr;
@@ -17,6 +18,7 @@ public:
     int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const override{
         if (stat == ATTACK && subject->getStatus() != STATUS_NONE){
             float newVal = (float) statVal * 1.5f;
+            subject->battle->debug("Guts active");
             return (int) floor(statVal);
         } 
         return statVal;
