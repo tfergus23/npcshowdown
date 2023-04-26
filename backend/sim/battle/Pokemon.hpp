@@ -20,6 +20,7 @@ class PokemonBlueprint;
 
 class Pokemon{
     public:
+        Battle* battle;
         //Blueprint
         const Species* species;
         const std::string nickname;
@@ -71,7 +72,6 @@ class Pokemon{
         bool isTrapped = false;
         int disabledIndex = -1;
         const Move* lastMoveUsed = nullptr;
-        Battle* battle;
         bool empty = true;
 
         Pokemon(const PokemonBlueprint* blueprint, Battle* battle);

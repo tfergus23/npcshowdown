@@ -51,7 +51,7 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
         }
         return 0;
     }
-    DealtDamage dealtDamage = calculateDirectDamage(moveUse, true); //TODO: Undo this
+    DealtDamage dealtDamage = calculateDirectDamage(moveUse);
     dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
     if (dealtDamage.damage > 0){
         if (logEffectiveness){

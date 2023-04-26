@@ -12,14 +12,14 @@ int main(){
     PokemonBlueprint poke1(
         "Squirtle",
         100,
-        {"Pound", "", "", ""},
+        {"Tackle", "", "", ""},
         "Guts",
         "Male",
         {31,31,31,31,31,31},
         "Serious",
         "",
         {252,0,4,252,0,0},
-        "Squirtle"
+        "Squirpie"
     );
     PokemonBlueprint poke2(
         "Charmander",

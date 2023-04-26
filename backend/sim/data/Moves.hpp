@@ -19,11 +19,10 @@ inline const Switch MOVE_SWITCH;
 inline const Struggle MOVE_STRUGGLE;
 
 
-inline const std::string MOVE_POUND_NAME = "Pound";
 class Pound: public Move{
 public:
     Pound(){
-        name = MOVE_POUND_NAME;
+        name = "Pound";
         type = NORMAL;
         damageCategory = PHYSICAL;
         power = 40;
@@ -49,9 +48,39 @@ public:
 };
 inline const Pound MOVE_POUND;
 
+class Tackle: public Move{
+public:
+    Tackle(){
+        name = "Tackle";
+        type = NORMAL;
+        damageCategory = PHYSICAL;
+        power = 40;
+        accuracy = 100;
+        maxPP = 56;
+        priority = 0;
+        critRatio = 0;
+        targetType = OPPONENT;
+        secondaryEffect = NOEFFECT;
+        secondaryEffectChance = -1;
+        secondaryEffectValue = -1;
+
+        //Flags
+        contact = true;
+        protect = true;
+        mirrorMove = true;
+        kingsRock = true;
+    }
+
+    void afterChecks(MoveUse* myMove, MoveUse* opponentMove) const override{
+        dealDirectDamage(myMove);
+    }
+};
+inline const Tackle MOVE_TACKLE;
+
 inline const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE_NAME, MOVE_NONE},
-    {MOVE_POUND.name, &MOVE_POUND}
+    {MOVE_POUND.name, &MOVE_POUND},
+    {MOVE_TACKLE.name, &MOVE_TACKLE}
 };
 
 inline const Move* getMove(const std::string& moveName) {
