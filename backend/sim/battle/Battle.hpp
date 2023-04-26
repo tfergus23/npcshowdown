@@ -67,9 +67,8 @@ private:
     Trainer* m_Player2;
     bool trainerBlackedOut(bool player);
     void setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, Trainer* trainer);
-    std::default_random_engine m_Generator;
-    std::uniform_int_distribution<int> m_Distribution;
     int m_Seed;
+    std::default_random_engine m_Generator;
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;
     MoveUse m_Turn[2];

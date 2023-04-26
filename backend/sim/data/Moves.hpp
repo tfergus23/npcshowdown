@@ -43,7 +43,7 @@ public:
         kingsRock = true;
     }
 
-    void afterChecks(MoveUse* myMove, MoveUse* opponentMove){
+    void afterChecks(MoveUse* myMove, MoveUse* opponentMove) const override{
         dealDirectDamage(myMove);
     }
 };

@@ -4,5 +4,4 @@
 class Weather : public Observer{
 public:
     std::string beginText;
-    Weather();
 };

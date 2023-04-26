@@ -3,14 +3,16 @@
 #include "sim/data/Moves.hpp"
 #include "sim/data/Weathers.hpp"
 #include "sim/data/Items.hpp"
-#define DEBUG_LOG 1
+#include <iostream>
+#define DEBUG_LOG 0
 
 Battle::Battle(Trainer& trainer1, Trainer& trainer2, int seed) :
 m_Player1{&trainer1},
 m_Player2{&trainer2},
 m_Seed{seed},
 player1Team{{Pokemon(&(trainer1.teamBlueprint[0]), this),Pokemon(&(trainer1.teamBlueprint[1]), this),Pokemon(&(trainer1.teamBlueprint[2]), this),Pokemon(&(trainer1.teamBlueprint[3]), this),Pokemon(&(trainer1.teamBlueprint[4]), this),Pokemon(&(trainer1.teamBlueprint[5]), this)}},
-player2Team{{Pokemon(&(trainer2.teamBlueprint[0]), this),Pokemon(&(trainer2.teamBlueprint[1]), this),Pokemon(&(trainer2.teamBlueprint[2]), this),Pokemon(&(trainer2.teamBlueprint[3]), this),Pokemon(&(trainer2.teamBlueprint[4]), this),Pokemon(&(trainer2.teamBlueprint[5]), this)}}
+player2Team{{Pokemon(&(trainer2.teamBlueprint[0]), this),Pokemon(&(trainer2.teamBlueprint[1]), this),Pokemon(&(trainer2.teamBlueprint[2]), this),Pokemon(&(trainer2.teamBlueprint[3]), this),Pokemon(&(trainer2.teamBlueprint[4]), this),Pokemon(&(trainer2.teamBlueprint[5]), this)}},
+m_Generator{std::default_random_engine(m_Seed)}
 {
     log("Seed: " + std::to_string(seed));
     setActivePokemon(IS_PLAYER_ONE, &(player1Team[0]));
@@ -20,9 +22,17 @@ player2Team{{Pokemon(&(trainer2.teamBlueprint[0]), this),Pokemon(&(trainer2.team
     raiseEvent(POKEMON_ENTER, EventArgs(m_SlowerPokemon, nullptr));
 }
 
+Trainer* Battle::getPlayer1() {
+    return m_Player1;
+}
+Trainer* Battle::getPlayer2() {
+    return m_Player2;
+}
+
 void Battle::log(const std::string& message){
     if (doLogging)
     battleLog += message + "\n";
+    //std::cout << message << '\n';
 }
 
 void Battle::debug(const std::string& message){
@@ -42,10 +52,9 @@ void Battle::assert(bool condition, const std::string& message){
 
 
 int Battle::randInt(int min, int max){
-    int rand = m_Distribution(m_Generator);
-    int diff = max - min;
-    int offset = rand % diff;
-    return min + offset;
+    std::uniform_int_distribution<int> distribution(min, max-1);
+    int dice_roll = distribution(m_Generator);
+    return dice_roll;
 }
 
 int Battle::getSeed(){
@@ -197,6 +206,7 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
         break;
     case END_OF_TURN:
     {
+        isTurnOver = true;
         moveNumber = 0;
         turns++;
 

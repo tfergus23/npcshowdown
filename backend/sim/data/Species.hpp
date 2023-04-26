@@ -826,6 +826,7 @@ inline const Species SPECIES_MELMETAL(809, "Melmetal", {STEEL, NONE}, 800.0f, -1
 
 
 inline const std::unordered_map<std::string, const Species*> speciesMap = {
+    {"", nullptr},
     {SPECIES_BULBASAUR.name, &SPECIES_BULBASAUR},
     {SPECIES_IVYSAUR.name, &SPECIES_IVYSAUR},
     {SPECIES_VENUSAUR.name, &SPECIES_VENUSAUR},

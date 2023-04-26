@@ -23,7 +23,7 @@ void givePercentHealing(float percent, Pokemon* recipient, Battle* battle);
 void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle);
 bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure=false);
 bool applyEffect(const Effect* effect, MoveUse* moveUse);
-bool changeStatModifier(int stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange=true);
+bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange=true);
 bool changeBattleWeather(const Weather* newWeather, Battle* battle);
 int calculateDamageBeforeMods(MoveUse* moveUse, bool crit);
 int calculateDamageBeforeMods(MoveUse* moveUse, bool crit, Stat attackingStat, Stat defendingStat);
