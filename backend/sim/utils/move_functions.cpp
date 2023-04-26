@@ -6,6 +6,7 @@
 #include "sim/data/Effects.hpp"
 #include "sim/data/Moves.hpp"
 
+
 int dealDamage(int damage, MoveUse* moveUse){
     bool isPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon;
     if (moveUse->battle->sideHasFieldEffect(isPlayer1, &FIELD_EFFECT_SUBSTITUTE)){
@@ -135,17 +136,170 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
     }
 }
 
-int dealFlatDamage(int damage, MoveUse* moveUse);
-void selfDestruct(MoveUse* moveUse);
-int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle);
-int dealPercentDamage(float percent, Pokemon* target, Battle* battle);
-void givePercentHealing(float percent, Pokemon* recipient, Battle* battle);
-void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle);
-bool applyStatus(const Status* status, MoveUse* moveUse);
-bool applyEffect(const Effect* effect, MoveUse* moveUse);
-bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange=true);
-bool changeBattleWeather(const Weather* newWeather, Battle* battle);
-int calculateDamageBeforeMods(MoveUse* moveUse, bool crit);
-int calculateDamageBeforeMods(MoveUse* moveUse, bool crit, Stat attackingStat, Stat defendingStat);
-bool genderCompatible(Gender gender1, Gender gender2);
-void crash(Pokemon* user, Battle* battle);
+int dealFlatDamage(int damage, MoveUse* moveUse) {
+    if (!moveUse->canDealDamage) {
+        if (!moveUse->loggedFailure) {
+            moveUse->battle->log(moveUse->failMessage);
+            moveUse->loggedFailure = true;
+        }
+        return 0;
+    }
+    int damageToDeal = (moveUse->target->currentHealth - damage < 0) ? moveUse->target->currentHealth : damage;
+    int damageDone = dealDamage(damageToDeal, moveUse);
+    moveUse->damageDone = damageDone;
+    moveUse->battle->raiseEvent(POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
+    return damageDone;
+}
+bool selfDestruct(MoveUse* moveUse) {
+    if (moveUse->cantSelfDestruct) {
+        moveUse->battle->log(moveUse->failMessage);
+        return false;
+    }
+    moveUse->user->currentHealth -= moveUse->user->currentHealth;
+    moveUse->battle->killTheDead();
+    return true;
+}
+
+int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle) {
+    int damage = (int) floor(target->getStat(HP) * (percent / 100.0f));
+    if (damage > target->currentHealth) damage = target->currentHealth;
+    target->currentHealth -= damage;
+    if (damage > 0) battle->log(target->nickname + " took " + std::to_string(damage) + " damage.");
+    return damage;
+}
+
+
+int dealPercentDamage(float percent, MoveUse* moveUse) {
+    int damage = (int)floor(moveUse->target->getStat(HP) * (percent / 100.0f));
+    if (damage > moveUse->target->currentHealth) damage = moveUse->target->currentHealth;
+    int damageDealt = dealDamage(damage, moveUse);
+    if (damageDealt > 0) moveUse->battle->log(moveUse->target->nickname + " took " + std::to_string(damage) + " damage.");
+    return damageDealt;
+}
+int giveHealing(int healing, Pokemon* recipient, Battle* battle) {
+    int recipientHP = recipient->getStat(HP);
+    int healingToGive = (recipient->currentHealth + healing > recipientHP) ? recipientHP - recipient->currentHealth : healing;
+    recipient->currentHealth += healingToGive;
+    if (healingToGive > 0) battle->log(recipient->nickname + " was healed for " + std::to_string(healing) + " health.");
+    return healingToGive;
+}
+void givePercentHealing(float percent, Pokemon* recipient, Battle* battle) {
+    int recipientHP = recipient->getStat(HP);
+    int healing = (int) floor(recipientHP * (percent / 100.0f));
+    giveHealing(healing, recipient, battle);
+}
+//Not sure why this is like this... will wait and see
+void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle) {
+    giveHealing(healing, recipient, battle);
+}
+bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
+    //TODO: Why are these separate if blocks?
+    if (moveUse->target->getStatus() != STATUS_NONE) {
+        if (logTypeFailure) moveUse->battle->log("But it failed!");
+        return false;
+    }
+    if (!moveUse->canApplyStatus || moveUse->target->isDead) {
+        if (!moveUse->loggedFailure) {
+            moveUse->battle->log(moveUse->failMessage);
+            moveUse->loggedFailure = true;
+        }
+        return false;
+    }
+    if (status == &STATUS_FROZEN && (moveUse->battle->weather == &WEATHER_SUN || moveUse->target->isType(ICE))) {
+        return false;
+    }
+    if (status == &STATUS_BURN && moveUse->target->isType(FIRE)) {
+        if (logTypeFailure) moveUse->battle->log("It doesn't affect " + moveUse->target->nickname + "...");
+        return false;
+    }
+    if ((status == &STATUS_POISON || status == &STATUS_BAD_POISON) && (moveUse->target->isType(POISON) || moveUse->target->isType(STEEL))) {
+        if (logTypeFailure) moveUse->battle->log("It doesn't affect " + moveUse->target->nickname + "...");
+        return false;
+    }
+    if (status == &STATUS_PARALYSIS && moveUse->target->isType(ELECTRIC)) {
+        if (logTypeFailure) moveUse->battle->log("It doesn't affect " + moveUse->target->nickname + "...");
+        return false;
+    }
+    moveUse->target->applyStatus(status);
+    moveUse->battle->log(status->was);
+    return true;
+}
+bool applyEffect(const Effect* effect, MoveUse* moveUse) {
+    if (!moveUse->canApplyStatus || moveUse->target->isDead) {
+        if (!moveUse->loggedFailure) {
+            moveUse->battle->log(moveUse->failMessage);
+            moveUse->loggedFailure = true;
+        }
+        return false;
+    }
+    moveUse->target->applyEffect(effect);
+    return true;
+}
+bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange) {
+    int currentMod = pokemon->boosts.at(stat);
+    int actualChange = 0;
+    if ((!moveUse->canLowerStats && change < 0) || (!moveUse->canRaiseStats && change > 0)) {
+        if (logNoChange) battle->log(moveUse->failMessage);
+        return false;
+    }
+    if (change > 0) {
+        actualChange = (currentMod + change <= 6) ? change : 6 - currentMod;
+    }
+    else {
+        actualChange = (currentMod + change <= 6) ? change : -6 - currentMod;
+    }
+    pokemon->boosts[stat] += actualChange;
+    if (actualChange == 0 && change != 0) {
+        const std::string adjective = (change > 0) ? "higher" : "lower";
+        if (logNoChange) battle->log(pokemon->nickname + "'s " + statNames[stat] + " can't go any " + adjective + "!");
+        return false;
+    }
+    else {
+        std::string verb = (actualChange > 0) ? "rose" : "fell";
+        std::string adverb = (abs(actualChange) > 1) ? " sharply" : "";
+        battle->log(pokemon->nickname + "'s " + statNames[stat] + " " + verb + adverb + "!");
+        return true;
+    }
+
+}
+bool changeBattleWeather(const Weather* newWeather, Battle* battle) {
+    if (battle->weather != WEATHER_NONE && battle->weather == newWeather) {
+        battle->log("But it failed!");
+        return false;
+    }
+    else {
+        battle->weather = newWeather;
+        if (newWeather != WEATHER_NONE) battle->log(newWeather->beginText);
+        return true;
+    }
+}
+int calculateDamageBeforeMods(MoveUse* moveUse, bool crit) {
+    int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
+    Stat attackingStat = (Stat)moveUse->move->damageCategory;
+    Stat defendingStat = (Stat)((int)(moveUse->move->damageCategory) + 1);
+    moveUse->battle->assert(attackingStat == ATTACK || attackingStat == SPATTACK, "Incorrectly calculated attackingStat");
+    moveUse->battle->assert(defendingStat == DEFENSE || defendingStat == SPDEFENSE, "Incorrectly calculated defendingStat");
+    int attack = moveUse->user->getStat(attackingStat);
+    int defense = moveUse->user->getStat(defendingStat);
+    float div2 = (float)attack / (float)defense;
+    int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
+    int damage = div3 + 2;
+    return damage;
+}
+int calculateDamageBeforeMods(MoveUse* moveUse, bool crit, Stat attackingStat, Stat defendingStat) {
+    int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
+    int attack = moveUse->user->getStat(attackingStat);
+    int defense = moveUse->user->getStat(defendingStat);
+    float div2 = (float)attack / (float)defense;
+    int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
+    int damage = div3 + 2;
+    return damage;
+}
+bool genderCompatible(Gender gender1, Gender gender2) {
+    if (gender1 == GENDERLESS || gender2 == GENDERLESS) return false;
+    return gender1 != gender2;
+}
+void crash(Pokemon* user, Battle* battle) {
+    battle->log(user->nickname + " kept going and crashed!");
+    dealResidualPercentDamage(50.0f, user, battle);
+}

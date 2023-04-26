@@ -9,14 +9,16 @@ struct DealtDamage{
     float typeMod;
 };
 
+inline const std::string statNames[] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed", "Accuracy", "Evasiveness"};
+
 int dealDamage(int damage, MoveUse* moveUse);
 DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average=false);
 int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness = true);
 bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove);
 int dealFlatDamage(int damage, MoveUse* moveUse);
-void selfDestruct(MoveUse* moveUse);
+bool selfDestruct(MoveUse* moveUse);
 int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle);
-int dealPercentDamage(float percent, Pokemon* target, Battle* battle);
+int dealPercentDamage(float percent, MoveUse* moveUse);
 void givePercentHealing(float percent, Pokemon* recipient, Battle* battle);
 void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle);
 bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure=false);

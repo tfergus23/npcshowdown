@@ -1,3 +1,3 @@
 #pragma once
 
-enum DamageCategory{PHYSICAL, SPECIAL, STATUS};
+enum DamageCategory{PHYSICAL=1, STATUS=0, SPECIAL=3};

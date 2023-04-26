@@ -87,7 +87,6 @@ const Status* Pokemon::getStatus(){
     return m_Status;
 }
 void Pokemon::applyStatus(const Status* status){
-    //TODO Implement the MoveEffects version here
     m_Status = status;
     statusState.reset();
     if (m_Status != STATUS_NONE)
