@@ -6,12 +6,12 @@
 #include <iostream>
 #define DEBUG_LOG 0
 
-Battle::Battle(Trainer& trainer1, Trainer& trainer2, int seed) :
-m_Player1{&trainer1},
-m_Player2{&trainer2},
+Battle::Battle(Trainer* trainer1, Trainer* trainer2, int seed) :
+m_Player1{trainer1},
+m_Player2{trainer2},
 m_Seed{seed},
-player1Team{{Pokemon(&(trainer1.teamBlueprint[0]), this),Pokemon(&(trainer1.teamBlueprint[1]), this),Pokemon(&(trainer1.teamBlueprint[2]), this),Pokemon(&(trainer1.teamBlueprint[3]), this),Pokemon(&(trainer1.teamBlueprint[4]), this),Pokemon(&(trainer1.teamBlueprint[5]), this)}},
-player2Team{{Pokemon(&(trainer2.teamBlueprint[0]), this),Pokemon(&(trainer2.teamBlueprint[1]), this),Pokemon(&(trainer2.teamBlueprint[2]), this),Pokemon(&(trainer2.teamBlueprint[3]), this),Pokemon(&(trainer2.teamBlueprint[4]), this),Pokemon(&(trainer2.teamBlueprint[5]), this)}},
+player1Team{{Pokemon(&(trainer1->teamBlueprint[0]), this),Pokemon(&(trainer1->teamBlueprint[1]), this),Pokemon(&(trainer1->teamBlueprint[2]), this),Pokemon(&(trainer1->teamBlueprint[3]), this),Pokemon(&(trainer1->teamBlueprint[4]), this),Pokemon(&(trainer1->teamBlueprint[5]), this)}},
+player2Team{{Pokemon(&(trainer2->teamBlueprint[0]), this),Pokemon(&(trainer2->teamBlueprint[1]), this),Pokemon(&(trainer2->teamBlueprint[2]), this),Pokemon(&(trainer2->teamBlueprint[3]), this),Pokemon(&(trainer2->teamBlueprint[4]), this),Pokemon(&(trainer2->teamBlueprint[5]), this)}},
 m_Generator{std::default_random_engine(m_Seed)}
 {
     log("Seed: " + std::to_string(seed));

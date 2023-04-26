@@ -44,7 +44,7 @@ int main(){
     int battlesRan = 0;
     std::vector<Trainer*> winners;
     while (battlesRan < 20000) {
-        Battle battle(trainer1, trainer2, rand());
+        Battle battle(&trainer1, &trainer2, rand());
         battle.doLogging = false;
         simulateBattle(&battle);
         winners.push_back(battle.winner);
