@@ -3,7 +3,7 @@
 #include "sim/battle/Battle.hpp"
 #include "api/NPCS_API_Server.hpp"
 #include <chrono>
-
+#define STRESS_TEST 0
 
 
 
@@ -39,7 +39,7 @@ int main(){
     Trainer trainer1("Youngster", "Joey", trainer1Team, WILD);
     Trainer trainer2("Youngster", "Ben", trainer2Team, WILD);
 
-
+#if STRESS_TEST
     auto start = std::chrono::high_resolution_clock::now();
     int battlesRan = 0;
     std::vector<Trainer*> winners;
@@ -53,14 +53,14 @@ int main(){
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0f << '\n';
     std::cout << winners[rand() % 20000]->getFullName() << "\n";
-    
+#else
 
-    /*
-    Battle battle(trainer1, trainer2, rand());
+    
+    Battle battle(&trainer1, &trainer2, rand());
     simulateBattle(&battle);
     std::cout << battle.battleLog << '\n';
-    */
-
+    
+#endif
    /*
     NPCS_API_Server server;
     return server.run();

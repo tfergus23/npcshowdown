@@ -51,7 +51,7 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
         }
         return 0;
     }
-    DealtDamage dealtDamage = calculateDirectDamage(moveUse);
+    DealtDamage dealtDamage = calculateDirectDamage(moveUse, true); //TODO: Undo this
     dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
     if (dealtDamage.damage > 0){
         if (logEffectiveness){
@@ -280,7 +280,7 @@ int calculateDamageBeforeMods(MoveUse* moveUse, bool crit) {
     moveUse->battle->assert(attackingStat == ATTACK || attackingStat == SPATTACK, "Incorrectly calculated attackingStat");
     moveUse->battle->assert(defendingStat == DEFENSE || defendingStat == SPDEFENSE, "Incorrectly calculated defendingStat");
     int attack = moveUse->user->getStat(attackingStat);
-    int defense = moveUse->user->getStat(defendingStat);
+    int defense = moveUse->target->getStat(defendingStat);
     float div2 = (float)attack / (float)defense;
     int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
     int damage = div3 + 2;
@@ -289,7 +289,7 @@ int calculateDamageBeforeMods(MoveUse* moveUse, bool crit) {
 int calculateDamageBeforeMods(MoveUse* moveUse, bool crit, Stat attackingStat, Stat defendingStat) {
     int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
     int attack = moveUse->user->getStat(attackingStat);
-    int defense = moveUse->user->getStat(defendingStat);
+    int defense = moveUse->target->getStat(defendingStat);
     float div2 = (float)attack / (float)defense;
     int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
     int damage = div3 + 2;

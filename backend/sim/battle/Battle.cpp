@@ -294,6 +294,14 @@ void Battle::setActivePokemon(bool isPlayer1, Pokemon* newPokemon){
 }
 
 void Battle::logCurrentStatus(){
+#if DEBUG_LOG
+    std::string statInfo = "";
+    Pokemon* pokemon = player1ActivePokemon;
+    statInfo += pokemon->nickname + " HP: " + std::to_string(pokemon->getStat(HP)) + " Attack: " + std::to_string(pokemon->getStat(ATTACK)) + " Defense: " + std::to_string(pokemon->getStat(DEFENSE)) + " Special Attack: " + std::to_string(pokemon->getStat(SPATTACK)) + " Special Defense: " + std::to_string(pokemon->getStat(SPDEFENSE)) + " Speed: " + std::to_string(pokemon->getStat(SPEED)) + '\n';
+    pokemon = player2ActivePokemon;
+    statInfo += pokemon->nickname + " HP: " + std::to_string(pokemon->getStat(HP)) + " Attack: " + std::to_string(pokemon->getStat(ATTACK)) + " Defense: " + std::to_string(pokemon->getStat(DEFENSE)) + " Special Attack: " + std::to_string(pokemon->getStat(SPATTACK)) + " Special Defense: " + std::to_string(pokemon->getStat(SPDEFENSE)) + " Speed: " + std::to_string(pokemon->getStat(SPEED));
+    if (doLogging) battleLog += statInfo + '\n';
+#endif
     if (doLogging)
     battleLog += m_Player1->getFullName() + ": " + player1ActivePokemon->nickname + " (" + std::to_string(player1ActivePokemon->currentHealth) + "/" + std::to_string(player1ActivePokemon->getStatRaw(HP)) + ")\n" +
                  m_Player2->getFullName() + ": " + player2ActivePokemon->nickname + " (" + std::to_string(player2ActivePokemon->currentHealth) + "/" + std::to_string(player2ActivePokemon->getStatRaw(HP)) + ")\n";

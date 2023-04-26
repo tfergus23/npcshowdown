@@ -171,7 +171,7 @@ int Pokemon::getStatRaw(Stat stat){
     case SPDEFENSE:
     {
         int div1 = (int)floor(evs[stat] / 4.0f);
-        int div2 = (int)floor(((2 * species->baseStats[stat] + evs[stat] + div1) * level) / 100.0f);
+        int div2 = (int)floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
         int unboostedStat = (int)floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
     }
