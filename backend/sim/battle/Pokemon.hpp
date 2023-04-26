@@ -12,6 +12,7 @@
 #include "sim/data/Items.hpp"
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/EffectState.hpp"
+#include <vector>
 
 class Move;
 struct EffectState;
