@@ -1,4 +1,3 @@
-#include "sim/Sim.hpp"
 #include "move_functions.hpp"
 #include "sim/data/FieldEffects.hpp"
 #include "sim/data/Items.hpp"

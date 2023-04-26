@@ -1,4 +1,3 @@
-#include "sim/Sim.hpp"
 #include "sim/battle/Trainer.hpp"
 #include <iostream>
 #include "sim/data/Moves.hpp"

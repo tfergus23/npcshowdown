@@ -1,4 +1,3 @@
-#include "sim/Sim.hpp"
 #include "Observer.hpp"
 #include "sim/battle/Battle.hpp"
 

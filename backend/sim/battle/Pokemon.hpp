@@ -12,7 +12,10 @@
 #include "sim/data/Items.hpp"
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/EffectState.hpp"
-    
+
+class Move;
+struct EffectState;
+class PokemonBlueprint;
 
 class Pokemon{
     public:

@@ -1,4 +1,3 @@
-#include "sim/Sim.hpp"
 #include "Pokemon.hpp"
 #include "sim/data/Abilities.hpp"
 #include "sim/battle/Gender.hpp"
@@ -123,7 +122,7 @@ Gender Pokemon::getGender(){
 
 int Pokemon::getStat(Stat stat, bool crit){
     int unboostedStat = getStatRaw(stat);
-    int finalStatValue;
+    int finalStatValue = unboostedStat;
     switch (stat)
     {
     case HP:

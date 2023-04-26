@@ -18,8 +18,6 @@ public:
 inline const Switch MOVE_SWITCH;
 inline const Struggle MOVE_STRUGGLE;
 
-const Move* getMove(const std::string& moveName);
-
 
 inline const std::string MOVE_POUND_NAME = "Pound";
 class Pound: public Move{
@@ -55,3 +53,7 @@ inline const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE_NAME, MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND}
 };
+
+inline const Move* getMove(const std::string& moveName) {
+    return moves.at(moveName);
+}

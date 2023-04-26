@@ -3,6 +3,9 @@
 #include "sim/battle/EventArgs.hpp"
 #include "sim/battle/EffectState.hpp"
 
+class Pokemon;
+class Battle;
+
 class Observer{
 public:
     void handleEvent(Event event, Pokemon* subject, Battle* battle, const EventArgs& args) const;

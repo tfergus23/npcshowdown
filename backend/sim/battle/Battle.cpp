@@ -1,4 +1,3 @@
-#include "sim/Sim.hpp"
 #include "sim/battle/Battle.hpp"
 #include <random>
 #include "sim/data/Moves.hpp"

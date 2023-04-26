@@ -1,5 +1,8 @@
 #pragma once
 
+class Pokemon;
+class MoveUse;
+
 class EventArgs{
 public:
     Pokemon* const eventSubject; // Subject of event

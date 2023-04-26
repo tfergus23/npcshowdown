@@ -12,7 +12,7 @@
 #include <random>
 #include <unordered_map>
 
-
+class Trainer;
 
 class Battle{
 public:

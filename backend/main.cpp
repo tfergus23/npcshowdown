@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "sim/Sim.hpp"
 #include "sim/battle/Battle.hpp"
 #include "api/NPCS_API_Server.hpp"
 
