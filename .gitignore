@@ -3,10 +3,3 @@ backend/out
 .vscode
 .vs
 scripts
-backend/lib/json/*.*
-backend/lib/json/Makefile
-backend/lib/json/cmake
-backend/lib/json/docs
-backend/lib/json/include
-backend/lib/json/tests
-backend/lib/json/tools
