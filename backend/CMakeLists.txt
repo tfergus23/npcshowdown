@@ -12,7 +12,7 @@ FILE(GLOB tournament ${PROJECT_SOURCE_DIR}/sim/tournament/*.cpp)
 FILE(GLOB utils ${PROJECT_SOURCE_DIR}/sim/utils/*.cpp)
 
 add_executable (npcs_sim main.cpp ${battle} ${data} ${tournament} ${utils})
-include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/lib/json/single_include)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET npcs_sim PROPERTY CXX_STANDARD 20)

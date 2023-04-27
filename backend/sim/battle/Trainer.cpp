@@ -1,6 +1,8 @@
 #include "sim/battle/Trainer.hpp"
 #include <iostream>
 #include "sim/data/Moves.hpp"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 
 
@@ -9,6 +11,14 @@ teamBlueprint{teamBlueprint},
 trainerClass{trainerClass},
 name{name},
 trainerLevel{trainerLevel}
+{
+}
+
+Trainer::Trainer(json json) :
+teamBlueprint{{PokemonBlueprint(json["team"][0]),PokemonBlueprint(json["team"][1]),PokemonBlueprint(json["team"][2]),PokemonBlueprint(json["team"][3]),PokemonBlueprint(json["team"][4]),PokemonBlueprint(json["team"][5])}},
+trainerClass{json["trainerClass"].get<std::string>()},
+name{json["name"].get<std::string>()},
+trainerLevel{(TrainerLevel) json["trainerLevel"].get<int>()}
 {
 }
 
@@ -89,7 +99,7 @@ int Trainer::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Ba
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
     std::vector<int> validSlots;
     getValidSwitches(currentlyActivePokemon, battle, validSlots);
-    battle->assert(validSlots.size() > 0, "pickPokemon called without any valid pokemon to switch to.");
+    battle->assertTrue(validSlots.size() > 0, "pickPokemon called without any valid pokemon to switch to.");
     return validSlots[battle->randInt(0, validSlots.size())];
 }
 
@@ -115,7 +125,23 @@ int Trainer::getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* batt
     return result;
 }
 
-std::string Trainer::toJSON(){
-    //TODO
-    return "";
+json Trainer::toJSON() const{
+    json json = {
+        {"name", name},
+        {"trainerClass", trainerClass},
+        {"trainerLevel", (int) trainerLevel},
+        {"team", {teamBlueprint[0].toJSON(),teamBlueprint[1].toJSON(),teamBlueprint[2].toJSON(),teamBlueprint[3].toJSON(),teamBlueprint[4].toJSON(),teamBlueprint[5].toJSON()}}
+    };
+    return json;
+}
+
+bool Trainer::equals(const Trainer& that) const{
+    for (int i = 0; i < teamBlueprint.size(); i++){
+        if (!teamBlueprint[i].equals(that.teamBlueprint[i])){
+            return false;
+        }
+    }
+    return name == that.name &&
+           trainerClass == that.trainerClass &&
+           trainerLevel == that.trainerLevel;
 }

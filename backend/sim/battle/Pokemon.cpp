@@ -29,7 +29,7 @@ battle{battle}
     currentType[0] = species->type[0];
     currentType[1] = species->type[1];
 
-    battle->assert(m_CurrentAbility != nullptr, nickname + " doesn't have an ability.");
+    battle->assertTrue(m_CurrentAbility != nullptr, nickname + " doesn't have an ability.");
     m_CurrentAbility->initializeState(&abilityState);
     if (m_CurrentItem != ITEM_NONE)
         m_CurrentItem->initializeState(&itemState);
@@ -107,7 +107,7 @@ void Pokemon::removeMarkedEffects(){
 
 void Pokemon::applyEffect(const Effect* effect){
     //TODO Implement the MoveEffects version here
-    battle->assert(!hasEffect(effect), "Tried to apply effect " + effect->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
+    battle->assertTrue(!hasEffect(effect), "Tried to apply effect " + effect->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
     m_Effects[effect];
     effect->initializeState(&m_Effects[effect]);
 }
@@ -149,7 +149,7 @@ int Pokemon::getStat(Stat stat, bool crit){
         break;
     }
     default:
-        battle->assert(false, "Unhandled stat: " + std::to_string(stat));
+        battle->assertTrue(false, "Unhandled stat: " + std::to_string(stat));
     }
     finalStatValue = m_CurrentAbility->modifySubjectStat(stat, finalStatValue, this);
     return finalStatValue;
@@ -183,7 +183,7 @@ int Pokemon::getStatRaw(Stat stat){
         return unboostedStat;
     }
     default:
-        battle->assert(false, "Unhandled stat: " + std::to_string(stat));
+        battle->assertTrue(false, "Unhandled stat: " + std::to_string(stat));
         return -1;
     }
 }

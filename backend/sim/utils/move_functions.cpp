@@ -55,13 +55,13 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
     if (dealtDamage.damage > 0){
         if (logEffectiveness){
-            moveUse->battle->assert(dealtDamage.typeMod != NOT_EFFECTIVE, "Move tried to deal damage when NOT_EFFECTIVE");
+            moveUse->battle->assertTrue(dealtDamage.typeMod != NOT_EFFECTIVE, "Move tried to deal damage when NOT_EFFECTIVE");
             if (dealtDamage.typeMod == SUPER_EFFECTIVE) moveUse->battle->log("It's Super Effective!");
             else if (dealtDamage.typeMod == ULTRA_EFFECTIVE) moveUse->battle->log("It's ULTRA Effective!");
             else if (dealtDamage.typeMod == NOT_VERY_EFFECTIVE) moveUse->battle->log("It's not very effective...");
             else if (dealtDamage.typeMod == BARELY_EFFECTIVE) moveUse->battle->log("It's barely effective...");
             else if (dealtDamage.typeMod == 1.0f);
-            else moveUse->battle->assert(false, "Looks like we got a rounding error on our hands boys: " + std::to_string(dealtDamage.typeMod));
+            else moveUse->battle->assertTrue(false, "Looks like we got a rounding error on our hands boys: " + std::to_string(dealtDamage.typeMod));
         }
         if (dealtDamage.crit){
             moveUse->battle->log("Critical hit!");
@@ -277,8 +277,8 @@ int calculateDamageBeforeMods(MoveUse* moveUse, bool crit) {
     int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
     Stat attackingStat = (Stat)moveUse->move->damageCategory;
     Stat defendingStat = (Stat)((int)(moveUse->move->damageCategory) + 1);
-    moveUse->battle->assert(attackingStat == ATTACK || attackingStat == SPATTACK, "Incorrectly calculated attackingStat");
-    moveUse->battle->assert(defendingStat == DEFENSE || defendingStat == SPDEFENSE, "Incorrectly calculated defendingStat");
+    moveUse->battle->assertTrue(attackingStat == ATTACK || attackingStat == SPATTACK, "Incorrectly calculated attackingStat");
+    moveUse->battle->assertTrue(defendingStat == DEFENSE || defendingStat == SPDEFENSE, "Incorrectly calculated defendingStat");
     int attack = moveUse->user->getStat(attackingStat);
     int defense = moveUse->target->getStat(defendingStat);
     float div2 = (float)attack / (float)defense;

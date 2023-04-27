@@ -42,7 +42,7 @@ void Battle::debug(const std::string& message){
 #endif
 }
 
-void Battle::assert(bool condition, const std::string& message){
+void Battle::assertTrue(bool condition, const std::string& message){
     if (!condition){
         log("Assertion failed! Stopping battle.");
         std::cerr << message << '\n';
@@ -122,7 +122,7 @@ Pokemon* Battle::switchPokemon(bool isPlayer1){
     Pokemon* currentPoke = isPlayer1 ? player1ActivePokemon : player2ActivePokemon;
     auto& team = isPlayer1 ? player1Team : player2Team;
     Pokemon* newPoke = &team[newPokePosition];
-    assert(currentPoke != newPoke, "Tried to switch in a Pokemon that is already in.");
+    assertTrue(currentPoke != newPoke, "Tried to switch in a Pokemon that is already in.");
     raiseEvent(POKEMON_SWITCH, EventArgs(currentPoke, nullptr));
     setActivePokemon(isPlayer1, newPoke);
     raiseEvent(POKEMON_ENTER, EventArgs(newPoke, nullptr));
@@ -168,7 +168,7 @@ void Battle::removeMarkedFieldEffects(bool side){
 }
 
 void Battle::raiseEvent(Event event, const EventArgs& args){
-    assert(event != PRIORITY_END_OF_TURN, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
+    assertTrue(event != PRIORITY_END_OF_TURN, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
     bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
     auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
     auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;

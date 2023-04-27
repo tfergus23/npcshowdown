@@ -83,10 +83,6 @@ class Pokemon{
         bool outOfPP();
         bool isType(Type type);
 
-
-
-
-
     private:
         void onSwitch();
         const Ability* m_BaseAbility;

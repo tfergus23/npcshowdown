@@ -3,7 +3,9 @@
 #include "sim/battle/Battle.hpp"
 #include "api/NPCS_API_Server.hpp"
 #include <chrono>
-#define STRESS_TEST 1
+#include <fstream>
+#define STRESS_TEST 0
+#define SINGLE_TEST 0
 
 
 
@@ -33,12 +35,25 @@ int main(){
         {252,0,4,252,0,0},
         "Charmander"
     );
-    std::array<PokemonBlueprint, 6> trainer1Team = {poke1, poke1, poke1, poke1, poke1 ,poke1 };
+    std::array<PokemonBlueprint, 6> trainer1Team = {poke1, poke1, poke1, poke1, poke1 ,PokemonBlueprint() };
     std::array<PokemonBlueprint, 6> trainer2Team = {poke2, poke2, poke2, poke2, poke2 ,poke2 };
 
     Trainer trainer1("Youngster", "Joey", trainer1Team, WILD);
     Trainer trainer2("Youngster", "Ben", trainer2Team, WILD);
 
+    std::ofstream outFile("joey.json");
+    std::string joeyString = trainer1.toJSON().dump(4);
+    outFile.write(joeyString.c_str(), joeyString.size());
+    outFile.close();
+
+    std::ifstream inFile ("joey.json");
+    json joeyJson = json::parse(inFile);
+
+    Trainer joey(joeyJson);
+
+    std::cout << trainer1.equals(joey) << '\n';
+
+/*
 #if STRESS_TEST
     auto start = std::chrono::high_resolution_clock::now();
     int battlesRan = 0;
@@ -61,6 +76,7 @@ int main(){
     std::cout << battle.battleLog << '\n';
     
 #endif
+*/
    /*
     NPCS_API_Server server;
     return server.run();

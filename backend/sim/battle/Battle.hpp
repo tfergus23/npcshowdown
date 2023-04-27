@@ -54,7 +54,7 @@ public:
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
     void log(const std::string& str);
     void debug(const std::string& str);
-    void assert(bool condition, const std::string& message = "");
+    void assertTrue(bool condition, const std::string& message = "");
 
     //void raiseBeforeMove(MoveUse* moveUse);
     //void raiseEndOfTurn();

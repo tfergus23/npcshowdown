@@ -24,6 +24,7 @@ public:
 
 
     Trainer(std::string trainerClass, std::string name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel);
+    Trainer(json json);
 
     std::string getFullName();
 
@@ -34,6 +35,7 @@ public:
     void getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, std::vector<int>& outVec);
     int getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* battle);
 
-    std::string toJSON();
+    json toJSON() const;
+    bool equals(const Trainer& that) const;
 private:
 };
