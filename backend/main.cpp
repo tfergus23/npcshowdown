@@ -52,6 +52,7 @@ int main(){
     Trainer joey(joeyJson);
 
     std::cout << trainer1.equals(joey) << '\n';
+    inFile.close();
 
 /*
 #if STRESS_TEST

@@ -19,7 +19,7 @@ public:
         if (stat == ATTACK && subject->getStatus() != STATUS_NONE){
             float newVal = (float) statVal * 1.5f;
             subject->battle->debug("Guts active");
-            return (int) floor(statVal);
+            return (int) floor(newVal);
         } 
         return statVal;
     }
