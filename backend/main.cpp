@@ -41,20 +41,7 @@ int main(){
     Trainer trainer1("Youngster", "Joey", trainer1Team, WILD);
     Trainer trainer2("Youngster", "Ben", trainer2Team, WILD);
 
-    std::ofstream outFile("joey.json");
-    std::string joeyString = trainer1.toJSON().dump(4);
-    outFile.write(joeyString.c_str(), joeyString.size());
-    outFile.close();
 
-    std::ifstream inFile ("joey.json");
-    json joeyJson = json::parse(inFile);
-
-    Trainer joey(joeyJson);
-
-    std::cout << trainer1.equals(joey) << '\n';
-    inFile.close();
-
-/*
 #if STRESS_TEST
     auto start = std::chrono::high_resolution_clock::now();
     int battlesRan = 0;
@@ -73,11 +60,11 @@ int main(){
 
     
     Battle battle(&trainer1, &trainer2, rand());
-    simulateBattle(&battle);
+    battle.simulate();
     std::cout << battle.battleLog << '\n';
     
 #endif
-*/
+
    /*
     NPCS_API_Server server;
     return server.run();

@@ -62,6 +62,7 @@ public:
     void killTheDead();
     void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
     void logCurrentStatus();
+    void simulate();
 private:
     Trainer* m_Player1;
     Trainer* m_Player2;
@@ -83,7 +84,7 @@ private:
     void killPokemon(Pokemon* pokemon);
 };
 
-void simulateBattle(Battle* battle);
+//void simulateBattle(Battle* battle);
 
 const bool IS_PLAYER_ONE = true;
 const bool IS_PLAYER_TWO = false;

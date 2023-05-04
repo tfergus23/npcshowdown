@@ -308,32 +308,32 @@ void Battle::logCurrentStatus(){
                  m_Player2->getFullName() + ": " + player2ActivePokemon->nickname + " (" + std::to_string(player2ActivePokemon->currentHealth) + "/" + std::to_string(player2ActivePokemon->getStatRaw(HP)) + ")\n";
 }
 
-void simulateBattle(Battle* battle){
+void Battle::simulate(){
     try{
-        while (!battle->isBattleOver){
-            const Move* player1Move = battle->getPlayer1()->pickMove(battle->player1ActivePokemon, battle->player2ActivePokemon, battle);
-            const Move* player2Move = battle->getPlayer2()->pickMove(battle->player2ActivePokemon, battle->player1ActivePokemon, battle);
-            battle->addMoves(player1Move, player2Move);
-            while (!battle->isTurnOver){
-                battle->doMove();
-                battle->switchIfNecessary();
-                if (battle->moveNumber == 1){
-                    battle->raiseEvent(END_OF_TURN, EventArgs(nullptr, nullptr));
-                    battle->switchIfNecessary();
-                    battle->logCurrentStatus();
+        while (!this->isBattleOver){
+            const Move* player1Move = this->getPlayer1()->pickMove(this->player1ActivePokemon, this->player2ActivePokemon, this);
+            const Move* player2Move = this->getPlayer2()->pickMove(this->player2ActivePokemon, this->player1ActivePokemon, this);
+            this->addMoves(player1Move, player2Move);
+            while (!this->isTurnOver){
+                this->doMove();
+                this->switchIfNecessary();
+                if (this->moveNumber == 1){
+                    this->raiseEvent(END_OF_TURN, EventArgs(nullptr, nullptr));
+                    this->switchIfNecessary();
+                    this->logCurrentStatus();
                 }
                 else{
-                    battle->moveNumber++;
+                    this->moveNumber++;
                 }
             }
         }
     }
     catch (const std::exception& e){
-        battle->invalid = true;
-        battle->isTurnOver = true;
-        battle->isBattleOver = true;
-        battle->winner = battle->getPlayer1(); //This could probably remain nullptr, but I'll keep it this for now
-        battle->log(e.what());
+        this->invalid = true;
+        this->isTurnOver = true;
+        this->isBattleOver = true;
+        this->winner = this->getPlayer1(); //This could probably remain nullptr, but I'll keep it this for now
+        this->log(e.what());
     }
 }
 
