@@ -1,0 +1,18 @@
+button{
+    width: 300px;
+    height: 250px;
+    border-color: rgb(0, 255, 255);
+    border-width: 5px;
+    border-style: solid;
+    background-color: rgb(78, 78, 79);
+    color: rgb(0, 255, 255);
+    margin: 10px;
+    font-size: 35px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: end;
+}
+
+button:hover{
+    background-color: rgb(105, 105, 106);
+}

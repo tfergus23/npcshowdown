@@ -1,8 +1,15 @@
 .container{
     text-align: left;
     margin: auto;
-    width: 45%;
+    width: 66%;
 }
 p{
     color: white;
+}
+
+.questions{
+    border: 5px solid rgb(0, 255, 255);
+    background-color: rgb(41, 41, 41);
+    border-radius: 5px;
+    padding: 5px;
 }

@@ -4,12 +4,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { AboutComponent } from './about/about.component';
+import { MenuButtonComponent } from './menu-button/menu-button.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    AboutComponent
+    AboutComponent,
+    MenuButtonComponent
   ],
   imports: [
     BrowserModule
