@@ -4,7 +4,7 @@
 #include "api/NPCS_API_Server.hpp"
 #include <chrono>
 #include <fstream>
-#define STRESS_TEST 0
+#define STRESS_TEST 1
 #define SINGLE_TEST 0
 
 
@@ -45,17 +45,17 @@ int main(){
 #if STRESS_TEST
     auto start = std::chrono::high_resolution_clock::now();
     int battlesRan = 0;
-    std::vector<Trainer*> winners;
+    //std::vector<Trainer*> winners;
     while (battlesRan < 20000) {
         Battle battle(&trainer1, &trainer2, rand());
         battle.doLogging = false;
-        simulateBattle(&battle);
-        winners.push_back(battle.winner);
+        battle.simulate();
+        //winners.push_back(battle.winner);
         battlesRan++;
     }
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0f << '\n';
-    std::cout << winners[rand() % 20000]->getFullName() << "\n";
+    //std::cout << winners[rand() % 20000]->getFullName() << "\n";
 #else
 
     

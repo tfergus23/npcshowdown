@@ -1,4 +1,4 @@
-button{
+a{
     width: 300px;
     height: 250px;
     border-color: rgb(0, 255, 255);
@@ -11,8 +11,14 @@ button{
     display: inline-flex;
     justify-content: center;
     align-items: end;
+    border-radius: 5px;
 }
 
-button:hover{
+a:hover{
     background-color: rgb(105, 105, 106);
+}
+
+img {
+    color: rgb(0, 255, 255);
+    filter: invert(80%) sepia(10%) saturate(5660%) hue-rotate(128deg) brightness(102%) contrast(107%);
 }

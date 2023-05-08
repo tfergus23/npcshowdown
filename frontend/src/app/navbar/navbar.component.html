@@ -1,5 +1,10 @@
 <nav class ="navBar">
     <a class="logo" href="/"><img src="../../assets/npcs_logo.png" height="60" alt="logo"></a>
     <a class="menu" href="/">MENU</a>
-    <button class="signin">Sign In</button>
+    <div *ngIf="loggedInUser; else elseBlock" class="signedin">
+        Signed in as <div class="username">{{loggedInUser.name}}</div>
+    </div>
+    <ng-template #elseBlock>
+        <button class="signin">Sign In</button>
+    </ng-template>
 </nav>
