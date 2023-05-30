@@ -23,15 +23,15 @@ class Pound: public Move{
 public:
     Pound(){
         name = "Pound";
-        type = NORMAL;
-        damageCategory = PHYSICAL;
+        type = Type::NORMAL;
+        damageCategory = DamageCategory::PHYSICAL;
         power = 40;
         accuracy = 100;
         maxPP = 56;
         priority = 0;
         critRatio = 0;
-        targetType = OPPONENT;
-        secondaryEffect = NOEFFECT;
+        targetType = TargetType::OPPONENT;
+        secondaryEffect = SecondaryEffect::NOEFFECT;
         secondaryEffectChance = -1;
         secondaryEffectValue = -1;
 
