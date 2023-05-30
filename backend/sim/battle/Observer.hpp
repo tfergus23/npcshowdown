@@ -6,17 +6,19 @@
 class Pokemon;
 class Battle;
 
+
+
 class Observer{
 public:
     void handleEvent(Event event, Pokemon* subject, Battle* battle, const EventArgs& args) const;
-    virtual void initializeState(EffectState* state) const {}
-protected:
-    virtual void beforeMove(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
-    virtual void endOfTurn(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
-    virtual void priorityEndOfTurn(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
-    virtual void afterMove(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
-    virtual void onPokemonSwitch(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
-    virtual void onPokemonEnter(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
-    virtual void onPokemonDeath(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
-    virtual void onPokemonAttacked(Pokemon* subject, Battle* battle, const EventArgs& args) const {}
+    void (*initializeState)(EffectState*) = [](EffectState* state){};
+//protected:
+    void (*beforeMove)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    void (*endOfTurn)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    void (*priorityEndOfTurn)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    void (*afterMove)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    void (*onPokemonSwitch)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    void (*onPokemonEnter)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    void (*onPokemonDeath)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    void (*onPokemonAttacked)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
 };

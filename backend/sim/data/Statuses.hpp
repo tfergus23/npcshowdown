@@ -4,36 +4,18 @@
 inline const Status* STATUS_NONE = nullptr;
 
 //TODO
-class Paralysis : public Status{
-
-};
-inline const Paralysis STATUS_PARALYSIS;
+inline const Status STATUS_PARALYSIS;
 
 //TODO
-class Poison: public Status{
-
-};
-inline const Poison STATUS_POISON;
+inline const Status STATUS_POISON;
 
 //TODO
-class Sleep: public Status{
-
-};
-inline const Sleep STATUS_SLEEP;
+inline const Status STATUS_SLEEP;
 
 //TODO
-class Burn: public Status{
-
-};
-inline const Burn STATUS_BURN;
+inline const Status STATUS_BURN;
 
 //TODO
-class Frozen : public Status{
+inline const Status STATUS_FROZEN;
 
-};
-inline const Frozen STATUS_FROZEN;
-
-class BadPoison: public Status{
-
-};
-inline const BadPoison STATUS_BAD_POISON;
+inline const Status STATUS_BAD_POISON;

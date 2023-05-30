@@ -3,7 +3,8 @@
 #include "sim/battle/Observer.hpp"
 
 
-class Effect : public Observer{
+class Effect {
 public:
+    Observer observer;
     std::string name;
 };

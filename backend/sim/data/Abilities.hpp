@@ -9,13 +9,10 @@ inline const std::string ABILITY_NONE_NAME = "";
 inline const Ability* ABILITY_NONE = nullptr;
 
 
-//Guts
-class Guts: public Ability{
-public:
-    Guts(){
-        name = "Guts";
-    }
-    int modifySubjectStat(Stat stat,int statVal,Pokemon* subject) const override{
+
+inline const Ability ABILITY_GUTS = {
+    .name = "Guts",
+    .modifySubjectStat = [](Stat stat,int statVal,Pokemon* subject){
         if (stat == ATTACK && subject->getStatus() != STATUS_NONE){
             float newVal = (float) statVal * 1.5f;
             subject->battle->debug("Guts active");
@@ -24,23 +21,18 @@ public:
         return statVal;
     }
 };
-inline const Guts ABILITY_GUTS;
 
-//Torrent
-class Torrent: public Ability{
-public:
-    Torrent(){
-        name = "Torrent";
-    }
-protected:
-    void beforeMove(Pokemon* subject, Battle* battle, const EventArgs& args) const override{
-        //TODO
-        if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(HP, subject->battle) <= (1.0f / 3.0f) && args.moveUse->move->type == WATER){
-            args.moveUse->damageMod *= 1.5f;
+inline const Ability ABILITY_TORRENT = {
+    .observer = {
+        .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
+            //TODO
+            if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(HP, subject->battle) <= (1.0f / 3.0f) && args.moveUse->move->type == WATER){
+                args.moveUse->damageMod *= 1.5f;
+            }
         }
-    }
+    },
+    .name = "Torrent"
 };
-inline const Torrent ABILITY_TORRENT;
 
 
 

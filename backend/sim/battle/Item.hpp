@@ -3,8 +3,9 @@
 #include <string>
 
 
-class Item : public Observer{
+class Item {
 public:
+    Observer observer;
     std::string name;
     int critMod = 0;
     bool ignorable = false;

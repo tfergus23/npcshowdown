@@ -4,7 +4,8 @@
 
 
 
-class FieldEffect : public Observer{
+class FieldEffect {
 public:
+    Observer observer;
     std::string name;
 };

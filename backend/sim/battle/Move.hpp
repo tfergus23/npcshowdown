@@ -7,16 +7,31 @@
 
 class MoveUse;
 
+/*
+    .name = "Pound",
+    .type = Type::NORMAL,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 40,
+    .accuracy = 100,
+    .maxPP = 56,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NOEFFECT,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+*/
+
 class Move{
 public:
-    int maxPP;
     std::string name;
+    Type type;
+    DamageCategory damageCategory;
     int power;
     int accuracy;
+    int maxPP;
     int priority;
-    Type type;
     int critRatio;
-    DamageCategory damageCategory;
     TargetType targetType;
     SecondaryEffect secondaryEffect;
     float secondaryEffectChance;
@@ -40,7 +55,7 @@ public:
     bool skillLink = false;
     bool soundBased = false;
 
-    virtual void beforeChecks(MoveUse* myMove, MoveUse* opponentMove) const{}
-    virtual void afterChecks(MoveUse* myMove, MoveUse* opponentMove) const{}
+    void (*beforeChecks)(MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};
+    void (*afterChecks) (MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};
 
 };

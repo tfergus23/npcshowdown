@@ -6,6 +6,7 @@
 #include <fstream>
 #define STRESS_TEST 1
 #define SINGLE_TEST 0
+#define BATTLES 20000
 
 
 
@@ -46,7 +47,7 @@ int main(){
     auto start = std::chrono::high_resolution_clock::now();
     int battlesRan = 0;
     //std::vector<Trainer*> winners;
-    while (battlesRan < 20000) {
+    while (battlesRan < BATTLES) {
         Battle battle(&trainer1, &trainer2, rand());
         battle.doLogging = false;
         battle.simulate();

@@ -2,7 +2,8 @@
 #include <string>
 
 
-class Status : public Observer{
+class Status {
 public:
+    Observer observer;
     std::string was;
 };

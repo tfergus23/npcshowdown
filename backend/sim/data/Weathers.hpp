@@ -4,12 +4,4 @@
 inline const Weather* WEATHER_NONE = nullptr;
 
 //TODO
-class Sun : public Weather {
-public:
-	Sun() {
-
-	}
-};
-
-inline const Sun WEATHER_SUN;
-
+inline const Weather WEATHER_SUN;
