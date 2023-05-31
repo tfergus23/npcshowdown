@@ -26,7 +26,7 @@ inline const Ability ABILITY_TORRENT = {
     .observer = {
         .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
             //TODO
-            if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(HP, subject->battle) <= (1.0f / 3.0f) && args.moveUse->move->type == WATER){
+            if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(HP) <= (1.0f / 3.0f) && args.moveUse->move->type == WATER){
                 args.moveUse->damageMod *= 1.5f;
             }
         }
