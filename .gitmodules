@@ -1,3 +1,6 @@
 [submodule "backend/lib/json"]
 	path = backend/lib/json
 	url = git@github.com:nlohmann/json.git
+[submodule "backend/lib/expresscpp"]
+	path = backend/lib/expresscpp
+	url = git@github.com:expresscpp/expresscpp.git

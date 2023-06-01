@@ -1,17 +1,17 @@
 #include <iostream>
-
-#include "sim/battle/Battle.hpp"
 #include "api/NPCS_API_Server.hpp"
+#include "sim/battle/Battle.hpp"
 #include <chrono>
 #include <fstream>
-#define STRESS_TEST 1
+#define STRESS_TEST 0
 #define SINGLE_TEST 0
+#define SERVER_TEST 1
 #define BATTLES 20000
 
 
 
 int main(){
-    
+    /*
     PokemonBlueprint poke1(
         "Squirtle",
         100,
@@ -41,6 +41,7 @@ int main(){
 
     Trainer trainer1("Youngster", "Joey", trainer1Team, WILD);
     Trainer trainer2("Youngster", "Ben", trainer2Team, WILD);
+    */
 
 
 #if STRESS_TEST
@@ -57,17 +58,15 @@ int main(){
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0f << '\n';
     //std::cout << winners[rand() % 20000]->getFullName() << "\n";
-#else
-
-    
+#endif
+#if SINGLE_TEST    
     Battle battle(&trainer1, &trainer2, rand());
     battle.simulate();
     std::cout << battle.battleLog << '\n';
-    
 #endif
 
-   /*
+#if SERVER_TEST
     NPCS_API_Server server;
     return server.run();
-   */
+#endif
 }

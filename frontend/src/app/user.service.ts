@@ -12,7 +12,7 @@ export class UserService {
     if (authToken == "token")
     return {
       id: 1,
-      name: "iiii"
+      name: "BilboSwaggins"
     };
     return undefined;
   }
