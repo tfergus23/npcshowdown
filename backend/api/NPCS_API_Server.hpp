@@ -8,4 +8,5 @@ public:
     int run();
 private:
     const std::shared_ptr<expresscpp::ExpressCpp> m_Expresscpp;
+    std::string authorizeUser(const std::string& username, const std::string& password);
 };

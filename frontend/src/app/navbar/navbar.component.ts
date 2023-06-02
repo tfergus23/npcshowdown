@@ -11,6 +11,8 @@ export class NavbarComponent {
   loggedInUser: User | undefined = undefined;
   constructor(private userService: UserService){}
   ngOnInit(): void {
-    this.loggedInUser = this.userService.getUserData(1, "token");
+    const response = this.userService.getUserData(1, "token");
+    response.subscribe((user) => this.loggedInUser = user);
+    //this.loggedInUser = this.userService.getUserData(1, "token");
   }
 }
