@@ -98,14 +98,14 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
 
 int Trainer::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Battle* battle){
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
-    std::vector<int> validSlots;
-    validSlots.reserve(5);
+    StackVec<int,5> validSlots;
+    //validSlots.reserve(5);
     getValidSwitches(currentlyActivePokemon, battle, validSlots);
     battle->assertTrue(validSlots.size() > 0, "pickPokemon called without any valid pokemon to switch to.");
     return validSlots[battle->randInt(0, validSlots.size())];
 }
 
-void Trainer::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, std::vector<int>& outVec){
+void Trainer::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, StackVec<int,5>& outVec){
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
     if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return;
     for (int i = 0; i < myTeam.size(); i++){

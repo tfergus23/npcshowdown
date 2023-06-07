@@ -4,14 +4,14 @@
 #include <chrono>
 #include <fstream>
 #define STRESS_TEST 0
-#define SINGLE_TEST 0
-#define SERVER_TEST 1
+#define SINGLE_TEST 1
+#define SERVER_TEST 0
 #define BATTLES 20000
 
 
 
 int main(){
-    /*
+    
     PokemonBlueprint poke1(
         "Squirtle",
         100,
@@ -41,7 +41,7 @@ int main(){
 
     Trainer trainer1("Youngster", "Joey", trainer1Team, WILD);
     Trainer trainer2("Youngster", "Ben", trainer2Team, WILD);
-    */
+    
 
 
 #if STRESS_TEST

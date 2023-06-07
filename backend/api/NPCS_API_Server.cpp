@@ -1,12 +1,13 @@
 #include "api/NPCS_API_Server.hpp"
 #include "nlohmann/json.hpp"
+#include "sim/data/Species.hpp"
 
 using json = nlohmann::json;
 
 #define PORT 3000
 #define WEBSITE_URL "http://localhost:4200"
 
-NPCS_API_Server::NPCS_API_Server() : m_Expresscpp{std::make_shared<expresscpp::ExpressCpp>()}{
+NPCS_API_Server::NPCS_API_Server() : m_Expresscpp{std::make_shared<expresscpp::ExpressCpp>()}, m_SpeciesData{getSpeciesData()}{
     auto headerMiddleWare = [&](auto req, auto res, auto next) {
         res->res.set("Access-Control-Allow-Origin", WEBSITE_URL);
         next();
@@ -20,9 +21,10 @@ NPCS_API_Server::NPCS_API_Server() : m_Expresscpp{std::make_shared<expresscpp::E
             json body = json::parse(req->getBody());
             std::string username = body["username"].get<std::string>();
             std::string password = body["password"].get<std::string>();
-            if (authorizeUser(username, password)){
+            std::string token = authorizeUser(username, password);
+            if (token != ""){
                 response["success"] = true;
-                response["token"] = "abc";
+                response["token"] = token;
             }
             else{
                 response["success"] = false;
@@ -55,3 +57,16 @@ std::string NPCS_API_Server::authorizeUser(const std::string& username, const st
     if (username == "BilboSwaggins" && password == "yourmom") return "abc";
     return "";
 }
+
+std::string NPCS_API_Server::getSpeciesData(){
+    //TODO: Sort this properly
+    std::vector<std::string> result;
+    for(auto [species,ptr] : speciesMap){
+        result.push_back(species);
+    }
+    json resultJSON = result;
+    return resultJSON.dump();
+}
+std::string getAbilityData();
+std::string getItemData();
+std::string getMoveData();

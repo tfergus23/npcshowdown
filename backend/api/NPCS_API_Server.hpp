@@ -9,4 +9,12 @@ public:
 private:
     const std::shared_ptr<expresscpp::ExpressCpp> m_Expresscpp;
     std::string authorizeUser(const std::string& username, const std::string& password);
+    std::string getSpeciesData();
+    std::string getAbilityData();
+    std::string getItemData();
+    std::string getMoveData();
+    const std::string m_SpeciesData;
+    const std::string m_AbilityData;
+    const std::string m_ItemData;
+    const std::string m_MoveData;
 };

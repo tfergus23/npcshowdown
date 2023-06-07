@@ -5,6 +5,7 @@
 #include "sim/battle/Move.hpp"
 #include "sim/battle/Pokemon.hpp"
 #include "sim/battle/Battle.hpp"
+#include "sim/utils/StackVec.hpp"
 
 enum TrainerLevel{FIRST_MOVE, USE_2_MOVES_THEN_SWITCH, SWITCHER, WILD, TRAINER, BOSS};
 
@@ -32,7 +33,7 @@ public:
 
     int pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Battle* battle);
 
-    void getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, std::vector<int>& outVec);
+    void getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, StackVec<int,5>& outVec);
     int getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* battle);
 
     json toJSON() const;
