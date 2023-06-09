@@ -4,8 +4,8 @@
 #include <chrono>
 #include <fstream>
 #define STRESS_TEST 0
-#define SINGLE_TEST 1
-#define SERVER_TEST 0
+#define SINGLE_TEST 0
+#define SERVER_TEST 1
 #define BATTLES 20000
 
 
@@ -49,9 +49,12 @@ int main(){
     int battlesRan = 0;
     //std::vector<Trainer*> winners;
     while (battlesRan < BATTLES) {
-        Battle battle(&trainer1, &trainer2, rand());
+        Battle battle(&trainer1, &trainer2, 123123);
         battle.doLogging = false;
         battle.simulate();
+        if (battle.invalid){
+            std::cerr << battle.battleLog << '\n';
+        }
         //winners.push_back(battle.winner);
         battlesRan++;
     }

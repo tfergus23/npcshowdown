@@ -1,10 +1,14 @@
 <nav class ="navBar">
     <a class="logo" href="/"><img src="../../assets/npcs_logo.png" height="60" alt="logo"></a>
     <a class="menu" href="/">MENU</a>
-    <div *ngIf="loggedInUser; else elseBlock" class="signedin">
-        Signed in as <div class="username">{{loggedInUser.name}}</div>
+    <div class="login-container">
+        <div *ngIf="app.loggedInUser; else elseBlock" class="signedin">
+            Signed in as <div class="username">{{app.loggedInUser.name}}</div>
+        </div>
+        <ng-template #elseBlock>
+            <input type="text" name="username" placeholder="Username" id="user_input">
+            <input type="password" name="password" placeholder="Password" id="password_input" (keyup.enter)="login()">
+            <button type="button" (click)="login()">Sign In</button>
+        </ng-template>
     </div>
-    <ng-template #elseBlock>
-        <button class="signin">Sign In</button>
-    </ng-template>
 </nav>
