@@ -45,4 +45,16 @@ export class NavbarComponent {
       }
     });
   }
+  logout(){
+    if(this.app.loggedInUser)
+    this.userService.logOut(this.app.loggedInUser?.token).subscribe((res) =>{
+      if (res.success){
+        this.app.loggedInUser = undefined;
+        this.cookieService.delete("token");
+      }
+      else{
+        console.log(res.message);
+      }
+    });
+  }
 }

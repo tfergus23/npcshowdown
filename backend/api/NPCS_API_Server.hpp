@@ -13,8 +13,12 @@ private:
     std::string getAbilityData();
     std::string getItemData();
     std::string getMoveData();
+    void addPreflightHandler(expresscpp::RouterPtr router, const std::string& path);
+    bool isTokenValid(const std::string token);
     const std::string m_SpeciesData;
     const std::string m_AbilityData;
     const std::string m_ItemData;
     const std::string m_MoveData;
 };
+
+std::string usernameFromToken(const std::string& token);
