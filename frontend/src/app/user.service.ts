@@ -31,7 +31,7 @@ export class UserService {
 
   logOut(authToken: string) : Observable<LogoutResponse>{
     let name = authToken.split(":")[0];
-    const response = this.http.put<LogoutResponse>(`${AppSettings.API_URL}user/${name}/logout`, {headers: {Authorization: authToken}});
+    const response = this.http.put<LogoutResponse>(`${AppSettings.API_URL}user/${name}/logout`, {}, {headers: {Authorization: authToken}});
     return response;
   }
 }

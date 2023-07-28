@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 
+using namespace tfhttp;
 using json = nlohmann::json;
 
 #define PORT 3000
@@ -22,9 +23,6 @@ void preflightHandler(const HTTP_Request& req, HTTP_Response& res){
     res.Send("");
 }
 
-bool authMiddleware(const HTTP_Request& req, HTTP_Response& res){
-    return true;
-}
 
 NPCS_API_Server::NPCS_API_Server() : m_SpeciesData{getSpeciesData()}{
     //Create routes
@@ -35,34 +33,83 @@ NPCS_API_Server::NPCS_API_Server() : m_SpeciesData{getSpeciesData()}{
     app.base_route.Use(addCORSHeaderMiddleware);
     baseRoute->Use(addCORSHeaderMiddleware);
     authorizedRoute->Use(addCORSHeaderMiddleware);
-    authorizedRoute->Use(authMiddleware);
+    authorizedRoute->Use([=](const HTTP_Request& req, HTTP_Response& res){
+        try {
+            std::string token = req.headers.at("Authorization");
+            std::string username = req.path_params.at("username");
+            if (isTokenValid(username, token)){
+                return true;
+            }
+            else{
+                res.Set_Status(401);
+                res.Send("");
+                return false;
+            }
+        } 
+        catch (...){
+            res.Set_Status(400);
+            res.Send("");
+            return false;
+        }
+    });
 
     //Add preflight handler to all paths
     app.Add_Handler("OPTIONS", "*", preflightHandler);
 
     //Add API handlers 
-    app.Add_Handler("GET", authorizedRoute, "/", [](const HTTP_Request& req, HTTP_Response& res) {
-        res.Send("Authorized route!");
+    app.Add_Handler("POST", baseRoute, "/auth", [=](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        try {
+            json body = json::parse(req.body);
+            std::string token = getToken(body["username"].get<std::string>(), body["password"].get<std::string>());
+            if (token != ""){
+                response["success"] = true;
+                response["token"] = token;
+                response["message"] = "success";
+            }
+            else{
+                response["success"] = false;
+                response["message"] = "Invalid credentials.";
+                res.Set_Status(401);
+            }
+            res.Send(response.dump());
+        } catch(...){
+            res.Set_Status(400);
+            res.Send("");
+        }
     });
 
-    app.Add_Handler("GET", baseRoute, "/", [](const HTTP_Request& req, HTTP_Response& res) {
-        res.Send("Base route!");
-    }); 
+    app.Add_Handler("GET", authorizedRoute, "/", [](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["name"] = req.path_params.at("username");
+        response["id"] = 0;
+        response["success"] = true;
+        response["token"] = "admin:123";
+        res.Send(response.dump());
+    });
+
+    app.Add_Handler("PUT", authorizedRoute, "/logout", [](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = true;
+        response["message"] = "Logout successful";
+        res.Send(response.dump());
+    });
 }
 
 int NPCS_API_Server::run(){
-    app.Listen(8080);
+    app.Listen(PORT);
     return 0;
 }
 
-std::string NPCS_API_Server::authenticateUser(const std::string& username, const std::string& password){
-    if (username == "BilboSwaggins" && password == "yourmom") return "BilboSwaggins:abc";
+std::string NPCS_API_Server::getToken(const std::string& username, const std::string& password){
+    if (username == "admin" && password  == "admin"){
+        return "admin:123";
+    }
     return "";
 }
 
-
-bool NPCS_API_Server::isTokenValid(const std::string token){
-    return token == "BilboSwaggins:abc";
+bool NPCS_API_Server::isTokenValid(const std::string& username, const std::string& token){
+    return username == "admin" && token == "admin:123";
 }
 
 std::string NPCS_API_Server::getSpeciesData(){
@@ -77,13 +124,3 @@ std::string NPCS_API_Server::getSpeciesData(){
 std::string getAbilityData();
 std::string getItemData();
 std::string getMoveData();
-
-std::string usernameFromToken(const std::string& token){
-    //TODO: This needs to lookup the token in the database and return the user it belongs to.
-    std::string username("");
-    for (char c : token){
-        if (c == ':') break;
-        username.push_back(c);
-    }
-    return username;
-}
