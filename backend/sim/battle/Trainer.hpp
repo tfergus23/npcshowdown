@@ -5,7 +5,7 @@
 #include "sim/battle/Move.hpp"
 #include "sim/battle/Pokemon.hpp"
 #include "sim/battle/Battle.hpp"
-#include "sim/utils/StackVec.hpp"
+#include "tflib/static_vector.h"
 
 enum TrainerLevel{FIRST_MOVE, USE_2_MOVES_THEN_SWITCH, SWITCHER, WILD, TRAINER, BOSS};
 
@@ -24,7 +24,7 @@ public:
     const TrainerLevel trainerLevel;
 
 
-    Trainer(std::string trainerClass, std::string name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel);
+    Trainer(std::string_view trainerClass, std::string_view name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel);
     Trainer(json json);
 
     std::string getFullName();
@@ -33,7 +33,7 @@ public:
 
     int pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Battle* battle);
 
-    void getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, StackVec<int,5>& outVec);
+    void getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, tflib::static_vector<int,5>& outVec);
     int getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* battle);
 
     json toJSON() const;

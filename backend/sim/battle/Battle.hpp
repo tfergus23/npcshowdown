@@ -52,9 +52,9 @@ public:
     bool sideHasFieldEffect(bool side, const FieldEffect* fieldEffect);
     EffectState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
-    void log(const std::string& str);
-    void debug(const std::string& str);
-    void assertTrue(bool condition, const std::string& message = "");
+    void log(std::string_view str);
+    void debug(std::string_view str);
+    void assertTrue(bool condition, std::string_view message = "");
 
     //void raiseBeforeMove(MoveUse* moveUse);
     //void raiseEndOfTurn();
@@ -92,7 +92,7 @@ const bool IS_PLAYER_TWO = false;
 
 class BattleAssertionFailedException : public std::exception {
 public:
-	BattleAssertionFailedException(const std::string& message) : m_Message{message} {}
+	BattleAssertionFailedException(std::string_view message) : m_Message{message} {}
 
 	const char* what() const noexcept override;
 private:

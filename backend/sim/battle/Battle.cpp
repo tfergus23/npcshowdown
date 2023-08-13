@@ -29,20 +29,22 @@ Trainer* Battle::getPlayer2() {
     return m_Player2;
 }
 
-void Battle::log(const std::string& message){
+void Battle::log(std::string_view message){
     if (doLogging)
-    battleLog += message + "\n";
+    battleLog += message;
+    battleLog.push_back('\n');
     //std::cout << message << '\n';
 }
 
-void Battle::debug(const std::string& message){
+void Battle::debug(std::string_view message){
 #if DEBUG_LOG
     if (doLogging)
-    battleLog += message + "\n";
+    battleLog += message;
+    battleLog.push_back('\n');
 #endif
 }
 
-void Battle::assertTrue(bool condition, const std::string& message){
+void Battle::assertTrue(bool condition, std::string_view message){
     if (!condition){
         log("Assertion failed! Stopping battle.");
         std::cerr << message << '\n';

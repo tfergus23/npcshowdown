@@ -6,7 +6,7 @@ using json = nlohmann::json;
 
 
 
-Trainer::Trainer(std::string trainerClass, std::string name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel) : 
+Trainer::Trainer(std::string_view trainerClass, std::string_view name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel) : 
 teamBlueprint{teamBlueprint},
 trainerClass{trainerClass},
 name{name},
@@ -31,8 +31,7 @@ std::string Trainer::getFullName(){
 }
 
 const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battle){
-    std::vector<const Move*> validMoves;
-    validMoves.reserve(4);
+    tflib::static_vector<const Move*, 4> validMoves;
     bool isPlayer1 = this == battle->getPlayer1();
     auto& myTeam = isPlayer1 ?  battle->player1Team : battle->player2Team;
     int& switchCounter = isPlayer1 ? battle->player1SwitchCounter : battle->player2SwitchCounter;
@@ -98,14 +97,13 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
 
 int Trainer::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Battle* battle){
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
-    StackVec<int,5> validSlots;
-    //validSlots.reserve(5);
+    tflib::static_vector<int,5> validSlots;
     getValidSwitches(currentlyActivePokemon, battle, validSlots);
     battle->assertTrue(validSlots.size() > 0, "pickPokemon called without any valid pokemon to switch to.");
     return validSlots[battle->randInt(0, validSlots.size())];
 }
 
-void Trainer::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, StackVec<int,5>& outVec){
+void Trainer::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, tflib::static_vector<int,5>& outVec){
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
     if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return;
     for (int i = 0; i < myTeam.size(); i++){
