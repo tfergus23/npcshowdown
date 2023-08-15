@@ -3,15 +3,18 @@
 #include <array>
 #include <unordered_map>
 #include "sim/battle/Type.hpp"
+#include <cstring>
 
 struct Species{
     int id;
-    std::string name;
+    char name[16] = {0};
     std::array<Type,2> type;
     float weightKG;
     float percentMale;
     std::array<int,6> baseStats;
-    Species(int id, const std::string& name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats) : id{id}, name{name}, type{type}, weightKG{weightKG}, percentMale{percentMale}, baseStats{baseStats}{}
+    Species(int id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats) : id{id}, type{type}, weightKG{weightKG}, percentMale{percentMale}, baseStats{baseStats}{
+        strcat(this->name, name);
+    }
 };
 
 inline const Species SPECIES_BULBASAUR(1, "Bulbasaur", {GRASS, POISON}, 6.9f, 87.5f, {45, 49, 49, 65, 65, 45});
