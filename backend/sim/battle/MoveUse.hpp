@@ -13,7 +13,6 @@ public:
     bool canKill = true;
     bool willFail = false;
     bool wontStart = false;
-    std::string failMessage = "But it failed!";
     float damageMod = 1.0f;
     int ppUsage = 1;
     bool usesPP = true;
@@ -36,12 +35,15 @@ public:
     MoveUse();
     MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle);
     void doMove(MoveUse* opponentMove);
-    void fail(const std::string& message);
-    void dontStart(const std::string& message);
-    void failOnDirectDamage(const std::string& message);
-    void failOnSemiInvulnerable(const std::string& message);
+    void fail(std::string_view message);
+    void dontStart(std::string_view message);
+    void failOnDirectDamage(std::string_view message);
+    void failOnSemiInvulnerable(std::string_view message);
+    char* getFailMessage();
+    void setFailMessage(std::string_view newMessage);
 private:
     float m_EffectiveAccuracy;
+    char m_FailMessage[40] = "But it failed!";
 };
 
 bool compareMoves(const MoveUse* move1, const MoveUse* move2);

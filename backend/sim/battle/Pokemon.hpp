@@ -51,16 +51,7 @@ class Pokemon{
         std::array<const Move*,4> currentMoves;
         int currentHealth;
         bool isDead = false;
-        std::unordered_map<Stat,int> boosts = {
-            {HP, 0},
-            {ATTACK, 0},
-            {DEFENSE, 0},
-            {SPATTACK, 0},
-            {SPDEFENSE, 0},
-            {SPEED, 0},
-            {ACCURACY, 0},
-            {EVASION, 0}
-        };
+        char boosts[8] = {0};
         int triggeredCritMod = 0;
         int choiceLockedMove = -1;
         int storedPP = -1; //Meant to be used by mimic to store the PP the user had before using Mimic

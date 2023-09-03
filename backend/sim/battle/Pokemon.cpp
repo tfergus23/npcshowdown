@@ -190,9 +190,8 @@ int Pokemon::getStatRaw(Stat stat){
 
 
 void Pokemon::resetBoosts(){
-    int size = boosts.size();
-    for (int i = 0; i < size; i++){
-        boosts[(Stat) i] = 0;
+    for (int i = 0; i < 8; i++){
+        boosts[i] = 0;
     }
 }
 

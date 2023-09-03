@@ -109,6 +109,8 @@ std::string NPCS_API_Server::getToken(const std::string& username, const std::st
 }
 
 bool NPCS_API_Server::isTokenValid(const std::string& username, const std::string& token){
+    //Get username token from database
+    //Make sure the token matches the one provided
     return username == "admin" && token == "admin:123";
 }
 

@@ -8,21 +8,22 @@
 MoveUse::MoveUse(){}
 MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{(float) move->accuracy}, effectivePower{move->power}{
     if (move->targetType == SELF) this->target = user;
+    m_FailMessage[39] = 0;
 }
 void MoveUse::doMove(MoveUse* opponentMove){
     battle->raiseEvent(BEFORE_MOVE, EventArgs(nullptr, this));
     move->beforeChecks(this, opponentMove);
     if (wontStart){
-        battle->log(failMessage);
+        battle->log(m_FailMessage);
         return;
     }
     if (logUsed) battle->log(user->nickname + " used " + move->name + "!");
     if (willFail){
-        battle->log(failMessage);
+        battle->log(m_FailMessage);
         return;
     }
     if (target->isDead){
-        battle->log(failMessage);
+        battle->log(m_FailMessage);
         return;
     }
     if (isSelfDestruct){
@@ -51,26 +52,31 @@ void MoveUse::doMove(MoveUse* opponentMove){
     }
     move->afterChecks(this, opponentMove);
 }
-void MoveUse::fail(const std::string& message){
+void MoveUse::fail(std::string_view message){
     willFail = true;
-    failMessage = message;
+    setFailMessage(message);
 }
-void MoveUse::dontStart(const std::string& message){
+void MoveUse::dontStart(std::string_view message){
     wontStart = true;
-    failMessage = message;
+    setFailMessage(message);
     usesPP = false;
 }
-void MoveUse::failOnDirectDamage(const std::string& message){
+void MoveUse::failOnDirectDamage(std::string_view message){
     canDealDamage = false;
-    failMessage = message;
+    setFailMessage(message);
 }
-void MoveUse::failOnSemiInvulnerable(const std::string& message){
+void MoveUse::failOnSemiInvulnerable(std::string_view message){
     canApplyStatus = false;
     canDealDamage = false;
-    failMessage = message;
+    setFailMessage(message);
 }
 
-
+char* MoveUse::getFailMessage(){
+    return m_FailMessage;
+}
+void MoveUse::setFailMessage(std::string_view newMessage){
+    strncpy(m_FailMessage, newMessage.data(), 39);
+}
 
 
 

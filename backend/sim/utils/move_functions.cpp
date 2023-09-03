@@ -46,7 +46,7 @@ DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
 int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     if (!moveUse->canDealDamage){
         if (!moveUse->loggedFailure){
-            moveUse->battle->log(moveUse->failMessage);
+            moveUse->battle->log(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return 0;
@@ -139,7 +139,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
 int dealFlatDamage(int damage, MoveUse* moveUse) {
     if (!moveUse->canDealDamage) {
         if (!moveUse->loggedFailure) {
-            moveUse->battle->log(moveUse->failMessage);
+            moveUse->battle->log(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return 0;
@@ -152,7 +152,7 @@ int dealFlatDamage(int damage, MoveUse* moveUse) {
 }
 bool selfDestruct(MoveUse* moveUse) {
     if (moveUse->cantSelfDestruct) {
-        moveUse->battle->log(moveUse->failMessage);
+        moveUse->battle->log(moveUse->getFailMessage());
         return false;
     }
     moveUse->user->currentHealth -= moveUse->user->currentHealth;
@@ -200,7 +200,7 @@ bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
     }
     if (!moveUse->canApplyStatus || moveUse->target->isDead) {
         if (!moveUse->loggedFailure) {
-            moveUse->battle->log(moveUse->failMessage);
+            moveUse->battle->log(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return false;
@@ -227,7 +227,7 @@ bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
 bool applyEffect(const Effect* effect, MoveUse* moveUse) {
     if (!moveUse->canApplyStatus || moveUse->target->isDead) {
         if (!moveUse->loggedFailure) {
-            moveUse->battle->log(moveUse->failMessage);
+            moveUse->battle->log(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return false;
@@ -236,10 +236,10 @@ bool applyEffect(const Effect* effect, MoveUse* moveUse) {
     return true;
 }
 bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange) {
-    int currentMod = pokemon->boosts.at(stat);
+    int currentMod = pokemon->boosts[stat];
     int actualChange = 0;
     if ((!moveUse->canLowerStats && change < 0) || (!moveUse->canRaiseStats && change > 0)) {
-        if (logNoChange) battle->log(moveUse->failMessage);
+        if (logNoChange) battle->log(moveUse->getFailMessage());
         return false;
     }
     if (change > 0) {
