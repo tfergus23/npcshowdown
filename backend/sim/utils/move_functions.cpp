@@ -128,7 +128,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
         case 1:
             return applyStatus(&STATUS_FROZEN, moveUse, false);
         case 2:
-            return applyStatus(&STATUS_PARALYSIS, moveUse, false);
+            return applyStatus(&STATUS_BURN, moveUse, false);
         }
     }
     default:
