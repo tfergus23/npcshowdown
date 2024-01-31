@@ -30,17 +30,19 @@ Trainer* Battle::getPlayer2() {
 }
 
 void Battle::log(std::string_view message){
-    if (doLogging)
-    battleLog += message;
-    battleLog.push_back('\n');
+    if (doLogging){
+        battleLog += message;
+        battleLog.push_back('\n');
+    }
     //std::cout << message << '\n';
 }
 
 void Battle::debug(std::string_view message){
 #if DEBUG_LOG
-    if (doLogging)
-    battleLog += message;
-    battleLog.push_back('\n');
+    if (doLogging){
+        battleLog += message;
+        battleLog.push_back('\n');
+    }
 #endif
 }
 

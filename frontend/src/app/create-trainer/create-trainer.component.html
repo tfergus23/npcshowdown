@@ -1,0 +1,59 @@
+<button (click)="toggleCollapsible()">
+    <h2>Trainer 1</h2>
+    <div class="info">
+        <div class="name">
+            Name: Youngster Joey
+        </div>
+        <div class="pokemon">
+            0/6 Pokemon
+        </div>
+    </div>
+</button>
+<div class="pokemon-list" [hidden]="collapsed">
+    <div class="pokemon-fields">
+        <div class="text-fields">
+            <div class="left-col">
+                <div class="pokemon-species">
+                    Species: <input>
+                </div>
+                <div class="pokemon-nickname">
+                    Nickname: <input>
+                </div>
+                <div class="pokemon-ability">
+                    Ability: <input>
+                </div>
+                <div class="pokemon-item">
+                    Item: <input>
+                </div>
+                <div class="pokemon-nature">
+                    Nature: <input>
+                </div>
+                <div class="pokemon-gender">
+                    Gender: <input>
+                </div>
+            </div>
+            <div class="right-col">
+                <div class="pokemon-move">
+                    Move 1: <input>
+                </div>
+                <div class="pokemon-move">
+                    Move 2: <input>
+                </div>
+                <div class="pokemon-move">
+                    Move 3: <input>
+                </div>
+                <div class="pokemon-move">
+                    Move 4: <input>
+                </div>
+                <div class="pokemon-level">
+                    Level: <input>
+                </div>
+            </div>
+        </div>
+        <div class="evs-ivs">
+            EVs: <input><input><input><input><input><input><br>
+            IVs: <input><input><input><input><input><input>
+        </div>
+    </div>
+
+</div>

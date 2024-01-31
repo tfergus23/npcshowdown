@@ -1,0 +1,54 @@
+button{
+    width: 100%;
+    text-align: left;
+    height:70px;
+    background-color: rgb(78, 78, 79);
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+button:hover{
+    background-color: rgb(105, 105, 106);
+}
+
+h2{
+    float: left;
+    width: 20%;
+}
+
+.info{
+    width: 90%;
+}
+
+.name{
+    float: right;
+}
+
+.pokemon{
+    float: right;
+    padding-right: 5px;
+}
+
+.collapsible{
+    display: none;
+}
+
+.text-fields{
+    display: flex;
+    flex-direction: row;
+}
+
+.left-col{
+    width: 50%;
+}
+
+.right-col{
+    margin-left: auto;
+}
+
+.evs-ivs{
+    padding-top: 10px;
+}

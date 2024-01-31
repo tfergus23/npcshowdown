@@ -13,6 +13,7 @@ import { CreateBattleComponent } from './create-battle/create-battle.component';
 import { CreateTournamentComponent } from './create-tournament/create-tournament.component';
 import { ViewTrainersComponent } from './view-trainers/view-trainers.component';
 import { ViewResultsComponent } from './view-results/view-results.component';
+import { CreateTrainerComponent } from './create-trainer/create-trainer.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ViewResultsComponent } from './view-results/view-results.component';
     CreateBattleComponent,
     CreateTournamentComponent,
     ViewTrainersComponent,
-    ViewResultsComponent
+    ViewResultsComponent,
+    CreateTrainerComponent
   ],
   imports: [
     BrowserModule,
