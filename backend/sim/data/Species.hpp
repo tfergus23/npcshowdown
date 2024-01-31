@@ -16,6 +16,7 @@ struct Species{
 };
 
 const Species* speciesFromString(const std::string& speciesName);
+std::string createSpeciesDataResponse();
 
 extern const Species SPECIES_BULBASAUR;
 extern const Species SPECIES_IVYSAUR;

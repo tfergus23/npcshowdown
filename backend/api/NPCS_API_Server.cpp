@@ -12,6 +12,8 @@ using json = nlohmann::json;
 #define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With"
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
 
+const std::string SPECIES_DATA_RESPONSE = createSpeciesDataResponse();
+
 bool addCORSHeaderMiddleware(const HTTP_Request& req, HTTP_Response& res){
     res.headers["Access-Control-Allow-Origin"] = "*";
     return true;
@@ -93,6 +95,10 @@ NPCS_API_Server::NPCS_API_Server() : m_SpeciesData{getSpeciesData()}{
         response["success"] = true;
         response["message"] = "Logout successful";
         res.Send(response.dump());
+    });
+
+    app.Add_Handler("GET", baseRoute, "/data/species", [](const HTTP_Request& req, HTTP_Response& res){
+        res.Send(SPECIES_DATA_RESPONSE);
     });
 }
 

@@ -1,4 +1,8 @@
 #include "sim/data/Species.hpp"
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 Species::Species(int id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats) : id{id}, type{type}, weightKG{weightKG}, percentMale{percentMale}, baseStats{baseStats}{
     strcat(this->name, name);
@@ -1629,4 +1633,22 @@ const std::unordered_map<std::string, const Species*> speciesMap = {
 
 const Species* speciesFromString(const std::string& speciesName){
     return speciesMap.at(speciesName);
+}
+
+bool compareSpeciesNames(const std::string& spec1, const std::string& spec2){
+    return speciesMap.at(spec1)->id < speciesMap.at(spec2)->id;
+}
+
+std::string createSpeciesDataResponse(){
+    std::vector<std::string> speciesNames;
+    for (auto& [name,data] : speciesMap){
+        if (data == nullptr) continue;
+        speciesNames.push_back(std::string(name));
+    }
+    std::sort(speciesNames.begin(), speciesNames.end(), compareSpeciesNames);
+    json response;
+    response["success"] = true;
+    response["message"] = "Ok";
+    response["data"] = speciesNames;
+    return response.dump();
 }

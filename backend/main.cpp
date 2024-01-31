@@ -3,9 +3,9 @@
 #include "sim/battle/Battle.hpp"
 #include <chrono>
 #include <fstream>
-#define STRESS_TEST 1
+#define STRESS_TEST 0
 #define SINGLE_TEST 0
-#define SERVER_TEST 0
+#define SERVER_TEST 1
 #define BATTLES 20000
 
 
