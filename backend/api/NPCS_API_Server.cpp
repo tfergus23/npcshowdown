@@ -115,13 +115,8 @@ bool NPCS_API_Server::isTokenValid(const std::string& username, const std::strin
 }
 
 std::string NPCS_API_Server::getSpeciesData(){
-    //TODO: Sort this properly
-    std::vector<std::string> result;
-    for(auto [species,ptr] : speciesMap){
-        result.push_back(species);
-    }
-    json resultJSON = result;
-    return resultJSON.dump();
+    //TODO
+    return "";
 }
 std::string getAbilityData();
 std::string getItemData();

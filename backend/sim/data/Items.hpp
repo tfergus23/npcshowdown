@@ -1,11 +1,7 @@
 #pragma once
 #include "sim/battle/Item.hpp"
-#include <unordered_map>
-#include <string>
 
-inline const std::string ITEM_NONE_NAME = "";
-inline const Item* ITEM_NONE = nullptr;
+extern const std::string ITEM_NONE_NAME;
+extern const Item* ITEM_NONE;
 
-inline const std::unordered_map<std::string, const Item*> items = {
-    {ITEM_NONE_NAME, ITEM_NONE}
-};
+const Item* itemFromString(const std::string& itemName);

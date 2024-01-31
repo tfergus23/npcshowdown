@@ -1,7 +1,7 @@
 #pragma once
 #include "sim/battle/Weather.hpp"
 
-inline const Weather* WEATHER_NONE = nullptr;
+extern const Weather* WEATHER_NONE;
 
 //TODO
-inline const Weather WEATHER_SUN;
+extern const Weather WEATHER_SUN;

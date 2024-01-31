@@ -1,21 +1,21 @@
 #pragma once
 #include "sim/battle/Status.hpp"
 
-inline const Status* STATUS_NONE = nullptr;
+extern const Status* STATUS_NONE;
 
 //TODO
-inline const Status STATUS_PARALYSIS;
+extern const Status STATUS_PARALYSIS;
 
 //TODO
-inline const Status STATUS_POISON;
+extern const Status STATUS_POISON;
 
 //TODO
-inline const Status STATUS_SLEEP;
+extern const Status STATUS_SLEEP;
 
 //TODO
-inline const Status STATUS_BURN;
+extern const Status STATUS_BURN;
 
 //TODO
-inline const Status STATUS_FROZEN;
+extern const Status STATUS_FROZEN;
 
-inline const Status STATUS_BAD_POISON;
+extern const Status STATUS_BAD_POISON;

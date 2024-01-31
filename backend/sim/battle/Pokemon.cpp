@@ -1,3 +1,4 @@
+#include "Battle.hpp"
 #include "Pokemon.hpp"
 #include "sim/data/Abilities.hpp"
 #include "sim/battle/Gender.hpp"
@@ -7,20 +8,21 @@
 #include "sim/utils/stage_multipliers.hpp"
 #include "sim/data/Items.hpp"
 #include "sim/battle//Stat.hpp"
+#include "sim/battle/PokemonBlueprint.hpp"
 
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
-species{speciesMap.at(blueprint->species)},
+species{speciesFromString(blueprint->species)},
 nickname{blueprint->nickname},
 level{blueprint->level},
 evs{blueprint->evs},
 ivs{blueprint->ivs},
-baseMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}},
+baseMoves{{moveFromString(blueprint->moves[0]),moveFromString(blueprint->moves[1]),moveFromString(blueprint->moves[2]),moveFromString(blueprint->moves[3])}},
 nature{natures.at(blueprint->nature)},
-currentMoves{{getMove(blueprint->moves[0]),getMove(blueprint->moves[1]),getMove(blueprint->moves[2]),getMove(blueprint->moves[3])}},
-m_BaseAbility{abilities.at(blueprint->abilityName)},
-m_CurrentAbility{abilities.at(blueprint->abilityName)},
-m_CurrentItem{items.at(blueprint->itemName)},
-m_BaseItem{items.at(blueprint->itemName)},
+currentMoves{{moveFromString(blueprint->moves[0]),moveFromString(blueprint->moves[1]),moveFromString(blueprint->moves[2]),moveFromString(blueprint->moves[3])}},
+m_BaseAbility{abilityFromString(blueprint->abilityName)},
+m_CurrentAbility{abilityFromString(blueprint->abilityName)},
+m_CurrentItem{itemFromString(blueprint->itemName)},
+m_BaseItem{itemFromString(blueprint->itemName)},
 battle{battle}
 {
     if (blueprint->empty) return;
