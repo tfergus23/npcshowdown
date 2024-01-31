@@ -12,9 +12,7 @@ struct Species{
     float weightKG;
     float percentMale;
     std::array<int,6> baseStats;
-    Species(int id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats) : id{id}, type{type}, weightKG{weightKG}, percentMale{percentMale}, baseStats{baseStats}{
-        strcat(this->name, name);
-    }
+    Species(int id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats);
 };
 
 const Species* speciesFromString(const std::string& speciesName);

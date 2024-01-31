@@ -1,5 +1,9 @@
 #include "sim/data/Species.hpp"
 
+Species::Species(int id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats) : id{id}, type{type}, weightKG{weightKG}, percentMale{percentMale}, baseStats{baseStats}{
+    strcat(this->name, name);
+}
+
 const Species SPECIES_BULBASAUR(1, "Bulbasaur", {GRASS, POISON}, 6.9f, 87.5f, {45, 49, 49, 65, 65, 45});
 const Species SPECIES_IVYSAUR(2, "Ivysaur", {GRASS, POISON}, 13.0f, 87.5f, {60, 62, 63, 80, 80, 60});
 const Species SPECIES_VENUSAUR(3, "Venusaur", {GRASS, POISON}, 100.0f, 87.5f, {80, 82, 83, 100, 100, 80});
