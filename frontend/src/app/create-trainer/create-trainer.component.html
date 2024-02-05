@@ -4,7 +4,7 @@
         <div class="name">
             Name: Youngster Joey
         </div>
-        <div class="pokemon">
+        <div class="pokemon-count">
             0/6 Pokemon
         </div>
     </div>
@@ -14,45 +14,80 @@
         <div class="text-fields">
             <div class="left-col">
                 <div class="pokemon-species">
-                    Species: <input>
+                    Species:
+                    <!--
+                    <select>
+                        <option *ngFor="let poke of dataLists.speciesList" value="1">{{poke}}</option>
+                    </select>
+                    -->
+                    <input type="text" list="speciesList">
+                    <datalist id="speciesList">
+                        <option *ngFor="let poke of dataLists.speciesList" value="{{poke}}">{{poke}}</option>
+                    </datalist>
                 </div>
                 <div class="pokemon-nickname">
                     Nickname: <input>
                 </div>
                 <div class="pokemon-ability">
-                    Ability: <input>
+                    Ability:
+                    <select>
+                        <option *ngFor="let poke of dataLists.abilityList" value="1">{{poke}}</option>
+                    </select>
                 </div>
                 <div class="pokemon-item">
-                    Item: <input>
+                    Item:
+                    <select>
+                        <option *ngFor="let poke of dataLists.itemList" value="1">{{poke}}</option>
+                    </select>
                 </div>
                 <div class="pokemon-nature">
-                    Nature: <input>
+                    Nature:
+                    <select>
+                        <option *ngFor="let poke of dataLists.natureList" value="1">{{poke}}</option>
+                    </select>
                 </div>
                 <div class="pokemon-gender">
-                    Gender: <input>
+                    Gender:
+                    <select>
+                        <option value="Random">Random</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
                 </div>
             </div>
             <div class="right-col">
                 <div class="pokemon-move">
-                    Move 1: <input>
+                    Move 1:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
+                    </select>
                 </div>
                 <div class="pokemon-move">
-                    Move 2: <input>
+                    Move 2:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
+                    </select>
                 </div>
                 <div class="pokemon-move">
-                    Move 3: <input>
+                    Move 3:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
+                    </select>
                 </div>
                 <div class="pokemon-move">
-                    Move 4: <input>
+                    Move 4:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
+                    </select>
                 </div>
                 <div class="pokemon-level">
-                    Level: <input>
+                    Level: <input type="number" min="1" max="100" value="100" step="1">
                 </div>
             </div>
         </div>
         <div class="evs-ivs">
-            EVs: <input><input><input><input><input><input><br>
-            IVs: <input><input><input><input><input><input>
+            EVs:<br> <input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><br>
+            IVs:<br> <input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1">
         </div>
     </div>
 

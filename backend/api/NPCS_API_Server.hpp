@@ -8,10 +8,6 @@ public:
     int run();
 private:
     tfhttp::HTTP_Server app;
-    std::string getSpeciesData();
-    std::string getAbilityData();
-    std::string getItemData();
-    std::string getMoveData();
     //void addPreflightHandler(expresscpp::RouterPtr router, const std::string& path);
     std::string getToken(const std::string& username, const std::string& password);
     bool isTokenValid(const std::string& username, const std::string& token);
@@ -20,3 +16,5 @@ private:
     const std::string m_ItemData;
     const std::string m_MoveData;
 };
+
+std::string createAllDataResponse();

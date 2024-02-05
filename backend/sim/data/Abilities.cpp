@@ -3,6 +3,8 @@
 #include <cmath>
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/MoveUse.hpp"
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 
 const std::string ABILITY_NONE_NAME = "";
@@ -47,4 +49,19 @@ const std::unordered_map<std::string,const Ability*> abilities = {
 
 const Ability* abilityFromString(const std::string& abilityName){
     return abilities.at(abilityName);
+}
+
+std::string createAbilityDataResponse(){
+    std::vector<std::string> abilityNames;
+    for (auto [name,ptr] : abilities){
+        if (name != ABILITY_NONE_NAME){
+            abilityNames.push_back(name);
+        }
+    }
+    std::sort(abilityNames.begin(), abilityNames.end());
+    json response;
+    response["success"] = true;
+    response["message"] = "OK";
+    response["data"] = abilityNames;
+    return response.dump();
 }

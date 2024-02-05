@@ -17,3 +17,21 @@ button{
     border-radius: 5px;
     cursor: pointer;
 }
+
+input {
+    background-color: rgb(45, 45, 46);
+    color:rgb(0, 255, 255);
+    border-radius: 5px;
+    outline-offset: 0px;
+}
+
+select{
+    background-color: rgb(45, 45, 46);
+    color:rgb(0, 255, 255);
+    border-radius: 5px;
+}
+
+input:focus{
+    border-color: rgb(0, 255, 255);
+
+}

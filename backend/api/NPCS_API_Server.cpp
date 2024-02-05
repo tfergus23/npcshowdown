@@ -1,6 +1,8 @@
 #include "api/NPCS_API_Server.hpp"
 #include "nlohmann/json.hpp"
-#include "sim/data/Species.hpp"
+#include "sim/battle/Battle.hpp"
+#include "sim/data/Abilities.hpp"
+#include "sim/data/Moves.hpp"
 #include <chrono>
 #include <thread>
 
@@ -13,6 +15,11 @@ using json = nlohmann::json;
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
 
 const std::string SPECIES_DATA_RESPONSE = createSpeciesDataResponse();
+const std::string ABILITY_DATA_RESPONSE = createAbilityDataResponse();
+const std::string ITEM_DATA_RESPONSE = createItemDataResponse();
+const std::string NATURE_DATA_RESPONSE = createNatureDataResponse();
+const std::string MOVE_DATA_RESPONSE = createMoveDataResponse();
+const std::string ALL_DATA_RESPONSE = createAllDataResponse();
 
 bool addCORSHeaderMiddleware(const HTTP_Request& req, HTTP_Response& res){
     res.headers["Access-Control-Allow-Origin"] = "*";
@@ -25,8 +32,30 @@ void preflightHandler(const HTTP_Request& req, HTTP_Response& res){
     res.Send("");
 }
 
+std::string createAllDataResponse(){
+    json response;
 
-NPCS_API_Server::NPCS_API_Server() : m_SpeciesData{getSpeciesData()}{
+    //Inefficient, but only runs once on startup so not a big deal
+    json speciesResponse = json::parse(createSpeciesDataResponse());
+    json abilityResponse = json::parse(createAbilityDataResponse());
+    json itemResponse = json::parse(createItemDataResponse());
+    json natureResponse = json::parse(createNatureDataResponse());
+    json moveResponse = json::parse(createMoveDataResponse());
+
+    response["success"] = true;
+    response["message"] = "OK";
+    response["data"] = {
+        {"speciesList", speciesResponse["data"].get<std::vector<std::string>>()},
+        {"abilityList", abilityResponse["data"].get<std::vector<std::string>>()},
+        {"itemList", itemResponse["data"].get<std::vector<std::string>>()},
+        {"natureList", natureResponse["data"].get<std::vector<std::string>>()},
+        {"moveList", moveResponse["data"].get<std::vector<std::string>>()},
+    };
+    return response.dump();
+}
+
+
+NPCS_API_Server::NPCS_API_Server(){
     //Create routes
     Route* baseRoute = app.Create_Route("/api");
     Route* authorizedRoute = app.Create_Route("/api/user/:username");
@@ -100,6 +129,10 @@ NPCS_API_Server::NPCS_API_Server() : m_SpeciesData{getSpeciesData()}{
     app.Add_Handler("GET", baseRoute, "/data/species", [](const HTTP_Request& req, HTTP_Response& res){
         res.Send(SPECIES_DATA_RESPONSE);
     });
+
+    app.Add_Handler("GET", baseRoute, "/data", [](const HTTP_Request& req, HTTP_Response& res){
+        res.Send(ALL_DATA_RESPONSE);
+    });
 }
 
 int NPCS_API_Server::run(){
@@ -119,11 +152,3 @@ bool NPCS_API_Server::isTokenValid(const std::string& username, const std::strin
     //Make sure the token matches the one provided
     return username == "admin" && token == "admin:123";
 }
-
-std::string NPCS_API_Server::getSpeciesData(){
-    //TODO
-    return "";
-}
-std::string getAbilityData();
-std::string getItemData();
-std::string getMoveData();

@@ -1,5 +1,9 @@
 #include "sim/data/Moves.hpp"
 #include "sim/utils/move_functions.hpp"
+#include <vector>
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 const Move* MOVE_NONE = nullptr;
 const std::string MOVE_NONE_NAME = "";
@@ -96,4 +100,17 @@ const std::unordered_map<std::string, const Move*> moves = {
 
 const Move* moveFromString(const std::string& moveName) {
     return moves.at(moveName);
+}
+
+std::string createMoveDataResponse(){
+    std::vector<std::string> moveNames;
+    for (auto [name,ptr] : moves){
+        moveNames.push_back(name);
+    }
+    std::sort(moveNames.begin(), moveNames.end());
+    json response;
+    response["success"] = true;
+    response["message"] = "OK";
+    response["data"] = moveNames;
+    return response.dump();
 }

@@ -63,3 +63,4 @@ inline const float natureChart[25][5] = {
 };
 
 float natureBoost(Nature nature, Stat stat);
+std::string createNatureDataResponse();

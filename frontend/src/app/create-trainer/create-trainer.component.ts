@@ -1,4 +1,6 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { CreateBattleComponent } from '../create-battle/create-battle.component';
+import DataLists from 'src/DataLists';
 
 @Component({
   selector: 'app-create-trainer',
@@ -7,6 +9,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 })
 export class CreateTrainerComponent {
   collapsed: boolean;
+  @Input() dataLists: DataLists = new DataLists();
   constructor(){
     this.collapsed = false;
   }

@@ -27,28 +27,46 @@ h2{
     float: right;
 }
 
-.pokemon{
+.pokemon-count{
     float: right;
     padding-right: 5px;
+}
+
+.pokemon-list input{
+    width: 350px;
+    height: 35px;
+    font-size: 15px;
+}
+
+.pokemon-list select{
+    width: 350px;
+    height: 35px;
+    font-size: 15px;
 }
 
 .collapsible{
     display: none;
 }
 
-.text-fields{
-    display: flex;
-    flex-direction: row;
-}
+
 
 .left-col{
-    width: 50%;
+    display: inline-block;
+    padding-right: 15%;
 }
 
 .right-col{
-    margin-left: auto;
+    display: inline-block;
 }
 
 .evs-ivs{
     padding-top: 10px;
+}
+
+.evs-ivs input{
+    width: 50px;
+}
+
+.pokemon-level input{
+    width: 50px;
 }

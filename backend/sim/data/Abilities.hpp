@@ -7,3 +7,4 @@ extern const Ability ABILITY_GUTS;
 extern const Ability ABILITY_TORRENT;
 
 const Ability* abilityFromString(const std::string& abilityName);
+std::string createAbilityDataResponse();
