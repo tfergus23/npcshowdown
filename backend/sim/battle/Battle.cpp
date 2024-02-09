@@ -210,8 +210,9 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
     {
     case AFTER_MOVE:
         for (int i = 0; i < 4; i++){
-            if (args.moveUse->move->maxPP > 0 && args.moveUse->user->currentMoves[i] == args.moveUse->move && args.moveUse->usesPP){
+            if (args.moveUse->move->maxPP > 0 && args.moveUse->user->currentMoves[i] == args.moveUse->move && args.moveUse->usesPP && args.moveUse->user->currentPP[i] > 0){
                 args.moveUse->user->currentPP[i] -= args.moveUse->ppUsage;
+                break;
             }
         }
         break;
@@ -220,6 +221,7 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
         isTurnOver = true;
         moveNumber = 0;
         turns++;
+
 
         //Check if the battle is over
         bool player1Dead = trainerBlackedOut(IS_PLAYER_ONE);
@@ -234,6 +236,11 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
                 winner = player1Dead ? m_Player2 : m_Player1;
                 log("The winner is " + winner->getFullName() + "!");
             }
+        }
+        if (turns > 200 && !isBattleOver){
+            isBattleOver = true;
+            isDraw = true;
+            log("It's a draw!");
         }
         if (!isBattleOver) {
             if (player1ActivePokemon->isDead) player1Switching = m_Player1->pickPokemon(player1ActivePokemon, player2ActivePokemon, this);

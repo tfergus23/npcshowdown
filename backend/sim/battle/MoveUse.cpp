@@ -3,6 +3,7 @@
 #include "sim/battle/Battle.hpp"
 #include "sim/utils/move_functions.hpp"
 #include "sim/utils/stage_multipliers.hpp"
+#include "sim/data/Moves.hpp"
 
 
 MoveUse::MoveUse(){}
@@ -11,6 +12,12 @@ MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battl
     m_FailMessage[39] = 0;
 }
 void MoveUse::doMove(MoveUse* opponentMove){
+    //Switching is a special case, since it's not really a 'move'
+    if(this->move == &MOVE_SWITCH){
+        const Trainer* trainer = battle->player1ActivePokemon == user ? battle->getPlayer1() : battle->getPlayer2();
+        battle->log(trainer->getFullName() + " withdrew " + user->nickname + "!");
+        return;
+    }
     battle->raiseEvent(BEFORE_MOVE, EventArgs(nullptr, this));
     move->beforeChecks(this, opponentMove);
     if (wontStart){

@@ -45,7 +45,7 @@ export class CreateTrainerComponent {
   getJSON() : Trainer{
     const name: string = "Joey";
     const trainerClass: string = "Youngster";
-    const level: string = "Wild";
+    const level: string = "Use Two Moves then Switch";
     let pokemon = new Array<Pokemon>();
     for(let i = 0; i < this.pokeComponents.length; i++){
       pokemon.push(this.pokeComponents[i].getJSON());

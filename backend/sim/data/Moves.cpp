@@ -13,7 +13,27 @@ const Move MOVE_SWITCH = {
     .priority = 8
 };
 const Move MOVE_STRUGGLE = {
-    .type = Type::NONE
+    .name = "Struggle",
+    .type = Type::NONE,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 50,
+    .accuracy = 0,
+    .maxPP = 1,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NOEFFECT,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+
+    //Flags
+    .contact = true,
+    .protect = true,
+    .kingsRock = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        dealDirectDamageWithRecoil(myMove, 1.0f / 4.0f);
+    }
 };
 
 const Move MOVE_POUND = {

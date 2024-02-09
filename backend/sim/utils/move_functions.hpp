@@ -29,3 +29,4 @@ int calculateDamageBeforeMods(MoveUse* moveUse, bool crit);
 int calculateDamageBeforeMods(MoveUse* moveUse, bool crit, Stat attackingStat, Stat defendingStat);
 bool genderCompatible(Gender gender1, Gender gender2);
 void crash(Pokemon* user, Battle* battle);
+int dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool logEffectiveness = true);

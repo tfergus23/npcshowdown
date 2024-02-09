@@ -27,7 +27,7 @@ public:
     Trainer(std::string_view trainerClass, std::string_view name, const std::vector<PokemonBlueprint>& teamBlueprint, TrainerLevel trainerLevel);
     Trainer(json json);
 
-    std::string getFullName();
+    std::string getFullName() const;
 
     const Move* pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battle);
 

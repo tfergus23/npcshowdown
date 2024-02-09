@@ -44,7 +44,7 @@ trainerLevel{stringToLevelMap.at(json["trainerLevel"].get<std::string>())}
 }
 
 
-std::string Trainer::getFullName(){
+std::string Trainer::getFullName() const{
     if (trainerClass == ""){
         return name;
     }
@@ -98,6 +98,7 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
             }
         }
         else{
+            switchCounter++;
             if (validMoves.size() <= 0){
                 return &MOVE_STRUGGLE;
             }

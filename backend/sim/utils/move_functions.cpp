@@ -303,3 +303,14 @@ void crash(Pokemon* user, Battle* battle) {
     battle->log(user->nickname + " kept going and crashed!");
     dealResidualPercentDamage(50.0f, user, battle);
 }
+
+int dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool logEffectiveness){
+    int damage = dealDirectDamage(moveUse, logEffectiveness);
+    if (damage > 0){
+        int recoil = (int) ceil((float) damage * recoilMultiplier);
+        int recoilDamage = (moveUse->user->currentHealth - recoil < 0) ? moveUse->user->currentHealth : recoil;
+        moveUse->user->currentHealth -= recoilDamage;
+        moveUse->battle->log(moveUse->user->nickname + " took " + std::to_string(recoilDamage) + " damage as recoil!");
+    }
+    return damage;
+}
