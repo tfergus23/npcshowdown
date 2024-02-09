@@ -12,7 +12,7 @@ a:visited{
     color:rgb(0, 255, 255);
 }
 button{
-    background-color: rgb(0, 255, 162);
+    background-color: rgb(0, 255, 255);
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -34,4 +34,8 @@ select{
 input:focus{
     border-color: rgb(0, 255, 255);
 
+}
+
+select:focus{
+    border-color: rgb(0, 255, 255);
 }

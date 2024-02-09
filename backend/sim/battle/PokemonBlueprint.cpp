@@ -11,8 +11,7 @@ PokemonBlueprint::PokemonBlueprint(std::string species, int level, std::array<st
     nature{nature},
     itemName{itemName},
     evs{evs},
-    nickname{nickname},
-    empty{false}
+    nickname{nickname}
 {
 }
 
@@ -26,8 +25,7 @@ PokemonBlueprint::PokemonBlueprint(json json) :
     nature{json["nature"].get<std::string>()},
     itemName{json["itemName"].get<std::string>()},
     evs{json["evs"].get<std::array<int,6>>()},
-    nickname{json["nickname"].get<std::string>()},
-    empty{json["empty"].get<bool>()}
+    nickname{json["nickname"].get<std::string>()}
 {
 }
 
@@ -42,8 +40,7 @@ json PokemonBlueprint::toJSON() const{
         {"nature", nature},
         {"itemName", itemName},
         {"evs", evs},
-        {"nickname", nickname},
-        {"empty", empty}
+        {"nickname", nickname}
     };
     return blueprintjson;
 }

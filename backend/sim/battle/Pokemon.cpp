@@ -10,9 +10,18 @@
 #include "sim/battle//Stat.hpp"
 #include "sim/battle/PokemonBlueprint.hpp"
 
+Pokemon::Pokemon() :
+level{-1},
+evs{std::array<int,6>()},
+ivs{std::array<int,6>()},
+baseMoves{std::array<const Move*, 4>()},
+nature{Nature::ADAMANT}
+{
+}
+
 Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
 species{speciesFromString(blueprint->species)},
-nickname{blueprint->nickname},
+nickname{blueprint->nickname == "" ? blueprint->species : blueprint->nickname},
 level{blueprint->level},
 evs{blueprint->evs},
 ivs{blueprint->ivs},
@@ -25,7 +34,6 @@ m_CurrentItem{itemFromString(blueprint->itemName)},
 m_BaseItem{itemFromString(blueprint->itemName)},
 battle{battle}
 {
-    if (blueprint->empty) return;
 
     //TODO: Set species data
     currentType[0] = species->type[0];
@@ -55,7 +63,23 @@ battle{battle}
         m_Gender = MALE;
         break;
     default:
-        m_Gender = genders.at(blueprint->gender);
+        if (blueprint->gender == "Random"){
+            int num = battle->randInt(0,2);
+            switch (num)
+            {
+            case 0:
+                m_Gender = Gender::MALE;
+                break;
+            case 1:
+                m_Gender = Gender::FEMALE;
+                break;
+            default:
+                throw std::runtime_error("Pulled an invalid random int when assigning gender.");
+            }
+        }
+        else{
+            m_Gender = genders.at(blueprint->gender);
+        }
         break;
     }
     currentHealth = getStatRaw(HP);
@@ -198,6 +222,9 @@ void Pokemon::resetBoosts(){
 }
 
 void Pokemon::handleEvent(Event event, const EventArgs& args){
+    //Still run this if we just died
+    if (isDead && !(event == Event::POKEMON_DEATH && args.eventSubject == this)) return;
+
     if (getCurrentItem() != ITEM_NONE && !itemState.suppressed) getCurrentItem()->observer.handleEvent(event,this, battle, args);
     if (getCurrentItem() != ITEM_NONE && event == END_OF_TURN) getCurrentItem()->observer.handleEvent(PRIORITY_END_OF_TURN,this, battle, args);
 

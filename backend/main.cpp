@@ -11,7 +11,7 @@
 
 
 int main(){
-    
+    /*
     PokemonBlueprint poke1(
         "Squirtle",
         100,
@@ -41,7 +41,7 @@ int main(){
 
     Trainer trainer1("Youngster", "Joey", trainer1Team, WILD);
     Trainer trainer2("Youngster", "Ben", trainer2Team, WILD);
-    
+    */
 
 
 #if STRESS_TEST

@@ -43,7 +43,7 @@ public:
     int randInt(int min, int max);
     int getSeed();
 
-    Battle(Trainer* trainer1, Trainer* trainer2, int seed);
+    Battle(Trainer* trainer1, Trainer* trainer2, size_t seed);
     void addMoves(const Move* move1, const Move* move2);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1);
@@ -68,7 +68,7 @@ private:
     Trainer* m_Player2;
     bool trainerBlackedOut(bool player);
     void setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, Trainer* trainer);
-    int m_Seed;
+    size_t m_Seed;
     std::default_random_engine m_Generator;
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;

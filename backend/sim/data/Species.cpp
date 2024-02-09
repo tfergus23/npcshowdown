@@ -819,7 +819,6 @@ const Species SPECIES_MELTAN(808, "Meltan", {STEEL, NONE}, 8.0f, -1.0f, {46, 65,
 const Species SPECIES_MELMETAL(809, "Melmetal", {STEEL, NONE}, 800.0f, -1.0f, {135, 143, 143, 80, 65, 34});
 
 const std::unordered_map<std::string, const Species*> speciesMap = {
-    {"", nullptr},
     {SPECIES_BULBASAUR.name, &SPECIES_BULBASAUR},
     {SPECIES_IVYSAUR.name, &SPECIES_IVYSAUR},
     {SPECIES_VENUSAUR.name, &SPECIES_VENUSAUR},

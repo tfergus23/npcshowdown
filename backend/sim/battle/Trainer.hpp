@@ -18,13 +18,13 @@ public:
     std::array<PokemonBlueprint, 6> getTeamBlueprint();
     TrainerLevel getTrainerLevel();
 */
-    const std::array<PokemonBlueprint, 6> teamBlueprint;
+    std::vector<PokemonBlueprint> teamBlueprint;
     const std::string trainerClass;
     const std::string name;
     const TrainerLevel trainerLevel;
 
 
-    Trainer(std::string_view trainerClass, std::string_view name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel);
+    Trainer(std::string_view trainerClass, std::string_view name, const std::vector<PokemonBlueprint>& teamBlueprint, TrainerLevel trainerLevel);
     Trainer(json json);
 
     std::string getFullName();
@@ -38,5 +38,7 @@ public:
 
     json toJSON() const;
     bool equals(const Trainer& that) const;
+
+    static TrainerLevel levelFromString(const std::string& string);
 private:
 };

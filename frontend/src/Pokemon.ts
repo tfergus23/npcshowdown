@@ -1,5 +1,4 @@
 export default interface Pokemon{
-    empty: boolean,
     species: string,
     nickname: string,
     level: number,

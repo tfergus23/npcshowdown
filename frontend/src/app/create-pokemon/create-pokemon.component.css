@@ -1,0 +1,59 @@
+.collapsible-header{
+    width: 100%;
+    text-align: left;
+    height:70px;
+    background-color: rgb(78, 78, 79);
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.collapsible-header:hover{
+    background-color: rgb(105, 105, 106);
+}
+
+.remove-poke-button{
+    margin-left: auto;
+    height: 30px;
+    width: 30px;
+}
+
+input{
+    width: 350px;
+    height: 35px;
+    font-size: 15px;
+    outline: none; /* This might not be good for accessability */
+}
+
+select{
+    width: 350px;
+    height: 35px;
+    font-size: 15px;
+    outline: none; /* This might not be good for accessability */
+}
+
+.left-col{
+    display: inline-block;
+    padding-right: 15%;
+}
+
+.right-col{
+    display: inline-block;
+}
+
+.evs-ivs{
+    padding-top: 10px;
+}
+
+.evs-ivs input{
+    width: 50px;
+}
+
+.pokemon-level input{
+    width: 50px;
+}
+
+.collapsible{
+    display: none;
+}

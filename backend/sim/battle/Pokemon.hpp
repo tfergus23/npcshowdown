@@ -23,15 +23,15 @@ class Pokemon{
         Battle* battle;
         //Blueprint
         const Species* species;
-        const std::string nickname;
-        const int level;
-        const std::array<int,6> evs;
-        const std::array<int,6> ivs;
+        std::string nickname;
+        int level;
+        std::array<int,6> evs;
+        std::array<int,6> ivs;
         const Ability* getBaseAbility();
         const Item* getBaseItem();
-        const std::array<const Move*,4> baseMoves;
+        std::array<const Move*,4> baseMoves;
         Gender getGender();
-        const Nature nature;
+        Nature nature;
 
 
         //Battle state
@@ -65,6 +65,7 @@ class Pokemon{
         const Move* lastMoveUsed = nullptr;
         bool empty = true;
 
+        Pokemon();
         Pokemon(const PokemonBlueprint* blueprint, Battle* battle);
         int getStat(Stat stat, bool crit = false);
         int getStatRaw(Stat stat);

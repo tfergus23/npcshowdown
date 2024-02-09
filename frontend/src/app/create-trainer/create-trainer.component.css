@@ -1,4 +1,4 @@
-button{
+.collapsible-header{
     width: 100%;
     text-align: left;
     height:70px;
@@ -32,41 +32,9 @@ h2{
     padding-right: 5px;
 }
 
-.pokemon-list input{
-    width: 350px;
-    height: 35px;
-    font-size: 15px;
-}
-
-.pokemon-list select{
-    width: 350px;
-    height: 35px;
-    font-size: 15px;
-}
-
-.collapsible{
-    display: none;
-}
-
-
-
-.left-col{
-    display: inline-block;
-    padding-right: 15%;
-}
-
-.right-col{
-    display: inline-block;
-}
-
-.evs-ivs{
-    padding-top: 10px;
-}
-
-.evs-ivs input{
-    width: 50px;
-}
-
-.pokemon-level input{
-    width: 50px;
+.add-pokemon-button{
+    height: 40px;
+    width: 200px;
+    margin-top: 25px;
+    margin-bottom: 25px;
 }

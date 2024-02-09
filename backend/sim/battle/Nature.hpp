@@ -7,7 +7,7 @@
 enum Nature {HARDY,LONELY,BRAVE,ADAMANT,NAUGHTY,BOLD,DOCILE,RELAXED,IMPISH,LAX,TIMID,HASTY,SERIOUS,JOLLY,NAIVE,MODEST,MILD,QUIET,BASHFUL,RASH,CALM,GENTLE,SASSY,CAREFUL,QUIRKY};
 
 inline const std::unordered_map<std::string, Nature> natures = {
-    {"", HARDY},
+    //{"", HARDY}, This might break something
     {"Hardy", HARDY},
     {"Lonely", LONELY},
     {"Brave", BRAVE},

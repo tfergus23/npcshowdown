@@ -6,14 +6,20 @@
 #include <iostream>
 #define DEBUG_LOG 0
 
-Battle::Battle(Trainer* trainer1, Trainer* trainer2, int seed) :
+Battle::Battle(Trainer* trainer1, Trainer* trainer2, size_t seed) :
 m_Player1{trainer1},
 m_Player2{trainer2},
 m_Seed{seed},
-player1Team{{Pokemon(&(trainer1->teamBlueprint[0]), this),Pokemon(&(trainer1->teamBlueprint[1]), this),Pokemon(&(trainer1->teamBlueprint[2]), this),Pokemon(&(trainer1->teamBlueprint[3]), this),Pokemon(&(trainer1->teamBlueprint[4]), this),Pokemon(&(trainer1->teamBlueprint[5]), this)}},
-player2Team{{Pokemon(&(trainer2->teamBlueprint[0]), this),Pokemon(&(trainer2->teamBlueprint[1]), this),Pokemon(&(trainer2->teamBlueprint[2]), this),Pokemon(&(trainer2->teamBlueprint[3]), this),Pokemon(&(trainer2->teamBlueprint[4]), this),Pokemon(&(trainer2->teamBlueprint[5]), this)}},
+//player1Team{{Pokemon(&(trainer1->teamBlueprint[0]), this),Pokemon(&(trainer1->teamBlueprint[1]), this),Pokemon(&(trainer1->teamBlueprint[2]), this),Pokemon(&(trainer1->teamBlueprint[3]), this),Pokemon(&(trainer1->teamBlueprint[4]), this),Pokemon(&(trainer1->teamBlueprint[5]), this)}},
+//player2Team{{Pokemon(&(trainer2->teamBlueprint[0]), this),Pokemon(&(trainer2->teamBlueprint[1]), this),Pokemon(&(trainer2->teamBlueprint[2]), this),Pokemon(&(trainer2->teamBlueprint[3]), this),Pokemon(&(trainer2->teamBlueprint[4]), this),Pokemon(&(trainer2->teamBlueprint[5]), this)}},
 m_Generator{std::default_random_engine(m_Seed)}
 {
+    for (int i = 0; i < trainer1->teamBlueprint.size(); i++){
+        player1Team[i] = Pokemon(&trainer1->teamBlueprint[i], this);
+    }
+    for (int i = 0; i < trainer2->teamBlueprint.size(); i++){
+        player2Team[i] = Pokemon(&trainer2->teamBlueprint[i], this);
+    }
     log("Seed: " + std::to_string(seed));
     setActivePokemon(IS_PLAYER_ONE, &(player1Team[0]));
     setActivePokemon(IS_PLAYER_TWO, &(player2Team[0]));

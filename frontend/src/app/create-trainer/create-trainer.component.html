@@ -1,94 +1,16 @@
-<button (click)="toggleCollapsible()">
-    <h2>Trainer 1</h2>
+<div>
+<button class="collapsible-header" (click)="toggleCollapsible()">
+    <h2>Trainer {{trainerNum}}</h2>
     <div class="info">
         <div class="name">
             Name: Youngster Joey
         </div>
         <div class="pokemon-count">
-            0/6 Pokemon
+            {{this.pokeComponents.length}}/6 Pokemon
         </div>
     </div>
 </button>
-<div class="pokemon-list" [hidden]="collapsed">
-    <div class="pokemon-fields">
-        <div class="text-fields">
-            <div class="left-col">
-                <div class="pokemon-species">
-                    Species:
-                    <!--
-                    <select>
-                        <option *ngFor="let poke of dataLists.speciesList" value="1">{{poke}}</option>
-                    </select>
-                    -->
-                    <input type="text" list="speciesList">
-                    <datalist id="speciesList">
-                        <option *ngFor="let poke of dataLists.speciesList" value="{{poke}}">{{poke}}</option>
-                    </datalist>
-                </div>
-                <div class="pokemon-nickname">
-                    Nickname: <input>
-                </div>
-                <div class="pokemon-ability">
-                    Ability:
-                    <select>
-                        <option *ngFor="let poke of dataLists.abilityList" value="1">{{poke}}</option>
-                    </select>
-                </div>
-                <div class="pokemon-item">
-                    Item:
-                    <select>
-                        <option *ngFor="let poke of dataLists.itemList" value="1">{{poke}}</option>
-                    </select>
-                </div>
-                <div class="pokemon-nature">
-                    Nature:
-                    <select>
-                        <option *ngFor="let poke of dataLists.natureList" value="1">{{poke}}</option>
-                    </select>
-                </div>
-                <div class="pokemon-gender">
-                    Gender:
-                    <select>
-                        <option value="Random">Random</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-            </div>
-            <div class="right-col">
-                <div class="pokemon-move">
-                    Move 1:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
-                    </select>
-                </div>
-                <div class="pokemon-move">
-                    Move 2:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
-                    </select>
-                </div>
-                <div class="pokemon-move">
-                    Move 3:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
-                    </select>
-                </div>
-                <div class="pokemon-move">
-                    Move 4:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="1">{{poke}}</option>
-                    </select>
-                </div>
-                <div class="pokemon-level">
-                    Level: <input type="number" min="1" max="100" value="100" step="1">
-                </div>
-            </div>
-        </div>
-        <div class="evs-ivs">
-            EVs:<br> <input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><br>
-            IVs:<br> <input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1">
-        </div>
-    </div>
-
+<div class="pokemon-list" [hidden]="this.collapsed" #container>
+</div>
+<button class="add-pokemon-button" [hidden]="this.pokeComponents.length > 5" (click)="addPoke()">Add Pokemon</button>
 </div>

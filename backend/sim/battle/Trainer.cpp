@@ -4,9 +4,27 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
+const std::unordered_map<std::string, TrainerLevel> stringToLevelMap = {
+    {"First Move", TrainerLevel::FIRST_MOVE},
+    {"Use Two Moves then Switch", TrainerLevel::USE_2_MOVES_THEN_SWITCH},
+    {"Wild", TrainerLevel::WILD},
+    {"Switcher", TrainerLevel::SWITCHER},
+    {"Trainer", TrainerLevel::TRAINER},
+    {"Boss", TrainerLevel::BOSS}
+};
+
+const std::unordered_map<TrainerLevel, std::string> levelToStringMap = {
+    {TrainerLevel::FIRST_MOVE, "First Move"},
+    {TrainerLevel::USE_2_MOVES_THEN_SWITCH, "Use Two Moves then Switch"},
+    {TrainerLevel::WILD, "Wild"},
+    {TrainerLevel::SWITCHER, "Switcher"},
+    {TrainerLevel::TRAINER, "Trainer"},
+    {TrainerLevel::BOSS, "Boss"}
+};
 
 
-Trainer::Trainer(std::string_view trainerClass, std::string_view name, const std::array<PokemonBlueprint, 6>& teamBlueprint, TrainerLevel trainerLevel) : 
+
+Trainer::Trainer(std::string_view trainerClass, std::string_view name, const std::vector<PokemonBlueprint>& teamBlueprint, TrainerLevel trainerLevel) : 
 teamBlueprint{teamBlueprint},
 trainerClass{trainerClass},
 name{name},
@@ -15,11 +33,14 @@ trainerLevel{trainerLevel}
 }
 
 Trainer::Trainer(json json) :
-teamBlueprint{{PokemonBlueprint(json["team"][0]),PokemonBlueprint(json["team"][1]),PokemonBlueprint(json["team"][2]),PokemonBlueprint(json["team"][3]),PokemonBlueprint(json["team"][4]),PokemonBlueprint(json["team"][5])}},
+//teamBlueprint{{PokemonBlueprint(json["team"][0]),PokemonBlueprint(json["team"][1]),PokemonBlueprint(json["team"][2]),PokemonBlueprint(json["team"][3]),PokemonBlueprint(json["team"][4]),PokemonBlueprint(json["team"][5])}},
 trainerClass{json["trainerClass"].get<std::string>()},
 name{json["name"].get<std::string>()},
-trainerLevel{(TrainerLevel) json["trainerLevel"].get<int>()}
+trainerLevel{stringToLevelMap.at(json["trainerLevel"].get<std::string>())}
 {
+    for(int i = 0; i < json["team"].size(); i++){
+        teamBlueprint.push_back(PokemonBlueprint(json["team"][i]));
+    }
 }
 
 
@@ -129,7 +150,7 @@ json Trainer::toJSON() const{
     json json = {
         {"name", name},
         {"trainerClass", trainerClass},
-        {"trainerLevel", (int) trainerLevel},
+        {"trainerLevel", levelToStringMap.at(trainerLevel)},
         {"team", {teamBlueprint[0].toJSON(),teamBlueprint[1].toJSON(),teamBlueprint[2].toJSON(),teamBlueprint[3].toJSON(),teamBlueprint[4].toJSON(),teamBlueprint[5].toJSON()}}
     };
     return json;
@@ -144,4 +165,8 @@ bool Trainer::equals(const Trainer& that) const{
     return name == that.name &&
            trainerClass == that.trainerClass &&
            trainerLevel == that.trainerLevel;
+}
+
+TrainerLevel Trainer::levelFromString(const std::string& string){
+    return stringToLevelMap.at(string);
 }

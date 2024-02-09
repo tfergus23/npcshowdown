@@ -16,7 +16,6 @@ class PokemonBlueprint{
         std::string nature = "";
         std::string itemName = "";
         std::array<int,6> evs = {0,0,0,0,0,0};
-        bool empty = true;
         PokemonBlueprint();
         PokemonBlueprint(std::string species, int level, std::array<std::string,4> moves, std::string abilityName, std::string gender, std::array<int,6> ivs, std::string nature, std::string itemName, std::array<int,6> evs, std::string nickname);
         PokemonBlueprint(json json);

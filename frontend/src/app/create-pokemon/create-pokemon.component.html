@@ -1,0 +1,86 @@
+<div [hidden]="this.parent.collapsed">
+    <button class="collapsible-header" (click)="toggleCollapsible()">
+        <h2>Pokemon {{pokeNumber}}</h2>
+        <button class="remove-poke-button" (click)="remove()">X</button>
+    </button>
+    <div [hidden]="collapsed" class="pokemon-fields" #fields>
+        <div class="text-fields">
+            <div class="left-col">
+                <div class="pokemon-species">
+                    Species:
+                    <!--
+                    <select>
+                        <option *ngFor="let poke of dataLists.speciesList" value="1">{{poke}}</option>
+                    </select>
+                    -->
+                    <input type="text" list="speciesList">
+                    <datalist id="speciesList">
+                        <option *ngFor="let poke of dataLists.speciesList" value="{{poke}}">{{poke}}</option>
+                    </datalist>
+                </div>
+                <div class="pokemon-nickname">
+                    Nickname: <input>
+                </div>
+                <div class="pokemon-ability">
+                    Ability:
+                    <select>
+                        <option *ngFor="let poke of dataLists.abilityList" value="{{poke}}">{{poke}}</option>
+                    </select>
+                </div>
+                <div class="pokemon-item">
+                    Item:
+                    <select>
+                        <option *ngFor="let poke of dataLists.itemList" value="{{poke}}">{{poke}}</option>
+                    </select>
+                </div>
+                <div class="pokemon-nature">
+                    Nature:
+                    <select>
+                        <option *ngFor="let poke of dataLists.natureList" value="{{poke}}">{{poke}}</option>
+                    </select>
+                </div>
+                <div class="pokemon-gender">
+                    Gender:
+                    <select>
+                        <option value="Random">Random</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+            </div>
+            <div class="right-col">
+                <div class="pokemon-move">
+                    Move 1:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
+                    </select>
+                </div>
+                <div class="pokemon-move">
+                    Move 2:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
+                    </select>
+                </div>
+                <div class="pokemon-move">
+                    Move 3:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
+                    </select>
+                </div>
+                <div class="pokemon-move">
+                    Move 4:
+                    <select>
+                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
+                    </select>
+                </div>
+                <div class="pokemon-level">
+                    Level: <input type="number" min="1" max="100" value="100" step="1">
+                </div>
+            </div>
+        </div>
+        <div class="evs-ivs">
+            EVs:<br> <input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><br>
+            IVs:<br> <input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1">
+        </div>
+    </div>
+</div>

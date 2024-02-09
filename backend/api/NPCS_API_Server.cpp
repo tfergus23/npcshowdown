@@ -5,6 +5,7 @@
 #include "sim/data/Moves.hpp"
 #include <chrono>
 #include <thread>
+#include "api/api_utils.hpp"
 
 using namespace tfhttp;
 using json = nlohmann::json;
@@ -20,6 +21,8 @@ const std::string ITEM_DATA_RESPONSE = createItemDataResponse();
 const std::string NATURE_DATA_RESPONSE = createNatureDataResponse();
 const std::string MOVE_DATA_RESPONSE = createMoveDataResponse();
 const std::string ALL_DATA_RESPONSE = createAllDataResponse();
+
+const std::hash<std::string> hasher;
 
 bool addCORSHeaderMiddleware(const HTTP_Request& req, HTTP_Response& res){
     res.headers["Access-Control-Allow-Origin"] = "*";
@@ -132,6 +135,45 @@ NPCS_API_Server::NPCS_API_Server(){
 
     app.Add_Handler("GET", baseRoute, "/data", [](const HTTP_Request& req, HTTP_Response& res){
         res.Send(ALL_DATA_RESPONSE);
+    });
+
+    app.Add_Handler("POST", baseRoute, "/battle", [](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        response["id"] = -1;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (...){
+            response["message"] = "Bad Request: Invalid JSON";
+            res.Send(response.dump());
+            return;
+        }
+        std::string problems = validateBattleRequest(request);
+        if (problems != ""){
+            response["message"] = problems;
+            res.Send(response.dump());
+            return;
+        }
+
+        Trainer trainer1(request["trainer1"]);
+        Trainer trainer2(request["trainer2"]);
+        std::string seedString = request["seed"].get<std::string>();
+        size_t seed = 0;
+        try {
+            seed = stol(seedString);
+        }
+        catch(...){
+            seed = hasher(seedString);
+        }
+        Battle battle(&trainer1, &trainer2, seed);
+        battle.simulate();
+
+        response["success"] = true;
+        response["id"] = 0;
+        response["message"] = battle.battleLog;
+        res.Send(response.dump());
     });
 }
 
