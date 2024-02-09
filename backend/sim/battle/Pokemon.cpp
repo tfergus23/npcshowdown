@@ -289,3 +289,14 @@ bool Pokemon::outOfPP(){
 bool Pokemon::isType(Type type){
     return type == currentType[0] || type == currentType[1];
 }
+
+void Pokemon::disableMove(const Move* move){
+    m_DisabledMoves[move]++;
+}
+void Pokemon::enableMove(const Move* move){
+    battle->assertTrue(m_DisabledMoves[move], "Tried to enable a move that wasn't disabled.");
+    m_DisabledMoves[move]--;
+}
+bool Pokemon::isMoveDisabled(const Move* move){
+    return m_DisabledMoves[move];
+}

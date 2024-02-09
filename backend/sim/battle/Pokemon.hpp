@@ -61,7 +61,7 @@ class Pokemon{
         int nextMoveCounter = -1;
         Type currentType[2];
         bool isTrapped = false;
-        int disabledIndex = -1;
+        //int disabledIndex = -1;
         const Move* lastMoveUsed = nullptr;
         bool empty = true;
 
@@ -74,6 +74,9 @@ class Pokemon{
         bool shouldDie();
         bool outOfPP();
         bool isType(Type type);
+        void disableMove(const Move* move);
+        void enableMove(const Move* move);
+        bool isMoveDisabled(const Move* move);
 
     private:
         void onSwitch();
@@ -86,4 +89,5 @@ class Pokemon{
         std::vector<const Effect*> m_EffectsToRemove;
         void removeMarkedEffects();
         Gender m_Gender;
+        std::unordered_map<const Move*, int> m_DisabledMoves;
 };

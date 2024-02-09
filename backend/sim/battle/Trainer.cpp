@@ -57,8 +57,9 @@ const Move* Trainer::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battl
     auto& myTeam = isPlayer1 ?  battle->player1Team : battle->player2Team;
     int& switchCounter = isPlayer1 ? battle->player1SwitchCounter : battle->player2SwitchCounter;
     for (int i = 0; i < myPoke->currentMoves.size(); i++){
-        if (myPoke->currentMoves[i] != MOVE_NONE && myPoke->currentPP[i] > 0 && i != myPoke->disabledIndex){
-            validMoves.push_back(myPoke->currentMoves[i]);
+        const Move* move = myPoke->currentMoves[i];
+        if (move != MOVE_NONE && myPoke->currentPP[i] > 0 && !myPoke->isMoveDisabled(move)){
+            validMoves.push_back(move);
         }
     }
 
