@@ -22,7 +22,13 @@ const std::unordered_map<TrainerLevel, std::string> levelToStringMap = {
     {TrainerLevel::BOSS, "Boss"}
 };
 
-
+std::vector<PokemonBlueprint> teamBluePrintFromJSON(const json& json){
+    std::vector<PokemonBlueprint> teamBlueprint;
+    for(int i = 0; i < json.size(); i++){
+        teamBlueprint.push_back(PokemonBlueprint(json[i]));
+    }
+    return teamBlueprint;
+}
 
 Trainer::Trainer(std::string_view trainerClass, std::string_view name, const std::vector<PokemonBlueprint>& teamBlueprint, TrainerLevel trainerLevel) : 
 teamBlueprint{teamBlueprint},
@@ -36,11 +42,9 @@ Trainer::Trainer(json json) :
 //teamBlueprint{{PokemonBlueprint(json["team"][0]),PokemonBlueprint(json["team"][1]),PokemonBlueprint(json["team"][2]),PokemonBlueprint(json["team"][3]),PokemonBlueprint(json["team"][4]),PokemonBlueprint(json["team"][5])}},
 trainerClass{json["trainerClass"].get<std::string>()},
 name{json["name"].get<std::string>()},
-trainerLevel{stringToLevelMap.at(json["trainerLevel"].get<std::string>())}
+trainerLevel{stringToLevelMap.at(json["trainerLevel"].get<std::string>())},
+teamBlueprint{teamBluePrintFromJSON(json["team"])}
 {
-    for(int i = 0; i < json["team"].size(); i++){
-        teamBlueprint.push_back(PokemonBlueprint(json["team"][i]));
-    }
 }
 
 

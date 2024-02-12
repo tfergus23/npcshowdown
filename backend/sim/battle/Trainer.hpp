@@ -18,7 +18,7 @@ public:
     std::array<PokemonBlueprint, 6> getTeamBlueprint();
     TrainerLevel getTrainerLevel();
 */
-    std::vector<PokemonBlueprint> teamBlueprint;
+    const std::vector<PokemonBlueprint> teamBlueprint;
     const std::string trainerClass;
     const std::string name;
     const TrainerLevel trainerLevel;
