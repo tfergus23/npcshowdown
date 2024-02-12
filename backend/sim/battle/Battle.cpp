@@ -349,6 +349,7 @@ void Battle::simulate(){
         this->invalid = true;
         this->isTurnOver = true;
         this->isBattleOver = true;
+        this->isDraw = true;
         this->winner = this->getPlayer1(); //This could probably remain nullptr, but I'll keep it this for now
         this->log(e.what());
     }

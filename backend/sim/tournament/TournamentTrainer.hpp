@@ -1,0 +1,16 @@
+#pragma once
+#include "sim/battle/Battle.hpp"
+#include "limits.h"
+
+class TournamentTrainer{
+public:
+    Trainer* trainer = nullptr;
+    int elo = 1000;
+    int wins = 0;
+    int losses = 0;
+    int opponentRatingsTotal = 0;
+    int bestWin = -1;
+    int bestWinEloDiff = INT_MIN;
+
+    void calculateElo();
+};
