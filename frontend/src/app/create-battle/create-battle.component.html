@@ -6,6 +6,10 @@
     <ul class="errors">
         <li *ngFor="let error of errors">{{error}}</li>
     </ul>
+    <div class="battle-seed" #seed>
+        <label>Seed (Optional): </label>
+        <input>
+    </div>
     <button class="submit-battle-button" (click)="submit()">Submit Battle</button>
     <ul>
         <li *ngFor="let line of logLines">{{line}}</li>

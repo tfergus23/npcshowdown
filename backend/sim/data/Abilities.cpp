@@ -6,12 +6,6 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-
-const std::string ABILITY_NONE_NAME = "";
-const Ability* ABILITY_NONE = nullptr;
-
-
-
 const Ability ABILITY_GUTS = {
     .name = "Guts",
     .modifySubjectStat = [](Stat stat,int statVal,Pokemon* subject){
@@ -42,7 +36,6 @@ const Ability ABILITY_TORRENT = {
 
 //Mapping string of name to ability
 const std::unordered_map<std::string,const Ability*> abilities = {
-    {ABILITY_NONE_NAME, ABILITY_NONE},
     {ABILITY_GUTS.name, &ABILITY_GUTS},
     {ABILITY_TORRENT.name, &ABILITY_TORRENT}
 };
@@ -54,9 +47,7 @@ const Ability* abilityFromString(const std::string& abilityName){
 std::string createAbilityDataResponse(){
     std::vector<std::string> abilityNames;
     for (auto [name,ptr] : abilities){
-        if (name != ABILITY_NONE_NAME){
-            abilityNames.push_back(name);
-        }
+        abilityNames.push_back(name);
     }
     std::sort(abilityNames.begin(), abilityNames.end());
     json response;

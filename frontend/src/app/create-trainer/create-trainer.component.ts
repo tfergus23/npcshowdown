@@ -17,6 +17,8 @@ export class CreateTrainerComponent {
   @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
   @ViewChild('trainerInfo') trainerInfo!: ElementRef<HTMLElement>;
   pokeComponents: Array<CreatePokemonComponent> = new Array<CreatePokemonComponent>();
+  nameInput?: HTMLInputElement;
+  levelSelect?: HTMLSelectElement;
   constructor(){
     this.collapsed = false;
   }
@@ -26,8 +28,10 @@ export class CreateTrainerComponent {
   }
 
   ngAfterViewInit(){
-    (this.trainerInfo.nativeElement.querySelector('.trainer-name input') as HTMLInputElement).value = this.trainerNum == '1' ? "Youngster Joey" : "Picknicker Heidi";
-    (this.trainerInfo.nativeElement.querySelector('.trainer-level select') as HTMLSelectElement).value = "Wild";
+    this.nameInput = (this.trainerInfo.nativeElement.querySelector('.trainer-name input') as HTMLInputElement);
+    this.levelSelect = (this.trainerInfo.nativeElement.querySelector('.trainer-level select') as HTMLSelectElement);
+    this.nameInput.value = this.trainerNum == '1' ? "Youngster Joey" : "Picknicker Heidi";
+    this.levelSelect.value = "Wild";
   }
 
   addPoke(){
@@ -49,8 +53,8 @@ export class CreateTrainerComponent {
   }
 
   getJSON() : Trainer{
-    const name: string = (this.trainerInfo.nativeElement.querySelector('.trainer-name input') as HTMLInputElement).value.trim();
-    const level: string = (this.trainerInfo.nativeElement.querySelector('.trainer-level select') as HTMLSelectElement).value.trim();
+    const name: string = this.nameInput!.value.trim();
+    const level: string = this.levelSelect!.value.trim();
     let pokemon = new Array<Pokemon>();
     for(let i = 0; i < this.pokeComponents.length; i++){
       pokemon.push(this.pokeComponents[i].getJSON());

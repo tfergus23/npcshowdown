@@ -2,6 +2,7 @@
     text-align: left;
     margin: auto;
     width: 68%;
+    height: 5000px;
 }
 
 h1 {
@@ -15,12 +16,29 @@ h1 {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
+    margin-top: 25px;
     margin-bottom: 50px;
     width: 500px;
     height: 80px;
 }
 
+.battle-seed{
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .errors{
     color:red;
+}
+
+input, select{
+    width: 350px;
+    height: 35px;
+    font-size: 15px;
+    outline: none; /* This might not be good for accessability */
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }

@@ -164,7 +164,7 @@ NPCS_API_Server::NPCS_API_Server(){
         std::string seedString = request["seed"].get<std::string>();
         size_t seed = 0;
         try {
-            seed = stol(seedString);
+            seed = stoul(seedString);
         }
         catch(...){
             seed = hasher(seedString);

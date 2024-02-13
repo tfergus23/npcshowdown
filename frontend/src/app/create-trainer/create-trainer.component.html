@@ -1,12 +1,15 @@
 <div>
 <button class="collapsible-header" (click)="toggleCollapsible()">
     <h2>Trainer {{trainerNum}}</h2>
-    <div class="info">
+    <div class="info" [hidden]="!this.collapsed">
         <div class="name">
-            Name: Youngster Joey
+            {{this.nameInput?.value}}
         </div>
         <div class="pokemon-count">
-            {{this.pokeComponents.length}}/6 Pokemon
+            {{this.pokeComponents.length}}/6
+        </div>
+        <div class="level">
+            {{this.levelSelect?.value}}
         </div>
     </div>
 </button>

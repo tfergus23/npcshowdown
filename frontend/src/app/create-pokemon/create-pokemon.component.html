@@ -8,12 +8,7 @@
             <div class="left-col">
                 <div class="pokemon-species">
                     Species:
-                    <!--
-                    <select>
-                        <option *ngFor="let poke of dataLists.speciesList" value="1">{{poke}}</option>
-                    </select>
-                    -->
-                    <input type="text" list="speciesList">
+                    <input type="text" list="speciesList" (focusout)="this.autoComplete($event)">
                     <datalist id="speciesList">
                         <option *ngFor="let poke of dataLists.speciesList" value="{{poke}}">{{poke}}</option>
                     </datalist>
@@ -23,15 +18,17 @@
                 </div>
                 <div class="pokemon-ability">
                     Ability:
-                    <select>
-                        <option *ngFor="let poke of dataLists.abilityList" value="{{poke}}">{{poke}}</option>
-                    </select>
+                    <input type="text" list="abilityList" (focusout)="this.autoComplete($event)">
+                    <datalist id="abilityList">
+                        <option *ngFor="let ability of dataLists.abilityList" value="{{ability}}">{{ability}}</option>
+                    </datalist>
                 </div>
                 <div class="pokemon-item">
                     Item:
-                    <select>
-                        <option *ngFor="let poke of dataLists.itemList" value="{{poke}}">{{poke}}</option>
-                    </select>
+                    <input type="text" list="itemList" (focusout)="this.autoComplete($event)">
+                    <datalist id="itemList">
+                        <option *ngFor="let item of dataLists.itemList" value="{{item}}">{{item}}</option>
+                    </datalist>
                 </div>
                 <div class="pokemon-nature">
                     Nature:
@@ -51,27 +48,31 @@
             <div class="right-col">
                 <div class="pokemon-move">
                     Move 1:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
-                    </select>
+                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <datalist id="moveList">
+                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
+                    </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 2:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
-                    </select>
+                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <datalist id="moveList">
+                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
+                    </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 3:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
-                    </select>
+                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <datalist id="moveList">
+                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
+                    </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 4:
-                    <select>
-                        <option *ngFor="let poke of dataLists.moveList" value="{{poke}}">{{poke}}</option>
-                    </select>
+                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <datalist id="moveList">
+                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
+                    </datalist>
                 </div>
                 <div class="pokemon-level">
                     Level: <input type="number" min="1" max="100" value="100" step="1">

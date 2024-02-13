@@ -15,21 +15,26 @@ button:hover{
 }
 
 h2{
-    float: left;
-    width: 20%;
+    display: inline-block;
+    padding-right: 20px;
 }
 
 .info{
-    width: 90%;
+    font-size: 15px;
 }
 
 .name{
-    float: right;
+    display: inline-block;
+    padding-right: 20px;
 }
 
 .pokemon-count{
-    float: right;
-    padding-right: 5px;
+    display: inline-block;
+    padding-right: 20px;
+}
+
+.level{
+    display: inline-block;
 }
 
 .add-pokemon-button{

@@ -1,4 +1,4 @@
-import { Component, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import DataLists from 'src/DataLists';
 import { DataService } from '../data.service';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
@@ -12,6 +12,7 @@ import { BattleService } from '../battle.service';
 export class CreateBattleComponent {
   dataLists!: DataLists;
   @ViewChildren(CreateTrainerComponent) trainers!: QueryList<CreateTrainerComponent>;
+  @ViewChild('seed') seed!: ElementRef<HTMLElement>;
   errors: Array<string> = [];
   logLines: Array<string> = [];
   constructor(private dataService: DataService, private battleService: BattleService){
@@ -25,10 +26,11 @@ export class CreateBattleComponent {
   }
 
   submit(){
+    let seedValue = this.seed.nativeElement.querySelector('input')!.value.trim();
     this.battleService.postBattleRequest({
       trainer1: this.trainers.get(0)!.getJSON(),
       trainer2: this.trainers.get(1)!.getJSON(),
-      seed: Math.round((Math.random() * 2147483647)).toString()
+      seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue
     }).subscribe(response => {
       if (!response.success){
         this.errors = response.message.split("\n");
