@@ -14,9 +14,9 @@ public:
     std::vector<BattleResult> results;
     int rounds;
     int totalBattles;
-    const int seed;
+    const size_t seed;
 
-    Tournament(std::vector<Trainer>& trainers, int rounds, int seed);
+    Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed);
     std::vector<TournamentTrainer> run();
 private:
     std::default_random_engine m_Generator;
