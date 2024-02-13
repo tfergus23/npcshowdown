@@ -30,7 +30,7 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, int seed) : r
     for (auto& trainer : trainers){
         this->trainers.push_back(
             {
-                .trainer = &trainer
+                .trainer = trainer
             }
         );
     }

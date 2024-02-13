@@ -4,7 +4,7 @@
 
 class TournamentTrainer{
 public:
-    Trainer* trainer = nullptr;
+    const Trainer& trainer;
     int elo = 1000;
     int wins = 0;
     int losses = 0;

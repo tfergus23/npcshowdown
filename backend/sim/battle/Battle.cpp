@@ -6,19 +6,19 @@
 #include <iostream>
 #define DEBUG_LOG 0
 
-Battle::Battle(Trainer* trainer1, Trainer* trainer2, size_t seed) :
-m_Player1{trainer1},
-m_Player2{trainer2},
+Battle::Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed) :
+m_Player1{trainer1.trainerInfo},
+m_Player2{trainer2.trainerInfo},
 m_Seed{seed},
 //player1Team{{Pokemon(&(trainer1->teamBlueprint[0]), this),Pokemon(&(trainer1->teamBlueprint[1]), this),Pokemon(&(trainer1->teamBlueprint[2]), this),Pokemon(&(trainer1->teamBlueprint[3]), this),Pokemon(&(trainer1->teamBlueprint[4]), this),Pokemon(&(trainer1->teamBlueprint[5]), this)}},
 //player2Team{{Pokemon(&(trainer2->teamBlueprint[0]), this),Pokemon(&(trainer2->teamBlueprint[1]), this),Pokemon(&(trainer2->teamBlueprint[2]), this),Pokemon(&(trainer2->teamBlueprint[3]), this),Pokemon(&(trainer2->teamBlueprint[4]), this),Pokemon(&(trainer2->teamBlueprint[5]), this)}},
 m_Generator{std::default_random_engine(m_Seed)}
 {
-    for (int i = 0; i < trainer1->teamBlueprint.size(); i++){
-        player1Team[i] = Pokemon(&trainer1->teamBlueprint[i], this);
+    for (int i = 0; i < trainer1.teamBlueprint.size(); i++){
+        player1Team[i] = Pokemon(&trainer1.teamBlueprint[i], this);
     }
-    for (int i = 0; i < trainer2->teamBlueprint.size(); i++){
-        player2Team[i] = Pokemon(&trainer2->teamBlueprint[i], this);
+    for (int i = 0; i < trainer2.teamBlueprint.size(); i++){
+        player2Team[i] = Pokemon(&trainer2.teamBlueprint[i], this);
     }
     log("Seed: " + std::to_string(seed));
     setActivePokemon(IS_PLAYER_ONE, &(player1Team[0]));
@@ -28,11 +28,11 @@ m_Generator{std::default_random_engine(m_Seed)}
     raiseEvent(POKEMON_ENTER, EventArgs(m_SlowerPokemon, nullptr));
 }
 
-Trainer* Battle::getPlayer1() {
-    return m_Player1;
+const TrainerInfo* Battle::getPlayer1() {
+    return &m_Player1;
 }
-Trainer* Battle::getPlayer2() {
-    return m_Player2;
+const TrainerInfo* Battle::getPlayer2() {
+    return &m_Player2;
 }
 
 void Battle::log(std::string_view message){
@@ -72,8 +72,8 @@ int Battle::getSeed(){
     return m_Seed;
 }
 
-void Battle::setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, Trainer* trainer){
-    bool isPlayer1 = trainer == m_Player1;
+void Battle::setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, const TrainerInfo* trainer){
+    bool isPlayer1 = trainer == &m_Player1;
     MoveUse& moveUse = isPlayer1 ? m_Turn[0] : m_Turn[1];
     int& playerSwitching = isPlayer1 ? player1Switching : player2Switching;
     if (user->nextMove != nullptr){
@@ -93,8 +93,8 @@ void Battle::setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy,
 
 void Battle::addMoves(const Move* move1, const Move* move2){
     isTurnOver = false;
-    setMoveUse(move1, player1ActivePokemon, player2ActivePokemon, m_Player1);
-    setMoveUse(move2, player2ActivePokemon, player1ActivePokemon, m_Player2);
+    setMoveUse(move1, player1ActivePokemon, player2ActivePokemon, &m_Player1);
+    setMoveUse(move2, player2ActivePokemon, player1ActivePokemon, &m_Player2);
     setMoveOrder();
     m_FasterPokemon = m_Turn[0].user;
     m_SlowerPokemon = m_Turn[1].user;
@@ -233,8 +233,8 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
                 log("It's a draw!");
             }
             else {
-                winner = player1Dead ? m_Player2 : m_Player1;
-                log("The winner is " + winner->getFullName() + "!");
+                winner = player1Dead ? &m_Player2 : &m_Player1;
+                log("The winner is " + winner->name + "!");
             }
         }
         if (turns > 200 && !isBattleOver){
@@ -243,8 +243,8 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
             log("It's a draw!");
         }
         if (!isBattleOver) {
-            if (player1ActivePokemon->isDead) player1Switching = m_Player1->pickPokemon(player1ActivePokemon, player2ActivePokemon, this);
-            if (player2ActivePokemon->isDead) player2Switching = m_Player2->pickPokemon(player2ActivePokemon, player1ActivePokemon, this);
+            if (player1ActivePokemon->isDead) player1Switching = m_Player1.pickPokemon(player1ActivePokemon, player2ActivePokemon, this);
+            if (player2ActivePokemon->isDead) player2Switching = m_Player2.pickPokemon(player2ActivePokemon, player1ActivePokemon, this);
         }
         break;
     }
@@ -303,11 +303,11 @@ void Battle::setPokemonHandlerOrder(){
 void Battle::setActivePokemon(bool isPlayer1, Pokemon* newPokemon){
     if (isPlayer1){
         player1ActivePokemon = newPokemon;
-        log(m_Player1->getFullName() + " sent out " + newPokemon->nickname + "!");
+        log(m_Player1.name + " sent out " + newPokemon->nickname + "!");
     }
     else{
         player2ActivePokemon = newPokemon;
-        log(m_Player2->getFullName() + " sent out " + newPokemon->nickname + "!");
+        log(m_Player2.name + " sent out " + newPokemon->nickname + "!");
     }
 }
 
@@ -321,8 +321,8 @@ void Battle::logCurrentStatus(){
     if (doLogging) battleLog += statInfo + '\n';
 #endif
     if (doLogging)
-    battleLog += m_Player1->getFullName() + ": " + player1ActivePokemon->nickname + " (" + std::to_string(player1ActivePokemon->currentHealth) + "/" + std::to_string(player1ActivePokemon->getStatRaw(HP)) + ")\n" +
-                 m_Player2->getFullName() + ": " + player2ActivePokemon->nickname + " (" + std::to_string(player2ActivePokemon->currentHealth) + "/" + std::to_string(player2ActivePokemon->getStatRaw(HP)) + ")\n";
+    battleLog += m_Player1.name + ": " + player1ActivePokemon->nickname + " (" + std::to_string(player1ActivePokemon->currentHealth) + "/" + std::to_string(player1ActivePokemon->getStatRaw(HP)) + ")\n" +
+                 m_Player2.name + ": " + player2ActivePokemon->nickname + " (" + std::to_string(player2ActivePokemon->currentHealth) + "/" + std::to_string(player2ActivePokemon->getStatRaw(HP)) + ")\n";
 }
 
 void Battle::simulate(){

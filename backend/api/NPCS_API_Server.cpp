@@ -167,7 +167,7 @@ NPCS_API_Server::NPCS_API_Server(){
         catch(...){
             seed = hasher(seedString);
         }
-        Battle battle(&trainer1, &trainer2, seed);
+        Battle battle(trainer1, trainer2, seed);
         battle.simulate();
 
         response["success"] = true;

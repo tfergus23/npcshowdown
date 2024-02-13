@@ -137,7 +137,6 @@ std::string validateTrainerJSON(const json& json, const std::string& trainerNumb
 
     //Validate schema
     problems += checkForString(json, trainerPrefix, "name");
-    problems += checkForString(json, trainerPrefix, "trainerClass");
     problems += checkForString(json, trainerPrefix, "trainerLevel");
     problems += checkForDynamicObjectArray(json, trainerPrefix, "team", 6);
 
@@ -152,12 +151,9 @@ std::string validateTrainerJSON(const json& json, const std::string& trainerNumb
     else if(tflib::trim(json["name"].get<std::string>()) == ""){
         problems += trainerFriendlyName + " needs a name.\n";
     }
-    if (json["trainerClass"].get<std::string>().size() > MAX_NAME_SIZE){
-        problems += trainerFriendlyName + "'s trainer class is too long, max " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
-    }
     std::string trainerLevel = json["trainerLevel"].get<std::string>();
     try{
-        Trainer::levelFromString(trainerLevel);
+        trainerLevelFromString(trainerLevel);
     }
     catch(...){
         problems += "Invalid trainer level: " + trainerLevel + "\n";

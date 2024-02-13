@@ -1,0 +1,101 @@
+#include "sim/battle/Battle.hpp"
+#include <string.h>
+#include "sim/data/Moves.hpp"
+
+TrainerInfo::TrainerInfo(const std::string& name, TrainerLevel level) : trainerLevel{level}, name{name}
+{
+}
+
+const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battle) const{
+    tflib::static_vector<const Move*, 4> validMoves;
+    bool isPlayer1 = this == battle->getPlayer1();
+    auto& myTeam = isPlayer1 ?  battle->player1Team : battle->player2Team;
+    int& switchCounter = isPlayer1 ? battle->player1SwitchCounter : battle->player2SwitchCounter;
+    for (int i = 0; i < myPoke->currentMoves.size(); i++){
+        const Move* move = myPoke->currentMoves[i];
+        if (move != MOVE_NONE && myPoke->currentPP[i] > 0 && !myPoke->isMoveDisabled(move)){
+            validMoves.push_back(move);
+        }
+    }
+
+
+    //TODO: The rest of these
+    switch (trainerLevel)
+    {
+    case FIRST_MOVE:
+        if (validMoves.size() <= 0){
+            return &MOVE_STRUGGLE;
+        }
+        return validMoves[0];
+    case SWITCHER:
+        if (getValidSwitchesCount(myPoke, battle) > 0){
+            return &MOVE_SWITCH;
+        }
+        if (validMoves.size() <= 0){
+            return &MOVE_STRUGGLE;
+        }
+        return validMoves[battle->randInt(0, validMoves.size())];
+    case WILD:
+        if (validMoves.size() <= 0){
+            return &MOVE_STRUGGLE;
+        }
+        return validMoves[battle->randInt(0, validMoves.size())];
+    case USE_2_MOVES_THEN_SWITCH:
+        if (switchCounter > 2){
+            if (getValidSwitchesCount(myPoke, battle) > 0){
+                switchCounter = 0;
+                return &MOVE_SWITCH;
+            }
+            else{
+                if (validMoves.size() <= 0){
+                    return &MOVE_STRUGGLE;
+                }
+                return validMoves[battle->randInt(0, validMoves.size())];
+            }
+        }
+        else{
+            switchCounter++;
+            if (validMoves.size() <= 0){
+                return &MOVE_STRUGGLE;
+            }
+            return validMoves[battle->randInt(0, validMoves.size())];
+        }
+    case TRAINER:
+        battle->assertTrue(false, "Unimplemented trainer level: " + stringFromTrainerLevel(trainerLevel));
+    case BOSS:
+        battle->assertTrue(false, "Unimplemented trainer level: " + stringFromTrainerLevel(trainerLevel));
+    default:
+        battle->assertTrue(false, "Unimplemented trainer level: " + stringFromTrainerLevel(trainerLevel));
+    }
+    return nullptr;
+}
+
+int TrainerInfo::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke, Battle* battle) const{
+    auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
+    tflib::static_vector<int,5> validSlots;
+    getValidSwitches(currentlyActivePokemon, battle, validSlots);
+    battle->assertTrue(validSlots.size() > 0, "pickPokemon called without any valid pokemon to switch to.");
+    return validSlots[battle->randInt(0, validSlots.size())];
+}
+
+void TrainerInfo::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, tflib::static_vector<int,5>& outVec) const{
+    auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
+    if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return;
+    for (int i = 0; i < myTeam.size(); i++){
+        if (!myTeam[i].empty && !myTeam[i].isDead && currentlyActivePokemon != &(myTeam[i])){
+            outVec.push_back(i);
+        }
+    }
+}
+
+int TrainerInfo::getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* battle) const{
+    auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
+    if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return 0;
+    int result = 0;
+    for (int i = 0; i < myTeam.size(); i++){
+        if (!myTeam[i].empty && !myTeam[i].isDead && currentlyActivePokemon != &(myTeam[i])){
+            result++;
+        }
+    }
+    return result;
+}

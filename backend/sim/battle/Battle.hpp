@@ -1,5 +1,6 @@
 #pragma once
 #include "sim/battle/Observer.hpp"
+#include "sim/battle/TrainerInfo.hpp"
 #include "sim/battle/Trainer.hpp"
 #include "sim/battle/Pokemon.hpp"
 #include "sim/battle/Weather.hpp"
@@ -16,8 +17,8 @@ class Trainer;
 
 class Battle{
 public:
-    Trainer* getPlayer1();
-    Trainer* getPlayer2();
+    const TrainerInfo* getPlayer1();
+    const TrainerInfo* getPlayer2();
     std::array<Pokemon,6> player1Team;
     std::array<Pokemon,6> player2Team;
     Pokemon* player1ActivePokemon;
@@ -29,7 +30,7 @@ public:
     int turns = 1;
     bool isBattleOver = false;
     bool isDraw = false;
-    Trainer* winner;
+    const TrainerInfo* winner;
     std::string battleLog = "";
     int weatherSuppressors = 0;
     int moveNumber = 0;
@@ -43,7 +44,7 @@ public:
     int randInt(int min, int max);
     int getSeed();
 
-    Battle(Trainer* trainer1, Trainer* trainer2, size_t seed);
+    Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed);
     void addMoves(const Move* move1, const Move* move2);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1);
@@ -64,10 +65,10 @@ public:
     void logCurrentStatus();
     void simulate();
 private:
-    Trainer* m_Player1;
-    Trainer* m_Player2;
+    TrainerInfo m_Player1;
+    TrainerInfo m_Player2;
     bool trainerBlackedOut(bool player);
-    void setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, Trainer* trainer);
+    void setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, const TrainerInfo* trainer);
     size_t m_Seed;
     std::default_random_engine m_Generator;
     Pokemon* m_FasterPokemon;
