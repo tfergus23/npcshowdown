@@ -6,7 +6,7 @@
 #include <iostream>
 #include "tflib/strings.h"
 
-const int MAX_NAME_SIZE = 32;
+const int MAX_NAME_SIZE = 64;
 
 //TODO: Use these
 std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName){

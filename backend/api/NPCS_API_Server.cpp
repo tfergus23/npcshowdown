@@ -44,6 +44,7 @@ std::string createAllDataResponse(){
     json itemResponse = json::parse(createItemDataResponse());
     json natureResponse = json::parse(createNatureDataResponse());
     json moveResponse = json::parse(createMoveDataResponse());
+    json trainerLevelResponse = json::parse(createTrainerLevelDataResponse());
 
     response["success"] = true;
     response["message"] = "OK";
@@ -53,6 +54,7 @@ std::string createAllDataResponse(){
         {"itemList", itemResponse["data"].get<std::vector<std::string>>()},
         {"natureList", natureResponse["data"].get<std::vector<std::string>>()},
         {"moveList", moveResponse["data"].get<std::vector<std::string>>()},
+        {"trainerLevelList", trainerLevelResponse["data"].get<std::vector<std::string>>()}
     };
     return response.dump();
 }

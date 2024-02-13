@@ -38,3 +38,22 @@ h2{
     margin-top: 25px;
     margin-bottom: 25px;
 }
+
+.trainer-name{
+    display: inline-block;
+}
+
+.trainer-level{
+    display: inline-block;
+    padding-left: 10px;
+}
+
+input, select{
+    width: 350px;
+    height: 35px;
+    font-size: 15px;
+    outline: none; /* This might not be good for accessability */
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}

@@ -4,6 +4,7 @@ export default class DataLists{
     public itemList: Array<string>;
     public natureList: Array<string>;
     public moveList: Array<string>;
+    public trainerLevelList: Array<string>;
 
     constructor(){
         this.speciesList = new Array<string>();
@@ -11,5 +12,6 @@ export default class DataLists{
         this.itemList = new Array<string>();
         this.natureList = new Array<string>();
         this.moveList = new Array<string>();
+        this.trainerLevelList = new Array<string>();
     }
 }

@@ -1,5 +1,10 @@
 #include "TrainerLevel.hpp"
 #include <unordered_map>
+#include <string>
+#include <vector>
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 const std::unordered_map<std::string, TrainerLevel> stringToLevelMap = {
     {"First Move", TrainerLevel::FIRST_MOVE},
@@ -24,4 +29,17 @@ TrainerLevel trainerLevelFromString(const std::string& string){
 }
 std::string stringFromTrainerLevel(TrainerLevel level){
     return levelToStringMap.at(level);
+}
+
+std::string createTrainerLevelDataResponse(){
+    std::vector<std::string> levelNames;
+    for (auto [name,ptr] : stringToLevelMap){
+        levelNames.push_back(name);
+    }
+    std::sort(levelNames.begin(), levelNames.end());
+    json response;
+    response["success"] = true;
+    response["message"] = "OK";
+    response["data"] = levelNames;
+    return response.dump();
 }

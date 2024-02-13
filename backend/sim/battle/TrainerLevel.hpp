@@ -5,3 +5,4 @@ enum TrainerLevel{FIRST_MOVE, USE_2_MOVES_THEN_SWITCH, SWITCHER, WILD, TRAINER, 
 
 TrainerLevel trainerLevelFromString(const std::string& string);
 std::string stringFromTrainerLevel(TrainerLevel level);
+std::string createTrainerLevelDataResponse();

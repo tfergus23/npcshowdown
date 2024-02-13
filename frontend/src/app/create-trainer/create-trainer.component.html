@@ -10,7 +10,19 @@
         </div>
     </div>
 </button>
+<div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
+    <div class="trainer-name">
+        <label>Trainer Name: </label>
+        <input>
+    </div>
+    <div class="trainer-level">
+        <label>Trainer AI Level: </label>
+        <select>
+            <option *ngFor="let level of dataLists.trainerLevelList" value="{{level}}">{{level}}</option>
+        </select>
+    </div>
+</div>
 <div class="pokemon-list" [hidden]="this.collapsed" #container>
 </div>
-<button class="add-pokemon-button" [hidden]="this.pokeComponents.length > 5" (click)="addPoke()">Add Pokemon</button>
+<button class="add-pokemon-button" [hidden]="this.pokeComponents.length > 5 || this.collapsed" (click)="addPoke()">Add Pokemon</button>
 </div>

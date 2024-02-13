@@ -19,18 +19,14 @@
     width: 30px;
 }
 
-input{
+input, select{
     width: 350px;
     height: 35px;
     font-size: 15px;
     outline: none; /* This might not be good for accessability */
-}
-
-select{
-    width: 350px;
-    height: 35px;
-    font-size: 15px;
-    outline: none; /* This might not be good for accessability */
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 .left-col{
