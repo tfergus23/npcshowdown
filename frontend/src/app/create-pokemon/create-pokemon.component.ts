@@ -37,13 +37,13 @@ export class CreatePokemonComponent {
 
 
     return {
-      species: speciesInput.value,
-      nickname: nicknameInput.value,
-      abilityName: abilitySelect.value,
-      itemName: itemSelect.value,
-      nature: natureSelect.value,
-      gender: genderSelect.value,
-      moves: [moveSelects[0].value,moveSelects[1].value,moveSelects[2].value,moveSelects[3].value],
+      species: speciesInput.value.trim(),
+      nickname: nicknameInput.value.trim(),
+      abilityName: abilitySelect.value.trim(),
+      itemName: itemSelect.value.trim(),
+      nature: natureSelect.value.trim(),
+      gender: genderSelect.value.trim(),
+      moves: [moveSelects[0].value.trim(),moveSelects[1].value.trim(),moveSelects[2].value.trim(),moveSelects[3].value.trim()],
       level: parseInt(levelInput.value),
       evs: [parseInt(valueInputs[0].value),parseInt(valueInputs[1].value),parseInt(valueInputs[2].value),parseInt(valueInputs[3].value),parseInt(valueInputs[4].value),parseInt(valueInputs[5].value)],
       ivs: [parseInt(valueInputs[6].value),parseInt(valueInputs[7].value),parseInt(valueInputs[8].value),parseInt(valueInputs[9].value),parseInt(valueInputs[10].value),parseInt(valueInputs[11].value)],

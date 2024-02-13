@@ -57,3 +57,7 @@ input, select{
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
+
+.add-pokemon-button{
+    margin-left: 30px;
+}

@@ -4,7 +4,6 @@
 #include "sim/data/Moves.hpp"
 #include "sim/data/Abilities.hpp"
 #include <iostream>
-#include "tflib/strings.h"
 
 const int MAX_NAME_SIZE = 64;
 
@@ -145,10 +144,10 @@ std::string validateTrainerJSON(const json& json, const std::string& trainerNumb
     }
 
     //Validate user errors
-    if (tflib::trim(json["name"].get<std::string>()).size() > MAX_NAME_SIZE){
+    if (json["name"].get<std::string>().size() > MAX_NAME_SIZE){
         problems += trainerFriendlyName + "'s name is too long, max " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
     }
-    else if(tflib::trim(json["name"].get<std::string>()) == ""){
+    else if(json["name"].get<std::string>() == ""){
         problems += trainerFriendlyName + " needs a name.\n";
     }
     std::string trainerLevel = json["trainerLevel"].get<std::string>();

@@ -49,8 +49,8 @@ export class CreateTrainerComponent {
   }
 
   getJSON() : Trainer{
-    const name: string = (this.trainerInfo.nativeElement.querySelector('.trainer-name input') as HTMLInputElement).value;
-    const level: string = (this.trainerInfo.nativeElement.querySelector('.trainer-level select') as HTMLSelectElement).value;
+    const name: string = (this.trainerInfo.nativeElement.querySelector('.trainer-name input') as HTMLInputElement).value.trim();
+    const level: string = (this.trainerInfo.nativeElement.querySelector('.trainer-level select') as HTMLSelectElement).value.trim();
     let pokemon = new Array<Pokemon>();
     for(let i = 0; i < this.pokeComponents.length; i++){
       pokemon.push(this.pokeComponents[i].getJSON());
