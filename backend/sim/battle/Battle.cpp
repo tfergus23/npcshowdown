@@ -83,9 +83,6 @@ void Battle::setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy,
         moveUse = MoveUse(&MOVE_SWITCH, user, user, this);
         playerSwitching = trainer->pickPokemon(user, enemy, this);
     }
-    else if (user->outOfPP()){
-        moveUse = MoveUse(&MOVE_STRUGGLE, user, enemy, this);
-    }
     else{
         moveUse = MoveUse(intendedMove,user,enemy,this);
     }
