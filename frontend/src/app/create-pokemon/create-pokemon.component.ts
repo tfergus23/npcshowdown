@@ -16,6 +16,15 @@ export class CreatePokemonComponent {
   @Input() parent!: CreateTrainerComponent;
   @ViewChild('fields') fields!: ElementRef<HTMLElement>;
   collapsed: boolean = false;
+  loaded: boolean = false;
+  
+  /**This does not represent the current state of the component, it is just used for importing. (TODO: look into two-way binding) */
+  initialPoke!: Pokemon;
+
+  ngAfterViewInit(){
+    this.loaded = true;
+    this.setFromJSON(this.initialPoke);
+  }
 
   toggleCollapsible(){
     this.collapsed = !this.collapsed;
@@ -36,6 +45,40 @@ export class CreatePokemonComponent {
       }
     }
     input.value = "";
+  }
+
+  setFromJSON(pokemon: Pokemon){
+    if (!this.loaded){
+      this.initialPoke = pokemon;
+      return;
+    }
+    const speciesInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-species input') as HTMLInputElement;
+    const nicknameInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-nickname input') as HTMLInputElement;
+    const abilityInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-ability input') as HTMLInputElement;
+    const itemInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-item input') as HTMLInputElement;
+    const natureSelect: HTMLSelectElement = this.fields.nativeElement.querySelector('.pokemon-nature select') as HTMLSelectElement;
+    const genderSelect: HTMLSelectElement = this.fields.nativeElement.querySelector('.pokemon-gender select') as HTMLSelectElement;
+    const moveInputs: NodeListOf<HTMLSelectElement> = this.fields.nativeElement.querySelectorAll('.pokemon-move input');
+    const levelInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-level input') as HTMLInputElement;
+    const valueInputs: NodeListOf<HTMLInputElement> = this.fields.nativeElement.querySelectorAll('.evs-ivs input');
+
+    speciesInput.value = pokemon.species;
+    nicknameInput.value = pokemon.nickname;
+    abilityInput.value = pokemon.abilityName;
+    itemInput.value = pokemon.itemName;
+    natureSelect.value = pokemon.nature;
+    genderSelect.value = pokemon.gender;
+    for(let i = 0;i < 4; i++){
+      moveInputs[i].value = pokemon.moves[i];
+    }
+    levelInput.value = pokemon.level.toString();
+
+    for(let i = 0; i < 6; i++){
+      valueInputs[i].value = pokemon.evs[i].toString();
+    }
+    for(let i = 0; i < 6; i++){
+      valueInputs[i+6].value = pokemon.ivs[i].toString();
+    }
   }
 
   getJSON() : Pokemon{

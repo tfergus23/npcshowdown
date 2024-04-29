@@ -66,4 +66,59 @@ export class CreateTrainerComponent {
     };
   }
 
+  setFromJson(json: Trainer){
+    this.nameInput!.value = json.name;
+    this.levelSelect!.value = json.trainerLevel;
+    const pokesToAdd = json.team.length - this.pokeComponents.length;
+    const pokesToRemove = this.pokeComponents.length - json.team.length;
+    for (let i = 0; i < pokesToAdd; i++){
+      this.addPoke();
+    }
+    for(let i = 0; i < pokesToRemove; i++){
+      this.removePoke((this.pokeComponents.length).toString());
+    }
+    for (let i = 0; i < json.team.length; i++){
+      //Calling setFromJSON here caused errors because the component isn't initialized immediately after calling addPoke
+      this.pokeComponents[i].setFromJSON(json.team[i]);
+    }
+  }
+
+  loadFromFile(){
+    let input = document.createElement("input");
+    input.type = 'file';
+    input.addEventListener('change', (event) => {
+      let file = input.files?.item(0);
+      if (file != undefined && file.size > 8192){
+        alert("File too big.");
+        return;
+      }
+      file?.text().then(text => {
+        try{
+          let trainer: Trainer = JSON.parse(text) as Trainer;
+          this.setFromJson(trainer);
+        }
+        catch(error){
+          console.log(error);
+          alert("Invalid trainer file.");
+        }
+
+      })
+    });
+    input.click();
+    input.remove();
+  }
+
+  download(){
+    const json: Trainer = this.getJSON();
+    const newBlob = new Blob([JSON.stringify(json, null, 4)], {
+      type: 'application/json'
+    });
+    const data = window.URL.createObjectURL(newBlob);
+    const link = document.createElement("a");
+    link.href = data;
+    link.download = `${json.name}.json`; 
+    link.click();
+    link.remove();
+  }
+
 }

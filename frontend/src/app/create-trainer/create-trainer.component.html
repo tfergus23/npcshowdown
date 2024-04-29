@@ -13,6 +13,12 @@
         </div>
     </div>
 </button>
+<div class="import-save-buttons" [hidden]="this.collapsed">
+    <button (click)="loadFromFile();">Import from File</button>
+    <button>Import from My Trainers</button>
+    <button (click)="download();">Save to File</button>
+    <button>Save to My Trainers</button>
+</div>
 <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
     <div class="trainer-name">
         <label>Trainer Name: </label>

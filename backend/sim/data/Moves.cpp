@@ -8,9 +8,19 @@ using json = nlohmann::json;
 const Move* MOVE_NONE = nullptr;
 const std::string MOVE_NONE_NAME = "";
 
-//TODO: Implement these
 const Move MOVE_SWITCH = {
-    .priority = 8
+    .name = "Switch",
+    .type = Type::NONE,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 0,
+    .maxPP = 0,
+    .priority = 8,
+    .critRatio = 0,
+    .targetType = TargetType::SELF,
+    .secondaryEffect = SecondaryEffect::NOEFFECT,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
 };
 const Move MOVE_STRUGGLE = {
     .name = "Struggle",
