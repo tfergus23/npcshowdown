@@ -5,3 +5,11 @@ export default interface Trainer{
     name: string,
     trainerLevel: string
 }
+
+export function createEmptyTrainer(): Trainer{
+    return {
+        team: new Array<Pokemon>(),
+        name: "Youngster Joey",
+        trainerLevel: "Wild"
+    }
+}

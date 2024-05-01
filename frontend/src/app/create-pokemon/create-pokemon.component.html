@@ -8,37 +8,37 @@
             <div class="left-col">
                 <div class="pokemon-species">
                     Species:
-                    <input type="text" list="speciesList" (focusout)="this.autoComplete($event)">
+                    <input [(ngModel)]="this.pokemon.species" type="text" list="speciesList" (focusout)="this.autoCompleteSpecies($event)">
                     <datalist id="speciesList">
                         <option *ngFor="let poke of dataLists.speciesList" value="{{poke}}">{{poke}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-nickname">
-                    Nickname: <input>
+                    Nickname: <input type="text" [(ngModel)]="this.pokemon.nickname">
                 </div>
                 <div class="pokemon-ability">
                     Ability:
-                    <input type="text" list="abilityList" (focusout)="this.autoComplete($event)">
+                    <input [(ngModel)]="this.pokemon.abilityName" type="text" list="abilityList" (focusout)="this.autoCompleteAbility($event)">
                     <datalist id="abilityList">
                         <option *ngFor="let ability of dataLists.abilityList" value="{{ability}}">{{ability}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-item">
                     Item:
-                    <input type="text" list="itemList" (focusout)="this.autoComplete($event)">
+                    <input [(ngModel)]="this.pokemon.itemName" type="text" list="itemList" (focusout)="this.autoCompleteItem($event)">
                     <datalist id="itemList">
                         <option *ngFor="let item of dataLists.itemList" value="{{item}}">{{item}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-nature">
                     Nature:
-                    <select>
+                    <select [(ngModel)]="this.pokemon.nature">
                         <option *ngFor="let poke of dataLists.natureList" value="{{poke}}">{{poke}}</option>
                     </select>
                 </div>
                 <div class="pokemon-gender">
                     Gender:
-                    <select>
+                    <select [(ngModel)]="this.pokemon.gender">
                         <option value="Random">Random</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -48,40 +48,52 @@
             <div class="right-col">
                 <div class="pokemon-move">
                     Move 1:
-                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <input [(ngModel)]="this.pokemon.moves[0]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 0)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 2:
-                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <input [(ngModel)]="this.pokemon.moves[1]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 1)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 3:
-                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <input [(ngModel)]="this.pokemon.moves[2]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 2)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 4:
-                    <input type="text" list="moveList" (focusout)="this.autoComplete($event)">
+                    <input [(ngModel)]="this.pokemon.moves[3]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 3)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-level">
-                    Level: <input type="number" min="1" max="100" value="100" step="1">
+                    Level: <input [(ngModel)]="this.pokemon.level" type="number" min="1" max="100" value="100" step="1">
                 </div>
             </div>
         </div>
         <div class="evs-ivs">
-            EVs:<br> <input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><input type="number" min="0" max="255" value="85" step="1"><br>
-            IVs:<br> <input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1"><input type="number" min="0" max="31" value="31" step="1">
+            EVs:<br> 
+            <input [(ngModel)]="this.pokemon.evs[0]" type="number" min="0" max="255" step="1">
+            <input [(ngModel)]="this.pokemon.evs[1]" type="number" min="0" max="255" step="1">
+            <input [(ngModel)]="this.pokemon.evs[2]" type="number" min="0" max="255" step="1">
+            <input [(ngModel)]="this.pokemon.evs[3]" type="number" min="0" max="255" step="1">
+            <input [(ngModel)]="this.pokemon.evs[4]" type="number" min="0" max="255" step="1">
+            <input [(ngModel)]="this.pokemon.evs[5]" type="number" min="0" max="255" step="1"><br>
+            IVs:<br> 
+            <input [(ngModel)]="this.pokemon.ivs[0]" type="number" min="0" max="31" step="1">
+            <input [(ngModel)]="this.pokemon.ivs[1]" type="number" min="0" max="31" step="1">
+            <input [(ngModel)]="this.pokemon.ivs[2]" type="number" min="0" max="31" step="1">
+            <input [(ngModel)]="this.pokemon.ivs[3]" type="number" min="0" max="31" step="1">
+            <input [(ngModel)]="this.pokemon.ivs[4]" type="number" min="0" max="31" step="1">
+            <input [(ngModel)]="this.pokemon.ivs[5]" type="number" min="0" max="31" step="1">
         </div>
     </div>
 </div>

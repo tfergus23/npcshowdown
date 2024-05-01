@@ -1,3 +1,9 @@
+.create-trainer-container{
+    background-color: rgb(78, 78, 79);
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
 .collapsible-header{
     width: 100%;
     text-align: left;
@@ -27,6 +33,10 @@ h2{
 
 .info{
     font-size: 15px;
+}
+
+.trainer-info{
+    padding-bottom: 10px;
 }
 
 .name{
@@ -71,4 +81,10 @@ input, select{
 
 .add-pokemon-button{
     margin-left: 30px;
+}
+
+.remove-trainer-button{
+    width: 30px;
+    height: 30px;
+    margin-left: auto;
 }

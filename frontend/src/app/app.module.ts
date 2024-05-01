@@ -15,6 +15,7 @@ import { ViewTrainersComponent } from './view-trainers/view-trainers.component';
 import { ViewResultsComponent } from './view-results/view-results.component';
 import { CreateTrainerComponent } from './create-trainer/create-trainer.component';
 import { CreatePokemonComponent } from './create-pokemon/create-pokemon.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { CreatePokemonComponent } from './create-pokemon/create-pokemon.componen
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

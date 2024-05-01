@@ -2,10 +2,11 @@
     <h1>Create a Tournament</h1>
     <h2>Trainers</h2>
     <div class="add-buttons">
-        <button>Add From File</button>
-        <button>Add From My Trainers</button>
+        <button (click)="addEmptyTrainer()">Add New</button>
+        <button (click)="addFromFiles()">Add From File</button>
+        <button [hidden]="this.app.loggedInUser == undefined">Add From My Trainers</button>
     </div>
-    <div class="tournament-trainer-list">
-
+    <div *ngFor="let trainer of trainers; index as i" class="tournament-trainer-list">
+        <app-create-trainer [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
     </div>
 </div>

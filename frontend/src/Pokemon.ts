@@ -10,3 +10,18 @@ export default interface Pokemon{
     itemName: string,
     evs: [number,number,number,number,number,number],
 }
+
+export function createEmptyPokemon(): Pokemon{
+    return{
+        species: "Luxray",
+        nickname: "",
+        level: 100,
+        moves: ["","","",""],
+        abilityName: "",
+        gender: "Random",
+        ivs: [31,31,31,31,31,31],
+        nature: "Serious",
+        itemName: "",
+        evs: [85,85,85,85,85,85]
+    };
+}

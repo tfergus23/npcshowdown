@@ -16,13 +16,14 @@ export class CreateBattleComponent {
   errors: Array<string> = [];
   logLines: Array<string> = [];
   constructor(private dataService: DataService, private battleService: BattleService){
-  }
-
-  ngOnInit() : void{
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
     });
+  }
+
+  ngOnInit() : void{
+
   }
 
   submit(){

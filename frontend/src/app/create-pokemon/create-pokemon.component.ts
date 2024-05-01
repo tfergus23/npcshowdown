@@ -2,8 +2,9 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import DataLists from 'src/DataLists';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
 import { bootstrapApplication } from '@angular/platform-browser';
-import Pokemon from 'src/Pokemon';
+import Pokemon, { createEmptyPokemon } from 'src/Pokemon';
 import { keyframes } from '@angular/animations';
+import Trainer from 'src/Trainer';
 
 @Component({
   selector: 'app-create-pokemon',
@@ -14,96 +15,88 @@ export class CreatePokemonComponent {
   @Input() dataLists: DataLists = new DataLists();
   @Input() pokeNumber: string = "1";
   @Input() parent!: CreateTrainerComponent;
+  @Input() trainer!: Trainer;
+  @Input() pokemon!: Pokemon;
   @ViewChild('fields') fields!: ElementRef<HTMLElement>;
   collapsed: boolean = false;
-  loaded: boolean = false;
-  
-  /**This does not represent the current state of the component, it is just used for importing. (TODO: look into two-way binding) */
-  initialPoke!: Pokemon;
-
-  ngAfterViewInit(){
-    this.loaded = true;
-    this.setFromJSON(this.initialPoke);
-  }
 
   toggleCollapsible(){
     this.collapsed = !this.collapsed;
   }
 
   remove(){
-    this.parent.removePoke(this.pokeNumber);
+    let index = parseInt(this.pokeNumber) - 1;
+    this.trainer.team.splice(index, 1);
   }
 
-  autoComplete(event: FocusEvent){
+  autoCompleteSpecies(event: FocusEvent){
     let input: HTMLInputElement = event.target as HTMLInputElement;
     let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
     for (let i = 0; i < dataList.options.length; i++){
       let inputVal = input.value.toLowerCase().trim();
       if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
-        input.value = dataList.options[i].value;
+        this.pokemon.species = dataList.options[i].value;
         return;
       }
     }
-    input.value = "";
+    this.pokemon.species = "";
+  }
+
+  autoCompleteItem(event: FocusEvent){
+    let input: HTMLInputElement = event.target as HTMLInputElement;
+    let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
+    for (let i = 0; i < dataList.options.length; i++){
+      let inputVal = input.value.toLowerCase().trim();
+      if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
+        this.pokemon.itemName = dataList.options[i].value;
+        return;
+      }
+    }
+    this.pokemon.itemName = "";
+  }
+
+  autoCompleteAbility(event: FocusEvent){
+    let input: HTMLInputElement = event.target as HTMLInputElement;
+    let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
+    for (let i = 0; i < dataList.options.length; i++){
+      let inputVal = input.value.toLowerCase().trim();
+      if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
+        this.pokemon.abilityName = dataList.options[i].value;
+        return;
+      }
+    }
+    this.pokemon.abilityName = "";
+  }
+
+  autoCompleteMove(event: FocusEvent, index: number){
+    let input: HTMLInputElement = event.target as HTMLInputElement;
+    let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
+    for (let i = 0; i < dataList.options.length; i++){
+      let inputVal = input.value.toLowerCase().trim();
+      if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
+        this.pokemon.moves[index] = dataList.options[i].value;
+        return;
+      }
+    }
+    this.pokemon.moves[index] = "";
   }
 
   setFromJSON(pokemon: Pokemon){
-    if (!this.loaded){
-      this.initialPoke = pokemon;
-      return;
-    }
-    const speciesInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-species input') as HTMLInputElement;
-    const nicknameInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-nickname input') as HTMLInputElement;
-    const abilityInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-ability input') as HTMLInputElement;
-    const itemInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-item input') as HTMLInputElement;
-    const natureSelect: HTMLSelectElement = this.fields.nativeElement.querySelector('.pokemon-nature select') as HTMLSelectElement;
-    const genderSelect: HTMLSelectElement = this.fields.nativeElement.querySelector('.pokemon-gender select') as HTMLSelectElement;
-    const moveInputs: NodeListOf<HTMLSelectElement> = this.fields.nativeElement.querySelectorAll('.pokemon-move input');
-    const levelInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-level input') as HTMLInputElement;
-    const valueInputs: NodeListOf<HTMLInputElement> = this.fields.nativeElement.querySelectorAll('.evs-ivs input');
-
-    speciesInput.value = pokemon.species;
-    nicknameInput.value = pokemon.nickname;
-    abilityInput.value = pokemon.abilityName;
-    itemInput.value = pokemon.itemName;
-    natureSelect.value = pokemon.nature;
-    genderSelect.value = pokemon.gender;
-    for(let i = 0;i < 4; i++){
-      moveInputs[i].value = pokemon.moves[i];
-    }
-    levelInput.value = pokemon.level.toString();
-
-    for(let i = 0; i < 6; i++){
-      valueInputs[i].value = pokemon.evs[i].toString();
-    }
-    for(let i = 0; i < 6; i++){
-      valueInputs[i+6].value = pokemon.ivs[i].toString();
-    }
+    this.pokemon = pokemon;
   }
 
   getJSON() : Pokemon{
-    const speciesInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-species input') as HTMLInputElement;
-    const nicknameInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-nickname input') as HTMLInputElement;
-    const abilityInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-ability input') as HTMLInputElement;
-    const itemInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-item input') as HTMLInputElement;
-    const natureSelect: HTMLSelectElement = this.fields.nativeElement.querySelector('.pokemon-nature select') as HTMLSelectElement;
-    const genderSelect: HTMLSelectElement = this.fields.nativeElement.querySelector('.pokemon-gender select') as HTMLSelectElement;
-    const moveInputs: NodeListOf<HTMLSelectElement> = this.fields.nativeElement.querySelectorAll('.pokemon-move input');
-    const levelInput: HTMLInputElement = this.fields.nativeElement.querySelector('.pokemon-level input') as HTMLInputElement;
-    const valueInputs: NodeListOf<HTMLInputElement> = this.fields.nativeElement.querySelectorAll('.evs-ivs input');
-
-
     return {
-      species: speciesInput.value.trim(),
-      nickname: nicknameInput.value.trim(),
-      abilityName: abilityInput.value.trim(),
-      itemName: itemInput.value.trim(),
-      nature: natureSelect.value.trim(),
-      gender: genderSelect.value.trim(),
-      moves: [moveInputs[0].value.trim(),moveInputs[1].value.trim(),moveInputs[2].value.trim(),moveInputs[3].value.trim()],
-      level: parseInt(levelInput.value),
-      evs: [parseInt(valueInputs[0].value),parseInt(valueInputs[1].value),parseInt(valueInputs[2].value),parseInt(valueInputs[3].value),parseInt(valueInputs[4].value),parseInt(valueInputs[5].value)],
-      ivs: [parseInt(valueInputs[6].value),parseInt(valueInputs[7].value),parseInt(valueInputs[8].value),parseInt(valueInputs[9].value),parseInt(valueInputs[10].value),parseInt(valueInputs[11].value)],
+      species: this.pokemon.species.trim(),
+      nickname: this.pokemon.nickname.trim(),
+      abilityName: this.pokemon.abilityName.trim(),
+      itemName: this.pokemon.itemName.trim(),
+      nature: this.pokemon.nature.trim(),
+      gender: this.pokemon.gender.trim(),
+      moves: [this.pokemon.moves[0].trim(),this.pokemon.moves[1].trim(),this.pokemon.moves[2].trim(),this.pokemon.moves[3].trim()],
+      level: this.pokemon.level,
+      evs: [this.pokemon.evs[0],this.pokemon.evs[1],this.pokemon.evs[2],this.pokemon.evs[3],this.pokemon.evs[4],this.pokemon.evs[5]],
+      ivs: [this.pokemon.ivs[0],this.pokemon.ivs[1],this.pokemon.ivs[2],this.pokemon.ivs[3],this.pokemon.ivs[4],this.pokemon.ivs[5]],
     }
   }
 }
