@@ -6,6 +6,7 @@
 #include <iostream>
 
 const int MAX_NAME_SIZE = 64;
+const std::hash<std::string> hasher;
 
 //TODO: Use these
 std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName){
@@ -264,4 +265,48 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
         problems += pokemonFriendlyName + "'s nickname is too long, max " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
     }
     return problems;
+}
+
+float calculateTotalBattles(int entrants, int rounds){
+    //Using floats to avoid overflow issues
+    float battles = (float) entrants * ((float) entrants - 1) / 2;
+    return battles * rounds;
+}
+
+std::string validateTournamentRequest(const json& json){
+    std::string problems = "";
+
+    //Validate Schema
+    problems += checkForDynamicObjectArray(json, "", "trainers", INT_MAX);
+    problems += checkForString(json, "", "seed");
+    problems += checkForInt(json, "", "rounds");
+
+    if (problems != ""){
+        return problems;
+    }
+
+    if (json["trainers"].size() < 2){
+        return "Need to have at least 2 trainers to have a tournament, " + std::to_string(json["trainers"].size()) + " supplied.\n";
+    }
+
+    if (calculateTotalBattles(json["trainers"].size(), json["rounds"].get<int>()) > 20000){
+        return "Too many battles in requested tournament, 20000 max.\n";
+    }
+
+    for(size_t i = 0; i < json["trainers"].size(); i++){
+        problems += validateTrainerJSON(json["trainers"][i], std::to_string(i+1));
+    }
+
+    return problems;
+}
+
+size_t seedFromString(const std::string& seedString){
+    size_t seed = 0;
+    try {
+        seed = stoul(seedString);
+    }
+    catch(...){
+        seed = hasher(seedString);
+    }
+    return seed;
 }

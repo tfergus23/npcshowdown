@@ -1,18 +1,9 @@
 #include "Tournament.hpp"
 
-int calculateTotalBattles(int entrants, int rounds){
-    int battles = 0;
-    for (int i = 0; i < rounds; i++)
-    {
-        for (int j = 0; j < entrants; j++)
-        {
-            for (int k = j+1; k < entrants; k++)
-            {
-                battles++;
-            }
-        }
-    }
-    return battles;
+float calculateTotalBattles(int entrants, int rounds){
+    //Using floats to avoid overflow issues
+    float battles = (float) entrants * ((float) entrants - 1) / 2;
+    return battles * rounds;
 }
 
 Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) : rounds{rounds}, totalBattles{calculateTotalBattles(trainers.size(), rounds)}, m_Generator{std::default_random_engine(seed)}, seed{seed}{
@@ -54,7 +45,7 @@ BattleResult determineBattleResult(Battle& battle, int trainer1, int trainer2){
     return result;
 }
 
-std::vector<TournamentTrainer> Tournament::run(){
+void Tournament::run(){
     for(int i = 0; i < rounds; i++){
         for(int j = 0; j < trainers.size(); j++){
             for(int k = j + 1; k < trainers.size(); k++){
@@ -77,7 +68,6 @@ std::vector<TournamentTrainer> Tournament::run(){
         }
     }
     setBiggestUpsets();
-    return trainers;
 }
 
 int Tournament::randInt(int min, int max){

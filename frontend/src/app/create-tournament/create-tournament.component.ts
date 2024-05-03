@@ -4,6 +4,8 @@ import { CreateTrainerComponent } from '../create-trainer/create-trainer.compone
 import { DataService } from '../data.service';
 import DataLists from 'src/DataLists';
 import Trainer, { createEmptyTrainer } from 'src/Trainer';
+import TournamentRequest from 'src/TournamentRequest';
+import { BattleService } from '../battle.service';
 
 @Component({
   selector: 'app-create-tournament',
@@ -14,8 +16,10 @@ export class CreateTournamentComponent {
   @ViewChild('tournamentTrainerList', {read: ViewContainerRef}) trainerList!: ViewContainerRef;
   trainers: Array<Trainer> = new Array<Trainer>();
   dataLists!: DataLists;
+  rounds: number = 25;
+  seed: string = "";
 
-  constructor(public app: AppComponent, private dataService: DataService){}
+  constructor(public app: AppComponent, private dataService: DataService, private battleService: BattleService){}
 
   ngOnInit() : void{
     this.dataService.getAllData().subscribe((response) => {
@@ -77,6 +81,7 @@ export class CreateTournamentComponent {
   addFromFiles(){
     let input = document.createElement("input");
     input.type = 'file';
+    input.multiple = true;
     input.addEventListener('change', (event) => {
       let files = input.files;
       if (!files || files.length <= 0){
@@ -99,5 +104,29 @@ export class CreateTournamentComponent {
     });
     input.click();
     input.remove();
+  }
+
+  numBattles(){
+    let entrants = this.trainers.length;
+    let matches = entrants * (entrants - 1) / 2;
+    return matches * this.rounds;
+  }
+
+  submitTournament(){
+    let request: TournamentRequest = {
+      trainers: this.trainers,
+      seed: this.seed == "" ? Math.round((Math.random() * 2147483647)).toString() : this.seed,
+      rounds: this.rounds
+    };
+    this.battleService.postTournamentRequest(request).subscribe((res) =>{
+      if (!res.success){
+        console.log(res.message);
+        return;
+      }
+      let a = document.createElement("a");
+      a.href = `/results/${res.id}`;
+      a.click();
+      a.remove();
+    });
   }
 }

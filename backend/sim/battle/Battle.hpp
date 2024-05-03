@@ -42,7 +42,7 @@ public:
     int player2SwitchCounter = 0;
 
     int randInt(int min, int max);
-    int getSeed();
+    size_t getSeed();
 
     Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed);
     void addMoves(const Move* move1, const Move* move2);

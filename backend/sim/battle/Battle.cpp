@@ -68,7 +68,7 @@ int Battle::randInt(int min, int max){
     return dice_roll;
 }
 
-int Battle::getSeed(){
+size_t Battle::getSeed(){
     return m_Seed;
 }
 

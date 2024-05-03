@@ -6,18 +6,18 @@
 const int MIN_TOURNAMENT_TRAINERS = 2;
 const int MAX_TOURNAMENT_BATTLES = 20000;
 
-int calculateTotalBattles(int entrants, int rounds);
+float calculateTotalBattles(int entrants, int rounds);
 
 class Tournament{
 public:
     std::vector<TournamentTrainer> trainers;
     std::vector<BattleResult> results;
     int rounds;
-    int totalBattles;
+    float totalBattles;
     const size_t seed;
 
     Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed);
-    std::vector<TournamentTrainer> run();
+    void run();
 private:
     std::default_random_engine m_Generator;
 
