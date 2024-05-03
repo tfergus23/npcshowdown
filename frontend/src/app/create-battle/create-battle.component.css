@@ -29,8 +29,19 @@ h1 {
     margin-right: auto;
 }
 
-.errors{
-    color:red;
+.errors-box{
+    background-color: rgb(46, 3, 3);
+    height: fit-content;
+    border: 3px solid red;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+
+.errors-messages{
+    height: fit-content;
+    width:fit-content;
+    color: rgb(255, 164, 164);
+    padding: 20px;
 }
 
 input, select{

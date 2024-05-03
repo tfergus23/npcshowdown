@@ -2,10 +2,16 @@
     <h1>Create a Battle</h1>
     <app-create-trainer [dataLists]="dataLists" [trainerNum]="'1'"></app-create-trainer>
     <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'"></app-create-trainer>
-    <label class="errors" [hidden]="errors.length == 0">The following problems occurred:</label>
-    <ul class="errors">
-        <li *ngFor="let error of errors">{{error}}</li>
-    </ul>
+    <div [hidden]="errors.length == 0" class="errors-box">
+        <div class="errors-messages">
+            <label>The following problems occurred:</label>
+            <ul>
+                <li *ngFor="let error of errors">{{error}}</li>
+            </ul>
+        </div>
+
+    </div>
+
     <div class="battle-seed" #seed>
         <label>Seed (Optional): </label>
         <input>

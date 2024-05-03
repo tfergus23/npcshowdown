@@ -33,27 +33,41 @@ export class CreateBattleComponent {
       trainer2: this.trainers.get(1)!.getJSON(),
       seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue
     }).subscribe(response => {
-      if (!response.success){
-        this.errors = response.message.split("\n");
-        this.errors = this.errors.filter((err) =>{
-          return err != "";
-        });
-        this.logLines = [];
-        return;
-      }
-      this.errors = [];
-      this.logLines = response.message.split("\n");
-      this.logLines = this.logLines.filter((line) =>{
-        return line != "";
-      });
+      this.showBattle(response.id);
     },
-    (error: Error) => {
-      this.errors = [];
-      this.errors.push(error.message);
+    (error) => {
+      this.showErrorResponse(error);
+    });
+  }
+
+  showBattle(id: number){
+    this.battleService.getBattle(id).subscribe(
+      (response) => {
+        this.errors = [];
+        this.logLines = response.data.split("\n");
+        this.logLines = this.logLines.filter((line) =>{
+          return line != "";
+        });
+      },
+      (error) => {
+        this.showErrorResponse(error);
+      }
+    )
+  }
+
+  showErrorResponse(error: any){
+    this.errors = [];
+    this.logLines = [];
+    if (error.error.message){
+      const response = error.error;
+      this.errors = response.message.split("\n");
       this.errors = this.errors.filter((err) =>{
         return err != "";
       });
-    });
+    }
+    else{
+      this.errors.push(error.message);
+    }
   }
   
 }

@@ -4,6 +4,8 @@
 #include "sim/data/Moves.hpp"
 #include "sim/data/Abilities.hpp"
 #include <iostream>
+#include <climits>
+#include "sim/tournament/Tournament.hpp"
 
 const int MAX_NAME_SIZE = 64;
 const std::hash<std::string> hasher;
@@ -265,12 +267,6 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
         problems += pokemonFriendlyName + "'s nickname is too long, max " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
     }
     return problems;
-}
-
-float calculateTotalBattles(int entrants, int rounds){
-    //Using floats to avoid overflow issues
-    float battles = (float) entrants * ((float) entrants - 1) / 2;
-    return battles * rounds;
 }
 
 std::string validateTournamentRequest(const json& json){

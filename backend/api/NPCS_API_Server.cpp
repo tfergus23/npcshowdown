@@ -58,6 +58,7 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
+std::string mostRecentBattleLog = "";
 
 NPCS_API_Server::NPCS_API_Server(){
     //Create routes
@@ -148,16 +149,19 @@ NPCS_API_Server::NPCS_API_Server(){
         }
         catch (...){
             response["message"] = "Bad Request: Invalid JSON";
+            res.Set_Status(400);
             res.Send(response.dump());
             return;
         }
         std::string problems = validateBattleRequest(request);
         if (problems != ""){
             response["message"] = problems;
+            res.Set_Status(400);
             res.Send(response.dump());
             return;
         }
 
+        // Simulate Battle
         Trainer trainer1(request["trainer1"]);
         Trainer trainer2(request["trainer2"]);
         std::string seedString = request["seed"].get<std::string>();
@@ -165,9 +169,13 @@ NPCS_API_Server::NPCS_API_Server(){
         Battle battle(trainer1, trainer2, seed);
         battle.simulate();
 
+        // Save the battle to the databasae
+        mostRecentBattleLog = battle.battleLog;
+
+        // Send back battle ID
         response["success"] = true;
-        response["id"] = 0;
-        response["message"] = battle.battleLog;
+        response["id"] = 1;
+        response["message"] = "OK";
         res.Send(response.dump());
     });
     
@@ -181,12 +189,14 @@ NPCS_API_Server::NPCS_API_Server(){
         }
         catch (...){
             response["message"] = "Bad Request: Invalid JSON";
+            res.Set_Status(400);
             res.Send(response.dump());
             return;
         }
         std::string problems = validateTournamentRequest(request);
         if (problems != ""){
             response["message"] = problems;
+            res.Set_Status(400);
             res.Send(response.dump());
             return;
         }
@@ -212,6 +222,35 @@ NPCS_API_Server::NPCS_API_Server(){
         response["id"] = 1;
         response["message"] = "OK";
         res.Send(response.dump());
+    });
+
+    app.Add_Handler("GET", baseRoute, "/battle/:id", [](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        size_t battleID = 0;
+        try{
+            battleID = stoul(req.path_params.at("id"));
+        }
+        catch (...){
+            response["message"] = "Sorry, that battle doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        // Look up battle in DB
+        if (battleID != 1){
+            response["message"] = "Sorry, that battle doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        response["success"] = true;
+        response["message"] = "OK";
+        response["data"] = mostRecentBattleLog;
+        res.Send(response.dump());
+
     });
 }
 

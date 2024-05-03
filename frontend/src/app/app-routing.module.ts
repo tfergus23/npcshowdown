@@ -11,7 +11,7 @@ const routes: Routes = [
   {path: "battle", component: CreateBattleComponent},
   {path: "tournament", component: CreateTournamentComponent},
   {path: "trainers", component: ViewTrainersComponent},
-  {path: "results", component: ViewResultsComponent},
+  {path: "results/:id", component: ViewResultsComponent},
 ];
 
 @NgModule({
