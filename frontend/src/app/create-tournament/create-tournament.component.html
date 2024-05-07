@@ -8,7 +8,7 @@
     </div>
     <div class="trainer-list-container">
         <div *ngFor="let trainer of trainers; index as i" class="tournament-trainer-list">
-            <app-create-trainer [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
+            <app-create-trainer [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
         </div>
     </div>
     <div class="seed-field">

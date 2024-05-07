@@ -1,33 +1,31 @@
 <div class="create-trainer-container">
 <button class="collapsible-header" (click)="toggleCollapsible()">
-    <h2>Trainer {{trainerNum}}</h2>
-    <div class="info" [hidden]="!this.collapsed">
-        <div class="name">
-            {{this.trainer.name}}
-        </div>
-        <div class="pokemon-count">
-            {{this.trainer.team.length}}/6
-        </div>
-        <div class="level">
-            {{this.trainer.trainerLevel}}
-        </div>
-    </div>
-    <button (click)="this.removeSelf()" [hidden]="this.parent == undefined" class="remove-trainer-button">X</button>
+    <label style="text-align: left;">Trainer {{trainerNum}}</label>
+    <label>{{this.trainer.name}}</label>
+    <label>{{this.trainer.team.length}}/6</label>
+    <label>{{this.trainer.trainerLevel}}</label>
+    <label *ngIf="this.results">{{this.results!.elo}}</label>
+    <label *ngIf="this.results">{{this.results!.wins}}</label>
+    <label *ngIf="this.results">{{this.results!.losses}}</label>
+    <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
+    <button *ngIf="this.results" (click)="showBattle(this.results.bestWin)" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
+    <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
 </button>
+<hr>
 <div class="import-save-buttons" [hidden]="this.collapsed">
-    <button (click)="loadFromFile();">Import from File</button>
-    <button [hidden]="this.app.loggedInUser == undefined">Import from My Trainers</button>
+    <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
+    <button [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
     <button (click)="download();">Save to File</button>
     <button [hidden]="this.app.loggedInUser == undefined">Save to My Trainers</button>
 </div>
 <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
     <div class="trainer-name">
         <label>Trainer Name: </label>
-        <input [(ngModel)]="this.trainer.name">
+        <input [(ngModel)]="this.trainer.name" [readonly]="this.readOnly">
     </div>
     <div class="trainer-level">
         <label>Trainer AI Level: </label>
-        <select [(ngModel)]="this.trainer.trainerLevel">
+        <select [(ngModel)]="this.trainer.trainerLevel" [disabled]="this.readOnly">
             <option *ngFor="let level of dataLists.trainerLevelList" value="{{level}}">{{level}}</option>
         </select>
     </div>
@@ -35,5 +33,5 @@
 <div *ngFor="let poke of this.trainer.team; index as i"  class="pokemon-list" [hidden]="this.collapsed" #container>
     <app-create-pokemon [pokemon]="poke" [dataLists]="this.dataLists" [trainer]="this.trainer" [pokeNumber]="(i+1).toString()" [parent]="this" ></app-create-pokemon>
 </div>
-<button class="add-pokemon-button" [hidden]="this.trainer.team.length > 5 || this.collapsed" (click)="addPoke()">Add Pokemon</button>
+<button class="add-pokemon-button" [hidden]="this.trainer.team.length > 5 || this.collapsed || this.readOnly" (click)="addPoke()">Add Pokemon</button>
 </div>

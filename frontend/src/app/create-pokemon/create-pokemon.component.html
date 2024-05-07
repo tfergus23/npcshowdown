@@ -1,44 +1,44 @@
 <div class="container" [hidden]="this.parent.collapsed">
     <button class="collapsible-header" (click)="toggleCollapsible()">
         <h2>Pokemon {{pokeNumber}}</h2>
-        <button class="remove-poke-button" (click)="remove()">X</button>
+        <button [hidden]="this.parent.readOnly" class="remove-poke-button" (click)="remove()">X</button>
     </button>
     <div [hidden]="collapsed" class="pokemon-fields" #fields>
         <div class="text-fields">
             <div class="left-col">
                 <div class="pokemon-species">
                     Species:
-                    <input [(ngModel)]="this.pokemon.species" type="text" list="speciesList" (focusout)="this.autoCompleteSpecies($event)">
+                    <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.species" type="text" list="speciesList" (focusout)="this.autoCompleteSpecies($event)">
                     <datalist id="speciesList">
                         <option *ngFor="let poke of dataLists.speciesList" value="{{poke}}">{{poke}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-nickname">
-                    Nickname: <input type="text" [(ngModel)]="this.pokemon.nickname">
+                    Nickname: <input [readonly]="this.parent.readOnly" type="text" [(ngModel)]="this.pokemon.nickname">
                 </div>
                 <div class="pokemon-ability">
                     Ability:
-                    <input [(ngModel)]="this.pokemon.abilityName" type="text" list="abilityList" (focusout)="this.autoCompleteAbility($event)">
+                    <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.abilityName" type="text" list="abilityList" (focusout)="this.autoCompleteAbility($event)">
                     <datalist id="abilityList">
                         <option *ngFor="let ability of dataLists.abilityList" value="{{ability}}">{{ability}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-item">
                     Item:
-                    <input [(ngModel)]="this.pokemon.itemName" type="text" list="itemList" (focusout)="this.autoCompleteItem($event)">
+                    <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.itemName" type="text" list="itemList" (focusout)="this.autoCompleteItem($event)">
                     <datalist id="itemList">
                         <option *ngFor="let item of dataLists.itemList" value="{{item}}">{{item}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-nature">
                     Nature:
-                    <select [(ngModel)]="this.pokemon.nature">
+                    <select [disabled]="this.parent.readOnly" [(ngModel)]="this.pokemon.nature">
                         <option *ngFor="let poke of dataLists.natureList" value="{{poke}}">{{poke}}</option>
                     </select>
                 </div>
                 <div class="pokemon-gender">
                     Gender:
-                    <select [(ngModel)]="this.pokemon.gender">
+                    <select [disabled]="this.parent.readOnly" [(ngModel)]="this.pokemon.gender">
                         <option value="Random">Random</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -48,52 +48,52 @@
             <div class="right-col">
                 <div class="pokemon-move">
                     Move 1:
-                    <input [(ngModel)]="this.pokemon.moves[0]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 0)">
+                    <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[0]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 0)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 2:
-                    <input [(ngModel)]="this.pokemon.moves[1]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 1)">
+                    <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[1]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 1)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 3:
-                    <input [(ngModel)]="this.pokemon.moves[2]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 2)">
+                    <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[2]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 2)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 4:
-                    <input [(ngModel)]="this.pokemon.moves[3]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 3)">
+                    <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[3]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 3)">
                     <datalist id="moveList">
                         <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
                     </datalist>
                 </div>
                 <div class="pokemon-level">
-                    Level: <input [(ngModel)]="this.pokemon.level" type="number" min="1" max="100" value="100" step="1">
+                    Level: <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.level" type="number" min="1" max="100" value="100" step="1">
                 </div>
             </div>
         </div>
         <div class="evs-ivs">
             EVs:<br> 
-            <input [(ngModel)]="this.pokemon.evs[0]" type="number" min="0" max="255" step="1">
-            <input [(ngModel)]="this.pokemon.evs[1]" type="number" min="0" max="255" step="1">
-            <input [(ngModel)]="this.pokemon.evs[2]" type="number" min="0" max="255" step="1">
-            <input [(ngModel)]="this.pokemon.evs[3]" type="number" min="0" max="255" step="1">
-            <input [(ngModel)]="this.pokemon.evs[4]" type="number" min="0" max="255" step="1">
-            <input [(ngModel)]="this.pokemon.evs[5]" type="number" min="0" max="255" step="1"><br>
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.evs[0]" type="number" min="0" max="255" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.evs[1]" type="number" min="0" max="255" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.evs[2]" type="number" min="0" max="255" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.evs[3]" type="number" min="0" max="255" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.evs[4]" type="number" min="0" max="255" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.evs[5]" type="number" min="0" max="255" step="1"><br>
             IVs:<br> 
-            <input [(ngModel)]="this.pokemon.ivs[0]" type="number" min="0" max="31" step="1">
-            <input [(ngModel)]="this.pokemon.ivs[1]" type="number" min="0" max="31" step="1">
-            <input [(ngModel)]="this.pokemon.ivs[2]" type="number" min="0" max="31" step="1">
-            <input [(ngModel)]="this.pokemon.ivs[3]" type="number" min="0" max="31" step="1">
-            <input [(ngModel)]="this.pokemon.ivs[4]" type="number" min="0" max="31" step="1">
-            <input [(ngModel)]="this.pokemon.ivs[5]" type="number" min="0" max="31" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.ivs[0]" type="number" min="0" max="31" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.ivs[1]" type="number" min="0" max="31" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.ivs[2]" type="number" min="0" max="31" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.ivs[3]" type="number" min="0" max="31" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.ivs[4]" type="number" min="0" max="31" step="1">
+            <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.ivs[5]" type="number" min="0" max="31" step="1">
         </div>
     </div>
 </div>

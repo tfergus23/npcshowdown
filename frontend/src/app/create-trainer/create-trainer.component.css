@@ -6,14 +6,18 @@
 
 .collapsible-header{
     width: 100%;
-    text-align: left;
+    text-align: center;
     height:70px;
     background-color: rgb(78, 78, 79);
     border: none;
     border-radius: 0;
     display: flex;
-    flex-direction: row;
     align-items: center;
+}
+
+.collapsible-header label{
+    width: 11%;
+
 }
 
 button:hover{
@@ -31,9 +35,6 @@ h2{
     height: 40px;
 }
 
-.info{
-    font-size: 15px;
-}
 
 .trainer-info{
     padding-bottom: 10px;
@@ -41,12 +42,12 @@ h2{
 
 .name{
     display: inline-block;
-    padding-right: 20px;
+    
 }
 
 .pokemon-count{
     display: inline-block;
-    padding-right: 20px;
+    
 }
 
 .level{
@@ -62,11 +63,11 @@ h2{
 
 .trainer-name{
     display: inline-block;
+    padding-right: 10px;
 }
 
 .trainer-level{
     display: inline-block;
-    padding-left: 10px;
 }
 
 input, select{
@@ -86,5 +87,29 @@ input, select{
 .remove-trainer-button{
     width: 30px;
     height: 30px;
+    
+}
+
+.tournament-results{
+    
+    
     margin-left: auto;
+}
+
+.tournament-results label{
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.best-win-button{
+    margin: auto;
+    border: none;
+    border-radius: 0px;
+    background: none;
+}
+
+.best-win-button:hover{
+    cursor: pointer;
+    text-decoration: underline;
+    color: aqua;
 }

@@ -7,6 +7,7 @@ import Pokemon, { createEmptyPokemon } from 'src/Pokemon';
 import { AppComponent } from '../app.component';
 import { JsonpInterceptor } from '@angular/common/http';
 import { CreateTournamentComponent } from '../create-tournament/create-tournament.component';
+import { TournamentResult } from 'src/TournamentResultSet';
 
 @Component({
   selector: 'app-create-trainer',
@@ -14,23 +15,31 @@ import { CreateTournamentComponent } from '../create-tournament/create-tournamen
   styleUrls: ['./create-trainer.component.css']
 })
 export class CreateTrainerComponent {
-  collapsed: boolean = false;
+  @Input() collapsed: boolean = false;
 
   @Input() parent: CreateTournamentComponent | undefined = undefined;
   @Input() dataLists: DataLists = new DataLists();
   @Input() trainerNum: string = "1";
   @Input() trainer: Trainer = createEmptyTrainer();
+  @Input() results: TournamentResult | undefined = undefined;
+  @Input() readOnly: boolean = false;
+
+  clickedBestWin: boolean = false; // Dumb workaround for butting a button in a button
 
   constructor(public app: AppComponent){
     
   }
 
   public toggleCollapsible() {
+    if (this.clickedBestWin){
+      this.clickedBestWin = false;
+      return;
+    }
     this.collapsed = !this.collapsed;
   }
 
   ngAfterViewInit(){
-    this.collapsed = this.parent !== undefined;
+    //this.collapsed = this.parent !== undefined;
   }
 
   addPoke(){
@@ -86,6 +95,11 @@ export class CreateTrainerComponent {
 
   removeSelf(){
     this.parent?.removeTrainer(this.trainerNum);
+  }
+
+  showBattle(battleID: number){
+    this.clickedBestWin = true;
+    console.log(`Showing battle ${battleID}`);
   }
 
 }
