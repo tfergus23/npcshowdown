@@ -10,14 +10,14 @@ import { BattleService } from '../battle.service';
 })
 export class ViewResultsComponent {
   tournamentID: number;
-  resultSet: TournamentResultSet | undefined = undefined;
+  results: string = "";
 
   constructor(private route: ActivatedRoute, private battleService: BattleService){
     this.tournamentID = Number(route.snapshot.paramMap.get('id'));
     this.battleService.getTournamentResults(this.tournamentID).subscribe(
     (response) => {
       if (response.success){
-        this.resultSet = response.data as TournamentResultSet;
+        this.results = JSON.stringify(response.data, null, 4);
       }
     },
     (error) => {

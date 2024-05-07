@@ -20,6 +20,7 @@ public:
     void run();
 private:
     std::default_random_engine m_Generator;
+    std::vector<Trainer>& m_Trainers;
 
     int randInt(int min, int max);
     void setBiggestUpsets();

@@ -7,6 +7,7 @@
 #include <thread>
 #include "api/api_utils.hpp"
 #include "sim/tournament/Tournament.hpp"
+#include <unordered_map>
 
 using namespace tfhttp;
 using json = nlohmann::json;
@@ -58,7 +59,9 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-std::string mostRecentBattleLog = "";
+std::vector<std::string> mostRecentBattleLogs;
+std::vector<TournamentTrainer> mostRecentTournamentTrainers;
+std::vector<Trainer> mostRecentTrainers;
 
 NPCS_API_Server::NPCS_API_Server(){
     //Create routes
@@ -69,7 +72,7 @@ NPCS_API_Server::NPCS_API_Server(){
     app.base_route.Use(addCORSHeaderMiddleware);
     baseRoute->Use(addCORSHeaderMiddleware);
     authorizedRoute->Use(addCORSHeaderMiddleware);
-    authorizedRoute->Use([=](const HTTP_Request& req, HTTP_Response& res){
+    authorizedRoute->Use([=, this](const HTTP_Request& req, HTTP_Response& res){
         try {
             std::string token = req.headers.at("Authorization");
             std::string username = req.path_params.at("username");
@@ -93,7 +96,7 @@ NPCS_API_Server::NPCS_API_Server(){
     app.Add_Handler("OPTIONS", "*", preflightHandler);
 
     //Add API handlers 
-    app.Add_Handler("POST", baseRoute, "/auth", [=](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", baseRoute, "/auth", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         try {
             json body = json::parse(req.body);
@@ -162,19 +165,22 @@ NPCS_API_Server::NPCS_API_Server(){
         }
 
         // Simulate Battle
+        mostRecentBattleLogs.clear();
         Trainer trainer1(request["trainer1"]);
         Trainer trainer2(request["trainer2"]);
         std::string seedString = request["seed"].get<std::string>();
         size_t seed = seedFromString(seedString);
+        std::cout << "Simulating battle...\n";
         Battle battle(trainer1, trainer2, seed);
         battle.simulate();
+        std::cout << "Done simulating battle.\n";
 
         // Save the battle to the databasae
-        mostRecentBattleLog = battle.battleLog;
+        mostRecentBattleLogs.push_back(battle.battleLog);
 
         // Send back battle ID
         response["success"] = true;
-        response["id"] = 1;
+        response["id"] = 0;
         response["message"] = "OK";
         res.Send(response.dump());
     });
@@ -208,12 +214,35 @@ NPCS_API_Server::NPCS_API_Server(){
         size_t seed = seedFromString(request["seed"].get<std::string>());
         int rounds = request["rounds"].get<int>();
 
+        std::cout << "Simulating tournament...\n";
         Tournament tournament(trainers, rounds, seed);
         tournament.run();
-
+        std::cout << "Done simulating tournament.\n";
+        
         // Create tournament record
+        mostRecentBattleLogs.clear();
+        mostRecentTournamentTrainers = tournament.trainers;
+        mostRecentTrainers = trainers;
 
         // Save upset battles to the database
+        std::unordered_map<int,int> battleIDToIndex;
+        int indexCounter = 0;
+
+        for(auto& trainer : mostRecentTournamentTrainers){
+            if (trainer.bestWin < 0) continue;
+            if (!battleIDToIndex.contains(trainer.bestWin)){
+                battleIDToIndex[trainer.bestWin] = indexCounter++;
+
+                BattleResult& br = tournament.results[trainer.bestWin];
+                const Trainer& t1 = mostRecentTrainers[tournament.trainers[br.trainer1].trainerIndex];
+                const Trainer& t2 = mostRecentTrainers[tournament.trainers[br.trainer2].trainerIndex];
+                size_t seed = br.seed;
+                Battle battle(t1, t2, seed);
+                battle.simulate();
+                mostRecentBattleLogs.push_back(battle.battleLog);
+            }
+            trainer.bestWin = battleIDToIndex[trainer.bestWin];
+        }
 
         // Save tournament trainers to the database
 
@@ -239,18 +268,55 @@ NPCS_API_Server::NPCS_API_Server(){
         }
 
         // Look up battle in DB
-        if (battleID != 1){
+        try{
+            response["success"] = true;
+            response["message"] = "OK";
+            response["data"] = mostRecentBattleLogs[battleID];
+            res.Send(response.dump());
+        }
+        catch(...){
             response["message"] = "Sorry, that battle doesn't exist.";
             res.Set_Status(404);
             res.Send(response.dump());
             return;
         }
 
-        response["success"] = true;
-        response["message"] = "OK";
-        response["data"] = mostRecentBattleLog;
-        res.Send(response.dump());
+    });
 
+    app.Add_Handler("GET", baseRoute, "/tournament/:id", [](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        size_t tournamentID = 0;
+        try{
+            tournamentID = stoul(req.path_params.at("id"));
+        }
+        catch (...){
+            response["message"] = "Sorry, that tournament doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (tournamentID != 1){
+            response["message"] = "Sorry, that tournament doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+        json data;
+        std::vector<json> trainerJSONs;
+        std::vector<json> resultJSONs;
+        for(auto& result : mostRecentTournamentTrainers){
+            resultJSONs.push_back(result.toJSON());
+        }
+        for(auto& trainer : mostRecentTrainers){
+            trainerJSONs.push_back(trainer.toJSON());
+        }
+        data["trainers"] = trainerJSONs;
+        data["results"] = resultJSONs;
+        response["success"] = true;
+        response["data"] = data;
+        res.Send(response.dump());
     });
 }
 

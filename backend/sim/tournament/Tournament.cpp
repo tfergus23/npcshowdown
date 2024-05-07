@@ -6,7 +6,7 @@ float calculateTotalBattles(int entrants, int rounds){
     return battles * rounds;
 }
 
-Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) : rounds{rounds}, totalBattles{calculateTotalBattles(trainers.size(), rounds)}, m_Generator{std::default_random_engine(seed)}, seed{seed}{
+Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) : rounds{rounds}, totalBattles{calculateTotalBattles(trainers.size(), rounds)}, m_Generator{std::default_random_engine(seed)}, seed{seed}, m_Trainers{trainers}{
     if (totalBattles > MAX_TOURNAMENT_BATTLES){
         throw std::runtime_error("Cant have more than " + std::to_string(MAX_TOURNAMENT_BATTLES) + ", tried " + std::to_string(totalBattles));
     }
@@ -21,7 +21,7 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
     for (auto& trainer : trainers){
         this->trainers.push_back(
             {
-                .trainer = trainer
+                .trainerIndex = id++
             }
         );
     }
@@ -49,7 +49,8 @@ void Tournament::run(){
     for(int i = 0; i < rounds; i++){
         for(int j = 0; j < trainers.size(); j++){
             for(int k = j + 1; k < trainers.size(); k++){
-                Battle battle(this->trainers[j].trainer, this->trainers[k].trainer, randInt(0, INT_MAX));
+                Battle battle(m_Trainers[this->trainers[j].trainerIndex], m_Trainers[this->trainers[k].trainerIndex], randInt(0, INT_MAX));
+                battle.doLogging = false;
                 battle.simulate();
                 BattleResult result = determineBattleResult(battle, j, k);
                 results.push_back(result);

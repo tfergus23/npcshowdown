@@ -17,12 +17,12 @@ void TournamentTrainer::calculateElo(){
 json TournamentTrainer::toJSON(){
     json json;
 
-    json["name"] = trainer.getFullName();
     json["elo"] = elo;
     json["wins"] = wins;
     json["losses"] = losses;
     json["bestWin"] = bestWin;
     json["bestWinEloDiff"] = bestWinEloDiff;
+    json["index"] = trainerIndex;
 
     return json;
 }

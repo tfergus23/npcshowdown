@@ -31,10 +31,14 @@ std::string Trainer::getFullName() const{
 }
 
 json Trainer::toJSON() const{
+    std::vector<json> teamJSON;
+    for(auto& poke: teamBlueprint){
+        teamJSON.push_back(poke.toJSON());
+    }
     json json = {
         {"name", trainerInfo.name},
         {"trainerLevel", stringFromTrainerLevel(trainerInfo.trainerLevel)},
-        {"team", {teamBlueprint[0].toJSON(),teamBlueprint[1].toJSON(),teamBlueprint[2].toJSON(),teamBlueprint[3].toJSON(),teamBlueprint[4].toJSON(),teamBlueprint[5].toJSON()}}
+        {"team", teamJSON}
     };
     return json;
 }

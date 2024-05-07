@@ -1,6 +1,6 @@
 import Trainer from "./Trainer"
 
-export interface TournamentTrainer{
+export interface TournamentResult{
     index: number,
     elo: number,
     wins: number,
@@ -10,6 +10,6 @@ export interface TournamentTrainer{
 }
 
 export interface TournamentResultSet{
-    tournamentTrainers: Array<TournamentTrainer>,
+    results: Array<TournamentResult>,
     trainers: Array<Trainer>
 }
