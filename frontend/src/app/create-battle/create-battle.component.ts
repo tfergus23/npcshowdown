@@ -4,13 +4,15 @@ import { DataService } from '../data.service';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
 import { BattleService } from '../battle.service';
 
+const SERVICE_DOWN_RESPONSE = "Sorry, it looks like the service is down. Please try again some other time.";
+
 @Component({
   selector: 'app-create-battle',
   templateUrl: './create-battle.component.html',
   styleUrls: ['./create-battle.component.css']
 })
 export class CreateBattleComponent {
-  dataLists!: DataLists;
+  dataLists?: DataLists;
   @ViewChildren(CreateTrainerComponent) trainers!: QueryList<CreateTrainerComponent>;
   @ViewChild('seed') seed!: ElementRef<HTMLElement>;
   errors: Array<string> = [];
@@ -19,6 +21,9 @@ export class CreateBattleComponent {
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
+    },
+    (error) => {
+      this.errors.push(SERVICE_DOWN_RESPONSE)
     });
   }
 
@@ -66,7 +71,7 @@ export class CreateBattleComponent {
       });
     }
     else{
-      this.errors.push(error.message);
+      this.errors.push(SERVICE_DOWN_RESPONSE);
     }
   }
   

@@ -12,7 +12,7 @@ import Trainer from 'src/Trainer';
   styleUrls: ['./create-pokemon.component.css']
 })
 export class CreatePokemonComponent {
-  @Input() dataLists: DataLists = new DataLists();
+  @Input() dataLists?: DataLists = new DataLists();
   @Input() pokeNumber: string = "1";
   @Input() parent!: CreateTrainerComponent;
   @Input() trainer!: Trainer;
@@ -30,6 +30,7 @@ export class CreatePokemonComponent {
   }
 
   autoCompleteSpecies(event: FocusEvent){
+    if (this.parent.readOnly) return;
     let input: HTMLInputElement = event.target as HTMLInputElement;
     let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
     for (let i = 0; i < dataList.options.length; i++){
@@ -43,6 +44,7 @@ export class CreatePokemonComponent {
   }
 
   autoCompleteItem(event: FocusEvent){
+    if (this.parent.readOnly) return;
     let input: HTMLInputElement = event.target as HTMLInputElement;
     let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
     for (let i = 0; i < dataList.options.length; i++){
@@ -56,6 +58,7 @@ export class CreatePokemonComponent {
   }
 
   autoCompleteAbility(event: FocusEvent){
+    if (this.parent.readOnly) return;
     let input: HTMLInputElement = event.target as HTMLInputElement;
     let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
     for (let i = 0; i < dataList.options.length; i++){
@@ -69,6 +72,7 @@ export class CreatePokemonComponent {
   }
 
   autoCompleteMove(event: FocusEvent, index: number){
+    if (this.parent.readOnly) return;
     let input: HTMLInputElement = event.target as HTMLInputElement;
     let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
     for (let i = 0; i < dataList.options.length; i++){

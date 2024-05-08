@@ -70,4 +70,47 @@ export class ViewResultsComponent {
       return r2.bestWinEloDiff - r1.bestWinEloDiff;
     });
   }
+
+  sortByName(){
+    this.results.results.sort((r1,r2) =>{
+      const name1 = this.results.trainers[r1.index].name;
+      const name2 = this.results.trainers[r2.index].name;
+
+      if (name1 > name2){
+        return 1;
+      }
+      else{
+        return -1;
+      }
+    });
+  }
+
+  sortByPokemonCount(){
+    this.results.results.sort((r1,r2) =>{
+      const count1 = this.results.trainers[r1.index].team.length;
+      const count2 = this.results.trainers[r2.index].team.length;
+
+      return count2 - count1;
+    });
+  }
+
+  sortByTrainerLevel(){
+    this.results.results.sort((r1,r2) =>{
+      const level1 = this.results.trainers[r1.index].trainerLevel;
+      const level2 = this.results.trainers[r2.index].trainerLevel;
+
+      if (level1 > level2){
+        return 1;
+      }
+      else{
+        return -1;
+      }
+    });
+  }
+
+  sortByTrainerNumber(){
+    this.results.results.sort((r1,r2) =>{
+      return r1.index - r2.index;
+    });
+  }
 }

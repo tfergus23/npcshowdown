@@ -16,6 +16,7 @@ using json = nlohmann::json;
 #define WEBSITE_URL "http://localhost:4200"
 #define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With"
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
+const size_t MAX_REQUEST_SIZE = 524288;
 
 const std::string SPECIES_DATA_RESPONSE = createSpeciesDataResponse();
 const std::string ABILITY_DATA_RESPONSE = createAbilityDataResponse();
@@ -63,7 +64,8 @@ std::vector<std::string> mostRecentBattleLogs;
 std::vector<TournamentTrainer> mostRecentTournamentTrainers;
 std::vector<Trainer> mostRecentTrainers;
 
-NPCS_API_Server::NPCS_API_Server(){
+NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
+
     //Create routes
     Route* baseRoute = app.Create_Route("/api");
     Route* authorizedRoute = app.Create_Route("/api/user/:username");

@@ -9,9 +9,6 @@
                 <div class="pokemon-species">
                     Species:
                     <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.species" type="text" list="speciesList" (focusout)="this.autoCompleteSpecies($event)">
-                    <datalist id="speciesList">
-                        <option *ngFor="let poke of dataLists.speciesList" value="{{poke}}">{{poke}}</option>
-                    </datalist>
                 </div>
                 <div class="pokemon-nickname">
                     Nickname: <input [readonly]="this.parent.readOnly" type="text" [(ngModel)]="this.pokemon.nickname">
@@ -19,21 +16,15 @@
                 <div class="pokemon-ability">
                     Ability:
                     <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.abilityName" type="text" list="abilityList" (focusout)="this.autoCompleteAbility($event)">
-                    <datalist id="abilityList">
-                        <option *ngFor="let ability of dataLists.abilityList" value="{{ability}}">{{ability}}</option>
-                    </datalist>
                 </div>
                 <div class="pokemon-item">
                     Item:
                     <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.itemName" type="text" list="itemList" (focusout)="this.autoCompleteItem($event)">
-                    <datalist id="itemList">
-                        <option *ngFor="let item of dataLists.itemList" value="{{item}}">{{item}}</option>
-                    </datalist>
                 </div>
                 <div class="pokemon-nature">
                     Nature:
                     <select [disabled]="this.parent.readOnly" [(ngModel)]="this.pokemon.nature">
-                        <option *ngFor="let poke of dataLists.natureList" value="{{poke}}">{{poke}}</option>
+                        <option *ngFor="let poke of dataLists?.natureList" value="{{poke}}">{{poke}}</option>
                     </select>
                 </div>
                 <div class="pokemon-gender">
@@ -49,30 +40,18 @@
                 <div class="pokemon-move">
                     Move 1:
                     <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[0]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 0)">
-                    <datalist id="moveList">
-                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
-                    </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 2:
                     <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[1]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 1)">
-                    <datalist id="moveList">
-                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
-                    </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 3:
                     <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[2]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 2)">
-                    <datalist id="moveList">
-                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
-                    </datalist>
                 </div>
                 <div class="pokemon-move">
                     Move 4:
                     <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.moves[3]" type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 3)">
-                    <datalist id="moveList">
-                        <option *ngFor="let move of dataLists.moveList" value="{{move}}">{{move}}</option>
-                    </datalist>
                 </div>
                 <div class="pokemon-level">
                     Level: <input [readonly]="this.parent.readOnly" [(ngModel)]="this.pokemon.level" type="number" min="1" max="100" value="100" step="1">

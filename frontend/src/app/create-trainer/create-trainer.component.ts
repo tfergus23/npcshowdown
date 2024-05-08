@@ -18,13 +18,13 @@ export class CreateTrainerComponent {
   @Input() collapsed: boolean = false;
 
   @Input() parent: CreateTournamentComponent | undefined = undefined;
-  @Input() dataLists: DataLists = new DataLists();
+  @Input() dataLists?: DataLists = new DataLists();
   @Input() trainerNum: string = "1";
   @Input() trainer: Trainer = createEmptyTrainer();
   @Input() results: TournamentResult | undefined = undefined;
   @Input() readOnly: boolean = false;
 
-  clickedBestWin: boolean = false; // Dumb workaround for butting a button in a button
+  clickedBestWin: boolean = false; // Dumb workaround for putting a button in a button
 
   constructor(public app: AppComponent){
     
@@ -39,7 +39,7 @@ export class CreateTrainerComponent {
   }
 
   ngAfterViewInit(){
-    //this.collapsed = this.parent !== undefined;
+    
   }
 
   addPoke(){

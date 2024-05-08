@@ -2,6 +2,7 @@
 #include "sim/battle/Battle.hpp"
 #include "tfhttp/HTTP_Server.hpp"
 
+
 class NPCS_API_Server{
 public:
     NPCS_API_Server();

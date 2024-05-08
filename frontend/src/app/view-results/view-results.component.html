@@ -2,19 +2,19 @@
     <h1>Showing results for tournament #{{this.tournamentID}}</h1>
     <p>Click on the column headers to sort the list. You can also click the numbers in the best win column to view the battles.</p>
     <div class="result-column-headers">
-        <button style="text-align: left;">Trainer #</button>
-        <button>Name</button>
-        <button># Pokemon</button>
-        <button>Level</button>
+        <button (click)="sortByTrainerNumber()" style="text-align: left;">Trainer #</button>
+        <button (click)="sortByName()">Name</button>
+        <button (click)="sortByPokemonCount()"># Pokemon</button>
+        <button (click)="sortByTrainerLevel()">Level</button>
         <button (click)="sortByELO()">ELO</button>
         <button (click)="sortByWins()">Wins</button>
         <button (click)="sortByLosses()">Losses</button>
         <button (click)="sortByWLRatio()">Ratio</button>
         <button (click)="sortByBestWin()">Best Win</button>
     </div>
-    <div class="trainer-list-container">
+    <div *ngIf="this.results" class="trainer-list-container">
         <div *ngFor="let result of results.results; index as i" class="tournament-trainer-list">
-            <app-create-trainer [collapsed]="true" [results]="result" [dataLists]="this.dataLists" [readOnly]="true" [trainer]="this.results.trainers[result.index]" [trainerNum]="(i+1).toString()"></app-create-trainer>
+            <app-create-trainer [collapsed]="true" [results]="result" [dataLists]="this.dataLists" [readOnly]="true" [trainer]="this.results.trainers[result.index]" [trainerNum]="(result.index+1).toString()"></app-create-trainer>
         </div>
     </div>
 </div>
