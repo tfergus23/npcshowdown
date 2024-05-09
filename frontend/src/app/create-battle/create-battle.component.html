@@ -1,9 +1,11 @@
 <app-data-lists [dataLists]="this.dataLists"></app-data-lists>
-<div class="container">
+<div [ngStyle]="{'pointer-events': this.pointerEvents}" class="container">
     <h1>Create a Battle</h1>
-    <div id="test-div-yo"></div>
-    <app-create-trainer [dataLists]="dataLists" [trainerNum]="'1'"></app-create-trainer>
-    <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'"></app-create-trainer>
+    <div class="trainer-list">
+        <app-create-trainer [dataLists]="dataLists" [trainerNum]="'1'"></app-create-trainer>
+        <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'"></app-create-trainer>
+    </div>
+
     <div [hidden]="errors.length == 0" class="errors-box">
         <div class="errors-messages">
             <label>The following problems occurred:</label>
@@ -23,3 +25,4 @@
         <li *ngFor="let line of logLines">{{line}}</li>
     </ul>
 </div>
+<app-battle-log-view #logView></app-battle-log-view>

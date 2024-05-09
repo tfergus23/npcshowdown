@@ -1,8 +1,9 @@
+
+
 .container{
     text-align: left;
     margin: auto;
-    width: 68%;
-    height: 5000px;
+    width: 90%;
 }
 
 h1 {
@@ -52,4 +53,9 @@ input, select{
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
+}
+
+.trainer-list{
+    height: 60vb;
+    overflow-y: scroll;
 }

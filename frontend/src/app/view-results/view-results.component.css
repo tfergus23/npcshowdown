@@ -18,3 +18,8 @@
 .result-column-headers button:hover{
     background: rgb(105, 105, 106);
 }
+
+.trainer-list-container{
+    height: 75vmin;
+    overflow: scroll;
+}

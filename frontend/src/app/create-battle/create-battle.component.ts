@@ -3,6 +3,7 @@ import DataLists from 'src/DataLists';
 import { DataService } from '../data.service';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
 import { BattleService } from '../battle.service';
+import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.component';
 
 const SERVICE_DOWN_RESPONSE = "Sorry, it looks like the service is down. Please try again some other time.";
 
@@ -17,6 +18,8 @@ export class CreateBattleComponent {
   @ViewChild('seed') seed!: ElementRef<HTMLElement>;
   errors: Array<string> = [];
   logLines: Array<string> = [];
+  showingBattle: boolean = false;
+  @ViewChild('logView') logView!: BattleLogViewComponent
   constructor(private dataService: DataService, private battleService: BattleService){
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
@@ -26,12 +29,14 @@ export class CreateBattleComponent {
       this.errors.push(SERVICE_DOWN_RESPONSE)
     });
   }
+  pointerEvents?: string;
 
   ngOnInit() : void{
-
+    
   }
 
   submit(){
+    console.log(this.pointerEvents);
     let seedValue = this.seed.nativeElement.querySelector('input')!.value.trim();
     this.battleService.postBattleRequest({
       trainer1: this.trainers.get(0)!.getJSON(),
@@ -45,14 +50,17 @@ export class CreateBattleComponent {
     });
   }
 
+  onBattleClose(){
+  }
+
   showBattle(id: number){
     this.battleService.getBattle(id).subscribe(
       (response) => {
         this.errors = [];
-        this.logLines = response.data.split("\n");
-        this.logLines = this.logLines.filter((line) =>{
-          return line != "";
-        });
+        this.logView.battleID = id;
+        this.logView.log = response.data;
+        this.logView.hidden = false;
+        
       },
       (error) => {
         this.showErrorResponse(error);

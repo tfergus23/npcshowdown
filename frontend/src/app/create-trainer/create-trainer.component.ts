@@ -8,6 +8,8 @@ import { AppComponent } from '../app.component';
 import { JsonpInterceptor } from '@angular/common/http';
 import { CreateTournamentComponent } from '../create-tournament/create-tournament.component';
 import { TournamentResult } from 'src/TournamentResultSet';
+import { BattleService } from '../battle.service';
+import { ViewResultsComponent } from '../view-results/view-results.component';
 
 @Component({
   selector: 'app-create-trainer',
@@ -17,16 +19,17 @@ import { TournamentResult } from 'src/TournamentResultSet';
 export class CreateTrainerComponent {
   @Input() collapsed: boolean = false;
 
-  @Input() parent: CreateTournamentComponent | undefined = undefined;
+  @Input() parent: CreateTournamentComponent  | undefined = undefined;
   @Input() dataLists?: DataLists = new DataLists();
   @Input() trainerNum: string = "1";
   @Input() trainer: Trainer = createEmptyTrainer();
   @Input() results: TournamentResult | undefined = undefined;
   @Input() readOnly: boolean = false;
+  @Input() resultsView: ViewResultsComponent | undefined;
 
   clickedBestWin: boolean = false; // Dumb workaround for putting a button in a button
 
-  constructor(public app: AppComponent){
+  constructor(public app: AppComponent, private battleService: BattleService){
     
   }
 
@@ -99,7 +102,11 @@ export class CreateTrainerComponent {
 
   showBattle(battleID: number){
     this.clickedBestWin = true;
-    console.log(`Showing battle ${battleID}`);
+    this.battleService.getBattle(battleID).subscribe((response) => {
+      this.resultsView!.logView.battleID = battleID;
+      this.resultsView!.logView.log = response.data;
+      this.resultsView!.logView.hidden = false;
+    });
   }
 
 }

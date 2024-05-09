@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TournamentResultSet } from 'src/TournamentResultSet';
 import { BattleService } from '../battle.service';
 import DataLists from 'src/DataLists';
 import { DataService } from '../data.service';
+import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.component';
 
 const SORT_ELO = 0;
 const SORT_WINS = 1;
@@ -21,6 +22,7 @@ export class ViewResultsComponent {
   results!: TournamentResultSet;
   dataLists!: DataLists;
   mostRecentSort: number = -1;
+  @ViewChild('logView') logView!: BattleLogViewComponent;
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService){
     this.tournamentID = Number(route.snapshot.paramMap.get('id'));

@@ -68,8 +68,3 @@ html, body{
     margin: auto;
     margin-top: 20px;
 }
-
-.submit-btn:disabled{
-    background-color: gray;
-    cursor:not-allowed;
-}
