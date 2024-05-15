@@ -14,7 +14,7 @@ void TournamentTrainer::calculateElo(){
     int bestWinEloDiff = INT_MIN;
 */
 
-json TournamentTrainer::toJSON(){
+json TournamentTrainer::toJSON() const{
     json json;
 
     json["elo"] = elo;

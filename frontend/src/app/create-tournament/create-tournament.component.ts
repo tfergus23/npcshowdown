@@ -54,7 +54,7 @@ export class CreateTournamentComponent {
           try{
             let trainer: Trainer = JSON.parse(text) as Trainer;
             this.trainers.push(trainer);
-            if (this.trainers.length == files!.length){
+            if (i+1 == files!.length){
               this.importingTrainers = false;
             }
           }

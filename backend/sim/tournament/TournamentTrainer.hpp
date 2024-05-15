@@ -14,5 +14,5 @@ public:
     int bestWinEloDiff = INT_MIN;
 
     void calculateElo();
-    json toJSON();
+    json toJSON() const;
 };

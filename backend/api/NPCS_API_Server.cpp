@@ -8,6 +8,7 @@
 #include "api/api_utils.hpp"
 #include "sim/tournament/Tournament.hpp"
 #include <unordered_map>
+#include <unordered_set>
 
 using namespace tfhttp;
 using json = nlohmann::json;
@@ -60,9 +61,60 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-std::vector<std::string> mostRecentBattleLogs;
-std::vector<TournamentTrainer> mostRecentTournamentTrainers;
-std::vector<Trainer> mostRecentTrainers;
+struct TournamentResults{
+    std::vector<TournamentTrainer> trainerStats;
+    std::vector<size_t> trainers;
+};
+
+// Mock database
+std::vector<json> savedTrainers;
+std::vector<BattleResult> savedBattles;
+std::vector<TournamentResults> savedTournaments;
+
+size_t saveTrainer(const json& json){
+    savedTrainers.push_back(json);
+    return savedTrainers.size() - 1; // Race condition?
+}
+
+size_t saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const Battle& battle){
+    size_t t1ID = saveTrainer(trainer1.toJSON());
+    size_t t2ID = saveTrainer(trainer2.toJSON());
+    size_t winner = battle.winner == battle.getPlayer1() ? t1ID : t2ID;
+    savedBattles.push_back({t1ID, t2ID, seed, winner});
+    return savedBattles.size() - 1; // Race condition?
+}
+
+size_t saveBattle(const BattleResult result){
+    savedBattles.push_back(result);
+    return savedBattles.size() - 1; // Race condiiton?
+}
+
+size_t saveTournament(const Tournament& tournament){
+    TournamentResults result;
+    std::vector<size_t> trainers;
+    for (auto& trainer : tournament.m_Trainers){
+        trainers.push_back(saveTrainer(trainer.toJSON()));
+    }
+    result.trainers = trainers;
+
+    std::vector<TournamentTrainer> stats;
+    std::unordered_map<size_t,size_t> addedBattles;
+    for (auto stat : tournament.trainers){
+        if (!addedBattles.contains(stat.bestWin) && stat.bestWin >= 0){
+            BattleResult bestWin = tournament.results[stat.bestWin];
+            bestWin.trainer1 = trainers[bestWin.trainer1];
+            bestWin.trainer2 = trainers[bestWin.trainer2];
+            bestWin.winner = trainers[bestWin.winner];
+            addedBattles[stat.bestWin] = saveBattle(bestWin);
+        }
+        stat.bestWin = addedBattles[stat.bestWin];
+        stats.push_back(stat);
+    }
+    result.trainerStats = stats;
+    
+    savedTournaments.push_back(result);
+    return savedTournaments.size() - 1;
+}
 
 NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
@@ -167,7 +219,6 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
 
         // Simulate Battle
-        mostRecentBattleLogs.clear();
         Trainer trainer1(request["trainer1"]);
         Trainer trainer2(request["trainer2"]);
         std::string seedString = request["seed"].get<std::string>();
@@ -178,11 +229,11 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         std::cout << "Done simulating battle.\n";
 
         // Save the battle to the databasae
-        mostRecentBattleLogs.push_back(battle.battleLog);
+        size_t id = saveBattle(trainer1, trainer2, seed, battle);
 
         // Send back battle ID
         response["success"] = true;
-        response["id"] = 0;
+        response["id"] = id;
         response["message"] = "OK";
         res.Send(response.dump());
     });
@@ -221,36 +272,12 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         tournament.run();
         std::cout << "Done simulating tournament.\n";
         
-        // Create tournament record
-        mostRecentBattleLogs.clear();
-        mostRecentTournamentTrainers = tournament.trainers;
-        mostRecentTrainers = trainers;
-
-        // Save upset battles to the database
-        std::unordered_map<int,int> battleIDToIndex;
-        int indexCounter = 0;
-
-        for(auto& trainer : mostRecentTournamentTrainers){
-            if (trainer.bestWin < 0) continue;
-            if (!battleIDToIndex.contains(trainer.bestWin)){
-                battleIDToIndex[trainer.bestWin] = indexCounter++;
-
-                BattleResult& br = tournament.results[trainer.bestWin];
-                const Trainer& t1 = mostRecentTrainers[tournament.trainers[br.trainer1].trainerIndex];
-                const Trainer& t2 = mostRecentTrainers[tournament.trainers[br.trainer2].trainerIndex];
-                size_t seed = br.seed;
-                Battle battle(t1, t2, seed);
-                battle.simulate();
-                mostRecentBattleLogs.push_back(battle.battleLog);
-            }
-            trainer.bestWin = battleIDToIndex[trainer.bestWin];
-        }
-
-        // Save tournament trainers to the database
+        // Save tournament to DB
+        size_t id = saveTournament(tournament);
 
         // Send back tournament ID
         response["success"] = true;
-        response["id"] = 1;
+        response["id"] = id;
         response["message"] = "OK";
         res.Send(response.dump());
     });
@@ -271,9 +298,16 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
         // Look up battle in DB
         try{
+            BattleResult br = savedBattles.at(battleID);
+            Trainer trainer1(savedTrainers[br.trainer1]);
+            Trainer trainer2(savedTrainers[br.trainer2]);
+            size_t seed = br.seed;
+            Battle battle(trainer1, trainer2, seed);
+            battle.simulate();
+
             response["success"] = true;
             response["message"] = "OK";
-            response["data"] = mostRecentBattleLogs[battleID];
+            response["data"] = battle.battleLog;
             res.Send(response.dump());
         }
         catch(...){
@@ -300,25 +334,31 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
 
         if (tournamentID != 1){
+
+        }
+        try{
+            const TournamentResults& tr = savedTournaments.at(tournamentID);
+            json data;
+            std::vector<json> trainerJSONs;
+            std::vector<json> statJSONs;
+            for(auto& stat : tr.trainerStats){
+                statJSONs.push_back(stat.toJSON());
+            }
+            for(auto trainer : tr.trainers){
+                trainerJSONs.push_back(savedTrainers.at(trainer));
+            }
+            data["trainers"] = trainerJSONs;
+            data["results"] = statJSONs;
+            response["success"] = true;
+            response["data"] = data;
+            res.Send(response.dump());
+        }
+        catch (...){
             response["message"] = "Sorry, that tournament doesn't exist.";
             res.Set_Status(404);
             res.Send(response.dump());
             return;
         }
-        json data;
-        std::vector<json> trainerJSONs;
-        std::vector<json> resultJSONs;
-        for(auto& result : mostRecentTournamentTrainers){
-            resultJSONs.push_back(result.toJSON());
-        }
-        for(auto& trainer : mostRecentTrainers){
-            trainerJSONs.push_back(trainer.toJSON());
-        }
-        data["trainers"] = trainerJSONs;
-        data["results"] = resultJSONs;
-        response["success"] = true;
-        response["data"] = data;
-        res.Send(response.dump());
     });
 }
 

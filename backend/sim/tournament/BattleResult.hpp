@@ -1,8 +1,8 @@
 #pragma once
 
 struct BattleResult{
-    int trainer1;
-    int trainer2;
-    int seed;
-    int winner;
+    size_t trainer1;
+    size_t trainer2;
+    size_t seed;
+    size_t winner;
 };

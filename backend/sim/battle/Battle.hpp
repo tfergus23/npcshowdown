@@ -17,8 +17,8 @@ class Trainer;
 
 class Battle{
 public:
-    const TrainerInfo* getPlayer1();
-    const TrainerInfo* getPlayer2();
+    const TrainerInfo* getPlayer1() const;
+    const TrainerInfo* getPlayer2() const;
     std::array<Pokemon,6> player1Team;
     std::array<Pokemon,6> player2Team;
     Pokemon* player1ActivePokemon;

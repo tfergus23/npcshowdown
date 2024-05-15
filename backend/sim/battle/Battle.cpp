@@ -28,10 +28,10 @@ m_Generator{std::default_random_engine(m_Seed)}
     raiseEvent(POKEMON_ENTER, EventArgs(m_SlowerPokemon, nullptr));
 }
 
-const TrainerInfo* Battle::getPlayer1() {
+const TrainerInfo* Battle::getPlayer1() const {
     return &m_Player1;
 }
-const TrainerInfo* Battle::getPlayer2() {
+const TrainerInfo* Battle::getPlayer2() const {
     return &m_Player2;
 }
 
