@@ -1,5 +1,5 @@
 #pragma once
-#include "TournamentTrainer.hpp"
+#include "TrainerStats.hpp"
 #include "BattleResult.hpp"
 #include <random>
 
@@ -10,7 +10,7 @@ float calculateTotalBattles(int entrants, int rounds);
 
 class Tournament{
 public:
-    std::vector<TournamentTrainer> trainers;
+    std::vector<TrainerStats> trainerStats;
     std::vector<BattleResult> results;
     int rounds;
     float totalBattles;
@@ -18,7 +18,7 @@ public:
 
     Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed);
     void run();
-    std::vector<Trainer>& m_Trainers;
+    std::vector<Trainer>& trainers;
 private:
     std::default_random_engine m_Generator;
 

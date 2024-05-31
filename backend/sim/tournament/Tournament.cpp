@@ -6,7 +6,7 @@ float calculateTotalBattles(int entrants, int rounds){
     return battles * rounds;
 }
 
-Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) : rounds{rounds}, totalBattles{calculateTotalBattles(trainers.size(), rounds)}, m_Generator{std::default_random_engine(seed)}, seed{seed}, m_Trainers{trainers}{
+Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) : rounds{rounds}, totalBattles{calculateTotalBattles(trainers.size(), rounds)}, m_Generator{std::default_random_engine(seed)}, seed{seed}, trainers{trainers}{
     if (totalBattles > MAX_TOURNAMENT_BATTLES){
         throw std::runtime_error("Cant have more than " + std::to_string(MAX_TOURNAMENT_BATTLES) + ", tried " + std::to_string(totalBattles));
     }
@@ -19,7 +19,7 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
 
     int id = 0;
     for (auto& trainer : trainers){
-        this->trainers.push_back(
+        this->trainerStats.push_back(
             {
                 .trainerIndex = id++
             }
@@ -49,15 +49,15 @@ void Tournament::run(){
     for(int i = 0; i < rounds; i++){
         for(int j = 0; j < trainers.size(); j++){
             for(int k = j + 1; k < trainers.size(); k++){
-                Battle battle(m_Trainers[this->trainers[j].trainerIndex], m_Trainers[this->trainers[k].trainerIndex], randInt(0, INT_MAX));
+                Battle battle(trainers[this->trainerStats[j].trainerIndex], trainers[this->trainerStats[k].trainerIndex], randInt(0, INT_MAX));
                 battle.doLogging = false;
                 battle.simulate();
                 BattleResult result = determineBattleResult(battle, j, k);
                 results.push_back(result);
                 if (!battle.isDraw){
                     int loserIndex = result.winner == result.trainer1 ? result.trainer2 : result.trainer1;
-                    TournamentTrainer& winner = trainers[result.winner];
-                    TournamentTrainer& loser = trainers[loserIndex];
+                    TrainerStats& winner = trainerStats[result.winner];
+                    TrainerStats& loser = trainerStats[loserIndex];
                     winner.wins++;
                     loser.losses++;
                     winner.opponentRatingsTotal += loser.elo;
@@ -82,8 +82,8 @@ void Tournament::setBiggestUpsets(){
         BattleResult& result = results[i];
 
         if (result.winner == -1) continue;
-        TournamentTrainer& winner = trainers[result.winner];
-        TournamentTrainer& loser = trainers[result.winner == result.trainer1 ? result.trainer2 : result.trainer1];
+        TrainerStats& winner = trainerStats[result.winner];
+        TrainerStats& loser = trainerStats[result.winner == result.trainer1 ? result.trainer2 : result.trainer1];
 
         int winnerEloDiff = loser.elo - winner.elo;
         if (winnerEloDiff > winner.bestWinEloDiff){

@@ -1,6 +1,6 @@
-#include "TournamentTrainer.hpp"
+#include "TrainerStats.hpp"
 
-void TournamentTrainer::calculateElo(){
+void TrainerStats::calculateElo(){
     elo = (opponentRatingsTotal + 400 * (wins - losses)) / (wins + losses);
 }
 /*
@@ -14,7 +14,7 @@ void TournamentTrainer::calculateElo(){
     int bestWinEloDiff = INT_MIN;
 */
 
-json TournamentTrainer::toJSON() const{
+json TrainerStats::toJSON() const{
     json json;
 
     json["elo"] = elo;

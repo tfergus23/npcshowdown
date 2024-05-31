@@ -2,7 +2,7 @@
 #include "sim/battle/Battle.hpp"
 #include "limits.h"
 
-class TournamentTrainer{
+class TrainerStats{
 public:
     int trainerIndex = -1;
     int elo = 1000;

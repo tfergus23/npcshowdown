@@ -62,44 +62,58 @@ std::string createAllDataResponse(){
 }
 
 struct TournamentResults{
-    std::vector<TournamentTrainer> trainerStats;
+    std::vector<TrainerStats> trainerStats;
     std::vector<size_t> trainers;
 };
 
 // Mock database
 std::vector<json> savedTrainers;
+std::mutex saveTrainerMutex;
+
 std::vector<BattleResult> savedBattles;
+std::mutex saveBattleMutex;
+
 std::vector<TournamentResults> savedTournaments;
+std::mutex saveTournamentMutex;
 
 size_t saveTrainer(const json& json){
+    saveTrainerMutex.lock();
     savedTrainers.push_back(json);
-    return savedTrainers.size() - 1; // Race condition?
+    size_t id = savedTrainers.size() - 1;
+    saveTrainerMutex.unlock();
+    return id;
 }
 
 size_t saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const Battle& battle){
     size_t t1ID = saveTrainer(trainer1.toJSON());
     size_t t2ID = saveTrainer(trainer2.toJSON());
     size_t winner = battle.winner == battle.getPlayer1() ? t1ID : t2ID;
+    saveBattleMutex.lock();
     savedBattles.push_back({t1ID, t2ID, seed, winner});
-    return savedBattles.size() - 1; // Race condition?
+    size_t id = savedBattles.size() - 1;
+    saveBattleMutex.unlock();
+    return id;
 }
 
 size_t saveBattle(const BattleResult result){
+    saveBattleMutex.lock();
     savedBattles.push_back(result);
-    return savedBattles.size() - 1; // Race condiiton?
+    size_t id = savedBattles.size() - 1;
+    saveBattleMutex.unlock();
+    return id;
 }
 
 size_t saveTournament(const Tournament& tournament){
     TournamentResults result;
     std::vector<size_t> trainers;
-    for (auto& trainer : tournament.m_Trainers){
+    for (auto& trainer : tournament.trainers){
         trainers.push_back(saveTrainer(trainer.toJSON()));
     }
     result.trainers = trainers;
 
-    std::vector<TournamentTrainer> stats;
+    std::vector<TrainerStats> stats;
     std::unordered_map<size_t,size_t> addedBattles;
-    for (auto stat : tournament.trainers){
+    for (auto stat : tournament.trainerStats){
         if (!addedBattles.contains(stat.bestWin) && stat.bestWin >= 0){
             BattleResult bestWin = tournament.results[stat.bestWin];
             bestWin.trainer1 = trainers[bestWin.trainer1];
@@ -112,8 +126,11 @@ size_t saveTournament(const Tournament& tournament){
     }
     result.trainerStats = stats;
     
+    saveTournamentMutex.lock();
     savedTournaments.push_back(result);
-    return savedTournaments.size() - 1;
+    size_t id = savedTournaments.size() - 1;
+    saveTournamentMutex.unlock();
+    return id;
 }
 
 NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
