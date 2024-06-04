@@ -9,6 +9,8 @@
 #include "sim/tournament/Tournament.hpp"
 #include <unordered_map>
 #include <unordered_set>
+#include <mutex>
+
 
 using namespace tfhttp;
 using json = nlohmann::json;
@@ -64,6 +66,7 @@ std::string createAllDataResponse(){
 struct TournamentResults{
     std::vector<TrainerStats> trainerStats;
     std::vector<size_t> trainers;
+    bool ready = false;
 };
 
 // Mock database
@@ -84,12 +87,11 @@ size_t saveTrainer(const json& json){
     return id;
 }
 
-size_t saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const Battle& battle){
+size_t saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed){
     size_t t1ID = saveTrainer(trainer1.toJSON());
     size_t t2ID = saveTrainer(trainer2.toJSON());
-    size_t winner = battle.winner == battle.getPlayer1() ? t1ID : t2ID;
     saveBattleMutex.lock();
-    savedBattles.push_back({t1ID, t2ID, seed, winner});
+    savedBattles.push_back({t1ID, t2ID, seed, 0}); // The 'winner' field isn't used in this case
     size_t id = savedBattles.size() - 1;
     saveBattleMutex.unlock();
     return id;
@@ -103,8 +105,10 @@ size_t saveBattle(const BattleResult result){
     return id;
 }
 
-size_t saveTournament(const Tournament& tournament){
-    TournamentResults result;
+void saveTournament(const Tournament& tournament, size_t id){
+    saveTournamentMutex.lock();
+    TournamentResults result = savedTournaments.at(id);
+    saveTournamentMutex.unlock();
     std::vector<size_t> trainers;
     for (auto& trainer : tournament.trainers){
         trainers.push_back(saveTrainer(trainer.toJSON()));
@@ -125,11 +129,32 @@ size_t saveTournament(const Tournament& tournament){
         stats.push_back(stat);
     }
     result.trainerStats = stats;
+
+    result.ready = true;
     
     saveTournamentMutex.lock();
-    savedTournaments.push_back(result);
+    savedTournaments.at(id) = result;
+    saveTournamentMutex.unlock();
+}
+
+size_t NPCS_API_Server::createTournamentRequest(const json& json){
+    saveTournamentMutex.lock();
+    savedTournaments.emplace_back();
     size_t id = savedTournaments.size() - 1;
     saveTournamentMutex.unlock();
+    TournamentRequest request{
+        .requestJson = json,
+        .id = id
+    };
+    int threadNumber = tournamentRequestThreadCounter++;
+    auto& queue = queuedTournaments[threadNumber];
+    auto& mutex = queuedTournamentMutexes[threadNumber];
+    tournamentRequestThreadCounter = tournamentRequestThreadCounter % MAX_TOURNAMENT_THREADS;
+    mutex.lock();
+    std::cout << "Queing up a tournament on thread #" << threadNumber << '\n';
+    queue.push(request);
+    mutex.unlock();
+
     return id;
 }
 
@@ -240,13 +265,9 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         Trainer trainer2(request["trainer2"]);
         std::string seedString = request["seed"].get<std::string>();
         size_t seed = seedFromString(seedString);
-        std::cout << "Simulating battle...\n";
-        Battle battle(trainer1, trainer2, seed);
-        battle.simulate();
-        std::cout << "Done simulating battle.\n";
 
         // Save the battle to the databasae
-        size_t id = saveBattle(trainer1, trainer2, seed, battle);
+        size_t id = saveBattle(trainer1, trainer2, seed);
 
         // Send back battle ID
         response["success"] = true;
@@ -255,7 +276,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         res.Send(response.dump());
     });
     
-    app.Add_Handler("POST", baseRoute, "/tournament", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", baseRoute, "/tournament", [=,this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -277,20 +298,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             return;
         }
 
-        std::vector<Trainer> trainers;
-        for(int i = 0; i < request["trainers"].size(); i++){
-            trainers.emplace_back(request["trainers"][i]);
-        }
-        size_t seed = seedFromString(request["seed"].get<std::string>());
-        int rounds = request["rounds"].get<int>();
-
-        std::cout << "Simulating tournament...\n";
-        Tournament tournament(trainers, rounds, seed);
-        tournament.run();
-        std::cout << "Done simulating tournament.\n";
-        
-        // Save tournament to DB
-        size_t id = saveTournament(tournament);
+        size_t id  = createTournamentRequest(request);
 
         // Send back tournament ID
         response["success"] = true;
@@ -319,8 +327,11 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             Trainer trainer1(savedTrainers[br.trainer1]);
             Trainer trainer2(savedTrainers[br.trainer2]);
             size_t seed = br.seed;
+            std::cout << "Creating battle...\n";
             Battle battle(trainer1, trainer2, seed);
+            std::cout << "Done.\nSimulating battle...\n";
             battle.simulate();
+            std::cout << "Done.\n";
 
             response["success"] = true;
             response["message"] = "OK";
@@ -349,12 +360,14 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             res.Send(response.dump());
             return;
         }
-
-        if (tournamentID != 1){
-
-        }
         try{
             const TournamentResults& tr = savedTournaments.at(tournamentID);
+            if (!tr.ready){
+                response["message"] = "Please wait. Your tournament is in queue...";
+                response["success"] = false;
+                res.Send(response.dump());
+                return;
+            }
             json data;
             std::vector<json> trainerJSONs;
             std::vector<json> statJSONs;
@@ -380,6 +393,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 }
 
 int NPCS_API_Server::run(){
+    startTournamentThreads();
     app.Listen(PORT);
     return 0;
 }
@@ -395,4 +409,49 @@ bool NPCS_API_Server::isTokenValid(const std::string& username, const std::strin
     //Get username token from database
     //Make sure the token matches the one provided
     return username == "admin" && token == "admin:123";
+}
+
+void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
+    try{
+    auto& queue = this->queuedTournaments.at(threadNumber);
+    auto& queueMutex = this->queuedTournamentMutexes.at(threadNumber);
+    while(true){
+        //TODO: Not this
+        while(queue.size() == 0){
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        std::cout << "Starting tournament on thread #" << threadNumber << '\n';
+        queueMutex.lock();
+        TournamentRequest req = queue.front();
+        json& request = req.requestJson;
+        queue.pop();
+        queueMutex.unlock();
+
+        std::vector<Trainer> trainers;
+        for(int i = 0; i < request["trainers"].size(); i++){
+            trainers.emplace_back(request["trainers"][i]);
+        }
+        size_t seed = seedFromString(request["seed"].get<std::string>());
+        int rounds = request["rounds"].get<int>();
+
+        std::cout << "Simulating tournament...\n";
+        Tournament tournament(trainers, rounds, seed);
+        tournament.run();
+        std::cout << "Done simulating tournament.\n";
+        
+        // Save tournament to DB
+        saveTournament(tournament, req.id);
+    }
+    } catch (const std::exception& e){
+        std::cout << e.what() << '\n';
+        exit(1);
+    }
+}
+
+void NPCS_API_Server::startTournamentThreads(){
+    for(int i = 0; i < MAX_TOURNAMENT_THREADS; i++){
+        std::cout << "Starting thread #" << i << '\n';
+        std::thread t(&NPCS_API_Server::waitForTournaments, this, i);
+        t.detach();
+    }
 }

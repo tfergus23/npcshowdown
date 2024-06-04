@@ -28,7 +28,7 @@ DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
     float critChance = critChanceFromStage(critStage);
     float critMod = 1.0f;
     bool crit = false;
-    if (moveUse->canCrit && moveUse->move->damageCategory != STATUS && moveUse->battle->randInt(1,10001) < critChance*100){
+    if (!average && moveUse->canCrit && moveUse->move->damageCategory != STATUS && moveUse->battle->randInt(1,10001) < critChance*100){
         critMod = 1.5f;
         crit = true;
     }

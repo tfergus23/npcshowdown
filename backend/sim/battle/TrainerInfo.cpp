@@ -1,9 +1,65 @@
 #include "sim/battle/Battle.hpp"
 #include <string.h>
 #include "sim/data/Moves.hpp"
+#include <unordered_set>
+#include "sim/utils/move_functions.hpp"
 
 TrainerInfo::TrainerInfo(const std::string& name, TrainerLevel level) : trainerLevel{level}, name{name}
 {
+}
+void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std::unordered_set<const Move*>& myMoves, const Move*& outMove, int& outDamage){
+    for (auto move : myMoves){
+        if (move->damageCategory == DamageCategory::STATUS){
+            return;
+        }
+        MoveUse moveUse(move, myPoke, enemyPoke, myPoke->battle);
+        int avgDamage = calculateDirectDamage(&moveUse, true).damage;
+        if (avgDamage > outDamage){
+            outMove = move;
+            outDamage = avgDamage;
+        }
+    }
+}
+
+const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* battle){
+    std::unordered_set<const Move*> validMoves;
+    bool isPlayer1 = myPoke == battle->player1ActivePokemon;
+    auto& myTeam = isPlayer1 ?  battle->player1Team : battle->player2Team;
+    int& switchCounter = isPlayer1 ? battle->player1SwitchCounter : battle->player2SwitchCounter;
+    for (int i = 0; i < myPoke->currentMoves.size(); i++){
+        const Move* move = myPoke->currentMoves[i];
+        if (move != MOVE_NONE && myPoke->currentPP[i] > 0 && !myPoke->isMoveDisabled(move)){
+            validMoves.insert(move);
+        }
+    }
+    const Move* mostDamagingMove = nullptr;
+    int mostDamage = 0;
+    float mostDamagePercent = (float) mostDamage / enemyPoke->getStat(Stat::HP);
+    findMostDamagingMove(myPoke, enemyPoke, validMoves, mostDamagingMove, mostDamage);
+
+    float myHealthPercent = ((float) myPoke->currentHealth / myPoke->getStat(Stat::HP)) * 100;
+    float enemyHealthPercent = ((float) enemyPoke->currentHealth / enemyPoke->getStat(Stat::HP)) * 100;
+
+    bool imFaster = myPoke->getStat(Stat::SPEED) > enemyPoke->getStat(Stat::SPEED);
+
+    if (mostDamagingMove != nullptr && mostDamage >= enemyPoke->currentHealth){
+        return mostDamagingMove;
+    }
+    else if (mostDamagingMove != nullptr){
+        return mostDamagingMove;
+    }
+    else{
+        int i = 0;
+        int rand = battle->randInt(0,validMoves.size());
+        for (auto move : validMoves){
+            if (i == rand){
+                return move;
+            }
+            i++;
+        }
+        battle->assertTrue(false, "pickSmartMove didn't pick a random move properly");
+        return nullptr;
+    }
 }
 
 const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* battle) const{
@@ -60,10 +116,24 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
             }
             return validMoves[battle->randInt(0, validMoves.size())];
         }
-    case TRAINER:
-        battle->assertTrue(false, "Unimplemented trainer level: " + stringFromTrainerLevel(trainerLevel));
+    case TRAINER:{
+        if (validMoves.size() <= 0){
+            return &MOVE_STRUGGLE;
+        }
+        int rand = battle->randInt(0,2);
+        switch (rand)
+        {
+        case 0:
+            return validMoves[battle->randInt(0, validMoves.size())];
+        
+        case 1:
+            return pickSmartMove(myPoke, enemyPoke, battle);
+        }}
     case BOSS:
-        battle->assertTrue(false, "Unimplemented trainer level: " + stringFromTrainerLevel(trainerLevel));
+        if (validMoves.size() <= 0){
+            return &MOVE_STRUGGLE;
+        }
+        return pickSmartMove(myPoke, enemyPoke, battle);
     default:
         battle->assertTrue(false, "Unimplemented trainer level: " + stringFromTrainerLevel(trainerLevel));
     }
@@ -99,3 +169,4 @@ int TrainerInfo::getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* 
     }
     return result;
 }
+
