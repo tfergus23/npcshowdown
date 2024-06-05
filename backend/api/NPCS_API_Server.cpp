@@ -443,7 +443,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         saveTournament(tournament, req.id);
     }
     } catch (const std::exception& e){
-        std::cout << e.what() << '\n';
+        std::cerr << e.what() << '\n';
         exit(1);
     }
 }

@@ -10,7 +10,7 @@ struct TournamentRequest{
     size_t id;
 };
 
-const int MAX_TOURNAMENT_THREADS = 4;
+const int MAX_TOURNAMENT_THREADS = 10;
 
 class NPCS_API_Server{
 public:
