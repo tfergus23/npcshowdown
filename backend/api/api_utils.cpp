@@ -124,6 +124,7 @@ std::string validateBattleRequest(const json& json){
 
     problems += validateTrainerJSON(json["trainer1"], "1");
     problems += validateTrainerJSON(json["trainer2"], "2");
+
     return problems;
 
 }

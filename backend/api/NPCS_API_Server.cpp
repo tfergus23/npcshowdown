@@ -254,6 +254,9 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
         std::string problems = validateBattleRequest(request);
         if (problems != ""){
+            if (problems[problems.size() - 1] == '\n'){
+                problems = problems.substr(0,problems.size()-1);
+            }
             response["message"] = problems;
             res.Set_Status(400);
             res.Send(response.dump());
@@ -292,6 +295,9 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
         std::string problems = validateTournamentRequest(request);
         if (problems != ""){
+            if (problems[problems.size() - 1] == '\n'){
+                problems = problems.substr(0,problems.size()-1);
+            }
             response["message"] = problems;
             res.Set_Status(400);
             res.Send(response.dump());
