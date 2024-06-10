@@ -27,6 +27,7 @@ private:
     void waitForTournaments(uint32_t threadNumber);
     size_t createTournamentRequest(const json& json);
     int tournamentRequestThreadCounter = 0;
+    std::mutex threadCounterMutex;
     void startTournamentThreads();
 };
 

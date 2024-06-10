@@ -146,10 +146,12 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json){
         .requestJson = json,
         .id = id
     };
+    threadCounterMutex.lock();
     int threadNumber = tournamentRequestThreadCounter++;
     auto& queue = queuedTournaments[threadNumber];
     auto& mutex = queuedTournamentMutexes[threadNumber];
     tournamentRequestThreadCounter = tournamentRequestThreadCounter % MAX_TOURNAMENT_THREADS;
+    threadCounterMutex.unlock();
     mutex.lock();
     std::cout << "Queing up a tournament on thread #" << threadNumber << '\n';
     queue.push(request);
