@@ -54,13 +54,13 @@ battle{battle}
     switch ((int) species->percentMale)
     {
     case -1:
-        m_Gender = GENDERLESS;
+        m_Gender = Gender::GENDERLESS;
         break;
     case 0:
-        m_Gender = FEMALE;
+        m_Gender = Gender::FEMALE;
         break;
     case 100:
-        m_Gender = MALE;
+        m_Gender = Gender::MALE;
         break;
     default:
         if (blueprint->gender == "Random"){
@@ -82,7 +82,7 @@ battle{battle}
         }
         break;
     }
-    currentHealth = getStatRaw(HP);
+    currentHealth = getStatRaw(Stat::HP);
 }
 
 const Ability* Pokemon::getBaseAbility(){
@@ -150,32 +150,32 @@ int Pokemon::getStat(Stat stat, bool crit){
     int finalStatValue = unboostedStat;
     switch (stat)
     {
-    case HP:
+    case Stat::HP:
         finalStatValue = unboostedStat;
         break;
-    case ATTACK:
-    case SPATTACK:
+    case Stat::ATTACK:
+    case Stat::SPATTACK:
     {
-        int boost = (crit && boosts[stat] < 0) ? 0 : boosts[stat];
+        int boost = (crit && boosts[(int)stat] < 0) ? 0 : boosts[(int)stat];
         finalStatValue = (int)floor((float)unboostedStat * statStageMultiplier(boost));
         break;
     }
-    case DEFENSE:
-    case SPDEFENSE:
+    case Stat::DEFENSE:
+    case Stat::SPDEFENSE:
     {
-        int boost = (crit && boosts[stat] > 0) ? 0 : boosts[stat];
+        int boost = (crit && boosts[(int)stat] > 0) ? 0 : boosts[(int)stat];
         finalStatValue = (int)floor((float)unboostedStat * statStageMultiplier(boost));
         break;
     }
-    case SPEED:
+    case Stat::SPEED:
     {
         float paralysisMod = 1.0f;
         if (m_Status == &STATUS_PARALYSIS) paralysisMod = 0.5f;
-        finalStatValue = (int)floor((float)unboostedStat * paralysisMod * statStageMultiplier(boosts[stat]));
+        finalStatValue = (int)floor((float)unboostedStat * paralysisMod * statStageMultiplier(boosts[(int)stat]));
         break;
     }
     default:
-        battle->assertTrue(false, "Unhandled stat: " + std::to_string(stat));
+        battle->assertTrue(false, "Unhandled stat: " + std::to_string((int)stat));
     }
     finalStatValue = m_CurrentAbility->modifySubjectStat(stat, finalStatValue, this);
     return finalStatValue;
@@ -183,33 +183,33 @@ int Pokemon::getStat(Stat stat, bool crit){
 int Pokemon::getStatRaw(Stat stat){
     switch (stat)
     {
-    case HP:
-        return (int) floor(((2 * species->baseStats[stat] + ivs[stat] + floor(evs[stat] / 4.0f)) * level)/100.0f) + level + 10;
-    case ATTACK:
-    case SPATTACK:
+    case Stat::HP:
+        return (int) floor(((2 * species->baseStats[(int)stat] + ivs[(int)stat] + floor(evs[(int)stat] / 4.0f)) * level)/100.0f) + level + 10;
+    case Stat::ATTACK:
+    case Stat::SPATTACK:
     {
-        int div1 = (int)floor(evs[stat] / 4.0f);
-        int div2 = (int)floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int div1 = (int)floor(evs[(int)stat] / 4.0f);
+        int div2 = (int)floor(((2 * species->baseStats[(int)stat] + ivs[(int)stat] + div1) * level) / 100.0f);
         int unboostedStat = (int)floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
     }
-    case DEFENSE:
-    case SPDEFENSE:
+    case Stat::DEFENSE:
+    case Stat::SPDEFENSE:
     {
-        int div1 = (int)floor(evs[stat] / 4.0f);
-        int div2 = (int)floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int div1 = (int)floor(evs[(int)stat] / 4.0f);
+        int div2 = (int)floor(((2 * species->baseStats[(int)stat] + ivs[(int)stat] + div1) * level) / 100.0f);
         int unboostedStat = (int)floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
     }
-    case SPEED:
+    case Stat::SPEED:
     {
-        int div1 = (int)floor(evs[stat] / 4.0f);
-        int div2 = (int)floor(((2 * species->baseStats[stat] + ivs[stat] + div1) * level) / 100.0f);
+        int div1 = (int)floor(evs[(int)stat] / 4.0f);
+        int div2 = (int)floor(((2 * species->baseStats[(int)stat] + ivs[(int)stat] + div1) * level) / 100.0f);
         int unboostedStat = (int)floor((div2 + 5) * natureBoost(nature, stat));
         return unboostedStat;
     }
     default:
-        battle->assertTrue(false, "Unhandled stat: " + std::to_string(stat));
+        battle->assertTrue(false, "Unhandled stat: " + std::to_string((int)stat));
         return -1;
     }
 }
@@ -226,30 +226,30 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
     if (isDead && !(event == Event::POKEMON_DEATH && args.eventSubject == this)) return;
 
     if (getCurrentItem() != ITEM_NONE && !itemState.suppressed) getCurrentItem()->observer.handleEvent(event,this, battle, args);
-    if (getCurrentItem() != ITEM_NONE && event == END_OF_TURN) getCurrentItem()->observer.handleEvent(PRIORITY_END_OF_TURN,this, battle, args);
+    if (getCurrentItem() != ITEM_NONE && event == Event::END_OF_TURN) getCurrentItem()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);
 
     if (getStatus() != STATUS_NONE && !statusState.suppressed) getStatus()->observer.handleEvent(event,this, battle, args);
-    if (getStatus() != STATUS_NONE && event == END_OF_TURN) getStatus()->observer.handleEvent(PRIORITY_END_OF_TURN,this, battle, args);
+    if (getStatus() != STATUS_NONE && event == Event::END_OF_TURN) getStatus()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);
 
 
     if (!abilityState.suppressed) getCurrentAbility()->observer.handleEvent(event,this, battle, args);
-    if (event == END_OF_TURN) getCurrentAbility()->observer.handleEvent(PRIORITY_END_OF_TURN, this, battle, args);
+    if (event == Event::END_OF_TURN) getCurrentAbility()->observer.handleEvent(Event::PRIORITY_END_OF_TURN, this, battle, args);
     for (auto [effect,state] : m_Effects){
         if (!state.suppressed) effect->observer.handleEvent(event, this, battle, args);
-        if (event == END_OF_TURN) effect->observer.handleEvent(PRIORITY_END_OF_TURN, this, battle, args);
+        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, this, battle, args);
     }
     removeMarkedEffects();
 
     if (args.eventSubject != this) return;
     switch (event)
     {
-    case POKEMON_SWITCH:
+    case Event::POKEMON_SWITCH:
         onSwitch();
         break;
-    case POKEMON_ENTER:
+    case Event::POKEMON_ENTER:
         lastMoveUsed = nullptr;
         break;
-    case POKEMON_DEATH:
+    case Event::POKEMON_DEATH:
         m_Status = STATUS_NONE;
         onSwitch();
     default:

@@ -1,3 +1,3 @@
 #pragma once
 
-enum TargetType {OPPONENT, SELF};
+enum class TargetType {OPPONENT, SELF};

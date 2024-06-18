@@ -18,7 +18,7 @@ const Move MOVE_SWITCH = {
     .priority = 8,
     .critRatio = 0,
     .targetType = TargetType::SELF,
-    .secondaryEffect = SecondaryEffect::NOEFFECT,
+    .secondaryEffect = SecondaryEffect::NO_EFFECT,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 };
@@ -32,7 +32,7 @@ const Move MOVE_STRUGGLE = {
     .priority = 0,
     .critRatio = 0,
     .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NOEFFECT,
+    .secondaryEffect = SecondaryEffect::NO_EFFECT,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -56,7 +56,7 @@ const Move MOVE_POUND = {
     .priority = 0,
     .critRatio = 0,
     .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NOEFFECT,
+    .secondaryEffect = SecondaryEffect::NO_EFFECT,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -73,15 +73,15 @@ const Move MOVE_POUND = {
 
 const Move MOVE_TACKLE = {
     .name = "Tackle",
-    .type = NORMAL,
-    .damageCategory = PHYSICAL,
+    .type = Type::NORMAL,
+    .damageCategory = DamageCategory::PHYSICAL,
     .power = 40,
     .accuracy = 100,
     .maxPP = 56,
     .priority = 0,
     .critRatio = 0,
-    .targetType = OPPONENT,
-    .secondaryEffect = NOEFFECT,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NO_EFFECT,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -98,15 +98,15 @@ const Move MOVE_TACKLE = {
 
 const Move MOVE_KARATE_CHOP = {
     .name = "Karate Chop",
-    .type = FIGHTING,
-    .damageCategory = PHYSICAL,
+    .type = Type::FIGHTING,
+    .damageCategory = DamageCategory::PHYSICAL,
     .power = 50,
     .accuracy = 100,
     .maxPP = 40,
     .priority = 0,
     .critRatio = 1,
-    .targetType = OPPONENT,
-    .secondaryEffect = NOEFFECT,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NO_EFFECT,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -121,11 +121,36 @@ const Move MOVE_KARATE_CHOP = {
     }
 };
 
+const Move MOVE_SURF = {
+    .name = "Surf",
+    .type = Type::WATER,
+    .damageCategory = DamageCategory::SPECIAL,
+    .power = 90,
+    .accuracy = 100,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NO_EFFECT,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+
+    //Flags
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        dealDirectDamage(myMove);
+    }
+};
+
 const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE_NAME, MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
     {MOVE_TACKLE.name, &MOVE_TACKLE},
-    {MOVE_KARATE_CHOP.name, &MOVE_KARATE_CHOP}
+    {MOVE_KARATE_CHOP.name, &MOVE_KARATE_CHOP},
+    {MOVE_SURF.name, &MOVE_SURF}
 };
 
 const Move* moveFromString(const std::string& moveName) {

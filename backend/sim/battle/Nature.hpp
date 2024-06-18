@@ -4,34 +4,34 @@
 #include "sim/battle/Nature.hpp"
 #include "sim/battle/Stat.hpp"
 
-enum Nature {HARDY,LONELY,BRAVE,ADAMANT,NAUGHTY,BOLD,DOCILE,RELAXED,IMPISH,LAX,TIMID,HASTY,SERIOUS,JOLLY,NAIVE,MODEST,MILD,QUIET,BASHFUL,RASH,CALM,GENTLE,SASSY,CAREFUL,QUIRKY};
+enum class Nature {HARDY,LONELY,BRAVE,ADAMANT,NAUGHTY,BOLD,DOCILE,RELAXED,IMPISH,LAX,TIMID,HASTY,SERIOUS,JOLLY,NAIVE,MODEST,MILD,QUIET,BASHFUL,RASH,CALM,GENTLE,SASSY,CAREFUL,QUIRKY};
 
 inline const std::unordered_map<std::string, Nature> natures = {
     //{"", HARDY}, This might break something
-    {"Hardy", HARDY},
-    {"Lonely", LONELY},
-    {"Brave", BRAVE},
-    {"Adamant", ADAMANT},
-    {"Naughty", NAUGHTY},
-    {"Bold", BOLD},
-    {"Docile", DOCILE},
-    {"Relaxed", RELAXED},
-    {"Impish", IMPISH},
-    {"Lax", LAX},
-    {"Timid", TIMID},
-    {"Hasty", HASTY},
-    {"Serious", SERIOUS},
-    {"Jolly", JOLLY},
-    {"Modest", MODEST},
-    {"Mild", MILD},
-    {"Quiet", QUIET},
-    {"Bashful", BASHFUL},
-    {"Rash", RASH},
-    {"Calm", CALM},
-    {"Gentle", GENTLE},
-    {"Sassy", SASSY},
-    {"Careful", CAREFUL},
-    {"Quirky", QUIRKY}
+    {"Hardy", Nature::HARDY},
+    {"Lonely", Nature::LONELY},
+    {"Brave", Nature::BRAVE},
+    {"Adamant", Nature::ADAMANT},
+    {"Naughty", Nature::NAUGHTY},
+    {"Bold", Nature::BOLD},
+    {"Docile", Nature::DOCILE},
+    {"Relaxed", Nature::RELAXED},
+    {"Impish", Nature::IMPISH},
+    {"Lax", Nature::LAX},
+    {"Timid", Nature::TIMID},
+    {"Hasty", Nature::HASTY},
+    {"Serious", Nature::SERIOUS},
+    {"Jolly", Nature::JOLLY},
+    {"Modest", Nature::MODEST},
+    {"Mild", Nature::MILD},
+    {"Quiet", Nature::QUIET},
+    {"Bashful", Nature::BASHFUL},
+    {"Rash", Nature::RASH},
+    {"Calm", Nature::CALM},
+    {"Gentle", Nature::GENTLE},
+    {"Sassy", Nature::SASSY},
+    {"Careful", Nature::CAREFUL},
+    {"Quirky", Nature::QUIRKY}
 };
 
 inline const float natureChart[25][5] = {

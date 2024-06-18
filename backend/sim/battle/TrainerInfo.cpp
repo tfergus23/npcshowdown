@@ -78,12 +78,12 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
     //TODO: The rest of these
     switch (trainerLevel)
     {
-    case FIRST_MOVE:
+    case TrainerLevel::FIRST_MOVE:
         if (validMoves.size() <= 0){
             return &MOVE_STRUGGLE;
         }
         return validMoves[0];
-    case SWITCHER:
+    case TrainerLevel::SWITCHER:
         if (getValidSwitchesCount(myPoke, battle) > 0){
             return &MOVE_SWITCH;
         }
@@ -91,12 +91,12 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
             return &MOVE_STRUGGLE;
         }
         return validMoves[battle->randInt(0, validMoves.size())];
-    case WILD:
+    case TrainerLevel::WILD:
         if (validMoves.size() <= 0){
             return &MOVE_STRUGGLE;
         }
         return validMoves[battle->randInt(0, validMoves.size())];
-    case USE_2_MOVES_THEN_SWITCH:
+    case TrainerLevel::USE_2_MOVES_THEN_SWITCH:
         if (switchCounter > 2){
             if (getValidSwitchesCount(myPoke, battle) > 0){
                 switchCounter = 0;
@@ -116,7 +116,7 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
             }
             return validMoves[battle->randInt(0, validMoves.size())];
         }
-    case TRAINER:{
+    case TrainerLevel::TRAINER:{
         if (validMoves.size() <= 0){
             return &MOVE_STRUGGLE;
         }
@@ -129,7 +129,7 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
         case 1:
             return pickSmartMove(myPoke, enemyPoke, battle);
         }}
-    case BOSS:
+    case TrainerLevel::BOSS:
         if (validMoves.size() <= 0){
             return &MOVE_STRUGGLE;
         }

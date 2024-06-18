@@ -8,5 +8,6 @@ extern const Move MOVE_STRUGGLE;
 extern const Move MOVE_POUND;
 extern const Move MOVE_TACKLE;
 extern const Move MOVE_KARATE_CHOP;
+extern const Move MOVE_SURF;
 extern const Move* moveFromString(const std::string& moveName);
 std::string createMoveDataResponse();

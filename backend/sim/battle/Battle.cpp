@@ -24,8 +24,8 @@ m_Generator{std::default_random_engine(m_Seed)}
     setActivePokemon(IS_PLAYER_ONE, &(player1Team[0]));
     setActivePokemon(IS_PLAYER_TWO, &(player2Team[0]));
     setPokemonHandlerOrder();
-    raiseEvent(POKEMON_ENTER, EventArgs(m_FasterPokemon, nullptr));
-    raiseEvent(POKEMON_ENTER, EventArgs(m_SlowerPokemon, nullptr));
+    raiseEvent(Event::POKEMON_ENTER, EventArgs(m_FasterPokemon, nullptr));
+    raiseEvent(Event::POKEMON_ENTER, EventArgs(m_SlowerPokemon, nullptr));
 }
 
 const TrainerInfo* Battle::getPlayer1() const {
@@ -120,7 +120,7 @@ MoveUse* Battle::doMove(){
         if (move->changeLastMoveUsed){
             move->user->lastMoveUsed = move->move;
         }
-        if (move->move != &MOVE_SWITCH) raiseEvent(AFTER_MOVE, EventArgs(nullptr, move));
+        if (move->move != &MOVE_SWITCH) raiseEvent(Event::AFTER_MOVE, EventArgs(nullptr, move));
     }
     return move;
 }
@@ -130,9 +130,9 @@ Pokemon* Battle::switchPokemon(bool isPlayer1){
     auto& team = isPlayer1 ? player1Team : player2Team;
     Pokemon* newPoke = &team[newPokePosition];
     assertTrue(currentPoke != newPoke, "Tried to switch in a Pokemon that is already in.");
-    raiseEvent(POKEMON_SWITCH, EventArgs(currentPoke, nullptr));
+    raiseEvent(Event::POKEMON_SWITCH, EventArgs(currentPoke, nullptr));
     setActivePokemon(isPlayer1, newPoke);
-    raiseEvent(POKEMON_ENTER, EventArgs(newPoke, nullptr));
+    raiseEvent(Event::POKEMON_ENTER, EventArgs(newPoke, nullptr));
     if (m_Turn[1].move != &MOVE_SWITCH && m_Turn[1].target == currentPoke) m_Turn[1].target = newPoke;
     newPokePosition = -1;
     setPokemonHandlerOrder();
@@ -175,20 +175,20 @@ void Battle::removeMarkedFieldEffects(bool side){
 }
 
 void Battle::raiseEvent(Event event, const EventArgs& args){
-    assertTrue(event != PRIORITY_END_OF_TURN, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
+    assertTrue(event != Event::PRIORITY_END_OF_TURN, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
     bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
     auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
     auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
 
     if (weather != WEATHER_NONE && weatherSuppressors <= 0) weather->observer.handleEvent(event, nullptr, this, args);
-    if (weather != WEATHER_NONE && event == END_OF_TURN) weather->observer.handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
+    if (weather != WEATHER_NONE && event == Event::END_OF_TURN) weather->observer.handleEvent(Event::PRIORITY_END_OF_TURN, nullptr, this, args);
     killTheDead();
 
     m_FasterPokemon->handleEvent(event, args);
     killTheDead();
     for (auto [effect, effectState] : fasterPokemonFieldEffects){
         if (!effectState.suppressed) effect->observer.handleEvent(event, nullptr, this, args);
-        if (event == END_OF_TURN) effect->observer.handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
+        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, nullptr, this, args);
         killTheDead();
     }
     removeMarkedFieldEffects(fasterPokemonIsPlayer1);
@@ -198,14 +198,14 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
     killTheDead();
     for (auto [effect, effectState]: slowerPokemonFieldEffects){
         if (!effectState.suppressed) effect->observer.handleEvent(event, nullptr, this, args);
-        if (event == END_OF_TURN) effect->observer.handleEvent(PRIORITY_END_OF_TURN, nullptr, this, args);
+        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, nullptr, this, args);
         killTheDead();
     }
     removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
 
     switch (event)
     {
-    case AFTER_MOVE:
+    case Event::AFTER_MOVE:
         for (int i = 0; i < 4; i++){
             if (args.moveUse->move->maxPP > 0 && args.moveUse->user->currentMoves[i] == args.moveUse->move && args.moveUse->usesPP && args.moveUse->user->currentPP[i] > 0){
                 args.moveUse->user->currentPP[i] -= args.moveUse->ppUsage;
@@ -213,7 +213,7 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
             }
         }
         break;
-    case END_OF_TURN:
+    case Event::END_OF_TURN:
     {
         isTurnOver = true;
         moveNumber = 0;
@@ -263,7 +263,7 @@ bool Battle::trainerBlackedOut(bool player){
 void Battle::killPokemon(Pokemon* pokemon){
     pokemon->isDead = true;
     log(pokemon->nickname + " fainted!");
-    raiseEvent(POKEMON_DEATH, EventArgs(pokemon, nullptr));
+    raiseEvent(Event::POKEMON_DEATH, EventArgs(pokemon, nullptr));
 }
 
 void Battle::killTheDead(){
@@ -285,13 +285,13 @@ void Battle::killTheDead(){
 }
 //This function is only used for determining the order of event handlers running. It is not used for the order of moves used in the turn.
 void Battle::setPokemonHandlerOrder(){
-    if (player1ActivePokemon->getStat(SPEED) == player2ActivePokemon->getStat(SPEED)){
+    if (player1ActivePokemon->getStat(Stat::SPEED) == player2ActivePokemon->getStat(Stat::SPEED)){
         int num = randInt(0,2);
         m_FasterPokemon = (num == 0) ? player1ActivePokemon : player2ActivePokemon;
         m_SlowerPokemon = (num == 0) ? player2ActivePokemon : player1ActivePokemon;
     }
     else{
-        bool poke1IsFaster = player1ActivePokemon->getStat(SPEED) > player2ActivePokemon->getStat(SPEED);
+        bool poke1IsFaster = player1ActivePokemon->getStat(Stat::SPEED) > player2ActivePokemon->getStat(Stat::SPEED);
         m_FasterPokemon = poke1IsFaster ? player1ActivePokemon : player2ActivePokemon;
         m_SlowerPokemon = poke1IsFaster ? player2ActivePokemon : player1ActivePokemon;
     }
@@ -318,8 +318,8 @@ void Battle::logCurrentStatus(){
     if (doLogging) battleLog += statInfo + '\n';
 #endif
     if (doLogging)
-    battleLog += m_Player1.name + ": " + player1ActivePokemon->nickname + " (" + std::to_string(player1ActivePokemon->currentHealth) + "/" + std::to_string(player1ActivePokemon->getStatRaw(HP)) + ")\n" +
-                 m_Player2.name + ": " + player2ActivePokemon->nickname + " (" + std::to_string(player2ActivePokemon->currentHealth) + "/" + std::to_string(player2ActivePokemon->getStatRaw(HP)) + ")\n";
+    battleLog += m_Player1.name + ": " + player1ActivePokemon->nickname + " (" + std::to_string(player1ActivePokemon->currentHealth) + "/" + std::to_string(player1ActivePokemon->getStatRaw(Stat::HP)) + ")\n" +
+                 m_Player2.name + ": " + player2ActivePokemon->nickname + " (" + std::to_string(player2ActivePokemon->currentHealth) + "/" + std::to_string(player2ActivePokemon->getStatRaw(Stat::HP)) + ")\n";
 }
 
 void Battle::simulate(){
@@ -332,7 +332,7 @@ void Battle::simulate(){
                 this->doMove();
                 this->switchIfNecessary();
                 if (this->moveNumber == 1){
-                    this->raiseEvent(END_OF_TURN, EventArgs(nullptr, nullptr));
+                    this->raiseEvent(Event::END_OF_TURN, EventArgs(nullptr, nullptr));
                     this->switchIfNecessary();
                     this->logCurrentStatus();
                 }

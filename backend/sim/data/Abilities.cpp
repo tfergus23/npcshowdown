@@ -9,7 +9,7 @@ using json = nlohmann::json;
 const Ability ABILITY_GUTS = {
     .name = "Guts",
     .modifySubjectStat = [](Stat stat,int statVal,Pokemon* subject){
-        if (stat == ATTACK && subject->getStatus() != STATUS_NONE){
+        if (stat == Stat::ATTACK && subject->getStatus() != STATUS_NONE){
             float newVal = (float) statVal * 1.5f;
             subject->battle->debug("Guts active");
             return (int) floor(newVal);
@@ -22,7 +22,7 @@ const Ability ABILITY_TORRENT = {
     .observer = {
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
         //TODO
-        if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(HP) <= (1.0f / 3.0f) && args.moveUse->move->type == WATER){
+        if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(Stat::HP) <= (1.0f / 3.0f) && args.moveUse->move->type == Type::WATER){
             args.moveUse->damageMod *= 1.5f;
         }
     }
