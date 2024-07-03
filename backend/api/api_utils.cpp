@@ -286,6 +286,12 @@ std::string validateTournamentRequest(const json& json){
         return "Need to have at least 2 trainers to have a tournament, " + std::to_string(json["trainers"].size()) + " supplied.\n";
     }
 
+    
+    if (json["rounds"].get<int>() < 1){
+        return "Can't have a tournament with zero or fewer rounds.\n";
+    }
+    
+
     if (calculateTotalBattles(json["trainers"].size(), json["rounds"].get<int>()) > 20000){
         return "Too many battles in requested tournament, 20000 max.\n";
     }

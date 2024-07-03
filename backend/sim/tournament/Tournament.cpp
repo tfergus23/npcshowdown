@@ -7,6 +7,9 @@ float calculateTotalBattles(int entrants, int rounds){
 }
 
 Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) : rounds{rounds}, totalBattles{calculateTotalBattles(trainers.size(), rounds)}, m_Generator{std::default_random_engine(seed)}, seed{seed}, trainers{trainers}{
+    if (rounds < 1){
+        throw std::runtime_error("Can't have a tournament with no rounds... unless you don't want me to do anything. Rounds requested: " + std::to_string(rounds));
+    }
     if (totalBattles > MAX_TOURNAMENT_BATTLES){
         throw std::runtime_error("Cant have more than " + std::to_string(MAX_TOURNAMENT_BATTLES) + ", tried " + std::to_string(totalBattles));
     }

@@ -451,7 +451,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         saveTournament(tournament, req.id);
     }
     } catch (const std::exception& e){
-        std::cerr << e.what() << '\n';
+        std::cerr << "ERROR: Uncaught exception on thread #" + std::to_string(threadNumber) + ":\n" + e.what() + "\nStopping.\n";
         exit(1);
     }
 }
