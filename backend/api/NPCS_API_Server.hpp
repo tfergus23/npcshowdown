@@ -1,7 +1,7 @@
 #pragma once
 #include "sim/battle/Battle.hpp"
 #include "tfhttp/HTTP_Server.hpp"
-#include <queue>
+#include <deque>
 #include "tflib/config.h"
 #include <condition_variable>
 
@@ -22,13 +22,14 @@ private:
     //void addPreflightHandler(expresscpp::RouterPtr router, const std::string& path);
     std::string getToken(const std::string& username, const std::string& password);
     bool isTokenValid(const std::string& username, const std::string& token);
-    std::array<std::queue<TournamentRequest>, MAX_TOURNAMENT_THREADS> queuedTournaments;
+    std::array<std::deque<TournamentRequest>, MAX_TOURNAMENT_THREADS> queuedTournaments;
     std::array<std::mutex, MAX_TOURNAMENT_THREADS> queuedTournamentMutexes;
     void waitForTournaments(uint32_t threadNumber);
     size_t createTournamentRequest(const json& json);
     int tournamentRequestThreadCounter = 0;
     std::mutex threadCounterMutex;
     void startTournamentThreads();
+    int findTournamentPositionInQueue(size_t tournamentID);
 };
 
 std::string createAllDataResponse();

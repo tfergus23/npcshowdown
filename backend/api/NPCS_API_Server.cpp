@@ -67,6 +67,7 @@ struct TournamentResults{
     std::vector<TrainerStats> trainerStats;
     std::vector<size_t> trainers;
     bool ready = false;
+    int thread = -1;
 };
 
 // Mock database
@@ -154,10 +155,29 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json){
     threadCounterMutex.unlock();
     mutex.lock();
     std::cout << "Queing up a tournament on thread #" << threadNumber << '\n';
-    queue.push(request);
+    savedTournaments.at(id).thread = threadNumber;
+    queue.push_back(request);
     mutex.unlock();
 
     return id;
+}
+
+int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID){
+    int threadNumber = savedTournaments.at(tournamentID).thread;
+    auto& queue = queuedTournaments[threadNumber];
+    auto& mutex = queuedTournamentMutexes[threadNumber];
+
+    mutex.lock();
+    int pos = 0;
+    for(const auto& request : queue){
+        if (request.id == tournamentID){
+            mutex.unlock();
+            return pos;
+        }
+        pos++;
+    }
+    mutex.unlock();
+    return -1;
 }
 
 NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
@@ -355,7 +375,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
     });
 
-    app.Add_Handler("GET", baseRoute, "/tournament/:id", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/tournament/:id", [=,this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
         size_t tournamentID = 0;
@@ -371,8 +391,15 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         try{
             const TournamentResults& tr = savedTournaments.at(tournamentID);
             if (!tr.ready){
-                response["message"] = "Please wait. Your tournament is in queue...";
+                int position = findTournamentPositionInQueue(tournamentID);
+                if (position > 0){
+                    response["message"] = "Please wait. Your tournament is in queue at position " + std::to_string(position) + ".";
+                }
+                else{
+                    response["message"] = "Please wait. Your tournament is currently being simulated.";
+                }
                 response["success"] = false;
+                res.Set_Status(404);
                 res.Send(response.dump());
                 return;
             }
@@ -432,7 +459,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         queueMutex.lock();
         TournamentRequest req = queue.front();
         json& request = req.requestJson;
-        queue.pop();
+        queue.pop_front();
         queueMutex.unlock();
 
         std::vector<Trainer> trainers;

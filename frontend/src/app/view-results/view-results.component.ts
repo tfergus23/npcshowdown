@@ -22,6 +22,7 @@ export class ViewResultsComponent {
   results!: TournamentResultSet;
   dataLists!: DataLists;
   mostRecentSort: number = -1;
+  errorMessage: string = "";
   @ViewChild('logView') logView!: BattleLogViewComponent;
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService){
@@ -33,7 +34,7 @@ export class ViewResultsComponent {
       }
     },
     (error) => {
-      console.log(error);
+      this.errorMessage = error.error.message;
     });
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
