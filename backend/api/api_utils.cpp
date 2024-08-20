@@ -292,8 +292,8 @@ std::string validateTournamentRequest(const json& json){
     }
     
 
-    if (calculateTotalBattles(json["trainers"].size(), json["rounds"].get<int>()) > 20000){
-        return "Too many battles in requested tournament, 20000 max.\n";
+    if (calculateTotalBattles(json["trainers"].size(), json["rounds"].get<int>()) > MAX_TOURNAMENT_BATTLES){
+        return "Too many battles in requested tournament, " + std::to_string(MAX_TOURNAMENT_BATTLES) + " max.\n";
     }
 
     for(size_t i = 0; i < json["trainers"].size(); i++){
