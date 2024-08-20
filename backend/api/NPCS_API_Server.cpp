@@ -399,7 +399,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                     response["message"] = "Please wait. Your tournament is currently being simulated.";
                 }
                 response["success"] = false;
-                res.Set_Status(404);
+                res.Set_Status(404); // TODO: What code should this be?
                 res.Send(response.dump());
                 return;
             }

@@ -23,22 +23,44 @@ export class ViewResultsComponent {
   dataLists!: DataLists;
   mostRecentSort: number = -1;
   errorMessage: string = "";
+  interval: number = 0;
   @ViewChild('logView') logView!: BattleLogViewComponent;
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService){
     this.tournamentID = Number(route.snapshot.paramMap.get('id'));
-    this.battleService.getTournamentResults(this.tournamentID).subscribe(
-    (response) => {
-      if (response.success){
-        this.results = response.data;
-      }
-    },
-    (error) => {
-      this.errorMessage = error.error.message;
-    });
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
+    });
+
+    // Using two arrow functions here because apparently functions have their own 'this'
+    this.interval = window.setInterval(() => {
+      this.battleService.getTournamentResults(this.tournamentID).subscribe(
+        (response) => {
+          if (response.success){
+            this.results = response.data;
+            clearInterval(this.interval);
+          }
+          else{
+            this.errorMessage = response.message;
+          }
+        },
+        (error) => {
+          this.errorMessage = error.error.message;
+        });
+    }, 1500);
+    this.battleService.getTournamentResults(this.tournamentID).subscribe(
+      (response) => {
+        if (response.success){
+          this.results = response.data;
+          clearInterval(this.interval);
+        }
+        else{
+          this.errorMessage = response.message;
+        }
+      },
+      (error) => {
+        this.errorMessage = error.error.message;
     });
   }
 
