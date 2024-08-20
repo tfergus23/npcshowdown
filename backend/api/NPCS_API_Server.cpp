@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <mutex>
+#include "db_utils.hpp"
 
 
 using namespace tfhttp;
@@ -63,86 +64,8 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-struct TournamentResults{
-    std::vector<TrainerStats> trainerStats;
-    std::vector<size_t> trainers;
-    bool ready = false;
-    int thread = -1;
-};
-
-// Mock database
-std::vector<json> savedTrainers;
-std::mutex saveTrainerMutex;
-
-std::vector<BattleResult> savedBattles;
-std::mutex saveBattleMutex;
-
-std::vector<TournamentResults> savedTournaments;
-std::mutex saveTournamentMutex;
-
-size_t saveTrainer(const json& json){
-    saveTrainerMutex.lock();
-    savedTrainers.push_back(json);
-    size_t id = savedTrainers.size() - 1;
-    saveTrainerMutex.unlock();
-    return id;
-}
-
-size_t saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed){
-    size_t t1ID = saveTrainer(trainer1.toJSON());
-    size_t t2ID = saveTrainer(trainer2.toJSON());
-    saveBattleMutex.lock();
-    savedBattles.push_back({t1ID, t2ID, seed, 0}); // The 'winner' field isn't used in this case
-    size_t id = savedBattles.size() - 1;
-    saveBattleMutex.unlock();
-    return id;
-}
-
-size_t saveBattle(const BattleResult result){
-    saveBattleMutex.lock();
-    savedBattles.push_back(result);
-    size_t id = savedBattles.size() - 1;
-    saveBattleMutex.unlock();
-    return id;
-}
-
-void saveTournament(const Tournament& tournament, size_t id){
-    saveTournamentMutex.lock();
-    TournamentResults result = savedTournaments.at(id);
-    saveTournamentMutex.unlock();
-    std::vector<size_t> trainers;
-    for (auto& trainer : tournament.trainers){
-        trainers.push_back(saveTrainer(trainer.toJSON()));
-    }
-    result.trainers = trainers;
-
-    std::vector<TrainerStats> stats;
-    std::unordered_map<size_t,size_t> addedBattles;
-    for (auto stat : tournament.trainerStats){
-        if (!addedBattles.contains(stat.bestWin) && stat.bestWin >= 0){
-            BattleResult bestWin = tournament.results[stat.bestWin];
-            bestWin.trainer1 = trainers[bestWin.trainer1];
-            bestWin.trainer2 = trainers[bestWin.trainer2];
-            bestWin.winner = trainers[bestWin.winner];
-            addedBattles[stat.bestWin] = saveBattle(bestWin);
-        }
-        stat.bestWin = addedBattles[stat.bestWin];
-        stats.push_back(stat);
-    }
-    result.trainerStats = stats;
-
-    result.ready = true;
-    
-    saveTournamentMutex.lock();
-    savedTournaments.at(id) = result;
-    saveTournamentMutex.unlock();
-}
-
 size_t NPCS_API_Server::createTournamentRequest(const json& json){
-    saveTournamentMutex.lock();
-    savedTournaments.emplace_back();
-    size_t id = savedTournaments.size() - 1;
-    saveTournamentMutex.unlock();
+    size_t id = db::createEmptyTournament();
     TournamentRequest request{
         .requestJson = json,
         .id = id
@@ -155,7 +78,9 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json){
     threadCounterMutex.unlock();
     mutex.lock();
     std::cout << "Queing up a tournament on thread #" << threadNumber << '\n';
-    savedTournaments.at(id).thread = threadNumber;
+    idToThreadMutex.lock();
+    idToThread[id] = threadNumber;
+    idToThreadMutex.unlock();
     queue.push_back(request);
     mutex.unlock();
 
@@ -163,7 +88,9 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json){
 }
 
 int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID){
-    int threadNumber = savedTournaments.at(tournamentID).thread;
+    idToThreadMutex.lock();
+    int threadNumber = idToThread.at(tournamentID);
+    idToThreadMutex.unlock();
     auto& queue = queuedTournaments[threadNumber];
     auto& mutex = queuedTournamentMutexes[threadNumber];
 
@@ -292,7 +219,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         size_t seed = seedFromString(seedString);
 
         // Save the battle to the databasae
-        size_t id = saveBattle(trainer1, trainer2, seed);
+        size_t id = db::saveBattle(trainer1, trainer2, seed);
 
         // Send back battle ID
         response["success"] = true;
@@ -351,9 +278,9 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
         // Look up battle in DB
         try{
-            BattleResult br = savedBattles.at(battleID);
-            Trainer trainer1(savedTrainers[br.trainer1]);
-            Trainer trainer2(savedTrainers[br.trainer2]);
+            BattleResult br = db::getBattle(battleID);
+            Trainer trainer1(db::getTrainer(br.trainer1));
+            Trainer trainer2(db::getTrainer(br.trainer2));
             size_t seed = br.seed;
             std::cout << "Creating battle...\n";
             Battle battle(trainer1, trainer2, seed);
@@ -389,7 +316,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             return;
         }
         try{
-            const TournamentResults& tr = savedTournaments.at(tournamentID);
+            const TournamentResults& tr = db::getTournament(tournamentID);
             if (!tr.ready){
                 int position = findTournamentPositionInQueue(tournamentID);
                 if (position > 0){
@@ -410,7 +337,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 statJSONs.push_back(stat.toJSON());
             }
             for(auto trainer : tr.trainers){
-                trainerJSONs.push_back(savedTrainers.at(trainer));
+                trainerJSONs.push_back(db::getTrainer(trainer));
             }
             data["trainers"] = trainerJSONs;
             data["results"] = statJSONs;
@@ -475,7 +402,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         std::cout << "Done simulating tournament.\n";
         
         // Save tournament to DB
-        saveTournament(tournament, req.id);
+        db::saveTournament(tournament, req.id);
     }
     } catch (const std::exception& e){
         std::cerr << "ERROR: Uncaught exception on thread #" + std::to_string(threadNumber) + ":\n" + e.what() + "\nStopping.\n";

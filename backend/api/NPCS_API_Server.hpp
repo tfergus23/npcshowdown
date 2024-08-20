@@ -30,6 +30,8 @@ private:
     std::mutex threadCounterMutex;
     void startTournamentThreads();
     int findTournamentPositionInQueue(size_t tournamentID);
+    std::unordered_map<size_t,int> idToThread;
+    std::mutex idToThreadMutex;
 };
 
 std::string createAllDataResponse();
