@@ -5,6 +5,9 @@ import { CreateBattleComponent } from './create-battle/create-battle.component';
 import { CreateTournamentComponent } from './create-tournament/create-tournament.component';
 import { ViewTrainersComponent } from './view-trainers/view-trainers.component';
 import { ViewResultsComponent } from './view-results/view-results.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { UserTrainersComponent } from './user-trainers/user-trainers.component';
+import { UserTournamentsComponent } from './user-tournaments/user-tournaments.component';
 
 const routes: Routes = [
   {path: "", component: HomeComponent},
@@ -12,6 +15,9 @@ const routes: Routes = [
   {path: "tournament", component: CreateTournamentComponent},
   {path: "trainers", component: ViewTrainersComponent},
   {path: "results/:id", component: ViewResultsComponent},
+  {path: "user/:username", component: UserProfileComponent},
+  {path: "user/:username/trainers", component: UserTrainersComponent},
+  {path: "user/:username/tournaments", component: UserTournamentsComponent},
 ];
 
 @NgModule({

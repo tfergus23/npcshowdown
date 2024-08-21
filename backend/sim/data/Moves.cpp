@@ -18,7 +18,7 @@ const Move MOVE_SWITCH = {
     .priority = 8,
     .critRatio = 0,
     .targetType = TargetType::SELF,
-    .secondaryEffect = SecondaryEffect::NO_EFFECT,
+    .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 };
@@ -32,7 +32,7 @@ const Move MOVE_STRUGGLE = {
     .priority = 0,
     .critRatio = 0,
     .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NO_EFFECT,
+    .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -56,7 +56,7 @@ const Move MOVE_POUND = {
     .priority = 0,
     .critRatio = 0,
     .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NO_EFFECT,
+    .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -81,7 +81,7 @@ const Move MOVE_TACKLE = {
     .priority = 0,
     .critRatio = 0,
     .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NO_EFFECT,
+    .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -106,7 +106,7 @@ const Move MOVE_KARATE_CHOP = {
     .priority = 0,
     .critRatio = 1,
     .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NO_EFFECT,
+    .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 
@@ -131,7 +131,7 @@ const Move MOVE_SURF = {
     .priority = 0,
     .critRatio = 0,
     .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NO_EFFECT,
+    .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
 

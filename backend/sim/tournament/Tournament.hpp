@@ -3,8 +3,8 @@
 #include "BattleResult.hpp"
 #include <random>
 
-const int MIN_TOURNAMENT_TRAINERS = 2;
-const int MAX_TOURNAMENT_BATTLES = 20000;
+constexpr int MIN_TOURNAMENT_TRAINERS = 2;
+constexpr int MAX_TOURNAMENT_BATTLES = 20000;
 
 float calculateTotalBattles(int entrants, int rounds);
 

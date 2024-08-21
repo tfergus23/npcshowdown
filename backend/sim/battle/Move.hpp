@@ -7,21 +7,6 @@
 
 class MoveUse;
 
-/*
-    .name = "Pound",
-    .type = Type::NORMAL,
-    .damageCategory = DamageCategory::PHYSICAL,
-    .power = 40,
-    .accuracy = 100,
-    .maxPP = 56,
-    .priority = 0,
-    .critRatio = 0,
-    .targetType = TargetType::OPPONENT,
-    .secondaryEffect = SecondaryEffect::NOEFFECT,
-    .secondaryEffectChance = -1,
-    .secondaryEffectValue = -1,
-*/
-
 class Move{
 public:
     std::string name;
@@ -37,7 +22,7 @@ public:
     float secondaryEffectChance;
     float secondaryEffectValue;
 
-    //Flags (Tags)
+    //Flags
     bool nothingAfterChecks = false;
     bool contact = false;
     bool protect = false;

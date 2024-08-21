@@ -2,14 +2,19 @@
     <a class="logo" href="/"><img src="../../assets/npcs_logo.png" height="60" alt="logo"></a>
     <a class="menu" href="/">MENU</a>
     <div class="login-container">
-        <div *ngIf="app.loggedInUser; else elseBlock" class="signedin">
-            Signed in as <div class="username">{{app.loggedInUser.name}}</div>
-            <a (click)="logout()" class="logout">Logout</a>
+        <button (click)="this.showDropDown()" (focusout)="this.hideDropDown()" *ngIf="app.loggedInUser; else elseBlock" class="signed-in">
+            <div class="username">{{app.loggedInUser.name}}▼</div>
+        </button>
+        <div [style.display]="this.dropdownDisplay" class="dropdown-content">
+            <a href="/user/{{this.app.loggedInUser?.name}}">Profile</a>
+            <a href="/user/{{this.app.loggedInUser?.name}}/trainers">Saved Trainers</a>
+            <a href="/user/{{this.app.loggedInUser?.name}}/tournaments">Saved Tournaments</a>
+            <button (click)="this.logout()">Logout</button>
         </div>
         <ng-template #elseBlock>
             <input type="text" name="username" placeholder="Username" id="user_input">
             <input type="password" name="password" placeholder="Password" id="password_input" (keyup.enter)="login()">
-            <button type="button" (click)="login()">Sign In</button>
+            <button class="loginBtn" type="button" (click)="login()">Sign In</button>
         </ng-template>
     </div>
 </nav>

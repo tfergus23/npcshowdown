@@ -77,7 +77,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
     if (!(moveUse->battle->randInt(1,101) <= moveUse->move->secondaryEffectChance * sereneGraceMod && moveUse->damageDone > 0 && moveUse->target->currentHealth > 0)) return false;
     switch (moveUse->move->secondaryEffect)
     {
-    case SecondaryEffect::NORMAL_POISON:
+    case SecondaryEffect::POISON:
         return applyStatus(&STATUS_POISON, moveUse, false);
     case SecondaryEffect::PARALYZE:
         return applyStatus(&STATUS_PARALYSIS, moveUse, false);

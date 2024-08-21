@@ -18,6 +18,9 @@ import { CreatePokemonComponent } from './create-pokemon/create-pokemon.componen
 import { FormsModule } from '@angular/forms';
 import { DataListsComponent } from './data-lists/data-lists.component';
 import { BattleLogViewComponent } from './battle-log-view/battle-log-view.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { UserTrainersComponent } from './user-trainers/user-trainers.component';
+import { UserTournamentsComponent } from './user-tournaments/user-tournaments.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +37,10 @@ import { BattleLogViewComponent } from './battle-log-view/battle-log-view.compon
     CreateTrainerComponent,
     CreatePokemonComponent,
     DataListsComponent,
-    BattleLogViewComponent
+    BattleLogViewComponent,
+    UserProfileComponent,
+    UserTrainersComponent,
+    UserTournamentsComponent
   ],
   imports: [
     BrowserModule,

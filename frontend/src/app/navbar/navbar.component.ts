@@ -12,6 +12,8 @@ import {CookieService} from 'ngx-cookie-service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
+  dropdownDisplay: string = "none";
+
   constructor(public app: AppComponent, private authService: AuthenticationService, private userService: UserService, private cookieService: CookieService){}
   ngOnInit(): void {
   }
@@ -46,15 +48,29 @@ export class NavbarComponent {
     });
   }
   logout(){
+    this.dropdownDisplay = "none";
     if(this.app.loggedInUser)
     this.userService.logOut(this.app.loggedInUser?.token).subscribe((res) =>{
       if (res.success){
         this.app.loggedInUser = undefined;
-        this.cookieService.delete("token");
+        this.cookieService.delete("token", "/", "localhost", false, "Lax");
       }
       else{
         console.log(res.message);
       }
     });
+  }
+
+  showDropDown(){
+    if (this.dropdownDisplay == "block"){
+      this.dropdownDisplay = "none";
+    }
+    else{
+      this.dropdownDisplay = "block";
+    }
+  }
+
+  hideDropDown(){
+    //this.dropdownDisplay = "none";
   }
 }
