@@ -165,10 +165,16 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
     app.Add_Handler("GET", authorizedRoute, "/", [](const HTTP_Request& req, HTTP_Response& res){
         json response;
-        response["name"] = req.path_params.at("username");
-        response["id"] = 0;
+        json data;
+        data["id"] = 0;
+        data["name"] = req.path_params.at("username");
+        data["token"] = "admin:123";
+        data["accountCreated"] = "2024-10-04";
+        data["lastPasswordChange"] = "2024-10-04";
+        data["email"] = "testperson@bmail.net";
         response["success"] = true;
-        response["token"] = "admin:123";
+        response["message"] = "OK";
+        response["data"] = data;
         res.Send(response.dump());
     });
 

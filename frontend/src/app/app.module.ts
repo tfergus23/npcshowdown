@@ -21,6 +21,8 @@ import { BattleLogViewComponent } from './battle-log-view/battle-log-view.compon
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UserTrainersComponent } from './user-trainers/user-trainers.component';
 import { UserTournamentsComponent } from './user-tournaments/user-tournaments.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
+import { UserViewComponent } from './user-view/user-view.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { UserTournamentsComponent } from './user-tournaments/user-tournaments.co
     BattleLogViewComponent,
     UserProfileComponent,
     UserTrainersComponent,
-    UserTournamentsComponent
+    UserTournamentsComponent,
+    SignUpComponent,
+    UserViewComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,12 @@
+<div class="content">
+    <div class="sidebar-content">
+        <div class="links">
+            <a [style.background-color]="(this.view == 'profile') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" href="/user/{{this.app.loggedInUser?.name}}?view=profile">Profile</a>
+            <a [style.background-color]="(this.view == 'trainers') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" href="/user/{{this.app.loggedInUser?.name}}?view=trainers">Trainers</a>
+            <a [style.background-color]="(this.view == 'tournaments') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" href="/user/{{this.app.loggedInUser?.name}}?view=tournaments">Tournaments</a>
+        </div>
+    </div>
+    <app-user-profile *ngIf="this.view == 'profile'"></app-user-profile>
+    <app-user-trainers *ngIf="this.view == 'trainers'"></app-user-trainers>
+    <app-user-tournaments *ngIf="this.view == 'tournaments'"></app-user-tournaments>
+</div>

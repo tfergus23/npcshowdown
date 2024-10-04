@@ -1,1 +1,21 @@
-<p>user-profile works!</p>
+<div class="profile-content">
+    <h2>{{this.app.loggedInUser?.name}}'s Profile</h2>
+    <hr>
+    <div class="details">
+        <div class="created">
+            <span class="bold">Account Created:</span> {{this.app.loggedInUser?.accountCreated}}
+        </div>
+        <div class="change-password">
+            <button>Change Password</button>
+            <div>Last changed: {{this.app.loggedInUser?.lastPasswordChange}}</div>
+        </div>
+        <div class="email">
+            <div class="email-line"><span class="bold">Email:</span></div>
+            <input class="email-line" value="{{this.app.loggedInUser?.email}}" type="text">
+            <button>Update</button>
+        </div>
+        <div>
+            <button class="delete-btn">Delete Account</button>
+        </div>
+    </div>
+</div>

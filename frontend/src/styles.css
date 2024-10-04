@@ -3,7 +3,6 @@ body{
     color:rgb(0, 255, 255);
     font-family: Tahoma;
     margin: 0%;
-    overflow: hidden;
 }
 
 a{
@@ -19,6 +18,7 @@ button{
     cursor: pointer;
     font-size: 15px;
     font-weight: bold;
+    border: none;
 }
 
 button:disabled{

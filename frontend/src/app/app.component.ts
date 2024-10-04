@@ -19,11 +19,7 @@ export class AppComponent {
     if (this.cookieService.check("token"))
     this.userService.getUserData(this.cookieService.get("token")).subscribe((res) =>{
       if (res.success){
-        this.loggedInUser = {
-          name:res.name,
-          id:res.id,
-          token:res.token
-        }
+        this.loggedInUser = res.data;
       }
     });
     

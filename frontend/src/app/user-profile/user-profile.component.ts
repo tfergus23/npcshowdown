@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./user-profile.component.css']
 })
 export class UserProfileComponent {
-
+  constructor(public app: AppComponent){}
 }

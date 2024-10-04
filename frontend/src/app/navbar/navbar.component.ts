@@ -30,12 +30,8 @@ export class NavbarComponent {
         const userResponse = this.userService.getUserData(res.token);
         userResponse.subscribe((res) => {
           if (res.success){
-            this.app.loggedInUser = {
-              name: res.name,
-              id: res.id,
-              token: res.token
-            };
-            this.cookieService.set("token", res.token);
+            this.app.loggedInUser = res.data;
+            this.cookieService.set("token", res.data.token);
           }
           else{
             //something went wrong

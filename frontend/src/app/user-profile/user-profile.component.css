@@ -1,0 +1,57 @@
+.profile-content{
+    overflow: hidden;
+}
+
+h2 {
+    margin-left: 50px;
+}
+
+button{
+    height: 50px;
+    width: 150px;
+}
+
+.profile-content hr{
+    border: 2px solid gray;
+    border-radius: 1px;
+}
+
+.details{
+    margin-left: 50px;
+    margin-top: 30px;
+    width: fit-content;
+}
+
+.details div{
+    margin-bottom: 70px;
+}
+
+.delete-btn{
+    margin-top: 50px;
+    background-color: red;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.email button{
+    height: 40px;
+    width: 70px;
+    display: inline-block;
+}
+
+.email-line{
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.email div{
+    margin-bottom: 0px;
+}
+
+.email input{
+    height: 30px;
+    width: 250px;
+    font-size: 15px;
+}

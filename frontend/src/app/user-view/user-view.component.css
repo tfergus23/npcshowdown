@@ -1,0 +1,48 @@
+.content{
+    width: 65%;
+    height: 100%;
+    overflow: hidden;
+    margin-top: 20px;
+    margin: auto;
+}
+
+@media (max-width: 1000px){
+    .content{
+        width: 100%;
+    }
+}
+
+.sidebar-content{
+    height: 100vh;
+    border-right: 3px solid gray;
+    vertical-align: top;
+    width: fit-content;
+    float: left;
+}
+
+.links{
+    width: fit-content;
+    margin: auto;
+    margin-top: 100px;
+}
+
+.links a{
+    display: block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 20px;
+    border-radius: 5px;
+    margin-right: 2px;
+}
+
+@media (max-width: 1000px){
+    .links a{
+        font-size: 16px;
+    }
+}
+
+.links a:hover{
+    text-decoration: underline;
+}

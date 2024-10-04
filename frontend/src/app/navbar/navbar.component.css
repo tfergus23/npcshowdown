@@ -1,6 +1,8 @@
 .navBar{
   background-color:rgb(41, 41, 41); 
   overflow: hidden;
+
+  --dropdown-text-size: 14px;
 }
 
 .navBar .logo{
@@ -13,18 +15,33 @@
   padding-top: 22px;
 }
 
+.sign-up{
+  margin-top: 22px;
+  margin-right: 10px;
+  display: block;
+  float: right;
+  width: fit-content;
+}
 
+.sign-up:hover{
+  text-decoration: underline;
+  cursor: pointer;
+}
 
-.navBar .login-container{
+.navBar .user-container{
   width: fit-content;
   height: 100%;
   display: block;
-  margin-left: auto;
-  margin-right: 20px;
+  float: right;
+  
 
 }
 
-.navBar .login-container .signed-in{
+.user-container input{
+  font-size: 15px;
+}
+
+.navBar .user-container .signed-in{
   height: 60px;
   width: fit-content;
   border: none;
@@ -34,32 +51,38 @@
   font-weight: bolder;
 }
 
+.login {
+  margin-top: 15px;
+  width: fit-content;
+}
+
 .signed-in:hover{
   text-decoration: underline;
 }
 
-.navBar .login-container .username{
+.navBar .user-container .username{
   width: fit-content;
   margin: auto;
 }
 
-
-
 .dropdown-content {
   position: absolute;
-  right: 0px;
+  right: 5px;
   background-color: rgb(41, 41, 41);
   min-width: 160px;
   z-index: 1;
+  border-radius: 3px;
+  border: 3px solid aqua;
+  
 }
 
 .dropdown-content a {
   color: aqua;
   padding: 12px 16px;
   display: block;
-  font-weight: bold;
+  
   transition-duration: 0.2s;
-  font-size: 18px;
+  font-size: var(--dropdown-text-size);
 }
 
 .dropdown-content button{
@@ -67,12 +90,11 @@
   color: red;
   padding: 12px 16px;
   display: block;
-  font-weight: bold;
   transition-duration: 0.2s;
   background-color: rgb(41, 41, 41);
   border: none;
   width: 100%;
-  font-size: 18px;
+  font-size: var(--dropdown-text-size);
   border-radius: 0;
 }
 
