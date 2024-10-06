@@ -396,6 +396,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         queueMutex.unlock();
 
         std::vector<Trainer> trainers;
+        trainers.reserve(request["trainers"].size());
         for(int i = 0; i < request["trainers"].size(); i++){
             trainers.emplace_back(request["trainers"][i]);
         }
