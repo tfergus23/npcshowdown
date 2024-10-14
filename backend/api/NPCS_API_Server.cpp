@@ -149,7 +149,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             if (token != ""){
                 response["success"] = true;
                 response["token"] = token;
-                response["message"] = "success";
+                response["message"] = "OK";
             }
             else{
                 response["success"] = false;
@@ -157,9 +157,13 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 res.Set_Status(401);
             }
             res.Send(response.dump());
-        } catch(...){
+        } 
+        catch (const json::parse_error& e){
+            response["success"] = false;
+            response["message"] = "Bad Request: " + std::string(e.what());
             res.Set_Status(400);
-            res.Send("");
+            res.Send(response.dump());
+            return;
         }
     });
 
@@ -201,8 +205,8 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         try {
             request = json::parse(req.body);
         }
-        catch (...){
-            response["message"] = "Bad Request: Invalid JSON";
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
             res.Set_Status(400);
             res.Send(response.dump());
             return;
@@ -242,8 +246,8 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         try {
             request = json::parse(req.body);
         }
-        catch (...){
-            response["message"] = "Bad Request: Invalid JSON";
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
             res.Set_Status(400);
             res.Send(response.dump());
             return;
