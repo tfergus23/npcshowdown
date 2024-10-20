@@ -19,6 +19,6 @@ namespace db{
     size_t createEmptyTournament();
     size_t saveTrainer(const json& json);
     size_t saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed);
-    size_t saveBattle(const BattleResult result);
+    size_t saveBattle(const BattleResult result); //TODO: Why is this not a reference?
     void saveTournament(const Tournament& tournament, size_t id);
 };

@@ -22,6 +22,7 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
 
     int id = 0;
     for (auto& trainer : trainers){
+        //this->trainerStats.emplace_back().trainerIndex = id++; //TODO: Test this
         this->trainerStats.push_back(
             {
                 .trainerIndex = id++
@@ -32,12 +33,12 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
 
 BattleResult determineBattleResult(Battle& battle, int trainer1, int trainer2){
     if (!battle.isBattleOver){
-        throw std::runtime_error("Can't determine result if the battle was never ran.");
+        throw std::runtime_error("Can't determine result if the battle was never ran.\nBattle:\n\n" + battle.battleLog);
     }
 
     BattleResult result;
     if (battle.isDraw){
-        result.winner = -1;
+        result.winner = -1; //TODO: Is this a problem?
     }
     else{
         result.winner = battle.winner == battle.getPlayer1() ? trainer1 : trainer2;

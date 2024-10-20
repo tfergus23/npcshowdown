@@ -74,7 +74,7 @@ void db::saveTournament(const Tournament& tournament, size_t id){
 
     std::vector<TrainerStats> stats;
     std::unordered_map<size_t,size_t> addedBattles;
-    for (auto stat : tournament.trainerStats){
+    for (auto stat : tournament.trainerStats){ //TODO: Why isn't this a reference?
         if (!addedBattles.contains(stat.bestWin) && stat.bestWin >= 0){
             BattleResult bestWin = tournament.results[stat.bestWin];
             bestWin.trainer1 = trainers[bestWin.trainer1];
