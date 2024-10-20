@@ -3,7 +3,7 @@
     <h1>Create a Battle</h1>
     <div class="trainer-list">
         <app-create-trainer [dataLists]="dataLists" [trainerNum]="'1'"></app-create-trainer>
-        <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'"></app-create-trainer>
+        <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'" [collapsed]="true"></app-create-trainer>
     </div>
 
     <div [hidden]="errors.length == 0" class="errors-box">

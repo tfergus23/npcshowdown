@@ -1,37 +1,121 @@
 <div class="create-trainer-container">
-<button class="collapsible-header" (click)="toggleCollapsible()">
-    <label style="text-align: left;">Trainer {{trainerNum}}</label>
-    <label>{{this.trainer.name}}</label>
-    <label>{{this.trainer.team.length}}/6</label>
-    <label>{{this.trainer.trainerLevel}}</label>
-    <label *ngIf="this.results">{{this.results!.elo}}</label>
-    <label *ngIf="this.results">{{this.results!.wins}}</label>
-    <label *ngIf="this.results">{{this.results!.losses}}</label>
-    <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
-    <button *ngIf="this.results" (click)="showBattle(this.results.bestWin)" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
-    <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
-</button>
-<hr>
-<div class="import-save-buttons" [hidden]="this.collapsed">
-    <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
-    <button [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
-    <button (click)="download();">Save to File</button>
-    <button [hidden]="this.app.loggedInUser == undefined">Save to My Trainers</button>
-</div>
-<div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
-    <div class="trainer-name">
-        <label>Trainer Name: </label>
-        <input [(ngModel)]="this.trainer.name" [readonly]="this.readOnly">
+    <button class="collapsible-header" (click)="toggleCollapsible()">
+        <label style="text-align: left;">Trainer {{trainerNum}}</label>
+        <label>{{this.trainer.name}}</label>
+        <label>{{this.trainer.team.length}}/6</label>
+        <label>{{this.trainer.trainerLevel}}</label>
+        <label *ngIf="this.results">{{this.results!.elo}}</label>
+        <label *ngIf="this.results">{{this.results!.wins}}</label>
+        <label *ngIf="this.results">{{this.results!.losses}}</label>
+        <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
+        <button *ngIf="this.results" (click)="showBattle(this.results.bestWin)" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
+        <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
+    </button>
+    <div class="import-save-buttons" [hidden]="this.collapsed">
+        <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
+        <button [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
+        <button (click)="download();">Save to File</button>
+        <button [hidden]="this.app.loggedInUser == undefined">Save to My Trainers</button>
     </div>
-    <div class="trainer-level">
-        <label>Trainer AI Level: </label>
-        <select [(ngModel)]="this.trainer.trainerLevel" [disabled]="this.readOnly">
-            <option *ngFor="let level of dataLists?.trainerLevelList" value="{{level}}">{{level}}</option>
-        </select>
+    <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
+        <div class="trainer-name">
+            <label>Trainer Name: </label>
+            <input [(ngModel)]="this.trainer.name" [readonly]="this.readOnly">
+        </div>
+        <div class="trainer-level">
+            <label>Trainer AI Level: </label>
+            <select [(ngModel)]="this.trainer.trainerLevel" [disabled]="this.readOnly">
+                <option *ngFor="let level of dataLists?.trainerLevelList" value="{{level}}">{{level}}</option>
+            </select>
+        </div>
     </div>
-</div>
-<div *ngFor="let poke of this.trainer.team; index as i"  class="pokemon-list" [hidden]="this.collapsed" #container>
-    <app-create-pokemon [pokemon]="poke" [dataLists]="this.dataLists" [trainer]="this.trainer" [pokeNumber]="(i+1).toString()" [parent]="this" ></app-create-pokemon>
-</div>
-<button class="add-pokemon-button" [hidden]="this.trainer.team.length > 5 || this.collapsed || this.readOnly" (click)="addPoke()">Add Pokemon</button>
+    <div [hidden]="this.collapsed" class="pokemon-block">
+        <div class="pokemon-tabs">
+            <button [style.background-color]="(this.selectedIndex == i) ? 'rgb(78, 78, 79)' : ''" (click)="this.setSelectedIndex(i)" *ngFor="let pokemon of trainer.team; index as i" class="pokemon-tab">
+                {{i+1}}. {{pokemon.nickname === "" ? pokemon.species : pokemon.nickname}}
+                <button *ngIf="!this.readOnly" (click)="this.removePoke(i)" class="remove-pokemon-btn">X</button>
+            </button>
+            <button (click)="this.addPoke()" [hidden]="this.trainer.team.length > 5" class="add-pokemon-btn">
+                +
+            </button>
+        </div>
+        <div *ngIf="this.trainer.team.length > 0" class="pokemon-details">
+            <div style="margin-right: 25px;" class="pokemon-column">
+                <div class="pokemon-input">
+                    <div class="inline-label">Species: </div> <input type="text" list="speciesList" (focusout)="this.autoCompleteSpecies($event)" [(ngModel)]="this.trainer.team[selectedIndex].species" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Ability: </div> <input type="text" list="abilityList" (focusout)="this.autoCompleteAbility($event)" [(ngModel)]="this.trainer.team[selectedIndex].abilityName" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Item: </div> <input type="text" list="itemList" (focusout)="this.autoCompleteItem($event)" [(ngModel)]="this.trainer.team[selectedIndex].itemName" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Level: </div> <input type="number" min="0" max="100" [(ngModel)]="this.trainer.team[selectedIndex].level" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Gender: </div>
+                    <select [(ngModel)]="this.trainer.team[selectedIndex].gender" [disabled]="this.readOnly">
+                        <option value="Random">Random</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Nickname: </div> <input type="text" [(ngModel)]="this.trainer.team[selectedIndex].nickname" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Nature: </div>
+                    <select [(ngModel)]="this.trainer.team[selectedIndex].nature" [disabled]="this.readOnly">
+                        <option *ngFor="let nature of dataLists?.natureList" value="{{nature}}">{{nature}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pokemon-column">
+                <div class="pokemon-input">
+                    <div class="inline-label">Move 1: </div> <input type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 0)" [(ngModel)]="this.trainer.team[selectedIndex].moves[0]" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Move 2: </div> <input type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 1)" [(ngModel)]="this.trainer.team[selectedIndex].moves[1]" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Move 3: </div> <input type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 2)" [(ngModel)]="this.trainer.team[selectedIndex].moves[2]" [readOnly]="this.readOnly">
+                </div>
+                <div class="pokemon-input">
+                    <div class="inline-label">Move 4: </div> <input type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 3)" [(ngModel)]="this.trainer.team[selectedIndex].moves[3]" [readOnly]="this.readOnly">
+                </div>
+                <div class="stat-value-input">
+                    <div class="inline-label"></div>
+                    <span class="stat-label">HP</span>
+                    <span class="stat-label">ATK</span>
+                    <span class="stat-label">DEF</span>
+                    <span class="stat-label">SPA</span>
+                    <span class="stat-label">SPD</span>
+                    <span class="stat-label">SPE</span>
+                </div>
+                <div class="stat-value-input">
+                    <div class="inline-label">
+                        EVs: 
+                    </div>
+                    <input placeholder="HP" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[0]" [readOnly]="this.readOnly">
+                    <input placeholder="ATK" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[1]" [readOnly]="this.readOnly">
+                    <input placeholder="DEF" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[2]" [readOnly]="this.readOnly">
+                    <input placeholder="SPA" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[3]" [readOnly]="this.readOnly">
+                    <input placeholder="SPD" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[4]" [readOnly]="this.readOnly">
+                    <input placeholder="SPE" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[5]" [readOnly]="this.readOnly">
+                </div>
+                <div class="stat-value-input">
+                    <div class="inline-label">
+                        IVs: 
+                    </div>
+                    <input placeholder="HP" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[0]" [readOnly]="this.readOnly">
+                    <input placeholder="ATK" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[1]" [readOnly]="this.readOnly">
+                    <input placeholder="DEF" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[2]" [readOnly]="this.readOnly">
+                    <input placeholder="SPA" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[3]" [readOnly]="this.readOnly">
+                    <input placeholder="SPD" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[4]" [readOnly]="this.readOnly">
+                    <input placeholder="SPE" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[5]" [readOnly]="this.readOnly">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

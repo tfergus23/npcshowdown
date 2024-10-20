@@ -28,6 +28,7 @@ export class CreateTrainerComponent {
   @Input() resultsView: ViewResultsComponent | undefined;
 
   clickedBestWin: boolean = false; // Dumb workaround for putting a button in a button
+  selectedIndex: number = 0;
 
   constructor(public app: AppComponent, private battleService: BattleService){
     
@@ -42,12 +43,18 @@ export class CreateTrainerComponent {
   }
 
   ngAfterViewInit(){
-    
   }
 
   addPoke(){
     this.trainer.team.push(createEmptyPokemon());
-    
+    this.selectedIndex = this.trainer.team.length-1;
+  }
+
+  removePoke(index: number){
+    this.trainer.team.splice(index,1);
+    if (this.selectedIndex == this.trainer.team.length){
+      this.selectedIndex--;
+    }
   }
 
   getJSON() : Trainer{
@@ -109,4 +116,64 @@ export class CreateTrainerComponent {
     });
   }
 
+  setSelectedIndex(newIndex: number){
+    this.selectedIndex = newIndex;
+  }
+
+
+  autoCompleteSpecies(event: FocusEvent){
+    if (this.readOnly) return;
+    let input: HTMLInputElement = event.target as HTMLInputElement;
+    let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
+    for (let i = 0; i < dataList.options.length; i++){
+      let inputVal = input.value.toLowerCase().trim();
+      if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
+        this.trainer.team[this.selectedIndex].species = dataList.options[i].value;
+        return;
+      }
+    }
+    this.trainer.team[this.selectedIndex].species = "";
+  }
+
+  autoCompleteItem(event: FocusEvent){
+    if (this.readOnly) return;
+    let input: HTMLInputElement = event.target as HTMLInputElement;
+    let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
+    for (let i = 0; i < dataList.options.length; i++){
+      let inputVal = input.value.toLowerCase().trim();
+      if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
+        this.trainer.team[this.selectedIndex].itemName = dataList.options[i].value;
+        return;
+      }
+    }
+    this.trainer.team[this.selectedIndex].itemName = "";
+  }
+
+  autoCompleteAbility(event: FocusEvent){
+    if (this.readOnly) return;
+    let input: HTMLInputElement = event.target as HTMLInputElement;
+    let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
+    for (let i = 0; i < dataList.options.length; i++){
+      let inputVal = input.value.toLowerCase().trim();
+      if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
+        this.trainer.team[this.selectedIndex].abilityName = dataList.options[i].value;
+        return;
+      }
+    }
+    this.trainer.team[this.selectedIndex].abilityName = "";
+  }
+
+  autoCompleteMove(event: FocusEvent, index: number){
+    if (this.readOnly) return;
+    let input: HTMLInputElement = event.target as HTMLInputElement;
+    let dataList: HTMLDataListElement = input.list as HTMLDataListElement;
+    for (let i = 0; i < dataList.options.length; i++){
+      let inputVal = input.value.toLowerCase().trim();
+      if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
+        this.trainer.team[this.selectedIndex].moves[index] = dataList.options[i].value;
+        return;
+      }
+    }
+    this.trainer.team[this.selectedIndex].moves[index] = "";
+  }
 }

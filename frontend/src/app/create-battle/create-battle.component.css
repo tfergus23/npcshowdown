@@ -3,7 +3,7 @@
 .container{
     text-align: left;
     margin: auto;
-    width: 90%;
+    width: 905px;
 }
 
 h1 {
@@ -55,7 +55,9 @@ input, select{
     -webkit-box-sizing: border-box;
 }
 
-.trainer-list{
-    height: 60vb;
-    overflow-y: scroll;
+
+@media (max-width: 930px){
+    .container{
+        width: 95%;
+    }
 }

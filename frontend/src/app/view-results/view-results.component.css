@@ -3,6 +3,12 @@
     width: 80%;
 }
 
+@media (max-width: 600px){
+    .container{
+        width: 100%;
+    }
+}
+
 .result-column-headers button{
     width: 11%;
     height: 50px;
