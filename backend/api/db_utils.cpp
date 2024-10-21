@@ -93,3 +93,13 @@ void db::saveTournament(const Tournament& tournament, size_t id){
     savedTournaments.at(id) = result;
     saveTournamentMutex.unlock();
 }
+
+std::vector<size_t> db::getUserTrainers(const std::string& username){
+    std::vector<size_t> result;
+    size_t size = savedTrainers.size();
+    result.reserve(size);
+    for(size_t i = 0; i < size; i++){
+        result.push_back(i);
+    }
+    return result;
+}

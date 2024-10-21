@@ -362,6 +362,27 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             return;
         }
     });
+
+    app.Add_Handler("GET", authorizedRoute, "/trainers", [](const HTTP_Request& req, HTTP_Response& res){
+        std::string username = req.path_params.at("username");
+
+
+        //TODO: Do this better
+        std::vector<size_t> userTrainerIDs = db::getUserTrainers(username);
+        std::vector<json> userTrainers;
+        userTrainers.reserve(userTrainerIDs.size());
+
+        for(auto id : userTrainerIDs){
+            userTrainers.push_back(db::getTrainer(id));
+        }
+
+        json response;
+        response["success"] = true;
+        response["message"] = "OK";
+        response["data"] = userTrainers;
+
+        res.Send(response.dump());
+    });  
 }
 
 int NPCS_API_Server::run(){

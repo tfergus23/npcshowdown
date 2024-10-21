@@ -15,6 +15,7 @@ namespace db{
     json getTrainer(size_t id);
     BattleResult getBattle(size_t id);
     TournamentResults getTournament(size_t id);
+    std::vector<size_t> getUserTrainers(const std::string& username);
 
     size_t createEmptyTournament();
     size_t saveTrainer(const json& json);
