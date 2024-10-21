@@ -4,10 +4,9 @@
 #include "sim/battle/Nature.hpp"
 #include "sim/battle/Stat.hpp"
 
-enum class Nature {HARDY,LONELY,BRAVE,ADAMANT,NAUGHTY,BOLD,DOCILE,RELAXED,IMPISH,LAX,TIMID,HASTY,SERIOUS,JOLLY,NAIVE,MODEST,MILD,QUIET,BASHFUL,RASH,CALM,GENTLE,SASSY,CAREFUL,QUIRKY};
+enum class Nature : int8_t {HARDY,LONELY,BRAVE,ADAMANT,NAUGHTY,BOLD,DOCILE,RELAXED,IMPISH,LAX,TIMID,HASTY,SERIOUS,JOLLY,NAIVE,MODEST,MILD,QUIET,BASHFUL,RASH,CALM,GENTLE,SASSY,CAREFUL,QUIRKY};
 
 inline const std::unordered_map<std::string, Nature> natures = {
-    //{"", HARDY}, This might break something
     {"Hardy", Nature::HARDY},
     {"Lonely", Nature::LONELY},
     {"Brave", Nature::BRAVE},

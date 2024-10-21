@@ -6,8 +6,10 @@
 #include "sim/utils/move_functions.hpp"
 using json = nlohmann::json;
 
-const std::string ITEM_NONE_NAME = "";
-const Item* ITEM_NONE = nullptr;
+const Item ITEM_NONE = {
+    .name = "",
+    .id = 0
+};
 
 const Item ITEM_LEFTOVERS = {
     .observer = {
@@ -17,12 +19,29 @@ const Item ITEM_LEFTOVERS = {
         }
     },
     .name = "Leftovers",
+    .id = 1,
 };
 
 const std::unordered_map<std::string, const Item*> items = {
-    {ITEM_NONE_NAME, ITEM_NONE},
+    {ITEM_NONE.name, &ITEM_NONE},
     {ITEM_LEFTOVERS.name, &ITEM_LEFTOVERS}
 };
+
+static std::unordered_map<int16_t,const Item*> idToItemMap;
+
+void mapIDToItem(int16_t id, const Item* item){
+    assert(!idToItemMap.contains(id));
+    assert(id == item->id);
+    idToItemMap[id] = item;
+}
+
+void mapIDsToItems(){
+    mapIDToItem(ITEM_NONE.id, &ITEM_NONE);
+    mapIDToItem(ITEM_LEFTOVERS.id, &ITEM_LEFTOVERS);
+}
+const Item* itemFromID(int16_t id){
+    return idToItemMap.at(id);
+}
 
 const Item* itemFromString(const std::string& itemName){
     return items.at(itemName);

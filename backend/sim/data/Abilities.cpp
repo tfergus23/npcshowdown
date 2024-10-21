@@ -15,7 +15,8 @@ const Ability ABILITY_GUTS = {
             return (int) floor(newVal);
         } 
         return statVal;
-    }
+    },
+    .id = 0
 };
 
 const Ability ABILITY_TORRENT = {
@@ -27,7 +28,8 @@ const Ability ABILITY_TORRENT = {
         }
     }
     },
-    .name = "Torrent"
+    .name = "Torrent",
+    .id = 1
 };
 
 
@@ -40,8 +42,25 @@ const std::unordered_map<std::string,const Ability*> abilities = {
     {ABILITY_TORRENT.name, &ABILITY_TORRENT}
 };
 
+std::unordered_map<int16_t, const Ability*> idToAbility;
+
+void mapIDToAbility(int16_t id, const Ability* ability){
+    assert(!idToAbility.contains(id));
+    assert(id == ability->id);
+    idToAbility[id] = ability;
+}
+
+void mapIDsToAbilities(){
+    mapIDToAbility(ABILITY_GUTS.id, &ABILITY_GUTS);
+    mapIDToAbility(ABILITY_TORRENT.id, &ABILITY_TORRENT);
+}
+
 const Ability* abilityFromString(const std::string& abilityName){
     return abilities.at(abilityName);
+}
+
+const Ability* abilityFromId(int16_t id){
+    return idToAbility.at(id);
 }
 
 std::string createAbilityDataResponse(){

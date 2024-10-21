@@ -6,17 +6,19 @@
 #include <cstring>
 
 struct Species{
-    int id;
+    int16_t id = 0;
     char name[16] = {0};
     std::array<Type,2> type;
     float weightKG;
     float percentMale;
     std::array<int,6> baseStats;
-    Species(int id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats);
+    Species(int16_t id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats);
 };
 
 const Species* speciesFromString(const std::string& speciesName);
 std::string createSpeciesDataResponse();
+void mapIDsToSpecies();
+const Species* speciesFromID(int16_t id);
 
 extern const Species SPECIES_BULBASAUR;
 extern const Species SPECIES_IVYSAUR;

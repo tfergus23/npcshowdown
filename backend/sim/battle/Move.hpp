@@ -21,6 +21,7 @@ public:
     SecondaryEffect secondaryEffect;
     float secondaryEffectChance;
     float secondaryEffectValue;
+    int16_t id = -1;
 
     //Flags
     bool nothingAfterChecks = false;

@@ -23,8 +23,6 @@ Pokemon::Pokemon(const PokemonBlueprint* blueprint, Battle* battle) :
 species{speciesFromString(blueprint->species)},
 nickname{blueprint->nickname == "" ? blueprint->species : blueprint->nickname},
 level{blueprint->level},
-evs{blueprint->evs},
-ivs{blueprint->ivs},
 baseMoves{{moveFromString(blueprint->moves[0]),moveFromString(blueprint->moves[1]),moveFromString(blueprint->moves[2]),moveFromString(blueprint->moves[3])}},
 nature{natures.at(blueprint->nature)},
 currentMoves{{moveFromString(blueprint->moves[0]),moveFromString(blueprint->moves[1]),moveFromString(blueprint->moves[2]),moveFromString(blueprint->moves[3])}},
@@ -34,14 +32,17 @@ m_CurrentItem{itemFromString(blueprint->itemName)},
 m_BaseItem{itemFromString(blueprint->itemName)},
 battle{battle}
 {
-
+    for (int i = 0; i < evs.size(); i++){
+        evs[i] = blueprint->evs[i];
+        ivs[i] = blueprint->ivs[i];
+    }
     //TODO: Set species data
     currentType[0] = species->type[0];
     currentType[1] = species->type[1];
 
     battle->assertTrue(m_CurrentAbility != nullptr, nickname + " doesn't have an ability.");
     m_CurrentAbility->observer.initializeState(&abilityState);
-    if (m_CurrentItem != ITEM_NONE)
+    if (m_CurrentItem != &ITEM_NONE)
         m_CurrentItem->observer.initializeState(&itemState);
 
     empty = false;
@@ -105,7 +106,7 @@ const Item* Pokemon::getCurrentItem(){
 void Pokemon::setCurrentItem(const Item* item){
     m_CurrentItem = item;
     itemState.reset();
-    if (m_CurrentItem != ITEM_NONE)
+    if (m_CurrentItem != &ITEM_NONE)
         m_CurrentItem->observer.initializeState(&itemState);
 
 }
@@ -225,8 +226,8 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
     //Still run this if we just died
     if (isDead && !(event == Event::POKEMON_DEATH && args.eventSubject == this)) return;
 
-    if (getCurrentItem() != ITEM_NONE && !itemState.suppressed) getCurrentItem()->observer.handleEvent(event,this, battle, args);
-    if (getCurrentItem() != ITEM_NONE && event == Event::END_OF_TURN) getCurrentItem()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);
+    if (getCurrentItem() != &ITEM_NONE && !itemState.suppressed) getCurrentItem()->observer.handleEvent(event,this, battle, args);
+    if (getCurrentItem() != &ITEM_NONE && event == Event::END_OF_TURN) getCurrentItem()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);
 
     if (getStatus() != STATUS_NONE && !statusState.suppressed) getStatus()->observer.handleEvent(event,this, battle, args);
     if (getStatus() != STATUS_NONE && event == Event::END_OF_TURN) getStatus()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);

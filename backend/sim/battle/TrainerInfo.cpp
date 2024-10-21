@@ -28,7 +28,7 @@ const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* battle){
     int& switchCounter = isPlayer1 ? battle->player1SwitchCounter : battle->player2SwitchCounter;
     for (int i = 0; i < myPoke->currentMoves.size(); i++){
         const Move* move = myPoke->currentMoves[i];
-        if (move != MOVE_NONE && myPoke->currentPP[i] > 0 && !myPoke->isMoveDisabled(move)){
+        if (move != &MOVE_NONE && myPoke->currentPP[i] > 0 && !myPoke->isMoveDisabled(move)){
             validMoves.insert(move);
         }
     }
@@ -69,7 +69,7 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
     int& switchCounter = isPlayer1 ? battle->player1SwitchCounter : battle->player2SwitchCounter;
     for (int i = 0; i < myPoke->currentMoves.size(); i++){
         const Move* move = myPoke->currentMoves[i];
-        if (move != MOVE_NONE && myPoke->currentPP[i] > 0 && !myPoke->isMoveDisabled(move)){
+        if (move != &MOVE_NONE && myPoke->currentPP[i] > 0 && !myPoke->isMoveDisabled(move)){
             validMoves.push_back(move);
         }
     }

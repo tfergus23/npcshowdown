@@ -213,7 +213,7 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
         std::string friendlyName = pokemonFriendlyName + ", move " + std::to_string(i+1);
         try{
             const Move* move = moveFromString(json["moves"][i].get<std::string>());
-            if (move != MOVE_NONE){
+            if (move != &MOVE_NONE){
                 foundAMove = true;
             }
         }

@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-Species::Species(int id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats) : id{id}, type{type}, weightKG{weightKG}, percentMale{percentMale}, baseStats{baseStats}{
+Species::Species(int16_t id, const char* name, const std::array<Type,2>& type, float weightKG, float percentMale, const std::array<int, 6>& baseStats) : id{id}, type{type}, weightKG{weightKG}, percentMale{percentMale}, baseStats{baseStats}{
     strcat(this->name, name);
 }
 
@@ -1629,6 +1629,18 @@ const std::unordered_map<std::string, const Species*> speciesMap = {
     {SPECIES_MELTAN.name, &SPECIES_MELTAN},
     {SPECIES_MELMETAL.name, &SPECIES_MELMETAL}
 };
+
+static std::unordered_map<int16_t, const Species*> idToSpeciesMap;
+
+void mapIDsToSpecies(){
+    for(const auto& [name, species] : speciesMap){
+        assert(!idToSpeciesMap.contains(species->id));
+        idToSpeciesMap[species->id] = species;
+    }
+}
+const Species* speciesFromID(int16_t id){
+    return idToSpeciesMap.at(id);
+}
 
 const Species* speciesFromString(const std::string& speciesName){
     return speciesMap.at(speciesName);

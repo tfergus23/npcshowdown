@@ -1,8 +1,17 @@
 #include "api/NPCS_API_Server.hpp"
-
-const size_t MAX_REQUEST_SIZE = 524288;
+#include "sim/data/Abilities.hpp"
+#include "sim/data/Moves.hpp"
+#include "sim/data/Items.hpp"
+#include "sim/data/Species.hpp"
 
 int main(){
+    mapIDsToAbilities();
+    mapIDsToItems();
+    mapIDsToMoves();
+    mapIDsToSpecies();
+
+    
     NPCS_API_Server server;
     return server.run();
+    
 }

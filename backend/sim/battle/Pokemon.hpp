@@ -82,8 +82,8 @@ class Pokemon{
         void onSwitch();
         const Ability* m_BaseAbility;
         const Ability* m_CurrentAbility;
-        const Item* m_BaseItem = ITEM_NONE;
-        const Item* m_CurrentItem = ITEM_NONE;
+        const Item* m_BaseItem = &ITEM_NONE;
+        const Item* m_CurrentItem = &ITEM_NONE;
         const Status* m_Status = STATUS_NONE;
         std::unordered_map<const Effect*,EffectState> m_Effects;
         std::vector<const Effect*> m_EffectsToRemove;

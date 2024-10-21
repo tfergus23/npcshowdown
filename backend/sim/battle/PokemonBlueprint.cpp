@@ -1,7 +1,7 @@
 #include "sim/battle/PokemonBlueprint.hpp"
 
 PokemonBlueprint::PokemonBlueprint() {}
-PokemonBlueprint::PokemonBlueprint(std::string species, int level, std::array<std::string,4> moves, std::string abilityName, std::string gender, std::array<int,6> ivs, std::string nature, std::string itemName, std::array<int,6> evs, std::string nickname) :
+PokemonBlueprint::PokemonBlueprint(std::string species, uint8_t level, std::array<std::string,4> moves, std::string abilityName, std::string gender, std::array<uint8_t,6> ivs, std::string nature, std::string itemName, std::array<uint8_t,6> evs, std::string nickname) :
     species{species},
     level{level},
     moves{moves},
@@ -17,14 +17,14 @@ PokemonBlueprint::PokemonBlueprint(std::string species, int level, std::array<st
 
 PokemonBlueprint::PokemonBlueprint(json json) : 
     species{json["species"].get<std::string>()},
-    level{json["level"].get<int>()},
+    level{json["level"].get<uint8_t>()},
     moves{json["moves"].get<std::array<std::string,4>>()},
     abilityName{json["abilityName"].get<std::string>()},
     gender{json["gender"].get<std::string>()},
-    ivs{json["ivs"].get<std::array<int,6>>()},
+    ivs{json["ivs"].get<std::array<uint8_t,6>>()},
     nature{json["nature"].get<std::string>()},
     itemName{json["itemName"].get<std::string>()},
-    evs{json["evs"].get<std::array<int,6>>()},
+    evs{json["evs"].get<std::array<uint8_t,6>>()},
     nickname{json["nickname"].get<std::string>()}
 {
 }

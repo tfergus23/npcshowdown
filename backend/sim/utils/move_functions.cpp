@@ -24,7 +24,7 @@ int dealDamage(int damage, MoveUse* moveUse){
 }
 
 DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
-    int critStage = moveUse->move->critRatio + ((moveUse->user->getCurrentItem() != ITEM_NONE) ? moveUse->user->getCurrentItem()->critMod : 0) + moveUse->user->getCurrentAbility()->critMod + moveUse->user->triggeredCritMod;
+    int critStage = moveUse->move->critRatio + ((moveUse->user->getCurrentItem() != &ITEM_NONE) ? moveUse->user->getCurrentItem()->critMod : 0) + moveUse->user->getCurrentAbility()->critMod + moveUse->user->triggeredCritMod;
     float critChance = critChanceFromStage(critStage);
     float critMod = 1.0f;
     bool crit = false;

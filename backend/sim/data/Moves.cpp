@@ -5,8 +5,21 @@
 
 using json = nlohmann::json;
 
-const Move* MOVE_NONE = nullptr;
-const std::string MOVE_NONE_NAME = "";
+const Move MOVE_NONE = {
+    .name = "",
+    .type = Type::NONE,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 0,
+    .maxPP = 0,
+    .priority = 8,
+    .critRatio = 0,
+    .targetType = TargetType::SELF,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 0
+};
 
 const Move MOVE_SWITCH = {
     .name = "Switch",
@@ -21,7 +34,9 @@ const Move MOVE_SWITCH = {
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
+    .id = 1
 };
+
 const Move MOVE_STRUGGLE = {
     .name = "Struggle",
     .type = Type::NONE,
@@ -35,6 +50,7 @@ const Move MOVE_STRUGGLE = {
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
+    .id = 2,
 
     //Flags
     .contact = true,
@@ -42,7 +58,7 @@ const Move MOVE_STRUGGLE = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamageWithRecoil(myMove, 1.0f / 4.0f);
+        dealDirectDamageWithRecoil(myMove, 1.0f / 4.0f, true);
     }
 };
 
@@ -59,6 +75,7 @@ const Move MOVE_POUND = {
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
+    .id = 3,
 
     //Flags
     .contact = true,
@@ -84,6 +101,7 @@ const Move MOVE_TACKLE = {
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
+    .id = 4,
 
     //Flags
     .contact = true,
@@ -109,6 +127,7 @@ const Move MOVE_KARATE_CHOP = {
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
+    .id = 5,
 
     //Flags
     .contact = true,
@@ -134,6 +153,7 @@ const Move MOVE_SURF = {
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
+    .id = 6,
 
     //Flags
     .protect = true,
@@ -146,12 +166,31 @@ const Move MOVE_SURF = {
 };
 
 const std::unordered_map<std::string, const Move*> moves = {
-    {MOVE_NONE_NAME, MOVE_NONE},
+    {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
     {MOVE_TACKLE.name, &MOVE_TACKLE},
     {MOVE_KARATE_CHOP.name, &MOVE_KARATE_CHOP},
     {MOVE_SURF.name, &MOVE_SURF}
 };
+
+static std::unordered_map<int16_t, const Move*> idToMoveMap;
+
+void mapIDToMove(int16_t id, const Move* move){
+    assert(!idToMoveMap.contains(id));
+    assert(id == move->id);
+    idToMoveMap[id] = move;
+}
+
+void mapIDsToMoves(){
+    mapIDToMove(MOVE_NONE.id, &MOVE_NONE);
+    mapIDToMove(MOVE_POUND.id, &MOVE_POUND);
+    mapIDToMove(MOVE_TACKLE.id, &MOVE_TACKLE);
+    mapIDToMove(MOVE_KARATE_CHOP.id, &MOVE_KARATE_CHOP);
+    mapIDToMove(MOVE_SURF.id, &MOVE_SURF);
+}
+const Move* moveFromID(int16_t id){
+    return idToMoveMap.at(id);
+}
 
 const Move* moveFromString(const std::string& moveName) {
     return moves.at(moveName);
