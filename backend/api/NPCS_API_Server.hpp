@@ -4,34 +4,36 @@
 #include <deque>
 #include "tflib/config.h"
 #include <condition_variable>
+#include "MariaDBConnection.hpp"
 
 struct TournamentRequest{
     json requestJson;
     size_t id;
 };
 
-const int MAX_TOURNAMENT_THREADS = 10;
-
 class NPCS_API_Server{
 public:
     NPCS_API_Server();
+    ~NPCS_API_Server();
     int run();
 private:
     tfhttp::HTTP_Server app;
-    //tflib::ini_file config = tflib::ini_file("npcs_config.ini", false);
-    //void addPreflightHandler(expresscpp::RouterPtr router, const std::string& path);
-    std::string getToken(const std::string& username, const std::string& password);
-    bool isTokenValid(const std::string& username, const std::string& token);
-    std::array<std::deque<TournamentRequest>, MAX_TOURNAMENT_THREADS> queuedTournaments;
-    std::array<std::mutex, MAX_TOURNAMENT_THREADS> queuedTournamentMutexes;
-    void waitForTournaments(uint32_t threadNumber);
-    size_t createTournamentRequest(const json& json);
+    tflib::ini_file config = tflib::ini_file("npcs_config.ini", false);
+    int max_tournament_threads = 0;
+    std::deque<TournamentRequest>* queuedTournaments = nullptr;
+    std::mutex* queuedTournamentMutexes = nullptr;
     int tournamentRequestThreadCounter = 0;
     std::mutex threadCounterMutex;
-    void startTournamentThreads();
-    int findTournamentPositionInQueue(size_t tournamentID);
     std::unordered_map<size_t,int> idToThread;
     std::mutex idToThreadMutex;
+    MariaDBConneciton db = MariaDBConneciton(config.get("db_user"), config.get("db_password"));
+
+    std::string getToken(const std::string& username, const std::string& password);
+    bool isTokenValid(const std::string& username, const std::string& token);
+    void waitForTournaments(uint32_t threadNumber);
+    size_t createTournamentRequest(const json& json);
+    void startTournamentThreads();
+    int findTournamentPositionInQueue(size_t tournamentID);
 };
 
 std::string createAllDataResponse();

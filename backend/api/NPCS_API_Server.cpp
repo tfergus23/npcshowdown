@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <mutex>
-#include "db_utils.hpp"
 
 
 using namespace tfhttp;
@@ -65,7 +64,7 @@ std::string createAllDataResponse(){
 }
 
 size_t NPCS_API_Server::createTournamentRequest(const json& json){
-    size_t id = db::createEmptyTournament();
+    size_t id = db.createEmptyTournament();
     TournamentRequest request{
         .requestJson = json,
         .id = id
@@ -74,7 +73,7 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json){
     int threadNumber = tournamentRequestThreadCounter++;
     auto& queue = queuedTournaments[threadNumber];
     auto& mutex = queuedTournamentMutexes[threadNumber];
-    tournamentRequestThreadCounter = tournamentRequestThreadCounter % MAX_TOURNAMENT_THREADS;
+    tournamentRequestThreadCounter = tournamentRequestThreadCounter % max_tournament_threads;
     threadCounterMutex.unlock();
     mutex.lock();
     std::cout << "Queing up a tournament on thread #" << threadNumber << '\n';
@@ -108,6 +107,22 @@ int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID){
 }
 
 NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
+    if (!config.has_key("tournament_threads")){
+        throw std::runtime_error("'tournament_threads' not specified in ini file.");
+    }
+    try{
+        max_tournament_threads = stoi(config.get("tournament_threads"));
+    }
+    catch (...){
+        throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
+    }
+
+    if (max_tournament_threads < 1){
+        throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
+    }
+
+    queuedTournaments = new std::deque<TournamentRequest>[max_tournament_threads];
+    queuedTournamentMutexes = new std::mutex[max_tournament_threads];
 
     //Create routes
     Route* baseRoute = app.Create_Route("/api");
@@ -197,7 +212,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         res.Send(ALL_DATA_RESPONSE);
     });
 
-    app.Add_Handler("POST", baseRoute, "/battle", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", baseRoute, "/battle", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -229,7 +244,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         size_t seed = seedFromString(seedString);
 
         // Save the battle to the databasae
-        size_t id = db::saveBattle(trainer1, trainer2, seed);
+        size_t id = db.saveBattle(trainer1, trainer2, seed);
 
         // Send back battle ID
         response["success"] = true;
@@ -272,7 +287,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", baseRoute, "/battle/:id", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/battle/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
         size_t battleID = 0;
@@ -288,9 +303,9 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
         // Look up battle in DB
         try{
-            BattleResult br = db::getBattle(battleID);
-            Trainer trainer1(db::getTrainer(br.trainer1));
-            Trainer trainer2(db::getTrainer(br.trainer2));
+            BattleResult br = db.getBattle(battleID);
+            Trainer trainer1(db.getTrainer(br.trainer1));
+            Trainer trainer2(db.getTrainer(br.trainer2));
             size_t seed = br.seed;
             std::cout << "Creating battle...\n";
             Battle battle(trainer1, trainer2, seed);
@@ -326,7 +341,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             return;
         }
         try{
-            const TournamentResults& tr = db::getTournament(tournamentID);
+            const TournamentResults& tr = db.getTournament(tournamentID);
             if (!tr.ready){
                 int position = findTournamentPositionInQueue(tournamentID);
                 if (position > 0){
@@ -347,7 +362,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 statJSONs.push_back(stat.toJSON());
             }
             for(auto trainer : tr.trainers){
-                trainerJSONs.push_back(db::getTrainer(trainer));
+                trainerJSONs.push_back(db.getTrainer(trainer));
             }
             data["trainers"] = trainerJSONs;
             data["results"] = statJSONs;
@@ -363,17 +378,17 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
     });
 
-    app.Add_Handler("GET", authorizedRoute, "/trainers", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", authorizedRoute, "/trainers", [=, this](const HTTP_Request& req, HTTP_Response& res){
         std::string username = req.path_params.at("username");
 
 
         //TODO: Do this better
-        std::vector<size_t> userTrainerIDs = db::getUserTrainers(username);
+        std::vector<size_t> userTrainerIDs = db.getUserTrainers(username);
         std::vector<json> userTrainers;
         userTrainers.reserve(userTrainerIDs.size());
 
         for(auto id : userTrainerIDs){
-            userTrainers.push_back(db::getTrainer(id));
+            userTrainers.push_back(db.getTrainer(id));
         }
 
         json response;
@@ -406,8 +421,8 @@ bool NPCS_API_Server::isTokenValid(const std::string& username, const std::strin
 
 void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
     try{
-    auto& queue = this->queuedTournaments.at(threadNumber);
-    auto& queueMutex = this->queuedTournamentMutexes.at(threadNumber);
+    auto& queue = this->queuedTournaments[threadNumber];
+    auto& queueMutex = this->queuedTournamentMutexes[threadNumber];
     while(true){
         //TODO: Not this
         while(queue.size() == 0){
@@ -434,7 +449,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         std::cout << "Done simulating tournament.\n";
         
         // Save tournament to DB
-        db::saveTournament(tournament, req.id);
+        db.saveTournament(tournament, req.id);
     }
     } catch (const std::exception& e){
         std::cerr << "ERROR: Uncaught exception on thread #" + std::to_string(threadNumber) + ":\n" + e.what() + "\nStopping.\n";
@@ -443,9 +458,14 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
 }
 
 void NPCS_API_Server::startTournamentThreads(){
-    for(int i = 0; i < MAX_TOURNAMENT_THREADS; i++){
+    for(int i = 0; i < max_tournament_threads; i++){
         std::cout << "Starting thread #" << i << '\n';
         std::thread t(&NPCS_API_Server::waitForTournaments, this, i);
         t.detach();
     }
+}
+
+NPCS_API_Server::~NPCS_API_Server(){
+    delete[] queuedTournaments;
+    delete[] queuedTournamentMutexes;
 }
