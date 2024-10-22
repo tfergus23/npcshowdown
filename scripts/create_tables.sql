@@ -30,7 +30,7 @@ create table tournament (
     user bigint,
     FOREIGN KEY (user) 
         REFERENCES user(id),
-    name varchar(64)
+    name varchar(32)
 );
 
 CREATE TABLE trainer (
@@ -41,7 +41,7 @@ CREATE TABLE trainer (
     tournament bigint,
     FOREIGN KEY (tournament) 
         REFERENCES tournament(id),
-    name varchar(64),
+    name varchar(32),
     trainerLevel ENUM('First Move', 'Use Two Moves then Switch', 'Wild', 'Switcher', 'Trainer', 'Boss')
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE pokemon (
     gender tinyint,
     nature tinyint,
     itemID smallint,
-    nickname varchar(64),
+    nickname varchar(16),
     hpIV  tinyint unsigned,
     atkIV tinyint unsigned,
     defIV tinyint unsigned,
@@ -75,6 +75,17 @@ CREATE TABLE pokemon (
 );
 
 CREATE INDEX pokemon_trainer_index on pokemon (trainer);
+
+CREATE TABLE battle (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    trainer1 bigint not null,
+    FOREIGN KEY (trainer1) 
+        REFERENCES trainer(id),
+    trainer2 bigint not null,
+    FOREIGN KEY (trainer2) 
+        REFERENCES trainer(id),
+    seed bigint unsigned not null
+);
 
 
 insert into user (name, password, email) values ("MrToadSir", "verystrongpassword", "guybro@dudemail.com");
