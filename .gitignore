@@ -2,7 +2,6 @@ backend/build
 backend/out
 .vscode
 .vs
-scripts
 
 .DS_STORE
 
