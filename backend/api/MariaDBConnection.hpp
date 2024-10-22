@@ -2,6 +2,7 @@
 #include "sim/battle/Battle.hpp"
 #include "sim/tournament/BattleResult.hpp"
 #include "sim/tournament/Tournament.hpp"
+#include "conncpp.hpp"
 
 using json = nlohmann::json;
 
@@ -23,7 +24,7 @@ public:
     size_t saveBattle(const BattleResult result); //TODO: Why is this not a reference?
     void saveTournament(const Tournament& tournament, size_t id);
 
-    MariaDBConneciton(const std::string& username, const std::string& password);
+    MariaDBConneciton(const std::string& username, const std::string& password, const std::string& host, const std::string& database);
 private:
-    
+    std::unique_ptr<sql::Connection> conn;
 };

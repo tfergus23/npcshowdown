@@ -14,7 +14,8 @@ FILE(GLOB tournament ${PROJECT_SOURCE_DIR}/sim/tournament/*.cpp)
 FILE(GLOB utils ${PROJECT_SOURCE_DIR}/sim/utils/*.cpp)
 FILE(GLOB api ${PROJECT_SOURCE_DIR}/api/*.cpp)
 
+
 add_executable (npcs_sim main.cpp ${battle} ${data} ${tournament} ${utils} ${api})
-include_directories(${PROJECT_SOURCE_DIR}/lib/json/single_include ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/lib/tfhttp/include ${PROJECT_SOURCE_DIR}/lib/tflib/include)
-target_link_libraries(npcs_sim tfhttp TFLib)
+include_directories(${PROJECT_SOURCE_DIR}/lib/json/single_include ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/lib/tfhttp/include ${PROJECT_SOURCE_DIR}/lib/tflib/include ${PROJECT_SOURCE_DIR}/lib/mariadb)
+target_link_libraries(npcs_sim tfhttp TFLib ${PROJECT_SOURCE_DIR}/lib/mariadb/libmariadbcpp.so)
 set_property(TARGET npcs_sim PROPERTY CXX_STANDARD 20)

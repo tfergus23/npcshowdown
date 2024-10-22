@@ -1,4 +1,5 @@
 #include "MariaDBConnection.hpp"
+#include <iostream>
 
 // In-memory database for testing
 static std::vector<json> savedTrainers;
@@ -9,7 +10,11 @@ static std::mutex saveTrainerMutex;
 static std::mutex saveBattleMutex;
 static std::mutex saveTournamentMutex;
 
-MariaDBConneciton::MariaDBConneciton(const std::string& username, const std::string& password){
+MariaDBConneciton::MariaDBConneciton(const std::string& username, const std::string& password, const std::string& host, const std::string& database){
+    sql::Driver* driver= sql::mariadb::get_driver_instance();
+    sql::SQLString url("jdbc:mariadb://" + host + ":3306/" + database);
+    sql::Properties properties({{"user", username}, {"password", password}});
+    conn = std::unique_ptr<sql::Connection>(driver->connect(url, properties));
 }
 
 json MariaDBConneciton::getTrainer(size_t id){

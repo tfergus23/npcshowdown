@@ -26,7 +26,7 @@ private:
     std::mutex threadCounterMutex;
     std::unordered_map<size_t,int> idToThread;
     std::mutex idToThreadMutex;
-    MariaDBConneciton db = MariaDBConneciton(config.get("db_user"), config.get("db_password"));
+    MariaDBConneciton db = MariaDBConneciton(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"));
 
     std::string getToken(const std::string& username, const std::string& password);
     bool isTokenValid(const std::string& username, const std::string& token);
