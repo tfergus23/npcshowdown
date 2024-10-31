@@ -450,6 +450,9 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         
         // Save tournament to DB
         db.saveTournament(tournament, req.id);
+        idToThreadMutex.lock();
+        idToThread.erase(req.id);
+        idToThreadMutex.unlock();
     }
     } catch (const std::exception& e){
         std::cerr << "ERROR: Uncaught exception on thread #" + std::to_string(threadNumber) + ":\n" + e.what() + "\nStopping.\n";
