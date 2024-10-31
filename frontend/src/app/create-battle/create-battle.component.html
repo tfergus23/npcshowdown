@@ -3,7 +3,7 @@
     <h1>Create a Battle</h1>
     <div class="trainer-list">
         <app-create-trainer [dataLists]="dataLists" [trainerNum]="'1'"></app-create-trainer>
-        <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'" [collapsed]="true"></app-create-trainer>
+        <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'"></app-create-trainer>
     </div>
 
     <div [hidden]="errors.length == 0" class="errors-box">
@@ -20,7 +20,7 @@
         <label>Seed (Optional): </label>
         <input>
     </div>
-    <button class="submit-battle-button" (click)="submit()">Submit Battle</button>
+    <button class="submit-battle-button" (click)="submit()">Simulate Battle!</button>
     <ul>
         <li *ngFor="let line of logLines">{{line}}</li>
     </ul>

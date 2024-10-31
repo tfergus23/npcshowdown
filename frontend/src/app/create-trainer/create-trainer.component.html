@@ -1,5 +1,6 @@
 <div class="create-trainer-container">
-    <button class="collapsible-header" (click)="toggleCollapsible()">
+    <div class="collapsible-header">
+        <button class="collapse-button" (click)="toggleCollapsible()">{{this.collapseButtonSymbol}}</button>
         <label style="text-align: left;">Trainer {{trainerNum}}</label>
         <label>{{this.trainer.name}}</label>
         <label>{{this.trainer.team.length}}/6</label>
@@ -10,7 +11,7 @@
         <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
         <button *ngIf="this.results" (click)="showBattle(this.results.bestWin)" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
         <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
-    </button>
+    </div>
     <div class="import-save-buttons" [hidden]="this.collapsed">
         <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
         <button [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
@@ -19,11 +20,11 @@
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">
-            <label>Trainer Name: </label>
+            <label>Name: </label>
             <input [(ngModel)]="this.trainer.name" [readonly]="this.readOnly">
         </div>
         <div class="trainer-level">
-            <label>Trainer AI Level: </label>
+            <label>AI Level: </label>
             <select [(ngModel)]="this.trainer.trainerLevel" [disabled]="this.readOnly">
                 <option *ngFor="let level of dataLists?.trainerLevelList" value="{{level}}">{{level}}</option>
             </select>
@@ -31,12 +32,12 @@
     </div>
     <div [hidden]="this.collapsed" class="pokemon-block">
         <div class="pokemon-tabs">
-            <button [style.background-color]="(this.selectedIndex == i) ? 'rgb(78, 78, 79)' : ''" (click)="this.setSelectedIndex(i)" *ngFor="let pokemon of trainer.team; index as i" class="pokemon-tab">
+            <button [style.background-color]="(this.selectedIndex == i) ? 'rgb(105, 105, 106)' : ''" (click)="this.setSelectedIndex(i)" *ngFor="let pokemon of trainer.team; index as i" class="pokemon-tab">
                 {{i+1}}. {{pokemon.nickname === "" ? pokemon.species : pokemon.nickname}}
                 <button *ngIf="!this.readOnly" (click)="this.removePoke(i)" class="remove-pokemon-btn">X</button>
             </button>
             <button (click)="this.addPoke()" [hidden]="this.trainer.team.length > 5" class="add-pokemon-btn">
-                +
+                + Add Pokemon
             </button>
         </div>
         <div *ngIf="this.trainer.team.length > 0" class="pokemon-details">

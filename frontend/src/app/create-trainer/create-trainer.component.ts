@@ -29,20 +29,18 @@ export class CreateTrainerComponent {
 
   clickedBestWin: boolean = false; // Dumb workaround for putting a button in a button
   selectedIndex: number = 0;
+  collapseButtonSymbol: string = "▶";
 
   constructor(public app: AppComponent, private battleService: BattleService){
-    
   }
 
   public toggleCollapsible() {
-    if (this.clickedBestWin){
-      this.clickedBestWin = false;
-      return;
-    }
     this.collapsed = !this.collapsed;
+    this.collapseButtonSymbol = (this.collapsed) ? "▶" : "▼";
   }
 
   ngAfterViewInit(){
+    this.collapseButtonSymbol = (this.collapsed) ? "▶" : "▼";
   }
 
   addPoke(){
@@ -78,6 +76,7 @@ export class CreateTrainerComponent {
         try{
           let trainer: Trainer = JSON.parse(text) as Trainer;
           this.setFromJson(trainer);
+          this.selectedIndex = 0;
         }
         catch(error){
           console.log(error);

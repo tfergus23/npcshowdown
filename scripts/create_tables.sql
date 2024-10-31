@@ -78,6 +78,9 @@ CREATE INDEX pokemon_trainer_index on pokemon (trainer);
 
 CREATE TABLE battle (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    tournament bigint,
+    FOREIGN KEY (tournament)
+        REFERENCES tournament(id),
     trainer1 bigint not null,
     FOREIGN KEY (trainer1) 
         REFERENCES trainer(id),
@@ -87,5 +90,6 @@ CREATE TABLE battle (
     seed bigint unsigned not null
 );
 
+CREATE INDEX battle_tournament_index on battle (tournament);
 
 insert into user (name, password, email) values ("MrToadSir", "verystrongpassword", "guybro@dudemail.com");

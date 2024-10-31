@@ -22,6 +22,6 @@ export function createEmptyPokemon(): Pokemon{
         ivs: [31,31,31,31,31,31],
         nature: "Serious",
         itemName: "",
-        evs: [85,85,85,85,85,85]
+        evs: [0,0,0,0,0,0]
     };
 }
