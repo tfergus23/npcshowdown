@@ -350,7 +350,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 else{
                     response["message"] = "Please wait. Your tournament is currently being simulated.";
                 }
-                response["success"] = false;
+                response["success"] = true;
                 res.Set_Status(404); // TODO: What code should this be?
                 res.Send(response.dump());
                 return;

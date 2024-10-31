@@ -46,6 +46,9 @@ export class ViewResultsComponent {
           }
         },
         (error) => {
+          if (!error.error.success){
+            clearInterval(this.interval);
+          }
           this.errorMessage = error.error.message;
         });
     }, 1500);
@@ -60,6 +63,9 @@ export class ViewResultsComponent {
         }
       },
       (error) => {
+        if (!error.error.success){
+          clearInterval(this.interval);
+        }
         this.errorMessage = error.error.message;
     });
   }
