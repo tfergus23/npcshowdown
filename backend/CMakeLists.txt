@@ -17,5 +17,5 @@ FILE(GLOB api ${PROJECT_SOURCE_DIR}/api/*.cpp)
 
 add_executable (npcs_sim main.cpp ${battle} ${data} ${tournament} ${utils} ${api})
 include_directories(${PROJECT_SOURCE_DIR}/lib/json/single_include ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/lib/tfhttp/include ${PROJECT_SOURCE_DIR}/lib/tflib/include ${PROJECT_SOURCE_DIR}/lib/mariadb)
-target_link_libraries(npcs_sim tfhttp TFLib ${PROJECT_SOURCE_DIR}/lib/mariadb/libmariadbcpp.so)
+target_link_libraries(npcs_sim tfhttp TFLib ${PROJECT_SOURCE_DIR}/lib/mariadb/libmariadbcpp.so crypto)
 set_property(TARGET npcs_sim PROPERTY CXX_STANDARD 20)

@@ -6,6 +6,10 @@
 #include <iostream>
 #include <climits>
 #include "sim/tournament/Tournament.hpp"
+#include <sstream>
+#include <iomanip>
+#include <fstream>
+#include <openssl/sha.h>
 
 const int MAX_NAME_SIZE = 64;
 const std::hash<std::string> hasher;
@@ -312,4 +316,44 @@ size_t seedFromString(const std::string& seedString){
         seed = hasher(seedString);
     }
     return seed;
+}
+
+std::string charArrayToHex(const char* arr, int len) {
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0');
+    for (int i = 0; i < len; ++i) {
+        ss << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(arr[i]));
+    }
+    return ss.str();
+}
+
+std::string generateUUID(){
+    std::ifstream urandom("/dev/urandom", std::ios::binary);
+
+    if (!urandom) {
+        throw std::runtime_error("Error opening /dev/urandom");
+    }
+
+    std::vector<char> buffer(16);
+    urandom.read(buffer.data(), buffer.size());
+
+    if (!urandom) {
+        throw std::runtime_error("Error opening /dev/urandom");
+    }
+
+    return charArrayToHex(buffer.data(), buffer.size());
+}
+
+std::string sha256(const std::string& str) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, str.c_str(), str.length());
+    SHA256_Final(hash, &sha256);
+
+    std::stringstream output;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        output << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+    return output.str();
 }
