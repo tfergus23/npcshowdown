@@ -1,0 +1,250 @@
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:10:37.515Z - Hash: caa5e80f561635ca - Time: 4877ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:23:11.420Z - Hash: caa5e80f561635ca - Time: 4414ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:24:02.508Z - Hash: caa5e80f561635ca - Time: 4255ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:29:39.554Z - Hash: caa5e80f561635ca - Time: 4395ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:32:49.201Z - Hash: caa5e80f561635ca - Time: 4398ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:33:58.255Z - Hash: caa5e80f561635ca - Time: 4437ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:36:29.365Z - Hash: caa5e80f561635ca - Time: 4289ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:38:16.401Z - Hash: caa5e80f561635ca - Time: 4531ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T17:40:26.605Z - Hash: caa5e80f561635ca - Time: 4237ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.42 MB |
+polyfills.js          | polyfills     | 314.28 kB |
+main.js               | main          | 233.84 kB |
+styles.css, styles.js | styles        | 210.08 kB |
+runtime.js            | runtime       |   6.52 kB |
+
+| Initial Total |   3.17 MB
+
+Build at: 2024-11-04T18:06:34.097Z - Hash: caa5e80f561635ca - Time: 4375ms
+
+./src/app/menu-button/menu-button.component.css?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(13:5) autoprefixer: end value has mixed support, consider using flex-end instead
+
+
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.

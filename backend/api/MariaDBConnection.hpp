@@ -12,7 +12,7 @@ struct TournamentResults{
     bool ready = false;
 };
 
-class MariaDBConneciton{
+class MariaDBConnection{
 public:
     json getTrainer(size_t id);
     BattleResult getBattle(size_t id);
@@ -23,8 +23,10 @@ public:
     size_t saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed);
     size_t saveBattle(const BattleResult result); //TODO: Why is this not a reference?
     void saveTournament(const Tournament& tournament, size_t id);
+    bool isTokenValid(const std::string& username, const std::string& token);
+    std::string createUserSession(const std::string& username, const std::string& password, std::string& outToken);
 
-    MariaDBConneciton(const std::string& username, const std::string& password, const std::string& host, const std::string& database);
+    MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database);
 private:
     std::unique_ptr<sql::Connection> conn;
 };

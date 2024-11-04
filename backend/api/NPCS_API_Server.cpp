@@ -136,7 +136,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         try {
             std::string token = req.headers.at("Authorization");
             std::string username = req.path_params.at("username");
-            if (isTokenValid(username, token)){
+            if (db.isTokenValid(username, token)){
                 return true;
             }
             else{
@@ -160,18 +160,36 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         json response;
         try {
             json body = json::parse(req.body);
-            std::string token = getToken(body["username"].get<std::string>(), body["password"].get<std::string>());
-            if (token != ""){
-                response["success"] = true;
-                response["token"] = token;
-                response["message"] = "OK";
-            }
-            else{
+            std::string problems = validateAuthRequest(body);
+            if (problems != ""){
+                if (problems[problems.size() - 1] == '\n'){
+                    problems = problems.substr(0,problems.size()-1);
+                }
+                response["message"] = problems;
                 response["success"] = false;
-                response["message"] = "Invalid credentials.";
-                res.Set_Status(401);
+                res.Set_Status(400);
+                res.Send(response.dump());
+                return;
             }
+            std::string token;
+            problems = db.createUserSession(body["username"].get<std::string>(), body["password"].get<std::string>(), token);
+
+            if (problems != ""){
+                if (problems[problems.size() - 1] == '\n'){
+                    problems = problems.substr(0,problems.size()-1);
+                }
+                response["message"] = problems;
+                response["success"] = false;
+                res.Set_Status(401);
+                res.Send(response.dump());
+                return;
+            }
+
+            response["success"] = true;
+            response["message"] = "OK";
+            response["token"] = token;
             res.Send(response.dump());
+
         } 
         catch (const json::parse_error& e){
             response["success"] = false;
@@ -413,12 +431,6 @@ std::string NPCS_API_Server::getToken(const std::string& username, const std::st
     return "";
 }
 
-bool NPCS_API_Server::isTokenValid(const std::string& username, const std::string& token){
-    //Get username token from database
-    //Make sure the token matches the one provided
-    return username == "admin" && token == "admin:123";
-}
-
 void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
     try{
     auto& queue = this->queuedTournaments[threadNumber];
@@ -428,7 +440,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         while(queue.size() == 0){
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
-        std::cout << "Starting tournament on thread #" << threadNumber << '\n';
+        std::cout << "Starting tournament on thread #" << threadNumber << std::endl;
         queueMutex.lock();
         TournamentRequest req = queue.front();
         json& request = req.requestJson;

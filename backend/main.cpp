@@ -5,6 +5,9 @@
 #include "sim/data/Species.hpp"
 
 int main(){
+#ifndef NDEBUG
+    std::cout.setf(std::ios::unitbuf);
+#endif
     mapIDsToAbilities();
     mapIDsToItems();
     mapIDsToMoves();

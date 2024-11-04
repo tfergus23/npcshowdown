@@ -9,6 +9,7 @@ std::string validateBattleRequest(const json& json);
 std::string validatePokemonJSON(const json& json,const std::string& trainerNumber, const std::string& pokemonNumber);
 std::string validateTrainerJSON(const json& json, const std::string& trainerNumber);
 std::string validateTournamentRequest(const json& json);
+std::string validateAuthRequest(const json& json);
 Battle battleFromRequest(const json& json);
 size_t seedFromString(const std::string& seedString);
 std::string generateUUID();

@@ -9,7 +9,7 @@
 #include <sstream>
 #include <iomanip>
 #include <fstream>
-#include <openssl/sha.h>
+#include <openssl/evp.h>
 
 const int MAX_NAME_SIZE = 64;
 const std::hash<std::string> hasher;
@@ -307,6 +307,10 @@ std::string validateTournamentRequest(const json& json){
     return problems;
 }
 
+std::string validateAuthRequest(const json& json){
+    throw std::runtime_error("Not implemented: validateAuthRequest");
+}
+
 size_t seedFromString(const std::string& seedString){
     size_t seed = 0;
     try {
@@ -328,32 +332,54 @@ std::string charArrayToHex(const char* arr, int len) {
 }
 
 std::string generateUUID(){
-    std::ifstream urandom("/dev/urandom", std::ios::binary);
+    std::ifstream random("/dev/random", std::ios::binary);
 
-    if (!urandom) {
-        throw std::runtime_error("Error opening /dev/urandom");
+    if (!random) {
+        throw std::runtime_error("Error opening /dev/random");
     }
 
     std::vector<char> buffer(16);
-    urandom.read(buffer.data(), buffer.size());
+    random.read(buffer.data(), buffer.size());
 
-    if (!urandom) {
-        throw std::runtime_error("Error opening /dev/urandom");
+    if (!random) {
+        throw std::runtime_error("Error opening /dev/random");
     }
 
     return charArrayToHex(buffer.data(), buffer.size());
 }
 
-std::string sha256(const std::string& str) {
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, str.c_str(), str.length());
-    SHA256_Final(hash, &sha256);
+std::string sha256(const std::string &input) {
+    unsigned char hash[EVP_MAX_MD_SIZE];
+    unsigned int hash_len = 0;
 
-    std::stringstream output;
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        output << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+    if (!ctx) {
+        throw std::runtime_error("Error: Could not create EVP_MD_CTX");
     }
-    return output.str();
+
+    if (EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr) != 1) {
+        EVP_MD_CTX_free(ctx);
+        throw std::runtime_error("Error: EVP_DigestInit_ex failed");
+    }
+
+    if (EVP_DigestUpdate(ctx, input.c_str(), input.length()) != 1) {
+        EVP_MD_CTX_free(ctx);
+        throw std::runtime_error("Error: EVP_DigestUpdate failed");
+    }
+
+    if (EVP_DigestFinal_ex(ctx, hash, &hash_len) != 1) {
+        EVP_MD_CTX_free(ctx);
+        throw std::runtime_error("Error: EVP_DigestFinal_ex failed");
+    }
+
+    EVP_MD_CTX_free(ctx);
+
+    std::string result;
+    for (unsigned int i = 0; i < hash_len; ++i) {
+        char buf[3];
+        snprintf(buf, 3, "%02x", hash[i]);
+        result += buf;
+    }
+
+    return result;
 }

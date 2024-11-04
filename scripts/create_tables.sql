@@ -19,7 +19,8 @@ create table user_session(
     FOREIGN KEY (user) 
         REFERENCES user(id),
     token char(32),
-    dateGranted DATE
+    dateGranted DATE,
+    lastUsed DATE
 );
 
 create index user_session_user_index on user_session(user);
