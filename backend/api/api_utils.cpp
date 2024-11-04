@@ -308,7 +308,12 @@ std::string validateTournamentRequest(const json& json){
 }
 
 std::string validateAuthRequest(const json& json){
-    throw std::runtime_error("Not implemented: validateAuthRequest");
+    std::string problems = "";
+
+    problems += checkForString(json, "", "username");
+    problems += checkForString(json, "", "password");
+
+    return problems;
 }
 
 size_t seedFromString(const std::string& seedString){

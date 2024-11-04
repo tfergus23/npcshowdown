@@ -26,7 +26,8 @@ export class UserService {
 
   getUserData(authToken: string) : Observable<GetResponse>{
     let name = authToken.split(":")[0];
-    const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${name}`, {headers: {Authorization: authToken}});
+    let token = authToken.split(":")[1];
+    const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${name}`, {headers: {Authorization: token}});
     return response;
   }
 

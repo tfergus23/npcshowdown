@@ -1,6 +1,7 @@
 #include "MariaDBConnection.hpp"
 #include <iostream>
 #include <mutex>
+#include "api_utils.hpp"
 
 // In-memory database for testing
 static std::vector<json> savedTrainers;
@@ -104,9 +105,70 @@ std::vector<size_t> MariaDBConnection::getUserTrainers(const std::string& userna
 }
 
 bool MariaDBConnection::isTokenValid(const std::string& username, const std::string& token){
-    return username == "admin" && token == "admin:123";
+    std::unique_ptr<sql::PreparedStatement> idStatement(conn->prepareStatement("select id from user where name = ?"));
+    idStatement->setString(1, username);
+    std::unique_ptr<sql::ResultSet> results(idStatement->executeQuery());
+
+    if (results->rowsCount() < 1){
+        return false;
+    }
+
+    if (results->rowsCount() > 1){
+        throw std::runtime_error("Somehow got two users in username query for: " + username);
+    }
+
+    size_t userID;
+    while (results->next()){
+        userID = results->getUInt64(1);
+    }
+    std::unique_ptr<sql::PreparedStatement> tokenStatement(conn->prepareStatement("select token from user_session where user = ?"));
+    tokenStatement->setUInt64(1, userID);
+
+    std::unique_ptr<sql::ResultSet> tokenResults(tokenStatement->executeQuery());
+
+    while(tokenResults->next()){
+        std::string dbToken(tokenResults->getString(1));
+        if (dbToken == token){
+            return true;
+        }
+    }
+    return false;
 }
 
 std::string MariaDBConnection::createUserSession(const std::string& username, const std::string& password, std::string& outToken){
-    throw std::runtime_error("Not implemented: createUserSession");
+    std::unique_ptr<sql::PreparedStatement> passwordStatement(conn->prepareStatement("select id,password from user where name = ?"));
+    passwordStatement->setString(1, username);
+    std::unique_ptr<sql::ResultSet> results(passwordStatement->executeQuery());
+
+    if (results->rowsCount() < 1){
+        return "That user does not exist";
+    }
+
+    if (results->rowsCount() > 1){
+        throw std::runtime_error("Somehow got two users in username query for: " + username);
+    }
+
+    std::string dbPassword;
+    size_t userID = 0;
+    while (results->next()){
+        userID = results->getUInt64(1);
+        dbPassword = results->getString(2);
+    }
+
+    std::string hashedPassword = sha256(password);
+
+    if (hashedPassword != dbPassword){
+        return "Invalid credentials";
+    }
+
+    //TODO: Code for too many sessions
+
+    std::string newToken = generateUUID();
+    std::unique_ptr<sql::PreparedStatement> insertTokenStatement(conn->prepareStatement("insert into user_session (user, token, dateGranted, lastUsed) values (?, ?, NOW(),NOW())"));
+    insertTokenStatement->setUInt64(1, userID);
+    insertTokenStatement->setString(2, newToken);
+    delete insertTokenStatement->executeQuery();
+
+    outToken = newToken;
+    return "";
 }

@@ -26,12 +26,12 @@ export class NavbarComponent {
     const authResponse = this.authService.getToken(username,password);
     authResponse.subscribe((res) =>{
       if (res.success && res.token != undefined){
-        console.log(res.token);
-        const userResponse = this.userService.getUserData(res.token);
+        const token = `${username}:${res.token}`;
+        const userResponse = this.userService.getUserData(token);
         userResponse.subscribe((res) => {
           if (res.success){
             this.app.loggedInUser = res.data;
-            this.cookieService.set("token", res.data.token);
+            this.cookieService.set("token", token);
           }
           else{
             //something went wrong

@@ -6,7 +6,7 @@ use npcs_test;
 create table user (
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(16),
-    password char(32),
+    password char(64),
     accountCreated DATE,
     lastPasswordChange DATE,
     email varchar(255)
@@ -19,8 +19,8 @@ create table user_session(
     FOREIGN KEY (user) 
         REFERENCES user(id),
     token char(32),
-    dateGranted DATE,
-    lastUsed DATE
+    dateGranted DATETIME,
+    lastUsed DATETIME
 );
 
 create index user_session_user_index on user_session(user);
@@ -93,4 +93,4 @@ CREATE TABLE battle (
 
 CREATE INDEX battle_tournament_index on battle (tournament);
 
-insert into user (name, password, email) values ("MrToadSir", "verystrongpassword", "guybro@dudemail.com");
+insert into user (name, password, accountCreated, lastPasswordChange, email) values ("admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", NOW(), NOW(), "guybro@dudemail.com");

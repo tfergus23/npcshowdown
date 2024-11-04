@@ -133,21 +133,25 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
     baseRoute->Use(addCORSHeaderMiddleware);
     authorizedRoute->Use(addCORSHeaderMiddleware);
     authorizedRoute->Use([=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        std::string username = req.path_params.at("username");
         try {
             std::string token = req.headers.at("Authorization");
-            std::string username = req.path_params.at("username");
             if (db.isTokenValid(username, token)){
                 return true;
             }
             else{
+                response["message"] = "Unauthorized: Invalid token.";
                 res.Set_Status(401);
-                res.Send("");
+                res.Send(response.dump());
                 return false;
             }
         } 
-        catch (...){
+        catch (const std::out_of_range& e){
+            response["message"] = "Bad Request: No Authorization header provided";
             res.Set_Status(400);
-            res.Send("");
+            res.Send(response.dump());
             return false;
         }
     });
