@@ -6,6 +6,6 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./menu-button.component.css']
 })
 export class MenuButtonComponent {
-  @Input()
-  option: string = '';
+  @Input() option: string = '';
+  @Input() imagePath: string = '';
 }

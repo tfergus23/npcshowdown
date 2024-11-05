@@ -6,7 +6,7 @@ import { AppSettings } from 'src/AppSettings';
 interface AuthResponse{
   success: boolean;
   token: string | undefined;
-  message: string | undefined;
+  message: string;
 }
 
 @Injectable({
