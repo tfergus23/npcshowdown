@@ -60,7 +60,9 @@ class Pokemon{
         const Move* nextMove = nullptr;
         int nextMoveCounter = -1;
         Type currentType[2];
-        bool isTrapped = false;
+        void entrap();
+        void releaseTrap();
+        bool isTrapped();
         //int disabledIndex = -1;
         const Move* lastMoveUsed = nullptr;
         bool empty = true;
@@ -90,4 +92,5 @@ class Pokemon{
         void removeMarkedEffects();
         Gender m_Gender;
         std::unordered_map<const Move*, int> m_DisabledMoves;
+        int8_t m_Trappers = 0;
 };

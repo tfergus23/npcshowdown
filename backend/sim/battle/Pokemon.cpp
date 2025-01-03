@@ -262,7 +262,7 @@ void Pokemon::onSwitch(){
     m_CurrentAbility = m_BaseAbility;
     resetBoosts();
     choiceLockedMove = -1;
-    isTrapped = false;
+    m_Trappers = 0;
     lastMoveUsed = nullptr;
     triggeredCritMod = 0;
     currentType[0] = species->type[0];
@@ -300,4 +300,15 @@ void Pokemon::enableMove(const Move* move){
 }
 bool Pokemon::isMoveDisabled(const Move* move){
     return m_DisabledMoves[move];
+}
+
+void Pokemon::entrap(){
+    m_Trappers++;
+}
+void Pokemon::releaseTrap(){
+    battle->assertTrue(m_Trappers > 0, "Tried to release a pokemon that wasn't trapped.");
+    m_Trappers--;
+}
+bool Pokemon::isTrapped(){
+    return m_Trappers;
 }

@@ -150,7 +150,7 @@ int TrainerInfo::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke
 
 void TrainerInfo::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, tflib::static_vector<int,5>& outVec) const{
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
-    if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return;
+    if (currentlyActivePokemon->isTrapped() && !currentlyActivePokemon->isDead) return;
     for (int i = 0; i < myTeam.size(); i++){
         if (!myTeam[i].empty && !myTeam[i].isDead && currentlyActivePokemon != &(myTeam[i])){
             outVec.push_back(i);
@@ -160,7 +160,7 @@ void TrainerInfo::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* batt
 
 int TrainerInfo::getValidSwitchesCount(Pokemon* currentlyActivePokemon, Battle* battle) const{
     auto& myTeam = this == battle->getPlayer1() ? battle->player1Team : battle->player2Team;
-    if (currentlyActivePokemon->isTrapped && !currentlyActivePokemon->isDead) return 0;
+    if (currentlyActivePokemon->isTrapped() && !currentlyActivePokemon->isDead) return 0;
     int result = 0;
     for (int i = 0; i < myTeam.size(); i++){
         if (!myTeam[i].empty && !myTeam[i].isDead && currentlyActivePokemon != &(myTeam[i])){
