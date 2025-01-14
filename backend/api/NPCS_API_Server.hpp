@@ -26,7 +26,7 @@ private:
     std::mutex threadCounterMutex;
     std::unordered_map<size_t,int> idToThread;
     std::mutex idToThreadMutex;
-    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"));
+    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"));
 
     std::string getToken(const std::string& username, const std::string& password);
     void waitForTournaments(uint32_t threadNumber);

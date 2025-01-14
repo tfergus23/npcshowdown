@@ -107,15 +107,7 @@ int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID){
 }
 
 NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
-    if (!config.has_key("tournament_threads")){
-        throw std::runtime_error("'tournament_threads' not specified in ini file.");
-    }
-    try{
-        max_tournament_threads = stoi(config.get("tournament_threads"));
-    }
-    catch (...){
-        throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
-    }
+    max_tournament_threads = getIntFromConfig(config, "tournament_threads");
 
     if (max_tournament_threads < 1){
         throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
@@ -139,6 +131,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         try {
             std::string token = req.headers.at("Authorization");
             if (db.isTokenValid(username, token)){
+                db.updateTokenLastUsed(username, token);
                 return true;
             }
             else{

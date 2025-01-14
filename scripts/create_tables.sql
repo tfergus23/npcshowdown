@@ -24,6 +24,7 @@ create table user_session(
 );
 
 create index user_session_user_index on user_session(user);
+create index user_session_user_token_index on user_session(user,token);
 
 create table tournament (
     id bigint PRIMARY KEY,

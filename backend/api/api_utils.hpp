@@ -2,6 +2,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include "sim/battle/Battle.hpp"
+#include "tflib/config.h"
 
 using json = nlohmann::json;
 
@@ -16,3 +17,4 @@ std::string generateUUID();
 std::string sha256(const std::string& str);
 std::string generateJWT(const std::string& username);
 bool validateJWT(const std::string& jwt, const std::string& username);
+int getIntFromConfig(tflib::ini_file& config, const std::string& key);

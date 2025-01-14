@@ -3,6 +3,7 @@
 #include "sim/tournament/BattleResult.hpp"
 #include "sim/tournament/Tournament.hpp"
 #include "conncpp.hpp"
+#include "api_utils.hpp"
 
 using json = nlohmann::json;
 
@@ -26,9 +27,12 @@ public:
     bool isTokenValid(const std::string& username, const std::string& token);
     std::string createUserSession(const std::string& username, const std::string& password, std::string& outToken);
     void deleteUserSession(const std::string& username, const std::string & token);
+    void deleteOldUserSessions(size_t userID);
     size_t userIdFromName(const std::string& username);
+    void updateTokenLastUsed(const std::string& username, const std::string& token);
 
-    MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database);
+    MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
 private:
     std::unique_ptr<sql::Connection> conn;
+    const int maxUserSessions = 1;
 };

@@ -12,11 +12,14 @@ static std::mutex saveTrainerMutex;
 static std::mutex saveBattleMutex;
 static std::mutex saveTournamentMutex;
 
-MariaDBConnection::MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database){
+MariaDBConnection::MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions) : maxUserSessions{maxUserSessions}{
     sql::Driver* driver= sql::mariadb::get_driver_instance();
     sql::SQLString url("jdbc:mariadb://" + host + ":3306/" + database);
     sql::Properties properties({{"user", username}, {"password", password}});
     conn = std::unique_ptr<sql::Connection>(driver->connect(url, properties));
+    if (maxUserSessions < 1){
+        throw std::runtime_error("Invalid value for max_user_sessions: " + std::to_string(maxUserSessions));
+    }
 }
 
 json MariaDBConnection::getTrainer(size_t id){
@@ -147,7 +150,7 @@ std::string MariaDBConnection::createUserSession(const std::string& username, co
         return "Invalid credentials";
     }
 
-    //TODO: Code for too many sessions
+    deleteOldUserSessions(userID);
 
     std::string newToken = generateUUID();
     std::unique_ptr<sql::PreparedStatement> insertTokenStatement(conn->prepareStatement("insert into user_session (user, token, dateGranted, lastUsed) values (?, ?, NOW(),NOW())"));
@@ -186,4 +189,30 @@ size_t MariaDBConnection::userIdFromName(const std::string& username){
         userID = results->getUInt64(1);
     }
     return userID;
+}
+
+void MariaDBConnection::deleteOldUserSessions(size_t userID){
+    std::unique_ptr<sql::PreparedStatement> countStatement(conn->prepareStatement("select count(*) from user_session where user = ?"));
+    countStatement->setUInt64(1, userID);
+    std::unique_ptr<sql::ResultSet> countResults(countStatement->executeQuery());
+    countResults->next();
+    int numSessions = countResults->getInt(1);
+
+    int numToRemove = (numSessions - maxUserSessions) + 1; // Want to reduce them to maxUserSessions - 1
+
+    if (numToRemove < 1) return;
+
+    std::unique_ptr<sql::PreparedStatement> deleteOldSessionsStatement(conn->prepareStatement("delete from user_session where user = ? order by lastUsed limit ?"));
+    deleteOldSessionsStatement->setUInt64(1, userID);
+    deleteOldSessionsStatement->setInt(2, numToRemove);
+
+    delete deleteOldSessionsStatement->executeQuery();
+}
+
+void MariaDBConnection::updateTokenLastUsed(const std::string& username, const std::string& token){
+    size_t userID = userIdFromName(username);
+    std::unique_ptr<sql::PreparedStatement> updateStatement(conn->prepareStatement("update user_session set lastUsed=NOW() where user = ? and token = ?"));
+    updateStatement->setUInt64(1, userID);
+    updateStatement->setString(2, token);
+    delete updateStatement->executeQuery();
 }

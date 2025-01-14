@@ -41,4 +41,4 @@ def get_admin_token():
     res = requests.post(f'{url}/auth', json=body)
     print(res.text)
 
-bad_auth_request()
+get_admin_token()
