@@ -26,8 +26,8 @@ export class NavbarComponent {
     const authResponse = this.authService.getToken(username,password);
     authResponse.subscribe((res) =>{
       if (res.success && res.token != undefined){
-        const token = `${username}:${res.token}`;
-        const userResponse = this.userService.getUserData(token);
+        const token = res.token;
+        const userResponse = this.userService.getUserData(username, token);
         userResponse.subscribe((res) => {
           if (res.success){
             this.app.loggedInUser = res.data;
@@ -45,16 +45,8 @@ export class NavbarComponent {
   }
   logout(){
     this.dropdownDisplay = "none";
-    if(this.app.loggedInUser)
-    this.userService.logOut(this.app.loggedInUser?.token).subscribe((res) =>{
-      if (res.success){
-        this.app.loggedInUser = undefined;
-        this.cookieService.delete("token", "/", "localhost", false, "Lax");
-      }
-      else{
-        console.log(res.message);
-      }
-    });
+    this.app.loggedInUser = undefined;
+    this.cookieService.delete('token');
   }
 
   showDropDown(){

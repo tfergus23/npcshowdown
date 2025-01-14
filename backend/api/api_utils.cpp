@@ -10,9 +10,11 @@
 #include <iomanip>
 #include <fstream>
 #include <openssl/evp.h>
+#include "jwt-cpp/jwt.h"
 
 const int MAX_NAME_SIZE = 64;
 const std::hash<std::string> hasher;
+const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
 
 //TODO: Use these
 std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName){
@@ -307,7 +309,7 @@ std::string validateTournamentRequest(const json& json){
     return problems;
 }
 
-std::string validateAuthRequest(const json& json){
+std::string validateAuthRequestSchema(const json& json){
     std::string problems = "";
 
     problems += checkForString(json, "", "username");
@@ -387,4 +389,29 @@ std::string sha256(const std::string &input) {
     }
 
     return result;
+}
+
+std::string generateJWT(const std::string& username){
+    auto token = jwt::create()
+        .set_type("JWT")
+        .set_issuer(API_AUTH_ENDPOINT)
+        .set_subject(username)
+        .sign(jwt::algorithm::hs256{"secret"});
+    return token;
+}
+
+bool validateJWT(const std::string& jwt, const std::string& username){
+
+    auto verifier = jwt::verify()
+        .with_issuer("http://npcshowdown.com/api/auth")
+        .with_subject(username)
+        .allow_algorithm(jwt::algorithm::hs256{"secret"});
+    try{
+        auto decoded = jwt::decode(jwt);
+        verifier.verify(decoded);
+        return true;
+    }
+    catch(...){
+        return false;
+    }
 }

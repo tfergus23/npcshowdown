@@ -138,7 +138,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         std::string username = req.path_params.at("username");
         try {
             std::string token = req.headers.at("Authorization");
-            if (db.isTokenValid(username, token)){
+            if (validateJWT(token, username)){
                 return true;
             }
             else{
@@ -164,7 +164,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         json response;
         try {
             json body = json::parse(req.body);
-            std::string problems = validateAuthRequest(body);
+            std::string problems = validateAuthRequestSchema(body);
             if (problems != ""){
                 if (problems[problems.size() - 1] == '\n'){
                     problems = problems.substr(0,problems.size()-1);
@@ -175,19 +175,16 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 res.Send(response.dump());
                 return;
             }
-            std::string token;
-            problems = db.createUserSession(body["username"].get<std::string>(), body["password"].get<std::string>(), token);
 
-            if (problems != ""){
-                if (problems[problems.size() - 1] == '\n'){
-                    problems = problems.substr(0,problems.size()-1);
-                }
-                response["message"] = problems;
+            if (!db.checkCredentials(body["username"], body["password"])){
+                response["message"] = "Invalid credentials.";
                 response["success"] = false;
                 res.Set_Status(401);
                 res.Send(response.dump());
                 return;
             }
+            
+            std::string token = generateJWT(body["username"]);
 
             response["success"] = true;
             response["message"] = "OK";

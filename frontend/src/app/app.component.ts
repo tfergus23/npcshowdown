@@ -3,6 +3,7 @@ import User from '../User'
 import { UserService } from './user.service';
 import { AuthenticationService } from './authentication.service';
 import { CookieService } from 'ngx-cookie-service';
+import { jwtDecode } from 'jwt-decode';
 
 
 @Component({
@@ -16,12 +17,15 @@ export class AppComponent {
 
   constructor(private userService: UserService, private authService: AuthenticationService, private cookieService: CookieService){}
   ngOnInit(){
-    if (this.cookieService.check("token"))
-    this.userService.getUserData(this.cookieService.get("token")).subscribe((res) =>{
-      if (res.success){
-        this.loggedInUser = res.data;
-      }
-    });
-    
+    if (this.cookieService.check("token")){
+      const token = this.cookieService.get("token");
+      const decodedJWT = jwtDecode(token);
+      const username = decodedJWT.sub!;
+      this.userService.getUserData(username, token).subscribe((res) =>{
+        if (res.success){
+          this.loggedInUser = res.data;
+        }
+      });
+  }
   }
 }
