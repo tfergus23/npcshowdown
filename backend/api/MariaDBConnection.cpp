@@ -104,6 +104,23 @@ std::vector<size_t> MariaDBConnection::getUserTrainers(const std::string& userna
     return result;
 }
 
+bool MariaDBConnection::isTokenValid(const std::string& username, const std::string& token){
+    size_t userID = userIdFromName(username);
+    
+    std::unique_ptr<sql::PreparedStatement> tokenStatement(conn->prepareStatement("select token from user_session where user = ?"));
+    tokenStatement->setUInt64(1, userID);
+
+    std::unique_ptr<sql::ResultSet> tokenResults(tokenStatement->executeQuery());
+
+    while(tokenResults->next()){
+        std::string dbToken(tokenResults->getString(1));
+        if (dbToken == token){
+            return true;
+        }
+    }
+    return false;
+}
+
 std::string MariaDBConnection::createUserSession(const std::string& username, const std::string& password, std::string& outToken){
     std::unique_ptr<sql::PreparedStatement> passwordStatement(conn->prepareStatement("select id,password from user where name = ?"));
     passwordStatement->setString(1, username);
@@ -142,23 +159,31 @@ std::string MariaDBConnection::createUserSession(const std::string& username, co
     return "";
 }
 
-bool MariaDBConnection::checkCredentials(const std::string& username, const std::string& password){
-    std::unique_ptr<sql::PreparedStatement> passwordStatement(conn->prepareStatement("select password from user where name = ?"));
+void MariaDBConnection::deleteUserSession(const std::string& username, const std::string & token){
+    size_t userID = userIdFromName(username);
+    std::unique_ptr<sql::PreparedStatement> deleteSessionStmnt(conn->prepareStatement("delete from user_session where user = ? and token = ?"));
+    deleteSessionStmnt->setUInt64(1, userID);
+    deleteSessionStmnt->setString(2, token);
+
+    delete deleteSessionStmnt->executeQuery();
+}
+
+size_t MariaDBConnection::userIdFromName(const std::string& username){
+    std::unique_ptr<sql::PreparedStatement> passwordStatement(conn->prepareStatement("select id from user where name = ?"));
     passwordStatement->setString(1, username);
     std::unique_ptr<sql::ResultSet> results(passwordStatement->executeQuery());
 
     if (results->rowsCount() < 1){
-        return false;
+        return 0;
     }
 
     if (results->rowsCount() > 1){
         throw std::runtime_error("Somehow got two users in username query for: " + username);
     }
 
-    std::string hashedProvidedPassword = sha256(password);
-    std::string dbPassword;
+    size_t userID = 0;
     while (results->next()){
-        dbPassword = results->getString(1);
+        userID = results->getUInt64(1);
     }
-    return hashedProvidedPassword == dbPassword;
+    return userID;
 }

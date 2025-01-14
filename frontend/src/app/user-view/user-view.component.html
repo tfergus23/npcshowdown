@@ -1,12 +1,11 @@
 <div class="content">
     <div class="sidebar-content">
         <div class="links">
-            <a [style.background-color]="(this.view == 'profile') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" href="/user/{{this.app.loggedInUser?.name}}?view=profile">Profile</a>
-            <a [style.background-color]="(this.view == 'trainers') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" href="/user/{{this.app.loggedInUser?.name}}?view=trainers">Trainers</a>
-            <a [style.background-color]="(this.view == 'tournaments') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" href="/user/{{this.app.loggedInUser?.name}}?view=tournaments">Tournaments</a>
+            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'profile') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" routerLink="profile">Profile</a>
+            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'trainers') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" routerLink="trainers">Trainers</a>
+            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'tournaments') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" routerLink="tournaments">Tournaments</a>
         </div>
     </div>
-    <app-user-profile *ngIf="this.view == 'profile'"></app-user-profile>
-    <app-user-trainers *ngIf="this.view == 'trainers'"></app-user-trainers>
-    <app-user-tournaments *ngIf="this.view == 'tournaments'"></app-user-tournaments>
+    <router-outlet *ngIf="this.app.loggedInUser"></router-outlet>
+    <h3 *ngIf="!this.app.loggedInUser">Log in to see your stuff!</h3>
 </div>

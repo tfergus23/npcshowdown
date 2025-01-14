@@ -138,7 +138,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         std::string username = req.path_params.at("username");
         try {
             std::string token = req.headers.at("Authorization");
-            if (validateJWT(token, username)){
+            if (db.isTokenValid(username, token)){
                 return true;
             }
             else{
@@ -175,16 +175,16 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 res.Send(response.dump());
                 return;
             }
+            std::string token;
+            problems = db.createUserSession(body["username"], body["password"], token);
 
-            if (!db.checkCredentials(body["username"], body["password"])){
-                response["message"] = "Invalid credentials.";
+            if (problems != ""){
+                response["message"] = problems;
                 response["success"] = false;
                 res.Set_Status(401);
                 res.Send(response.dump());
                 return;
             }
-            
-            std::string token = generateJWT(body["username"]);
 
             response["success"] = true;
             response["message"] = "OK";
@@ -206,7 +206,6 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         json data;
         data["id"] = 0;
         data["name"] = req.path_params.at("username");
-        data["token"] = "admin:123";
         data["accountCreated"] = "2024-10-04";
         data["lastPasswordChange"] = "2024-10-04";
         data["email"] = "testperson@bmail.net";
@@ -216,10 +215,11 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         res.Send(response.dump());
     });
 
-    app.Add_Handler("PUT", authorizedRoute, "/logout", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("PUT", authorizedRoute, "/logout", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        db.deleteUserSession(req.path_params.at("username"), req.headers.at("Authorization"));
         json response;
         response["success"] = true;
-        response["message"] = "Logout successful";
+        response["message"] = "OK";
         res.Send(response.dump());
     });
 

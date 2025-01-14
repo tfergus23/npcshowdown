@@ -17,9 +17,11 @@ const routes: Routes = [
   {path: "tournament", component: CreateTournamentComponent},
   {path: "trainers", component: ViewTrainersComponent},
   {path: "results/:id", component: ViewResultsComponent},
-  {path: "user/:username", component: UserViewComponent},
-  {path: "user/:username/trainers", component: UserTrainersComponent},
-  {path: "user/:username/tournaments", component: UserTournamentsComponent},
+  {path: "user/:username", component: UserViewComponent, children:[
+    {path: "profile", component: UserProfileComponent},
+    {path: "trainers", component: UserTrainersComponent},
+    {path: "tournaments", component: UserTournamentsComponent},
+  ]},
   {path: "signup", component: SignUpComponent},
 ];
 

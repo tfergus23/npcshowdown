@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, enableProdMode } from '@angular/core';
 import User from '../User'
 import { UserService } from './user.service';
 import { AuthenticationService } from './authentication.service';
 import { CookieService } from 'ngx-cookie-service';
-import { jwtDecode } from 'jwt-decode';
 
 
 @Component({
@@ -17,15 +16,23 @@ export class AppComponent {
 
   constructor(private userService: UserService, private authService: AuthenticationService, private cookieService: CookieService){}
   ngOnInit(){
+    this.setUserData();
+  }
+
+  setUserData(){
     if (this.cookieService.check("token")){
-      const token = this.cookieService.get("token");
-      const decodedJWT = jwtDecode(token);
-      const username = decodedJWT.sub!;
+      const splitToken = this.cookieService.get("token").split(":");
+      const username = splitToken[0];
+      const token = splitToken[1];
+      
       this.userService.getUserData(username, token).subscribe((res) =>{
         if (res.success){
           this.loggedInUser = res.data;
         }
+      },(error) => {
+        this.loggedInUser = undefined;
+        console.error(error.error.message);
       });
-  }
+    }
   }
 }

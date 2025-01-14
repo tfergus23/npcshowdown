@@ -1,14 +1,14 @@
 <nav class ="navBar">
-    <a class="logo" href="/"><img src="../../assets/npcs_logo.png" height="60" alt="logo"></a>
-    <a class="menu" href="/">MENU</a>
+    <a class="logo" routerLink="/"><img src="../../assets/npcs_logo.png" height="60" alt="logo"></a>
+    <a class="menu" routerLink="/">MENU</a>
     <div class="user-container">
         <button (click)="this.showDropDown()" (focusout)="this.hideDropDown()" *ngIf="app.loggedInUser" class="signed-in">
             <div class="username">{{app.loggedInUser.name}}▼</div>
         </button>
         <div [style.display]="this.dropdownDisplay" class="dropdown-content">
-            <a href="/user/{{this.app.loggedInUser?.name}}?view=profile">Profile</a>
-            <a href="/user/{{this.app.loggedInUser?.name}}?view=trainers">Saved Trainers</a>
-            <a href="/user/{{this.app.loggedInUser?.name}}?view=tournaments">Saved Tournaments</a>
+            <a routerLink="user/{{this.app.loggedInUser?.name}}/profile">Profile</a>
+            <a routerLink="user/{{this.app.loggedInUser?.name}}/trainers">Saved Trainers</a>
+            <a routerLink="user/{{this.app.loggedInUser?.name}}/tournaments">Saved Tournaments</a>
             <button (click)="this.logout()">Logout</button>
         </div>
         <div *ngIf="!app.loggedInUser" class="login">

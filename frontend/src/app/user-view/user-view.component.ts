@@ -9,10 +9,8 @@ import { AppComponent } from '../app.component';
 })
 export class UserViewComponent {
 
-  view: string | null = "";
   selectedStyle: string = "text-decoration: underline; background-color: rgb(105,105,106);";
 
   constructor(public activatedRoute: ActivatedRoute, public app: AppComponent){
-    this.view = this.activatedRoute.snapshot.queryParamMap.get('view');
   }
 }

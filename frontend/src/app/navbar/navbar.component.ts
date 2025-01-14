@@ -26,27 +26,28 @@ export class NavbarComponent {
     const authResponse = this.authService.getToken(username,password);
     authResponse.subscribe((res) =>{
       if (res.success && res.token != undefined){
-        const token = res.token;
-        const userResponse = this.userService.getUserData(username, token);
-        userResponse.subscribe((res) => {
-          if (res.success){
-            this.app.loggedInUser = res.data;
-            this.cookieService.set("token", token);
-          }
-          else{
-            //something went wrong
-          }
-        });
+        this.cookieService.set('token', `${username}:${res.token}`);
+        this.app.setUserData();
       }
       else{
-        console.log(res.message);
+        console.error(res.message);
       }
+    }, (error) => {
+      console.error(error.error.message);
     });
   }
   logout(){
-    this.dropdownDisplay = "none";
-    this.app.loggedInUser = undefined;
-    this.cookieService.delete('token');
+    const splitToken = this.cookieService.get('token').split(':');
+    const username = splitToken[0];
+    const token = splitToken[1];
+    this.userService.logOut(username, token).subscribe((res) =>{
+      if (res.success){
+        this.dropdownDisplay = "none";
+        this.app.loggedInUser = undefined;
+        this.cookieService.delete('token');
+      }
+    });
+
   }
 
   showDropDown(){

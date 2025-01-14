@@ -396,6 +396,7 @@ std::string generateJWT(const std::string& username){
         .set_type("JWT")
         .set_issuer(API_AUTH_ENDPOINT)
         .set_subject(username)
+        .set_id(generateUUID())
         .sign(jwt::algorithm::hs256{"secret"});
     return token;
 }

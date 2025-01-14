@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppSettings } from 'src/AppSettings';
 import GetResponse from 'src/GetResponse';
+import { AppComponent } from './app.component';
 
 interface UserResponse{
   name: string,
@@ -26,6 +27,11 @@ export class UserService {
 
   getUserData(username: string, authToken: string) : Observable<GetResponse>{
     const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${username}`, {headers: {Authorization: authToken}});
+    return response;
+  }
+
+  logOut(username: string, authToken: string) : Observable<LogoutResponse>{
+    const response = this.http.put<LogoutResponse>(`${AppSettings.API_URL}user/${username}/logout`, {}, {headers: {Authorization: authToken}});
     return response;
   }
 }
