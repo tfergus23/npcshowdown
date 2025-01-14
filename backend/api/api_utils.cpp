@@ -10,7 +10,6 @@
 #include <iomanip>
 #include <fstream>
 #include <openssl/evp.h>
-#include "jwt-cpp/jwt.h"
 
 const int MAX_NAME_SIZE = 64;
 const std::hash<std::string> hasher;
@@ -389,32 +388,6 @@ std::string sha256(const std::string &input) {
     }
 
     return result;
-}
-
-std::string generateJWT(const std::string& username){
-    auto token = jwt::create()
-        .set_type("JWT")
-        .set_issuer(API_AUTH_ENDPOINT)
-        .set_subject(username)
-        .set_id(generateUUID())
-        .sign(jwt::algorithm::hs256{"secret"});
-    return token;
-}
-
-bool validateJWT(const std::string& jwt, const std::string& username){
-
-    auto verifier = jwt::verify()
-        .with_issuer("http://npcshowdown.com/api/auth")
-        .with_subject(username)
-        .allow_algorithm(jwt::algorithm::hs256{"secret"});
-    try{
-        auto decoded = jwt::decode(jwt);
-        verifier.verify(decoded);
-        return true;
-    }
-    catch(...){
-        return false;
-    }
 }
 
 int getIntFromConfig(tflib::ini_file& config, const std::string& key){
