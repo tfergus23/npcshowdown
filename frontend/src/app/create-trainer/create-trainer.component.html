@@ -98,23 +98,23 @@
                     <div class="inline-label">
                         EVs: 
                     </div>
-                    <input placeholder="HP" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[0]" [readOnly]="this.readOnly">
-                    <input placeholder="ATK" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[1]" [readOnly]="this.readOnly">
-                    <input placeholder="DEF" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[2]" [readOnly]="this.readOnly">
-                    <input placeholder="SPA" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[3]" [readOnly]="this.readOnly">
-                    <input placeholder="SPD" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[4]" [readOnly]="this.readOnly">
-                    <input placeholder="SPE" type="number" [(ngModel)]="this.trainer.team[selectedIndex].evs[5]" [readOnly]="this.readOnly">
+                    <input placeholder="HP" type="number" min="0" max="255"  [(ngModel)]="this.trainer.team[selectedIndex].evs[0]" [readOnly]="this.readOnly">
+                    <input placeholder="ATK" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[1]" [readOnly]="this.readOnly">
+                    <input placeholder="DEF" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[2]" [readOnly]="this.readOnly">
+                    <input placeholder="SPA" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[3]" [readOnly]="this.readOnly">
+                    <input placeholder="SPD" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[4]" [readOnly]="this.readOnly">
+                    <input placeholder="SPE" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[5]" [readOnly]="this.readOnly">
                 </div>
                 <div class="stat-value-input">
                     <div class="inline-label">
                         IVs: 
                     </div>
-                    <input placeholder="HP" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[0]" [readOnly]="this.readOnly">
-                    <input placeholder="ATK" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[1]" [readOnly]="this.readOnly">
-                    <input placeholder="DEF" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[2]" [readOnly]="this.readOnly">
-                    <input placeholder="SPA" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[3]" [readOnly]="this.readOnly">
-                    <input placeholder="SPD" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[4]" [readOnly]="this.readOnly">
-                    <input placeholder="SPE" type="number" [(ngModel)]="this.trainer.team[selectedIndex].ivs[5]" [readOnly]="this.readOnly">
+                    <input placeholder="HP" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[0]" [readOnly]="this.readOnly">
+                    <input placeholder="ATK" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[1]" [readOnly]="this.readOnly">
+                    <input placeholder="DEF" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[2]" [readOnly]="this.readOnly">
+                    <input placeholder="SPA" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[3]" [readOnly]="this.readOnly">
+                    <input placeholder="SPD" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[4]" [readOnly]="this.readOnly">
+                    <input placeholder="SPE" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[5]" [readOnly]="this.readOnly">
                 </div>
             </div>
         </div>
