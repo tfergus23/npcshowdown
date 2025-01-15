@@ -25,12 +25,8 @@ export class NavbarComponent {
     }
     const authResponse = this.authService.getToken(username,password);
     authResponse.subscribe((res) =>{
-      if (res.success && res.token != undefined){
-        const expirationDate = new Date();
-        expirationDate.setFullYear(expirationDate.getFullYear() + 10);
-        
-        this.cookieService.set('token', `${username}:${res.token}`, expirationDate, '/');
-        this.app.setUserData();
+      if (res.success){
+        this.app.setUserData(username);
       }
       else{
         console.error(res.message);
@@ -40,26 +36,23 @@ export class NavbarComponent {
     });
   }
   logout(){
-    if (!this.cookieService.check('token')){
+    if (localStorage.getItem('user') == null){
       this.dropdownDisplay = "none";
       this.app.loggedInUser = undefined;
-      this.cookieService.delete('token');
+      localStorage.removeItem('user');
       return;
     }
-    const splitToken = this.cookieService.get('token').split(':');
-    const username = splitToken[0];
-    const token = splitToken[1];
-    this.userService.logOut(username, token).subscribe((res) =>{
+    this.userService.logOut(localStorage.getItem('user') as string).subscribe((res) =>{
       if (res.success){
         this.dropdownDisplay = "none";
         this.app.loggedInUser = undefined;
-        this.cookieService.delete('token');
+        localStorage.removeItem('user');
       }
     }, (error) =>{
       if (error.status == 401){
         this.dropdownDisplay = "none";
         this.app.loggedInUser = undefined;
-        this.cookieService.delete('token');
+        localStorage.removeItem('user');
       }
       else{
         console.error(error);

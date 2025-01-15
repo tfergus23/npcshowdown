@@ -13,6 +13,7 @@ export class UserProfileComponent {
   constructor(public app: AppComponent, private userService: UserService, private cookieService: CookieService){}
 
   ngOnInit(){
-    this.app.setUserData();
+    if (localStorage.getItem('user') != null)
+    this.app.setUserData(localStorage.getItem('user') as string);
   }
 }

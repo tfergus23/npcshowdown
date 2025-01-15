@@ -25,13 +25,13 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  getUserData(username: string, authToken: string) : Observable<GetResponse>{
-    const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${username}`, {headers: {Authorization: authToken}});
+  getUserData(username: string) : Observable<GetResponse>{
+    const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${username}`, {withCredentials: true});
     return response;
   }
 
-  logOut(username: string, authToken: string) : Observable<LogoutResponse>{
-    const response = this.http.delete<LogoutResponse>(`${AppSettings.API_URL}user/${username}/logout`, {headers: {Authorization: authToken}});
+  logOut(username: string) : Observable<LogoutResponse>{
+    const response = this.http.delete<LogoutResponse>(`${AppSettings.API_URL}user/${username}/logout`, {withCredentials: true});
     return response;
   }
 }

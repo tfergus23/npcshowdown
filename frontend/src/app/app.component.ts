@@ -16,27 +16,20 @@ export class AppComponent {
 
   constructor(private userService: UserService, private authService: AuthenticationService, private cookieService: CookieService){}
   ngOnInit(){
-    this.setUserData();
+    if (localStorage.getItem('user') != null)
+    this.setUserData(localStorage.getItem('user') as string);
   }
 
-  setUserData(){
-    const hasToken = this.cookieService.check("token");
-    console.log(hasToken);
-    console.log(document.cookie);
-    if (hasToken){
-      console.log("app loaded");
-      const splitToken = this.cookieService.get("token").split(":");
-      const username = splitToken[0];
-      const token = splitToken[1];
-      
-      this.userService.getUserData(username, token).subscribe((res) =>{
-        if (res.success){
-          this.loggedInUser = res.data;
-        }
-      },(error) => {
-        this.loggedInUser = undefined;
-        console.error(error.error.message);
-      });
-    }
+  setUserData(username: string){
+    this.userService.getUserData(username).subscribe((res) =>{
+      if (res.success){
+        this.loggedInUser = res.data;
+        localStorage.setItem('user', res.data.name);
+      }
+    },(error) => {
+      this.loggedInUser = undefined;
+      localStorage.removeItem('user');
+      console.error(error.error.message);
+    });
   }
 }

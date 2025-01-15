@@ -17,7 +17,7 @@ using json = nlohmann::json;
 
 #define PORT 3000
 #define WEBSITE_URL "http://localhost:4200"
-#define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With"
+#define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With,Set-Cookie"
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
 const size_t MAX_REQUEST_SIZE = 524288;
 
@@ -29,7 +29,8 @@ const std::string MOVE_DATA_RESPONSE = createMoveDataResponse();
 const std::string ALL_DATA_RESPONSE = createAllDataResponse();
 
 bool addCORSHeaderMiddleware(const HTTP_Request& req, HTTP_Response& res){
-    res.headers["Access-Control-Allow-Origin"] = "*";
+    res.headers["Access-Control-Allow-Origin"] = WEBSITE_URL;
+    res.headers["Access-Control-Allow-Credentials"] = "true";
     return true;
 }
 
@@ -106,6 +107,22 @@ int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID){
     return -1;
 }
 
+const std::string TOKEN_COOKIE_START = "token=";
+
+std::string getTokenFromRequest(const HTTP_Request& req){
+    if (req.headers.contains("Cookie")){
+        const std::string& cookieHeader = req.headers.at("Cookie");
+        size_t cookieBegin = cookieHeader.find(TOKEN_COOKIE_START) + TOKEN_COOKIE_START.size();
+        return cookieHeader.substr(cookieBegin, 32);
+    }
+    else if (req.headers.contains("Authorization")){
+        return req.headers.at("Authorization");
+    }
+    else{
+        return "";
+    }
+}
+
 NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
     max_tournament_threads = getIntFromConfig(config, "tournament_threads");
 
@@ -128,25 +145,19 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         json response;
         response["success"] = false;
         std::string username = req.path_params.at("username");
-        try {
-            std::string token = req.headers.at("Authorization");
-            if (db.isTokenValid(username, token)){
-                db.updateTokenLastUsed(username, token);
-                return true;
-            }
-            else{
-                response["message"] = "Unauthorized: Invalid token.";
-                res.Set_Status(401);
-                res.Send(response.dump());
-                return false;
-            }
-        } 
-        catch (const std::out_of_range& e){
-            response["message"] = "Bad Request: No Authorization header provided";
-            res.Set_Status(400);
+
+        std::string token = getTokenFromRequest(req);
+        if (db.isTokenValid(username, token)){
+            db.updateTokenLastUsed(username, token);
+            return true;
+        }
+        else{
+            response["message"] = "Unauthorized: Invalid token.";
+            res.Set_Status(401);
             res.Send(response.dump());
             return false;
         }
+
     });
 
     //Add preflight handler to all paths
@@ -179,6 +190,8 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 return;
             }
 
+            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=localhost";
+
             response["success"] = true;
             response["message"] = "OK";
             response["token"] = token;
@@ -209,7 +222,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
     });
 
     app.Add_Handler("DELETE", authorizedRoute, "/logout", [=, this](const HTTP_Request& req, HTTP_Response& res){
-        db.deleteUserSession(req.path_params.at("username"), req.headers.at("Authorization"));
+        db.deleteUserSession(req.path_params.at("username"), getTokenFromRequest(req));
         json response;
         response["success"] = true;
         response["message"] = "OK";
