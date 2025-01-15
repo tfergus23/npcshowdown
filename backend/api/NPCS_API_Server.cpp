@@ -208,7 +208,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         res.Send(response.dump());
     });
 
-    app.Add_Handler("PUT", authorizedRoute, "/logout", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("DELETE", authorizedRoute, "/logout", [=, this](const HTTP_Request& req, HTTP_Response& res){
         db.deleteUserSession(req.path_params.at("username"), req.headers.at("Authorization"));
         json response;
         response["success"] = true;

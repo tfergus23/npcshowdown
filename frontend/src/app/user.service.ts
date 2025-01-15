@@ -31,7 +31,7 @@ export class UserService {
   }
 
   logOut(username: string, authToken: string) : Observable<LogoutResponse>{
-    const response = this.http.put<LogoutResponse>(`${AppSettings.API_URL}user/${username}/logout`, {}, {headers: {Authorization: authToken}});
+    const response = this.http.delete<LogoutResponse>(`${AppSettings.API_URL}user/${username}/logout`, {headers: {Authorization: authToken}});
     return response;
   }
 }

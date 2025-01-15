@@ -26,7 +26,10 @@ export class NavbarComponent {
     const authResponse = this.authService.getToken(username,password);
     authResponse.subscribe((res) =>{
       if (res.success && res.token != undefined){
-        this.cookieService.set('token', `${username}:${res.token}`);
+        const expirationDate = new Date();
+        expirationDate.setFullYear(expirationDate.getFullYear() + 10);
+        
+        this.cookieService.set('token', `${username}:${res.token}`, expirationDate, '/');
         this.app.setUserData();
       }
       else{
@@ -37,6 +40,12 @@ export class NavbarComponent {
     });
   }
   logout(){
+    if (!this.cookieService.check('token')){
+      this.dropdownDisplay = "none";
+      this.app.loggedInUser = undefined;
+      this.cookieService.delete('token');
+      return;
+    }
     const splitToken = this.cookieService.get('token').split(':');
     const username = splitToken[0];
     const token = splitToken[1];
@@ -45,6 +54,15 @@ export class NavbarComponent {
         this.dropdownDisplay = "none";
         this.app.loggedInUser = undefined;
         this.cookieService.delete('token');
+      }
+    }, (error) =>{
+      if (error.status == 401){
+        this.dropdownDisplay = "none";
+        this.app.loggedInUser = undefined;
+        this.cookieService.delete('token');
+      }
+      else{
+        console.error(error);
       }
     });
 

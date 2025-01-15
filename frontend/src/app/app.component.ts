@@ -20,7 +20,11 @@ export class AppComponent {
   }
 
   setUserData(){
-    if (this.cookieService.check("token")){
+    const hasToken = this.cookieService.check("token");
+    console.log(hasToken);
+    console.log(document.cookie);
+    if (hasToken){
+      console.log("app loaded");
       const splitToken = this.cookieService.get("token").split(":");
       const username = splitToken[0];
       const token = splitToken[1];
