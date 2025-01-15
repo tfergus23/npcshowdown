@@ -149,6 +149,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         std::string token = getTokenFromRequest(req);
         if (db.isTokenValid(username, token)){
             db.updateTokenLastUsed(username, token);
+            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=localhost";
             return true;
         }
         else{
