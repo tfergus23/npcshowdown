@@ -250,7 +250,7 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
     }
 
     try{
-        natures.at(json["nature"].get<std::string>());
+        natureFromString(json["nature"].get<std::string>());
     }
     catch(...){
         problems += pokemonFriendlyName + " has an invalid nature.\n";
@@ -282,6 +282,11 @@ std::string validateTournamentRequest(const json& json){
     problems += checkForDynamicObjectArray(json, "", "trainers", INT_MAX);
     problems += checkForString(json, "", "seed");
     problems += checkForInt(json, "", "rounds");
+
+    //user is optional
+    if (json.contains("user") && !json["user"].is_string()){
+        problems += "Bad Request: 'user' must be of type string, was " + std::string(json["user"].type_name()) + "\n";
+    }
 
     if (problems != ""){
         return problems;

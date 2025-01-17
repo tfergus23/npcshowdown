@@ -64,11 +64,12 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-size_t NPCS_API_Server::createTournamentRequest(const json& json){
+size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user){
     size_t id = db.createEmptyTournament();
     TournamentRequest request{
         .requestJson = json,
-        .id = id
+        .id = id,
+        .user = user
     };
     threadCounterMutex.lock();
     int threadNumber = tournamentRequestThreadCounter++;
@@ -129,6 +130,8 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
     if (max_tournament_threads < 1){
         throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
     }
+
+    testTrainerSerialization();
 
     queuedTournaments = new std::deque<TournamentRequest>[max_tournament_threads];
     queuedTournamentMutexes = new std::mutex[max_tournament_threads];
@@ -270,7 +273,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         size_t seed = seedFromString(seedString);
 
         // Save the battle to the databasae
-        size_t id = db.saveBattle(trainer1, trainer2, seed);
+        size_t id = db.saveBattle(trainer1, trainer2, seed, 0, 0);
 
         // Send back battle ID
         response["success"] = true;
@@ -303,8 +306,12 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             res.Send(response.dump());
             return;
         }
+        size_t userID = 0;
+        if (request.contains("user")){
+            userID = db.userIdFromName(request["user"].get<std::string>());
+        }
 
-        size_t id  = createTournamentRequest(request);
+        size_t id  = createTournamentRequest(request, userID);
 
         // Send back tournament ID
         response["success"] = true;
@@ -388,7 +395,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 statJSONs.push_back(stat.toJSON());
             }
             for(auto trainer : tr.trainers){
-                trainerJSONs.push_back(db.getTrainer(trainer));
+                trainerJSONs.push_back(db.getTrainer(trainer).toJSON());
             }
             data["trainers"] = trainerJSONs;
             data["results"] = statJSONs;
@@ -414,7 +421,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         userTrainers.reserve(userTrainerIDs.size());
 
         for(auto id : userTrainerIDs){
-            userTrainers.push_back(db.getTrainer(id));
+            userTrainers.push_back(db.getTrainer(id).toJSON());
         }
 
         json response;
@@ -469,7 +476,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         std::cout << "Done simulating tournament.\n";
         
         // Save tournament to DB
-        db.saveTournament(tournament, req.id);
+        db.saveTournament(tournament, req.user, req.id);
         idToThreadMutex.lock();
         idToThread.erase(req.id);
         idToThreadMutex.unlock();
@@ -491,4 +498,49 @@ void NPCS_API_Server::startTournamentThreads(){
 NPCS_API_Server::~NPCS_API_Server(){
     delete[] queuedTournaments;
     delete[] queuedTournamentMutexes;
+}
+
+void NPCS_API_Server::testTrainerSerialization(){
+    std::vector<PokemonBlueprint> team = {
+        {
+            "Squirtle",
+            100,
+            {"Tackle","Tackle","Tackle","Tackle"},
+            "Torrent",
+            "Random",
+            {31,31,31,31,31,31},
+            "Adamant",
+            "Leftovers",
+            {255,255,255,255,255,255},
+            "Squirty"
+        },
+        {
+            "Charmander",
+            99,
+            {"Pound","Tackle","Karate Chop","Surf"},
+            "Guts",
+            "Female",
+            {31,31,31,31,31,31},
+            "Docile",
+            "Leftovers",
+            {255,255,255,255,255,3},
+            "Kalameet"
+        },
+    };
+    std::string name = "Test Guy";
+    TrainerLevel level = TrainerLevel::TRAINER;
+
+    Trainer t(name, team, level);
+
+    size_t id = db.saveTrainer(t, 0, 0);
+
+    Trainer tdb = db.getTrainer(id);
+    Trainer tjs(t.toJSON());
+
+    std::cout << t.toJSON().dump() << '\n';
+    std::cout << tdb.toJSON().dump() << '\n';
+    std::cout << tjs.toJSON().dump() << '\n';
+
+    assert(t.equals(tdb));
+    assert(tjs.equals(tdb));
 }

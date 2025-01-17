@@ -9,6 +9,7 @@
 struct TournamentRequest{
     json requestJson;
     size_t id;
+    size_t user = 0;
 };
 
 class NPCS_API_Server{
@@ -30,9 +31,10 @@ private:
 
     std::string getToken(const std::string& username, const std::string& password);
     void waitForTournaments(uint32_t threadNumber);
-    size_t createTournamentRequest(const json& json);
+    size_t createTournamentRequest(const json& json, size_t user);
     void startTournamentThreads();
     int findTournamentPositionInQueue(size_t tournamentID);
+    void testTrainerSerialization();
 };
 
 std::string createAllDataResponse();

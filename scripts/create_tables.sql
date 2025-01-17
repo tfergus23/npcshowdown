@@ -36,7 +36,7 @@ create table tournament (
 );
 
 CREATE TABLE trainer (
-    id BIGINT PRIMARY KEY,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user bigint,
     FOREIGN KEY (user) 
         REFERENCES user(id),
@@ -44,13 +44,14 @@ CREATE TABLE trainer (
     FOREIGN KEY (tournament) 
         REFERENCES tournament(id),
     name varchar(32),
-    trainerLevel ENUM('First Move', 'Use Two Moves then Switch', 'Wild', 'Switcher', 'Trainer', 'Boss')
+    trainerLevel tinyint
 );
 
 CREATE TABLE pokemon (
     trainer bigint NOT NULL,
     FOREIGN KEY (trainer) 
         REFERENCES trainer(id),
+    position tinyint,
     species smallint,
     level tinyint unsigned,
     move1 smallint,
@@ -58,7 +59,7 @@ CREATE TABLE pokemon (
     move3 smallint,
     move4 smallint,
     abilityID smallint,
-    gender tinyint,
+    gender ENUM('Random', 'Male', 'Female'),
     nature tinyint,
     itemID smallint,
     nickname varchar(16),

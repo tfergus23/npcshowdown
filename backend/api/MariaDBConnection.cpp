@@ -2,6 +2,13 @@
 #include <iostream>
 #include <mutex>
 #include "api_utils.hpp"
+#include "sim/battle/TrainerLevel.hpp"
+#include "sim/battle/Battle.hpp"
+#include "sim/data/Species.hpp"
+#include "sim/data/Moves.hpp"
+#include "sim/data/Abilities.hpp"
+#include "sim/battle/Nature.hpp"
+
 
 // In-memory database for testing
 static std::vector<json> savedTrainers;
@@ -11,6 +18,8 @@ static std::vector<TournamentResults> savedTournaments;
 static std::mutex saveTrainerMutex;
 static std::mutex saveBattleMutex;
 static std::mutex saveTournamentMutex;
+
+static std::mutex mostRecentKeyMutex;
 
 MariaDBConnection::MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions) : maxUserSessions{maxUserSessions}{
     sql::Driver* driver= sql::mariadb::get_driver_instance();
@@ -22,10 +31,58 @@ MariaDBConnection::MariaDBConnection(const std::string& username, const std::str
     }
 }
 
-json MariaDBConnection::getTrainer(size_t id){
-    std::unique_lock lk(saveTrainerMutex);
-    auto result = savedTrainers.at(id);
-    return result;
+Trainer MariaDBConnection::getTrainer(size_t id){
+    std::unique_ptr<sql::PreparedStatement>  trainerStmnt(conn->prepareStatement("select trainerLevel, name from trainer where id = ?"));
+    trainerStmnt->setUInt64(1, id);
+    std::unique_ptr<sql::ResultSet> trainerResult(trainerStmnt->executeQuery());
+    if (!trainerResult->next()){
+        throw std::runtime_error("Trainer with id not found: " + std::to_string(id));
+    }
+
+    TrainerLevel trainerLevel =  (TrainerLevel)trainerResult->getInt(1);
+    std::string trainerName(trainerResult->getString(2));
+
+    std::unique_ptr<sql::PreparedStatement> teamStmnt(conn->prepareStatement("select * from pokemon where trainer = ? order by position asc"));
+    teamStmnt->setUInt64(1, id);
+
+    std::unique_ptr<sql::ResultSet> teamResults(teamStmnt->executeQuery());
+
+    std::vector<PokemonBlueprint> team;
+    while (teamResults->next())
+    {
+        team.emplace_back(
+            speciesFromID(teamResults->getShort(3))->name,
+            (uint8_t)teamResults->getUInt(4),
+            std::array<std::string,4>{
+                moveFromID(teamResults->getShort(5))->name,
+                moveFromID(teamResults->getShort(6))->name,
+                moveFromID(teamResults->getShort(7))->name,
+                moveFromID(teamResults->getShort(8))->name
+            },
+            abilityFromId(teamResults->getShort(9))->name,
+            std::string(teamResults->getString(10)), //Gender, this might not work
+            std::array<uint8_t,6>{
+                (uint8_t)teamResults->getUInt(14),
+                (uint8_t)teamResults->getUInt(15),
+                (uint8_t)teamResults->getUInt(16),
+                (uint8_t)teamResults->getUInt(17),
+                (uint8_t)teamResults->getUInt(18),
+                (uint8_t)teamResults->getUInt(19)
+            },
+            stringFromNature((Nature) teamResults->getInt(11)),
+            itemFromID(teamResults->getShort(12))->name,
+            std::array<uint8_t,6>{
+                (uint8_t)teamResults->getUInt(20),
+                (uint8_t)teamResults->getUInt(21),
+                (uint8_t)teamResults->getUInt(22),
+                (uint8_t)teamResults->getUInt(23),
+                (uint8_t)teamResults->getUInt(24),
+                (uint8_t)teamResults->getUInt(25),
+            },
+            std::string(teamResults->getString(13))
+        );
+    }
+    return Trainer(trainerName, team, trainerLevel);
 }
 BattleResult MariaDBConnection::getBattle(size_t id){
     std::unique_lock lk(saveBattleMutex);
@@ -45,35 +102,53 @@ size_t MariaDBConnection::createEmptyTournament(){
     return id;
 }
 
-size_t MariaDBConnection::saveTrainer(const json& json){
-    std::unique_lock lk(saveTrainerMutex);
-    savedTrainers.push_back(json);
-    size_t id = savedTrainers.size() - 1;
+size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_t tournament){
+    std::string sql = "insert into trainer (user, tournament, name, trainerLevel) values (?, ?, ?, ?)";
+    std::unique_ptr<sql::PreparedStatement> insertTrainerStmnt(conn->prepareStatement(sql));
+    if (user){
+        insertTrainerStmnt->setUInt64(1, user);
+    }
+    else{
+        insertTrainerStmnt->setNull(1, sql::Types::BIGINT);
+    }
+    
+    if (tournament){
+        insertTrainerStmnt->setInt64(2, tournament);
+    }
+    else{
+        insertTrainerStmnt->setNull(2, sql::Types::BIGINT);
+    }
+    insertTrainerStmnt->setString(3, trainer.trainerInfo.name);
+    insertTrainerStmnt->setInt(4, (int8_t)trainer.trainerInfo.trainerLevel);
+
+    size_t id = executeInsertAndGetID(insertTrainerStmnt.get());
+
+    saveTeam(trainer.teamBlueprint, id);
     return id;
 }
 
-size_t MariaDBConnection::saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed){
-    size_t t1ID = saveTrainer(trainer1.toJSON());
-    size_t t2ID = saveTrainer(trainer2.toJSON());
+size_t MariaDBConnection::saveBattle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, size_t user, size_t tournament){
+    size_t t1ID = saveTrainer(trainer1.toJSON(), user, tournament);
+    size_t t2ID = saveTrainer(trainer2.toJSON(), user, tournament);
     std::unique_lock lk(saveBattleMutex);
     savedBattles.push_back({t1ID, t2ID, seed, 0}); // The 'winner' field isn't used in this case
     size_t id = savedBattles.size() - 1;
     return id;
 }
 
-size_t MariaDBConnection::saveBattle(const BattleResult result){
+size_t MariaDBConnection::saveBattle(const BattleResult result, size_t user, size_t tournament){
     std::unique_lock lk(saveBattleMutex);
     savedBattles.push_back(result);
     size_t id = savedBattles.size() - 1;
     return id;
 }
 
-void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
+void MariaDBConnection::saveTournament(const Tournament& tournament, size_t user, size_t id){
     std::unique_lock lk(saveTournamentMutex);
     TournamentResults result = savedTournaments.at(id);
     std::vector<size_t> trainers;
     for (auto& trainer : tournament.trainers){
-        trainers.push_back(saveTrainer(trainer.toJSON()));
+        trainers.push_back(saveTrainer(trainer.toJSON(), user, id));
     }
     result.trainers = trainers;
 
@@ -85,7 +160,7 @@ void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
             bestWin.trainer1 = trainers[bestWin.trainer1];
             bestWin.trainer2 = trainers[bestWin.trainer2];
             bestWin.winner = trainers[bestWin.winner];
-            addedBattles[stat.bestWin] = saveBattle(bestWin);
+            addedBattles[stat.bestWin] = saveBattle(bestWin, user, id);
         }
         stat.bestWin = addedBattles[stat.bestWin];
         stats.push_back(stat);
@@ -215,4 +290,64 @@ void MariaDBConnection::updateTokenLastUsed(const std::string& username, const s
     updateStatement->setUInt64(1, userID);
     updateStatement->setString(2, token);
     delete updateStatement->executeQuery();
+}
+
+void MariaDBConnection::saveTeam(const std::vector<PokemonBlueprint>& team, size_t trainer){
+    std::string sql = "insert into pokemon (trainer, position, species, level, move1, move2, move3, move4, abilityID, gender, nature, itemID, nickname, hpIV, atkIV, defIV, spaIV, spdIV, speIV, hpEV, atkEV, defEV, spaEV, spdEV, speEV) values ";
+
+    for (const auto& poke : team){
+        sql += "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),";
+    }
+    sql.pop_back();
+
+    std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement(sql));
+
+    int32_t columnIndex = 1;
+    int32_t teamIndex = 0;
+    for (const auto& poke : team){
+        stmnt->setUInt64(columnIndex++, trainer);
+        stmnt->setInt(columnIndex++, teamIndex);
+        stmnt->setShort(columnIndex++, speciesFromString(poke.species)->id);
+        stmnt->setUInt(columnIndex++, poke.level);
+        stmnt->setShort(columnIndex++, moveFromString(poke.moves[0])->id);
+        stmnt->setShort(columnIndex++, moveFromString(poke.moves[1])->id);
+        stmnt->setShort(columnIndex++, moveFromString(poke.moves[2])->id);
+        stmnt->setShort(columnIndex++, moveFromString(poke.moves[3])->id);
+        stmnt->setShort(columnIndex++, abilityFromString(poke.abilityName)->id);
+        stmnt->setString(columnIndex++, poke.gender); //This might not work?
+        stmnt->setInt(columnIndex++, (int8_t) natureFromString(poke.nature));
+        stmnt->setShort(columnIndex++, itemFromString(poke.itemName)->id);
+        stmnt->setString(columnIndex++, poke.nickname);
+        stmnt->setUInt(columnIndex++, poke.ivs[0]);
+        stmnt->setUInt(columnIndex++, poke.ivs[1]);
+        stmnt->setUInt(columnIndex++, poke.ivs[2]);
+        stmnt->setUInt(columnIndex++, poke.ivs[3]);
+        stmnt->setUInt(columnIndex++, poke.ivs[4]);
+        stmnt->setUInt(columnIndex++, poke.ivs[5]);
+        stmnt->setUInt(columnIndex++, poke.evs[0]);
+        stmnt->setUInt(columnIndex++, poke.evs[1]);
+        stmnt->setUInt(columnIndex++, poke.evs[2]);
+        stmnt->setUInt(columnIndex++, poke.evs[3]);
+        stmnt->setUInt(columnIndex++, poke.evs[4]);
+        stmnt->setUInt(columnIndex++, poke.evs[5]);
+        teamIndex++;
+    }
+
+    executeInsert(stmnt.get());
+}
+
+size_t MariaDBConnection::executeInsertAndGetID(sql::PreparedStatement* stmnt){
+    std::unique_lock lk(mostRecentKeyMutex);
+    delete stmnt->executeQuery();
+
+    std::unique_ptr<sql::PreparedStatement> keyStmnt(conn->prepareStatement("select LAST_INSERT_ID()"));
+    std::unique_ptr<sql::ResultSet> results(keyStmnt->executeQuery());
+    results->next();
+    size_t key = results->getUInt64(1);
+    return key;
+}
+
+void MariaDBConnection::executeInsert(sql::PreparedStatement* stmnt){
+    std::unique_lock lk(mostRecentKeyMutex);
+    delete stmnt->executeQuery();
 }
