@@ -234,7 +234,7 @@ std::vector<size_t> MariaDBConnection::getUserTrainers(const std::string& userna
 
 bool MariaDBConnection::isTokenValid(const std::string& username, const std::string& token){
     size_t userID = userIdFromName(username);
-    
+    //TODO: This is dumb    
     std::unique_ptr<sql::PreparedStatement> tokenStatement(conn->prepareStatement("select token from user_session where user = ?"));
     tokenStatement->setUInt64(1, userID);
 
