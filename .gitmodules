@@ -7,6 +7,3 @@
 [submodule "backend/lib/tflib"]
 	path = backend/lib/tflib
 	url = git@github.com:tfergus23/tflib.git
-[submodule "backend/lib/base64"]
-	path = backend/lib/base64
-	url = git@github.com:tobiaslocker/base64.git
