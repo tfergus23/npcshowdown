@@ -89,7 +89,8 @@ export class CreateTournamentComponent {
     let request: TournamentRequest = {
       trainers: this.trainers,
       seed: this.seed == "" ? Math.round((Math.random() * 2147483647)).toString() : this.seed,
-      rounds: this.rounds
+      rounds: this.rounds,
+      user: this.app.loggedInUser ? this.app.loggedInUser.name : undefined
     };
     this.battleService.postTournamentRequest(request).subscribe((res) =>{
       if (!res.success){

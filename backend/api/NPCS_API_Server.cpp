@@ -65,7 +65,7 @@ std::string createAllDataResponse(){
 }
 
 size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user){
-    size_t id = db.createEmptyTournament();
+    size_t id = db.createEmptyTournament(user);
     TournamentRequest request{
         .requestJson = json,
         .id = id,
@@ -209,14 +209,26 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
     });
 
-    app.Add_Handler("GET", authorizedRoute, "/", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", authorizedRoute, "/", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
+
+        auto dbUser = db.getUserData(req.path_params.at("username"));
+
+        if (!dbUser.has_value()){
+            response["success"] = false;
+            response["message"] = "That user doesn't exist.";
+            res.Send(response.dump());
+            return;
+        }
+
+        auto& user = dbUser.value();
+
         json data;
-        data["id"] = 0;
-        data["name"] = req.path_params.at("username");
-        data["accountCreated"] = "2024-10-04";
-        data["lastPasswordChange"] = "2024-10-04";
-        data["email"] = "testperson@bmail.net";
+        data["id"] = user.id;
+        data["name"] = user.name;
+        data["accountCreated"] = user.accountCreated;
+        data["lastPasswordChange"] = user.lastPasswordChange;
+        data["email"] = user.email;
         response["success"] = true;
         response["message"] = "OK";
         response["data"] = data;
@@ -399,8 +411,9 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             response["data"] = data;
             res.Send(response.dump());
         }
-        catch (...){
+        catch (const std::exception& e){
             response["message"] = "Sorry, that tournament doesn't exist.";
+            std::cerr << e.what() << '\n';
             res.Set_Status(404);
             res.Send(response.dump());
             return;
@@ -472,7 +485,7 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         std::cout << "Done simulating tournament.\n";
         
         // Save tournament to DB
-        db.saveTournament(tournament, req.user, req.id);
+        db.saveTournament(tournament, req.id);
         idToThreadMutex.lock();
         idToThread.erase(req.id);
         idToThreadMutex.unlock();
