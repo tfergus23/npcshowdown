@@ -15,8 +15,8 @@ export class BattleService {
 
   constructor(private http: HttpClient) { }
 
-  public postBattleRequest(req: BattleRequest) : Observable<PostResponse>{
-    const response = this.http.post(AppSettings.API_URL + 'battle', req) as Observable<PostResponse>;
+  public postBattleRequest(req: BattleRequest) : Observable<GetResponse>{
+    const response = this.http.post(AppSettings.API_URL + 'battle', req) as Observable<GetResponse>;
     return response;
   }
 

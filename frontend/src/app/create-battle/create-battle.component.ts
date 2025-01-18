@@ -42,30 +42,20 @@ export class CreateBattleComponent {
       trainer1: this.trainers.get(0)!.getJSON(),
       trainer2: this.trainers.get(1)!.getJSON(),
       seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue
-    }).subscribe(response => {
-      this.showBattle(response.id);
-    },
-    (error) => {
-      this.showErrorResponse(error);
-    });
-  }
-
-  onBattleClose(){
-  }
-
-  showBattle(id: number){
-    this.battleService.getBattle(id).subscribe(
+    }).subscribe(
       (response) => {
         this.errors = [];
-        this.logView.battleID = id;
+        this.logView.battleID = 0;
         this.logView.log = response.data;
         this.logView.hidden = false;
         
       },
       (error) => {
         this.showErrorResponse(error);
-      }
-    )
+      });
+  }
+
+  onBattleClose(){
   }
 
   showErrorResponse(error: any){

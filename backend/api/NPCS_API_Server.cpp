@@ -131,8 +131,6 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
     }
 
-    testTrainerSerialization();
-
     queuedTournaments = new std::deque<TournamentRequest>[max_tournament_threads];
     queuedTournamentMutexes = new std::mutex[max_tournament_threads];
 
@@ -269,15 +267,13 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         // Simulate Battle
         Trainer trainer1(request["trainer1"]);
         Trainer trainer2(request["trainer2"]);
-        std::string seedString = request["seed"].get<std::string>();
-        size_t seed = seedFromString(seedString);
-
-        // Save the battle to the databasae
-        size_t id = db.saveBattle(trainer1, trainer2, seed, 0, 0);
+        size_t seed = seedFromString(request["seed"].get<std::string>());
+        Battle battle(trainer1, trainer2, seed);
+        battle.simulate();
 
         // Send back battle ID
         response["success"] = true;
-        response["id"] = id;
+        response["data"] = battle.battleLog;
         response["message"] = "OK";
         res.Send(response.dump());
     });
@@ -374,7 +370,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             return;
         }
         try{
-            const TournamentResults& tr = db.getTournament(tournamentID);
+            TournamentResults tr = db.getTournament(tournamentID);
             if (!tr.ready){
                 int position = findTournamentPositionInQueue(tournamentID);
                 if (position > 0){
