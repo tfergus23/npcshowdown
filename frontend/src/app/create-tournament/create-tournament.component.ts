@@ -50,6 +50,12 @@ export class CreateTournamentComponent {
       this.importingTrainers = true;
       for(let i = 0; i < files.length; i++){
         let file = files.item(i);
+        if (file?.size && file?.size > 30000){
+          if (i+1 == files!.length){
+            this.importingTrainers = false;
+          }
+          continue;
+        }
         file?.text().then(text => {
           try{
             let trainer: Trainer = JSON.parse(text) as Trainer;
@@ -60,6 +66,9 @@ export class CreateTournamentComponent {
           }
           catch(error){
             console.log(error); // TODO: Show this to the user somehow.
+            if (i+1 == files!.length){
+              this.importingTrainers = false;
+            }
           }
         });
 
