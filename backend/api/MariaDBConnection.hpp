@@ -29,7 +29,7 @@ public:
     std::vector<size_t> getUserTrainers(const std::string& username);
     size_t createEmptyTournament(size_t user);
     size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament);
-    size_t saveBattle(const BattleResult result, size_t tournament); //TODO: Why is this not a reference?
+    size_t saveBattle(const BattleResult& result, size_t tournament);
     void saveTournament(const Tournament& tournament, size_t id);
     bool isTokenValid(const std::string& username, const std::string& token);
     std::string createUserSession(const std::string& username, const std::string& password, std::string& outToken);

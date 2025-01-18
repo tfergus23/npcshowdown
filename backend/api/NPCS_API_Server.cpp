@@ -316,7 +316,18 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
         size_t userID = 0;
         if (request.contains("user")){
-            userID = db.userIdFromName(request["user"].get<std::string>());
+            std::string username = request["user"].get<std::string>();
+            std::string token = getTokenFromRequest(req);
+            if (db.isTokenValid(username, token)){
+                db.updateTokenLastUsed(username, token);
+                userID = db.userIdFromName(username);
+            }
+            else{
+                response["message"] = "Unauthorized: Invalid token.";
+                res.Set_Status(401);
+                res.Send(response.dump());
+                return;
+            }
         }
 
         size_t id  = createTournamentRequest(request, userID);

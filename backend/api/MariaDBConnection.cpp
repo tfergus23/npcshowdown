@@ -131,6 +131,8 @@ size_t MariaDBConnection::createEmptyTournament(size_t user){
 }
 
 size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_t tournament){
+    assert(!(user == 0 && tournament == 0));
+    assert(!(user && tournament));
     std::string sql = "insert into trainer (user, tournament, name, trainerLevel) values (?, ?, ?, ?)";
     std::unique_ptr<sql::PreparedStatement> insertTrainerStmnt(conn->prepareStatement(sql));
     if (user){
@@ -155,7 +157,7 @@ size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_
     return id;
 }
 
-size_t MariaDBConnection::saveBattle(const BattleResult result, size_t tournament){
+size_t MariaDBConnection::saveBattle(const BattleResult& result, size_t tournament){
     std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into battle (tournament, trainer1, trainer2, seed) values (?,?,?,?)"));
     insertStmnt->setUInt64(1, tournament);
     insertStmnt->setUInt64(2, result.trainer1);
@@ -173,7 +175,7 @@ void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
 
     std::vector<TrainerStats> stats;
     std::unordered_map<size_t,size_t> addedBattles;
-    for (auto stat : tournament.trainerStats){ //TODO: Why isn't this a reference?
+    for (auto stat : tournament.trainerStats){
         if (!addedBattles.contains(stat.bestWin) && stat.bestWin >= 0){
             BattleResult bestWin = tournament.results[stat.bestWin];
             bestWin.trainer1 = trainers[bestWin.trainer1];
