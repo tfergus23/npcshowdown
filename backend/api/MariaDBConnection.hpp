@@ -7,10 +7,13 @@
 
 using json = nlohmann::json;
 
+class MariaDBConnection;
 struct TournamentResults{
     std::vector<TrainerStats> trainerStats;
     std::vector<size_t> trainers;
     bool ready = false;
+
+    json toJSON(MariaDBConnection& db) const;
 };
 
 struct User{
@@ -23,10 +26,11 @@ struct User{
 
 class MariaDBConnection{
 public:
-    Trainer getTrainer(size_t id);
-    BattleResult getBattle(size_t id);
-    TournamentResults getTournament(size_t id);
-    std::vector<size_t> getUserTrainers(const std::string& username);
+    std::optional<Trainer> getTrainer(size_t id);
+    std::optional<BattleResult> getBattle(size_t id);
+    std::optional<TournamentResults> getTournament(size_t id);
+    bool tournamentExists(size_t id);
+    bool trainerExists(size_t id, size_t user);
     size_t createEmptyTournament(size_t user);
     size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament);
     size_t saveBattle(const BattleResult& result, size_t tournament);
@@ -37,6 +41,12 @@ public:
     void updateTokenLastUsed(const std::string& username, const std::string& token);
     size_t userIdFromName(const std::string& username);
     std::optional<User> getUserData(const std::string& username);
+    std::vector<Trainer> getUserTrainers(const std::string& username);
+    std::vector<TournamentResults> getUserTournaments(const std::string& username);
+    void saveTournamentToUser(size_t user, size_t tournament);
+    void deleteSavedTrainer(size_t user, size_t trainer);
+    void deleteSavedTournament(size_t user, size_t tournament);
+    void updateSavedTrainer(size_t trainer, size_t user, const Trainer& trainerData);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
 private:

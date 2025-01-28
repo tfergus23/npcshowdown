@@ -29,6 +29,7 @@ create index user_session_user_token_index on user_session(user,token);
 create table tournament (
     id bigint PRIMARY KEY AUTO_INCREMENT,
     dateRan DATE,
+    lastUnsave DATE,
     user bigint,
     FOREIGN KEY (user) 
         REFERENCES user(id) on delete cascade,
@@ -114,5 +115,16 @@ CREATE TABLE trainer_stats (
 );
 
 CREATE INDEX stats_tournament_index on trainer_stats(tournament);
+
+create table saved_tournaments (
+    user BIGINT not null,
+    FOREIGN KEY (user)
+        REFERENCES user(id) on delete cascade,
+    tournament bigint not null,
+    FOREIGN KEY (tournament)
+        REFERENCES tournament(id) on delete cascade
+);
+
+CREATE INDEX saved_tournaments_user_index on saved_tournaments(user);
 
 insert into user (name, password, accountCreated, lastPasswordChange, email) values ("admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", NOW(), NOW(), "guybro@dudemail.com");

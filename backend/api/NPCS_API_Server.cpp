@@ -173,7 +173,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             std::string problems = validateAuthRequestSchema(body);
             if (problems != ""){
                 if (problems[problems.size() - 1] == '\n'){
-                    problems = problems.substr(0,problems.size()-1);
+                    problems.pop_back();
                 }
                 response["message"] = problems;
                 response["success"] = false;
@@ -268,7 +268,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         std::string problems = validateBattleRequest(request);
         if (problems != ""){
             if (problems[problems.size() - 1] == '\n'){
-                problems = problems.substr(0,problems.size()-1);
+                problems.pop_back();
             }
             response["message"] = problems;
             res.Set_Status(400);
@@ -307,7 +307,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         std::string problems = validateTournamentRequest(request);
         if (problems != ""){
             if (problems[problems.size() - 1] == '\n'){
-                problems = problems.substr(0,problems.size()-1);
+                problems.pop_back();
             }
             response["message"] = problems;
             res.Set_Status(400);
@@ -354,10 +354,11 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         }
 
         // Look up battle in DB
-        try{
-            BattleResult br = db.getBattle(battleID);
-            Trainer trainer1(db.getTrainer(br.trainer1));
-            Trainer trainer2(db.getTrainer(br.trainer2));
+        auto brQueryResult = db.getBattle(battleID);
+        if (brQueryResult.has_value()){
+            const BattleResult& br = brQueryResult.value();
+            Trainer trainer1 = db.getTrainer(br.trainer1).value();
+            Trainer trainer2 = db.getTrainer(br.trainer2).value();
             size_t seed = br.seed;
             std::cout << "Creating battle...\n";
             Battle battle(trainer1, trainer2, seed);
@@ -370,7 +371,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             response["data"] = battle.battleLog;
             res.Send(response.dump());
         }
-        catch(...){
+        else{
             response["message"] = "Sorry, that battle doesn't exist.";
             res.Set_Status(404);
             res.Send(response.dump());
@@ -392,8 +393,9 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             res.Send(response.dump());
             return;
         }
-        try{
-            TournamentResults tr = db.getTournament(tournamentID);
+        auto trQueryResult = db.getTournament(tournamentID);
+        if (trQueryResult.has_value()){
+            const TournamentResults& tr = trQueryResult.value();
             if (!tr.ready){
                 int position = findTournamentPositionInQueue(tournamentID);
                 if (position > 0){
@@ -407,24 +409,12 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
                 res.Send(response.dump());
                 return;
             }
-            json data;
-            std::vector<json> trainerJSONs;
-            std::vector<json> statJSONs;
-            for(auto& stat : tr.trainerStats){
-                statJSONs.push_back(stat.toJSON());
-            }
-            for(auto trainer : tr.trainers){
-                trainerJSONs.push_back(db.getTrainer(trainer).toJSON());
-            }
-            data["trainers"] = trainerJSONs;
-            data["results"] = statJSONs;
             response["success"] = true;
-            response["data"] = data;
+            response["data"] = tr.toJSON(db);
             res.Send(response.dump());
         }
-        catch (const std::exception& e){
+        else {
             response["message"] = "Sorry, that tournament doesn't exist.";
-            std::cerr << e.what() << '\n';
             res.Set_Status(404);
             res.Send(response.dump());
             return;
@@ -436,21 +426,220 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
 
         //TODO: Do this better
-        std::vector<size_t> userTrainerIDs = db.getUserTrainers(username);
-        std::vector<json> userTrainers;
-        userTrainers.reserve(userTrainerIDs.size());
+        std::vector<Trainer> userTrainers = db.getUserTrainers(username);
+        std::vector<json> userTrainerJSONs;
+        userTrainerJSONs.reserve(userTrainers.size());
 
-        for(auto id : userTrainerIDs){
-            userTrainers.push_back(db.getTrainer(id).toJSON());
+        for(const auto& trainer : userTrainers){
+            userTrainers.push_back(trainer.toJSON());
         }
 
         json response;
         response["success"] = true;
         response["message"] = "OK";
-        response["data"] = userTrainers;
+        response["data"] = userTrainerJSONs;
 
         res.Send(response.dump());
-    });  
+    });
+
+    app.Add_Handler("POST", authorizedRoute, "/trainer", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        response["id"] = -1;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+        std::string problems = validateTrainerJSON(request, "");
+        if (problems != ""){
+            if (problems[problems.size() - 1] == '\n'){
+                problems.pop_back();
+            }
+            response["message"] = problems;
+            response["success"] = false;
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        size_t userID = db.userIdFromName(req.path_params.at("username"));
+
+        size_t trainerID = db.saveTrainer(request, userID, 0);
+        
+        response["message"] = "OK";
+        response["success"] = true;
+        response["id"] = trainerID;
+        res.Send(response.dump());
+        return;
+
+    });
+
+    app.Add_Handler("PUT", authorizedRoute, "/trainer/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        size_t trainerID = 0;
+        try{
+            trainerID = stoul(req.path_params.at("id"));
+        }
+        catch (...){
+            response["message"] = "Sorry, that trainer doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+        std::string problems = validateTrainerJSON(request, "");
+        if (problems != ""){
+            if (problems[problems.size() - 1] == '\n'){
+                problems.pop_back();
+            }
+            response["message"] = problems;
+            response["success"] = false;
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        size_t userID = db.userIdFromName(req.path_params.at("username"));
+
+        if (db.trainerExists(trainerID, userID)){
+            db.deleteSavedTrainer(userID, trainerID);
+            db.saveTrainer(request, userID, 0); //TODO: This changes the trainer ID. Maybe rework it to keep the old one?
+            response["success"] = true;
+            response["message"] = "OK";
+            res.Send(response.dump());
+            return;
+        }
+        else{
+            response["message"] = "Sorry, that trainer doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+    });
+
+    app.Add_Handler("DELETE", authorizedRoute, "/trainer/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        size_t trainerID = 0;
+        try{
+            trainerID = stoul(req.path_params.at("id"));
+        }
+        catch (...){
+            response["message"] = "Sorry, that trainer doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+        size_t userID = db.userIdFromName(req.path_params.at("username"));
+        if (db.trainerExists(trainerID, userID)){
+            db.deleteSavedTrainer(userID, trainerID);
+            response["success"] = true;
+            response["message"] = "OK";
+            res.Send(response.dump());
+            return;
+        }
+        else{
+            response["message"] = "Sorry, that trainer doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+    });
+
+    app.Add_Handler("GET", authorizedRoute, "/tournaments", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        std::vector<TournamentResults> savedTournaments = db.getUserTournaments(req.path_params.at("username"));
+        std::vector<json> savedTournamentJSONs;
+
+        for (auto& tournament : savedTournaments){
+            savedTournamentJSONs.push_back(tournament.toJSON(db));
+        }
+
+        json response;
+        response["success"] = true;
+        response["message"] = "OK";
+        response["data"] = savedTournamentJSONs;
+
+        res.Send(response.dump());
+    });
+
+    app.Add_Handler("POST", authorizedRoute, "/tournament", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        response["id"] = -1;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+        size_t tournamentID = request["tournamentID"].get<size_t>();
+        size_t userID = db.userIdFromName(req.path_params.at("username"));
+
+        if (db.tournamentExists(tournamentID)){
+            db.saveTournamentToUser(userID, tournamentID);
+            response["success"] = true;
+            response["message"] = "OK";
+            response["id"] = tournamentID;
+            res.Send(response.dump());
+            return;
+        }
+        else{
+            response["message"] = "Sorry, that tournament doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+    });
+
+    app.Add_Handler("DELETE", authorizedRoute, "/tournament/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        size_t tournamentID = 0;
+        try{
+            tournamentID = stoul(req.path_params.at("id"));
+        }
+        catch (...){
+            response["message"] = "Sorry, that tournament doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+        if (db.tournamentExists(tournamentID)){
+            size_t userID = db.userIdFromName(req.path_params.at("username"));
+            db.deleteSavedTournament(userID, tournamentID);
+            response["success"] = true;
+            response["message"] = "OK";
+            res.Send(response.dump());
+            return;
+        }
+        else{
+            response["message"] = "Sorry, that tournament doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+    });
+
 }
 
 int NPCS_API_Server::run(){
@@ -554,7 +743,7 @@ void NPCS_API_Server::testTrainerSerialization(){
 
     size_t id = db.saveTrainer(t, 0, 0);
 
-    Trainer tdb = db.getTrainer(id);
+    Trainer tdb = db.getTrainer(id).value();
     Trainer tjs(t.toJSON());
 
     std::cout << t.toJSON().dump() << '\n';
