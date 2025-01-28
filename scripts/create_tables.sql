@@ -4,7 +4,7 @@ use npcs_test;
 
 
 create table user (
-    id bigint PRIMARY KEY AUTO_INCREMENT,
+    id bigint unsigned PRIMARY KEY AUTO_INCREMENT,
     name varchar(16),
     password char(64),
     accountCreated DATE,
@@ -15,7 +15,7 @@ create table user (
 create unique index user_name_index on user (name);
 
 create table user_session(
-    user bigint not null,
+    user bigint unsigned not null,
     FOREIGN KEY (user) 
         REFERENCES user(id) on delete cascade,
     token char(32),
@@ -27,10 +27,10 @@ create index user_session_user_index on user_session(user);
 create index user_session_user_token_index on user_session(user,token);
 
 create table tournament (
-    id bigint PRIMARY KEY AUTO_INCREMENT,
+    id bigint unsigned PRIMARY KEY AUTO_INCREMENT,
     dateRan DATE,
     lastUnsave DATE,
-    user bigint,
+    user bigint unsigned,
     FOREIGN KEY (user) 
         REFERENCES user(id) on delete cascade,
     name varchar(32),
@@ -38,11 +38,11 @@ create table tournament (
 );
 
 CREATE TABLE trainer (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user bigint,
+    id BIGINT unsigned PRIMARY KEY AUTO_INCREMENT,
+    user bigint unsigned,
     FOREIGN KEY (user) 
         REFERENCES user(id) on delete cascade,
-    tournament bigint,
+    tournament bigint unsigned,
     FOREIGN KEY (tournament) 
         REFERENCES tournament(id) on delete cascade,
     name varchar(32),
@@ -50,7 +50,7 @@ CREATE TABLE trainer (
 );
 
 CREATE TABLE pokemon (
-    trainer bigint NOT NULL,
+    trainer bigint unsigned NOT NULL,
     FOREIGN KEY (trainer) 
         REFERENCES trainer(id) on delete cascade,
     position tinyint,
@@ -82,14 +82,14 @@ CREATE TABLE pokemon (
 CREATE INDEX pokemon_trainer_index on pokemon (trainer);
 
 CREATE TABLE battle (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    tournament bigint not null,
+    id BIGINT unsigned PRIMARY KEY AUTO_INCREMENT,
+    tournament bigint unsigned not null,
     FOREIGN KEY (tournament)
         REFERENCES tournament(id) on delete cascade,
-    trainer1 bigint not null,
+    trainer1 bigint unsigned not null,
     FOREIGN KEY (trainer1) 
         REFERENCES trainer(id) on delete cascade,
-    trainer2 bigint not null,
+    trainer2 bigint unsigned not null,
     FOREIGN KEY (trainer2) 
         REFERENCES trainer(id) on delete cascade,
     seed bigint unsigned not null
@@ -98,17 +98,17 @@ CREATE TABLE battle (
 CREATE INDEX battle_tournament_index on battle (tournament);
 
 CREATE TABLE trainer_stats (
-    tournament bigint not null,
+    tournament bigint unsigned not null,
     FOREIGN KEY (tournament) 
         REFERENCES tournament(id) on delete cascade,
     trainerIndex int not null,
-    trainer bigint not null,
+    trainer bigint unsigned not null,
     FOREIGN KEY (trainer)
         REFERENCES trainer(id) on delete cascade,
     elo int not null,
     wins int not null,
     losses int not null,
-    bestWin bigint,
+    bestWin bigint unsigned,
     FOREIGN KEY (bestWin)
         REFERENCES battle(id) on delete cascade,
     bestWinEloDiff int not null
@@ -117,10 +117,10 @@ CREATE TABLE trainer_stats (
 CREATE INDEX stats_tournament_index on trainer_stats(tournament);
 
 create table saved_tournaments (
-    user BIGINT not null,
+    user BIGINT unsigned not null,
     FOREIGN KEY (user)
         REFERENCES user(id) on delete cascade,
-    tournament bigint not null,
+    tournament bigint  unsigned not null,
     FOREIGN KEY (tournament)
         REFERENCES tournament(id) on delete cascade
 );
