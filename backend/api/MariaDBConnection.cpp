@@ -16,17 +16,16 @@ json TournamentResults::toJSON(MariaDBConnection& db) const{
     json data;
     std::vector<json> trainerJSONs;
     std::vector<json> statJSONs;
-    for(auto& stat : trainerStats){
+    for(int i = 0; i < trainerStats.size(); i++){
+        auto& stat = trainerStats[i];
         statJSONs.push_back(stat.toJSON());
+        statJSONs[statJSONs.size()-1]["id"] = trainers[i];
     }
-    for(auto trainer : trainers){
-        trainerJSONs.push_back(db.getTrainer(trainer).value().toJSON());
-    }
-    data["trainers"] = trainerJSONs;
     data["results"] = statJSONs;
     if (user != ""){
         data["user"] = user;
     }
+    data["id"] = id;
     return data;
 }
 
@@ -108,8 +107,7 @@ std::optional<BattleResult> MariaDBConnection::getBattle(size_t id){
     };
 }
 std::optional<TournamentResults> MariaDBConnection::getTournament(size_t id){
-    //TODO: This needs to include the username of the user that ran the tournament
-    std::unique_ptr<sql::PreparedStatement> doneStatement(conn->prepareStatement("select done,user from tournament where id = ?"));
+    std::unique_ptr<sql::PreparedStatement> doneStatement(conn->prepareStatement("select done,user,id from tournament where id = ?"));
     doneStatement->setUInt64(1, id);
     std::unique_ptr<sql::ResultSet> doneResults(doneStatement->executeQuery());
     if (doneResults->rowsCount() < 1){
@@ -130,6 +128,7 @@ std::optional<TournamentResults> MariaDBConnection::getTournament(size_t id){
         result.user = usernameResults->getString(1);
     }
 
+    result.id = doneResults->getUInt64(3);
     result.ready = doneResults->getBoolean(1);
     if (!result.ready){
         return result;
@@ -501,16 +500,38 @@ bool MariaDBConnection::tournamentExists(size_t id){
     return results->rowsCount();
 }
 
-bool MariaDBConnection::trainerExists(size_t id, size_t user){
-    std::string sql = "select id from trainer where id = ?";
-    if (user){
-        sql += "and user = ?";
-    }
+bool MariaDBConnection::userTrainerExists(size_t id, size_t user){
+    std::string sql = "select id from trainer where id = ? and user = ?";
     std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement(sql));
     selectStmnt->setUInt64(1, id);
-    if (user){
-        selectStmnt->setUInt64(2, user);
-    }
+    selectStmnt->setUInt64(2, user);
+
+    std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
+
+    return results->rowsCount();
+}
+
+int MariaDBConnection::userTrainerCount(size_t user){
+    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select count(*) from trainer where user = ? and tournament is null"));
+    selectStmnt->setUInt64(1, user);
+    std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
+    results->next();
+    return results->getInt(1);
+}
+
+bool MariaDBConnection::userHasTournamentSaved(size_t user, size_t tournament){
+    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select count(*) from saved_tournaments where user = ? and tournament = ?"));
+    selectStmnt->setUInt64(1, user);
+    selectStmnt->setUInt64(2, tournament);
+    std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
+    results->next();
+    return results->getInt(1);
+}
+
+bool MariaDBConnection::tournamentTrainerExists(size_t trainer){
+    std::string sql = "select id from trainer where id = ? and tournament is not null";
+    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement(sql));
+    selectStmnt->setUInt64(1, trainer);
 
     std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
 

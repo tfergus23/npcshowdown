@@ -5,6 +5,9 @@ import { BattleService } from '../battle.service';
 import DataLists from 'src/DataLists';
 import { DataService } from '../data.service';
 import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.component';
+import { AppComponent } from '../app.component';
+import { UserService } from '../user.service';
+import Trainer from 'src/Trainer';
 
 const SORT_ELO = 0;
 const SORT_WINS = 1;
@@ -26,7 +29,7 @@ export class ViewResultsComponent {
   interval: number = 0;
   @ViewChild('logView') logView!: BattleLogViewComponent;
 
-  constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService){
+  constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService){
     this.tournamentID = Number(route.snapshot.paramMap.get('id'));
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
@@ -39,7 +42,13 @@ export class ViewResultsComponent {
         (response) => {
           if (response.success){
             this.results = response.data;
+            this.results.trainers = new Array<Trainer>();
             clearInterval(this.interval);
+            for (let i = 0; i < this.results.results.length; i++){
+              this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
+                this.results.trainers[this.results.results[i].index] = res.data;
+              })
+            }
           }
           else{
             this.errorMessage = response.message;
@@ -56,7 +65,13 @@ export class ViewResultsComponent {
       (response) => {
         if (response.success){
           this.results = response.data;
+          this.results.trainers = new Array<Trainer>();
           clearInterval(this.interval);
+          for (let i = 0; i < this.results.results.length; i++){
+            this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
+              this.results.trainers[this.results.results[i].index] = res.data;
+            })
+          }
         }
         else{
           this.errorMessage = response.message;
@@ -68,6 +83,15 @@ export class ViewResultsComponent {
         }
         this.errorMessage = error.error.message;
     });
+  }
+
+  userHasTournament() : boolean{
+    for (let i = 0; i < this.app.loggedInUser!.tournaments.length; i++){
+      if (this.results.id == this.app.loggedInUser!.tournaments[i].id){
+        return true;
+      }
+    }
+    return false;
   }
 
   sortByELO(){
@@ -142,6 +166,21 @@ export class ViewResultsComponent {
   sortByTrainerNumber(){
     this.results.results.sort((r1,r2) =>{
       return r1.index - r2.index;
+    });
+  }
+
+  addTournamentToUser(){
+    this.userService.addTournamentToUserProfile(this.app.loggedInUser!.name, this.results.id).subscribe((res) =>{
+      this.app.setUserData(this.app.loggedInUser!.name);
+    },
+    (error) =>{
+      if (error.status == 401){
+        this.app.loggedInUser = undefined;
+        localStorage.removeItem('user');
+      }
+      else{
+        console.error(error);
+      }
     });
   }
 }

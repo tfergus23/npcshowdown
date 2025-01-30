@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { AppSettings } from 'src/AppSettings';
 import GetResponse from 'src/GetResponse';
 import { AppComponent } from './app.component';
+import Trainer from 'src/Trainer';
+import PostResponse from 'src/PostResponse';
 
 interface UserResponse{
   name: string,
@@ -32,6 +34,26 @@ export class UserService {
 
   logOut(username: string) : Observable<LogoutResponse>{
     const response = this.http.delete<LogoutResponse>(`${AppSettings.API_URL}user/${username}/logout`, {withCredentials: true});
+    return response;
+  }
+
+  addTrainerToUserProfile(username: string, trainer: Trainer) : Observable<PostResponse>{
+    const response = this.http.post<PostResponse>(`${AppSettings.API_URL}user/${username}/trainer`, trainer, {withCredentials: true});
+    return response;
+  }
+
+  addTournamentToUserProfile(username: string, tournamentID: number) : Observable<PostResponse>{
+    const response = this.http.post<PostResponse>(`${AppSettings.API_URL}user/${username}/tournament/${tournamentID}`, {}, {withCredentials: true});
+    return response;
+  }
+
+  getUserTrainers(username: string) : Observable<GetResponse>{
+    const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${username}/trainers`, {withCredentials: true});
+    return response;
+  }
+
+  getUserTournaments(username: string) : Observable<GetResponse>{
+    const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${username}/tournaments`, {withCredentials: true});
     return response;
   }
 }

@@ -12,6 +12,7 @@ struct TournamentResults{
     std::vector<TrainerStats> trainerStats;
     std::vector<size_t> trainers;
     std::string user = "";
+    size_t id = 0;
     bool ready = false;
 
     json toJSON(MariaDBConnection& db) const;
@@ -31,7 +32,7 @@ public:
     std::optional<BattleResult> getBattle(size_t id);
     std::optional<TournamentResults> getTournament(size_t id);
     bool tournamentExists(size_t id);
-    bool trainerExists(size_t id, size_t user);
+    bool userTrainerExists(size_t id, size_t user);
     size_t createEmptyTournament(size_t user);
     size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament);
     size_t saveBattle(const BattleResult& result, size_t tournament);
@@ -48,6 +49,9 @@ public:
     void deleteSavedTrainer(size_t user, size_t trainer);
     void deleteSavedTournament(size_t user, size_t tournament);
     void updateSavedTrainer(size_t trainer, size_t user, const Trainer& trainerData);
+    int userTrainerCount(size_t user);
+    bool userHasTournamentSaved(size_t user, size_t tournament);
+    bool tournamentTrainerExists(size_t trainer);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
 private:

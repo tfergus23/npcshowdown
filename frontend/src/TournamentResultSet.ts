@@ -6,11 +6,13 @@ export interface TournamentResult{
     wins: number,
     losses: number,
     bestWin: number,
-    bestWinEloDiff: number
+    bestWinEloDiff: number,
+    id: number
 }
 
 export interface TournamentResultSet{
     results: Array<TournamentResult>,
     trainers: Array<Trainer>,
-    user: string | undefined
+    user: string | undefined,
+    id: number
 }

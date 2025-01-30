@@ -21,4 +21,5 @@ class PokemonBlueprint{
         PokemonBlueprint(json json);
         json toJSON() const;
         bool equals(const PokemonBlueprint& that) const;
+        size_t hashCode() const;
 };

@@ -1,5 +1,8 @@
 <div class="container">
     <h1>Showing results for tournament #{{this.tournamentID}}</h1>
+    <div class="save-download-buttons">
+        <button *ngIf="this.results">Save To File</button><button *ngIf="this.results && this.app.loggedInUser && this.app.loggedInUser.tournaments" (click)="this.addTournamentToUser()" [disabled]="this.userHasTournament()">{{this.userHasTournament() ? "Saved ✓" : "Add to My Tournaments"}}</button>
+    </div>
     <p *ngIf="this.results && this.results.user">Submitted by user <span class="bold">{{this.results.user}}</span></p>
     <p *ngIf="this.results && !this.results.user">Submitted by an anonymous user</p>
     <p *ngIf="this.results">Click on the column headers to sort the list. You can also click the numbers in the best win column to view the battles.</p>

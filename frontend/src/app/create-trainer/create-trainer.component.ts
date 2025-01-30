@@ -10,6 +10,7 @@ import { CreateTournamentComponent } from '../create-tournament/create-tournamen
 import { TournamentResult } from 'src/TournamentResultSet';
 import { BattleService } from '../battle.service';
 import { ViewResultsComponent } from '../view-results/view-results.component';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-create-trainer',
@@ -32,7 +33,10 @@ export class CreateTrainerComponent {
 
   imageStrings: Array<string> = ["", "", "", "", "", ""];
 
-  constructor(public app: AppComponent, private battleService: BattleService){
+  addTrainertext: string = "Add to My Trainers";
+  trainerAdded: boolean = false;
+
+  constructor(public app: AppComponent, private battleService: BattleService, private userService: UserService){
   }
 
   public toggleCollapsible() {
@@ -190,4 +194,26 @@ export class CreateTrainerComponent {
     }
     this.trainer.team[this.selectedIndex].moves[index] = "";
   }
+
+  saveToUserProfile(){
+    if (this.app.loggedInUser)
+    this.userService.addTrainerToUserProfile(this.app.loggedInUser.name, this.trainer).subscribe((res) => {
+      console.log(`Success! Saved to ${res.id}`)
+      this.addTrainertext = "Added ✓";
+      this.trainerAdded = true;
+    }, 
+    (error) =>{
+      if (error.status == 409){
+        console.error(error.error.message);
+      }
+      else if (error.status == 401){
+        this.app.loggedInUser = undefined;
+        localStorage.removeItem('user');
+      }
+      else{
+        console.error(error);
+      }
+    });
+  }
 }
+

@@ -29,3 +29,13 @@
 .bold{
     font-weight: bolder;
 }
+
+.save-download-buttons button{
+    width: 200px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.save-download-buttons button:disabled{
+    background-color: rgb(0,255,0);
+}

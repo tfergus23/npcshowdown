@@ -16,7 +16,7 @@
         <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
         <button [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
         <button (click)="download();">Save to File</button>
-        <button [hidden]="this.app.loggedInUser == undefined">Save to My Trainers</button>
+        <button (click)="saveToUserProfile()" [disabled]="this.trainerAdded" [hidden]="this.app.loggedInUser == undefined">{{this.addTrainertext}}</button>
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">

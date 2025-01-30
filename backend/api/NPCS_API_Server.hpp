@@ -21,6 +21,7 @@ private:
     tfhttp::HTTP_Server app;
     tflib::ini_file config = tflib::ini_file("npcs_config.ini", false);
     int max_tournament_threads = 0;
+    int max_trainers_per_user = 0;
     std::deque<TournamentRequest>* queuedTournaments = nullptr;
     std::mutex* queuedTournamentMutexes = nullptr;
     int tournamentRequestThreadCounter = 0;

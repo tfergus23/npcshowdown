@@ -25,6 +25,24 @@ export class AppComponent {
       if (res.success){
         this.loggedInUser = res.data;
         localStorage.setItem('user', res.data.name);
+        this.userService.getUserTrainers(username).subscribe((res) =>{
+          if (res.success){
+            this.loggedInUser!.trainers = res.data;
+          }
+        },(error) => {
+          this.loggedInUser = undefined;
+          localStorage.removeItem('user');
+          console.error(error);
+        });
+        this.userService.getUserTournaments(username).subscribe((res) =>{
+          if (res.success){
+            this.loggedInUser!.tournaments = res.data;
+          }
+        },(error) => {
+          this.loggedInUser = undefined;
+          localStorage.removeItem('user');
+          console.error(error);
+        });
       }
     },(error) => {
       this.loggedInUser = undefined;

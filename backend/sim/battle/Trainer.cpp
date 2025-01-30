@@ -52,3 +52,21 @@ bool Trainer::equals(const Trainer& that) const{
     return trainerInfo.name == that.trainerInfo.name &&
            trainerInfo.trainerLevel == that.trainerInfo.trainerLevel;
 }
+
+size_t Trainer::hashCode() const{
+    size_t seed = 0;
+
+    // Combine the hashes of all the fields
+    auto hash_combine = [&seed](const auto& value) {
+        std::hash<std::decay_t<decltype(value)>> hash_fn;
+        seed ^= hash_fn(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2); //0x9e3779b9 is a 'golden ratio' constant
+    };
+
+    hash_combine(trainerInfo.name);
+    hash_combine((int8_t)trainerInfo.trainerLevel);
+    for (const auto& poke :  teamBlueprint){
+        hash_combine(poke.hashCode());
+    }
+
+    return seed;
+}

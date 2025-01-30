@@ -1,4 +1,5 @@
 #include "sim/battle/PokemonBlueprint.hpp"
+#include <functional>
 
 PokemonBlueprint::PokemonBlueprint() {}
 PokemonBlueprint::PokemonBlueprint(std::string species, uint8_t level, std::array<std::string,4> moves, std::string abilityName, std::string gender, std::array<uint8_t,6> ivs, std::string nature, std::string itemName, std::array<uint8_t,6> evs, std::string nickname) :
@@ -68,4 +69,37 @@ bool PokemonBlueprint::equals(const PokemonBlueprint& that) const{
            nature == that.nature &&
            itemName == that.itemName &&
            nickname == that.nickname;
+}
+
+size_t PokemonBlueprint::hashCode() const{
+    size_t seed = 0;
+
+    // Combine the hashes of all the fields
+    auto hash_combine = [&seed](const auto& value) {
+        std::hash<std::decay_t<decltype(value)>> hash_fn;
+        seed ^= hash_fn(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2); //0x9e3779b9 is a 'golden ratio' constant
+    };
+
+    hash_combine(species);
+    hash_combine(nickname);
+    hash_combine(level);
+    hash_combine(abilityName);
+    hash_combine(gender);
+    hash_combine(nature);
+    hash_combine(itemName);
+
+    // Handle arrays: hash each element
+    for (const auto& move : moves) {
+        hash_combine(move);  // Hash each string in the moves array
+    }
+
+    for (const auto& iv : ivs) {
+        hash_combine(iv);    // Hash each value in the ivs array
+    }
+
+    for (const auto& ev : evs) {
+        hash_combine(ev);    // Hash each value in the evs array
+    }
+
+    return seed;
 }

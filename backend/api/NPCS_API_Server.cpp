@@ -126,9 +126,14 @@ std::string getTokenFromRequest(const HTTP_Request& req){
 
 NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
     max_tournament_threads = getIntFromConfig(config, "tournament_threads");
+    max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
 
     if (max_tournament_threads < 1){
         throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
+    }
+
+    if (max_trainers_per_user < 1){
+        throw std::runtime_error("Invalid max trainers per user in ini file: " + config.get("max_trainers_per_user"));
     }
 
     queuedTournaments = new std::deque<TournamentRequest>[max_tournament_threads];
@@ -380,6 +385,35 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
     });
 
+    app.Add_Handler("GET", baseRoute, "/trainer/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        size_t trainerID = 0;
+        try{
+            trainerID = stoul(req.path_params.at("id"));
+        }
+        catch (...){
+            response["message"] = "Sorry, that trainer doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (!db.tournamentTrainerExists(trainerID)){
+            response["message"] = "Sorry, that trainer doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        auto trainerQueryResult = db.getTrainer(trainerID);
+
+        response["message"] = "OK";
+        response["success"] = true;
+        response["data"] = trainerQueryResult.value().toJSON();
+        res.Send(response.dump());
+    });
+
     app.Add_Handler("GET", baseRoute, "/tournament/:id", [=,this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
@@ -470,6 +504,15 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
         size_t userID = db.userIdFromName(req.path_params.at("username"));
 
+        if (db.userTrainerCount(userID) >= max_trainers_per_user){
+            response["message"] = "Your user already has the maximum number of allowed trainers (" + std::to_string(max_trainers_per_user) + "). Please delete some to make room.";
+            response["success"] = false;
+            response["id"] = -1;
+            res.Set_Status(409);
+            res.Send(response.dump());
+            return;
+        }
+
         size_t trainerID = db.saveTrainer(request, userID, 0);
         
         response["message"] = "OK";
@@ -517,7 +560,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
         size_t userID = db.userIdFromName(req.path_params.at("username"));
 
-        if (db.trainerExists(trainerID, userID)){
+        if (db.userTrainerExists(trainerID, userID)){
             db.deleteSavedTrainer(userID, trainerID);
             db.saveTrainer(request, userID, 0); //TODO: This changes the trainer ID. Maybe rework it to keep the old one?
             response["success"] = true;
@@ -547,7 +590,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
             return;
         }
         size_t userID = db.userIdFromName(req.path_params.at("username"));
-        if (db.trainerExists(trainerID, userID)){
+        if (db.userTrainerExists(trainerID, userID)){
             db.deleteSavedTrainer(userID, trainerID);
             response["success"] = true;
             response["message"] = "OK";
@@ -565,6 +608,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
     app.Add_Handler("GET", authorizedRoute, "/tournaments", [=, this](const HTTP_Request& req, HTTP_Response& res){
         std::vector<TournamentResults> savedTournaments = db.getUserTournaments(req.path_params.at("username"));
         std::vector<json> savedTournamentJSONs;
+        savedTournamentJSONs.reserve(savedTournaments.size());
 
         for (auto& tournament : savedTournaments){
             savedTournamentJSONs.push_back(tournament.toJSON(db));
@@ -578,22 +622,30 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         res.Send(response.dump());
     });
 
-    app.Add_Handler("POST", authorizedRoute, "/tournament", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", authorizedRoute, "/tournament/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
-        json request;
-        try {
-            request = json::parse(req.body);
+
+        size_t tournamentID = 0;
+        try{
+            tournamentID = stoul(req.path_params.at("id"));
         }
-        catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
+        catch (...){
+            response["message"] = "Sorry, that tournament doesn't exist.";
+            res.Set_Status(404);
             res.Send(response.dump());
             return;
         }
-        size_t tournamentID = request["tournamentID"].get<size_t>();
+
         size_t userID = db.userIdFromName(req.path_params.at("username"));
+
+        if (db.userHasTournamentSaved(userID, tournamentID)){
+            response["message"] = "That tournament is already saved to your profile.";
+            res.Set_Status(409);
+            res.Send(response.dump());
+            return;
+        }
 
         if (db.tournamentExists(tournamentID)){
             db.saveTournamentToUser(userID, tournamentID);
@@ -741,7 +793,7 @@ void NPCS_API_Server::testTrainerSerialization(){
 
     Trainer t(name, team, level);
 
-    size_t id = db.saveTrainer(t, 0, 0);
+    size_t id = db.saveTrainer(t, 1, 0);
 
     Trainer tdb = db.getTrainer(id).value();
     Trainer tjs(t.toJSON());
@@ -750,6 +802,7 @@ void NPCS_API_Server::testTrainerSerialization(){
     std::cout << tdb.toJSON().dump() << '\n';
     std::cout << tjs.toJSON().dump() << '\n';
 
-    assert(t.equals(tdb));
-    assert(tjs.equals(tdb));
+    assert(t.hashCode() == tdb.hashCode());
+    assert(tjs.hashCode() == tdb.hashCode());
+    std::cout << t.hashCode() << '\n';
 }

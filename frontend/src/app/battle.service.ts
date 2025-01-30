@@ -34,4 +34,10 @@ export class BattleService {
     const response = this.http.get(AppSettings.API_URL + `tournament/${id}`) as Observable<GetResponse>;
     return response;
   }
+
+  public getTournamentTrainer(id: number) : Observable<GetResponse>{
+    const response = this.http.get(AppSettings.API_URL + `trainer/${id}`) as Observable<GetResponse>;
+    return response;
+  }
+
 }

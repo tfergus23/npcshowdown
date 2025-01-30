@@ -26,5 +26,6 @@ public:
 
     json toJSON() const;
     bool equals(const Trainer& that) const;
+    size_t hashCode() const;
 private:
 };
