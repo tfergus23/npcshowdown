@@ -85,6 +85,13 @@ export class CreateTournamentComponent {
     return matches * this.rounds;
   }
 
+  redirectToTournamentResults(tournamentID: number){
+    let a = document.createElement("a");
+    a.href = `/results/${tournamentID}`;
+    a.click();
+    a.remove();
+  }
+
   submitTournament(){
     let request: TournamentRequest = {
       trainers: this.trainers,
@@ -93,14 +100,19 @@ export class CreateTournamentComponent {
       user: this.app.loggedInUser ? this.app.loggedInUser.name : undefined
     };
     this.battleService.postTournamentRequest(request).subscribe((res) =>{
-      if (!res.success){
-        console.log(res.message);
-        return;
+      this.redirectToTournamentResults(res.id);
+    }, (error) =>{
+      if (error.status == 401){
+        request.user = undefined;
+        this.app.loggedInUser = undefined;
+        localStorage.removeItem('user');
+        this.battleService.postTournamentRequest(request).subscribe((res) =>{
+          this.redirectToTournamentResults(res.id);
+        });
       }
-      let a = document.createElement("a");
-      a.href = `/results/${res.id}`;
-      a.click();
-      a.remove();
+      else{
+        console.error(error);
+      }
     });
   }
 }

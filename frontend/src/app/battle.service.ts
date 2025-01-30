@@ -21,7 +21,7 @@ export class BattleService {
   }
 
   public postTournamentRequest(req: TournamentRequest) : Observable<PostResponse> {
-    const response = this.http.post(AppSettings.API_URL + 'tournament', req) as Observable<PostResponse>;
+    const response = this.http.post(AppSettings.API_URL + 'tournament', req, {withCredentials: true}) as Observable<PostResponse>;
     return response;
   }
 

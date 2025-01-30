@@ -11,5 +11,6 @@ export interface TournamentResult{
 
 export interface TournamentResultSet{
     results: Array<TournamentResult>,
-    trainers: Array<Trainer>
+    trainers: Array<Trainer>,
+    user: string | undefined
 }

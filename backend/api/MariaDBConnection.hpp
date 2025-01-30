@@ -11,6 +11,7 @@ class MariaDBConnection;
 struct TournamentResults{
     std::vector<TrainerStats> trainerStats;
     std::vector<size_t> trainers;
+    std::string user = "";
     bool ready = false;
 
     json toJSON(MariaDBConnection& db) const;

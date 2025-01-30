@@ -24,3 +24,8 @@
 .result-column-headers button:hover{
     background: rgb(105, 105, 106);
 }
+
+
+.bold{
+    font-weight: bolder;
+}
