@@ -27,9 +27,10 @@ export class CreateTrainerComponent {
   @Input() readOnly: boolean = false;
   @Input() resultsView: ViewResultsComponent | undefined;
 
-  clickedBestWin: boolean = false; // Dumb workaround for putting a button in a button
   selectedIndex: number = 0;
   collapseButtonSymbol: string = "▶";
+
+  imageStrings: Array<string> = ["", "", "", "", "", ""];
 
   constructor(public app: AppComponent, private battleService: BattleService){
   }
@@ -39,6 +40,10 @@ export class CreateTrainerComponent {
     this.collapseButtonSymbol = (this.collapsed) ? "▶" : "▼";
   }
 
+  ngOnInit(){
+    this.setImagePathStrings();
+  }
+
   ngAfterViewInit(){
     this.collapseButtonSymbol = (this.collapsed) ? "▶" : "▼";
   }
@@ -46,6 +51,7 @@ export class CreateTrainerComponent {
   addPoke(){
     this.trainer.team.push(createEmptyPokemon());
     this.selectedIndex = this.trainer.team.length-1;
+    this.setImagePathStrings();
   }
 
   removePoke(index: number){
@@ -53,6 +59,7 @@ export class CreateTrainerComponent {
     if (this.selectedIndex == this.trainer.team.length){
       this.selectedIndex--;
     }
+    this.setImagePathStrings();
   }
 
   getJSON() : Trainer{
@@ -61,6 +68,7 @@ export class CreateTrainerComponent {
 
   setFromJson(json: Trainer){
     this.trainer = json;
+    this.setImagePathStrings();
   }
 
   loadFromFile(){
@@ -107,7 +115,6 @@ export class CreateTrainerComponent {
   }
 
   showBattle(battleID: number){
-    this.clickedBestWin = true;
     this.battleService.getBattle(battleID).subscribe((response) => {
       this.resultsView!.logView.battleID = battleID;
       this.resultsView!.logView.log = response.data;
@@ -119,6 +126,12 @@ export class CreateTrainerComponent {
     this.selectedIndex = newIndex;
   }
 
+  setImagePathStrings(){
+    for (let i = 0; i < this.trainer.team.length; i++){
+      this.imageStrings[i] = this.trainer.team[i].species.toLowerCase();
+    }
+  }
+
 
   autoCompleteSpecies(event: FocusEvent){
     if (this.readOnly) return;
@@ -128,10 +141,12 @@ export class CreateTrainerComponent {
       let inputVal = input.value.toLowerCase().trim();
       if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
         this.trainer.team[this.selectedIndex].species = dataList.options[i].value;
+        this.setImagePathStrings();
         return;
       }
     }
     this.trainer.team[this.selectedIndex].species = "";
+    this.setImagePathStrings();
   }
 
   autoCompleteItem(event: FocusEvent){

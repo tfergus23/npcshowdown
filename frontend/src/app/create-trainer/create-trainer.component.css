@@ -249,3 +249,11 @@ input, select{
     color: aqua;
     background-color: rgb(78, 78, 79);
 }
+
+img{
+    display: inline-block;
+    vertical-align: middle;
+}
+.pokemon-label{
+    vertical-align: middle;
+}
