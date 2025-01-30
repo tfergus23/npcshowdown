@@ -17,7 +17,6 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
         throw std::runtime_error("Need at least " + std::to_string(MIN_TOURNAMENT_TRAINERS) + " trainers for a tournament, " + std::to_string(trainers.size()) + " supplied.");
     }
 
-    this->trainers.reserve(trainers.size());
     this->results.reserve(totalBattles);
 
     int id = 0;
