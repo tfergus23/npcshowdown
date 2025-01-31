@@ -86,12 +86,8 @@ CREATE TABLE battle (
     tournament bigint unsigned not null,
     FOREIGN KEY (tournament)
         REFERENCES tournament(id) on delete cascade,
-    trainer1 bigint unsigned not null,
-    FOREIGN KEY (trainer1) 
-        REFERENCES trainer(id) on delete cascade,
-    trainer2 bigint unsigned not null,
-    FOREIGN KEY (trainer2) 
-        REFERENCES trainer(id) on delete cascade,
+    trainer1 int not null,
+    trainer2 int not null,
     seed bigint unsigned not null
 );
 

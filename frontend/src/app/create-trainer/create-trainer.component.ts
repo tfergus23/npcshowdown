@@ -118,9 +118,9 @@ export class CreateTrainerComponent {
     this.parent?.removeTrainer(this.trainerNum);
   }
 
-  showBattle(battleID: number){
-    this.battleService.getBattle(battleID).subscribe((response) => {
-      this.resultsView!.logView.battleID = battleID;
+  showBattle(trainer1: Trainer, trainer2: Trainer, seed: string){
+    this.battleService.postBattleRequest({trainer1, trainer2, seed}).subscribe((response) => {
+      this.resultsView!.logView.battleID = 0;
       this.resultsView!.logView.log = response.data;
       this.resultsView!.logView.hidden = false;
     });

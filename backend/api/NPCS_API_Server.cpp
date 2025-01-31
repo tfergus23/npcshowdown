@@ -344,47 +344,6 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", baseRoute, "/battle/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
-        json response;
-        response["success"] = false;
-        size_t battleID = 0;
-        try{
-            battleID = stoul(req.path_params.at("id"));
-        }
-        catch (...){
-            response["message"] = "Sorry, that battle doesn't exist.";
-            res.Set_Status(404);
-            res.Send(response.dump());
-            return;
-        }
-
-        // Look up battle in DB
-        auto brQueryResult = db.getBattle(battleID);
-        if (brQueryResult.has_value()){
-            const BattleResult& br = brQueryResult.value();
-            Trainer trainer1 = db.getTrainer(br.trainer1).value();
-            Trainer trainer2 = db.getTrainer(br.trainer2).value();
-            size_t seed = br.seed;
-            std::cout << "Creating battle...\n";
-            Battle battle(trainer1, trainer2, seed);
-            std::cout << "Done.\nSimulating battle...\n";
-            battle.simulate();
-            std::cout << "Done.\n";
-
-            response["success"] = true;
-            response["message"] = "OK";
-            response["data"] = battle.battleLog;
-            res.Send(response.dump());
-        }
-        else{
-            response["message"] = "Sorry, that battle doesn't exist.";
-            res.Set_Status(404);
-            res.Send(response.dump());
-            return;
-        }
-
-    });
-
     app.Add_Handler("GET", baseRoute, "/trainer/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;

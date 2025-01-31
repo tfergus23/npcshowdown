@@ -10,7 +10,7 @@ json TrainerStats::toJSON() const{
     json["elo"] = elo;
     json["wins"] = wins;
     json["losses"] = losses;
-    json["bestWin"] = bestWin;
+    json["bestWin"] = bestWin.toJSON();
     json["bestWinEloDiff"] = bestWinEloDiff;
     json["index"] = trainerIndex;
 

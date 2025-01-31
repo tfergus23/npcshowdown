@@ -29,13 +29,11 @@ struct User{
 class MariaDBConnection{
 public:
     std::optional<Trainer> getTrainer(size_t id);
-    std::optional<BattleResult> getBattle(size_t id);
     std::optional<TournamentResults> getTournament(size_t id);
     bool tournamentExists(size_t id);
     bool userTrainerExists(size_t id, size_t user);
     size_t createEmptyTournament(size_t user);
     size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament);
-    size_t saveBattle(const BattleResult& result, size_t tournament);
     void saveTournament(const Tournament& tournament, size_t id);
     bool isTokenValid(const std::string& username, const std::string& token);
     std::string createUserSession(const std::string& username, const std::string& password, std::string& outToken);
@@ -61,4 +59,6 @@ private:
     size_t executeInsertAndGetID(sql::PreparedStatement* stmnt);
     void executeInsert(sql::PreparedStatement* stmnt);
     void deleteOldUserSessions(size_t userID);
+    std::optional<BattleResult> getBattle(size_t id);
+    size_t saveBattle(int trainer1, int trainer2, size_t seed, size_t tournament);
 };

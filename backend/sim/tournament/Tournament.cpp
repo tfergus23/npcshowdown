@@ -30,43 +30,41 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
     }
 }
 
-BattleResult determineBattleResult(Battle& battle, int trainer1, int trainer2){
+int determineBattleWinner(Battle& battle, int trainer1, int trainer2){
     if (!battle.isBattleOver){
         throw std::runtime_error("Can't determine result if the battle was never ran.\nBattle:\n\n" + battle.battleLog);
     }
-
-    BattleResult result;
     if (battle.isDraw){
-        result.winner = -1; //TODO: Is this a problem?
+        return -1; //TODO: Is this a problem?
     }
     else{
-        result.winner = battle.winner == battle.getPlayer1() ? trainer1 : trainer2;
+        return battle.winner == battle.getPlayer1() ? trainer1 : trainer2;
     }
-    result.trainer1 = trainer1;
-    result.trainer2 = trainer2;
-    result.seed = battle.getSeed();
-    return result;
 }
 
 void Tournament::run(){
     for(int i = 0; i < rounds; i++){
         for(int j = 0; j < trainers.size(); j++){
             for(int k = j + 1; k < trainers.size(); k++){
-                Battle battle(trainers[this->trainerStats[j].trainerIndex], trainers[this->trainerStats[k].trainerIndex], randInt(0, INT_MAX));
+                int trainer1 = j;
+                int trainer2 = k;
+                assert(this->trainerStats[j].trainerIndex == j);
+                assert(this->trainerStats[k].trainerIndex == k);
+                Battle battle(trainers[trainer1], trainers[trainer2], randInt(0, INT_MAX));
                 battle.doLogging = false;
                 battle.simulate();
-                BattleResult result = determineBattleResult(battle, j, k);
-                results.push_back(result);
+                int winner = determineBattleWinner(battle, j, k);
+                results.push_back({j, k, battle.getSeed(), winner});
                 if (!battle.isDraw){
-                    int loserIndex = result.winner == result.trainer1 ? result.trainer2 : result.trainer1;
-                    TrainerStats& winner = trainerStats[result.winner];
-                    TrainerStats& loser = trainerStats[loserIndex];
-                    winner.wins++;
-                    loser.losses++;
-                    winner.opponentRatingsTotal += loser.elo;
-                    loser.opponentRatingsTotal += winner.elo;
-                    winner.calculateElo();
-                    loser.calculateElo();
+                    int loserIndex = winner == trainer1 ? trainer2 : trainer1;
+                    TrainerStats& winnerStats = trainerStats[winner];
+                    TrainerStats& loserStats = trainerStats[loserIndex];
+                    winnerStats.wins++;
+                    loserStats.losses++;
+                    winnerStats.opponentRatingsTotal += loserStats.elo;
+                    loserStats.opponentRatingsTotal += winnerStats.elo;
+                    winnerStats.calculateElo();
+                    loserStats.calculateElo();
                 }
             }
         }
@@ -90,7 +88,7 @@ void Tournament::setBiggestUpsets(){
 
         int winnerEloDiff = loser.elo - winner.elo;
         if (winnerEloDiff > winner.bestWinEloDiff){
-            winner.bestWin = i;
+            winner.bestWin = result;
             winner.bestWinEloDiff = winnerEloDiff;
         }
     }

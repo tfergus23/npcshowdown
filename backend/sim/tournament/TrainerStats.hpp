@@ -1,5 +1,6 @@
 #pragma once
 #include "sim/battle/Battle.hpp"
+#include "sim/tournament/BattleResult.hpp"
 #include "limits.h"
 
 class TrainerStats{
@@ -10,7 +11,8 @@ public:
     int losses = 0;
     int opponentRatingsTotal = 0;
     //Index into the results list
-    ssize_t bestWin = -1;
+    //ssize_t bestWin = -1;
+    BattleResult bestWin;
     int bestWinEloDiff = INT_MIN;
 
     void calculateElo();

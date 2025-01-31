@@ -9,7 +9,7 @@
         <label *ngIf="this.results">{{this.results!.wins}}</label>
         <label *ngIf="this.results">{{this.results!.losses}}</label>
         <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
-        <button *ngIf="this.results" (click)="showBattle(this.results.bestWin)" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
+        <button *ngIf="this.results" (click)="showBattle(this.resultsView!.results!.trainers[this.results.bestWin.trainer1Index], this.resultsView!.results!.trainers[this.results.bestWin.trainer2Index], this.results.bestWin.seed.toString())" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
         <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
     </div>
     <div class="import-save-buttons" [hidden]="this.collapsed">

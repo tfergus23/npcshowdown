@@ -101,8 +101,8 @@ std::optional<BattleResult> MariaDBConnection::getBattle(size_t id){
     }
     results->next();
     return BattleResult{
-        results->getUInt64(1),
-        results->getUInt64(2),
+        results->getInt(1),
+        results->getInt(2),
         results->getUInt64(3)
     };
 }
@@ -145,7 +145,7 @@ std::optional<TournamentResults> MariaDBConnection::getTournament(size_t id){
         stats.elo = results->getInt(3);
         stats.wins = results->getInt(4);
         stats.losses = results->getInt(5);
-        stats.bestWin = results->getInt64(6);
+        stats.bestWin = getBattle(results->getInt64(6)).value();
         stats.bestWinEloDiff = results->getInt(7);
         result.trainers.push_back(results->getUInt64(2));
     }
@@ -193,12 +193,12 @@ size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_
     return id;
 }
 
-size_t MariaDBConnection::saveBattle(const BattleResult& result, size_t tournament){
+size_t MariaDBConnection::saveBattle(int trainer1, int trainer2, size_t seed, size_t tournament){
     std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into battle (tournament, trainer1, trainer2, seed) values (?,?,?,?)"));
     insertStmnt->setUInt64(1, tournament);
-    insertStmnt->setUInt64(2, result.trainer1);
-    insertStmnt->setUInt64(3, result.trainer2);
-    insertStmnt->setUInt64(4, result.seed);
+    insertStmnt->setInt(2, trainer1);
+    insertStmnt->setInt(3, trainer2);
+    insertStmnt->setUInt64(4, seed);
 
     return executeInsertAndGetID(insertStmnt.get());
 }
@@ -209,6 +209,7 @@ void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
         trainers.push_back(saveTrainer(trainer, 0, id));
     }
 
+    /*
     std::vector<TrainerStats> stats;
     std::unordered_map<size_t,size_t> addedBattles;
     for (auto stat : tournament.trainerStats){
@@ -222,10 +223,11 @@ void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
         stat.bestWin = addedBattles[stat.bestWin];
         stats.push_back(stat);
     }
+    */
 
     std::string sql = "insert into trainer_stats (tournament, trainerIndex, trainer, elo, wins, losses, bestWin, bestWinEloDiff) values";
 
-    for (auto& stat : stats){
+    for (auto& stat : tournament.trainerStats){
         sql += "(?,?,?,?,?,?,?,?),";
     }
     sql.pop_back();
@@ -233,14 +235,14 @@ void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
     std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement(sql));
 
     int32_t columnIndex = 1;
-    for(auto& stat: stats){
+    for(auto& stat: tournament.trainerStats){
         insertStmnt->setUInt64(columnIndex++, id);
         insertStmnt->setInt(columnIndex++, stat.trainerIndex);
         insertStmnt->setUInt64(columnIndex++, trainers[stat.trainerIndex]);
         insertStmnt->setInt(columnIndex++, stat.elo);
         insertStmnt->setInt(columnIndex++, stat.wins);
         insertStmnt->setInt(columnIndex++, stat.losses);
-        insertStmnt->setUInt64(columnIndex++, stat.bestWin);
+        insertStmnt->setUInt64(columnIndex++, saveBattle(stat.bestWin.trainer1,stat.bestWin.trainer2, stat.bestWin.seed, id));
         insertStmnt->setInt(columnIndex++, stat.bestWinEloDiff);
     }
 
