@@ -45,7 +45,6 @@ export class CreateBattleComponent {
     }).subscribe(
       (response) => {
         this.errors = [];
-        this.logView.battleID = 0;
         this.logView.log = response.data;
         this.logView.hidden = false;
         

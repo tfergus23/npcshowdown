@@ -1,12 +1,11 @@
 <div *ngIf="!this.hidden" class="container">
     <div class="header">
-        <h1>Battle #{{this.battleID}}</h1>
+        <h1>Battle Log</h1>
         <button (click)="this.hide()">X</button>
     </div>
     <hr>
     <textarea readonly="true">{{this.log}}</textarea>
     <div class="save-buttons">
-        <button>Save Battle to File</button>
-        <button>Save Battle to My Results</button>
+        <button (click)="this.download()">Save Battle to File</button>
     </div>
 </div>

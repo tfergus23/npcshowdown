@@ -6,7 +6,6 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./battle-log-view.component.css']
 })
 export class BattleLogViewComponent {
-  @Input() battleID?: number;
   @Input() log?: string = "Test log!\nThis should be on a new line!";
   hidden: boolean = true;
   onHide?: Function;
@@ -17,5 +16,17 @@ export class BattleLogViewComponent {
       console.log("calling onhide");
       this.onHide();
     }
+  }
+
+  download(){
+    const newBlob = new Blob([this.log!], {
+      type: 'application/json'
+    });
+    const data = window.URL.createObjectURL(newBlob);
+    const link = document.createElement("a");
+    link.href = data;
+    link.download = `battle_log.txt`; 
+    link.click();
+    link.remove();
   }
 }

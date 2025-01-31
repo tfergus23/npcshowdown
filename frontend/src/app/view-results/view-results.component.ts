@@ -183,4 +183,16 @@ export class ViewResultsComponent {
       }
     });
   }
+    download(){
+      const json = this.results;
+      const newBlob = new Blob([JSON.stringify(json, null, 4)], {
+        type: 'application/json'
+      });
+      const data = window.URL.createObjectURL(newBlob);
+      const link = document.createElement("a");
+      link.href = data;
+      link.download = `tournament${this.results.id}.json`; 
+      link.click();
+      link.remove();
+    }
 }

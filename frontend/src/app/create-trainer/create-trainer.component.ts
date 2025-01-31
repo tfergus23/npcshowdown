@@ -120,7 +120,6 @@ export class CreateTrainerComponent {
 
   showBattle(trainer1: Trainer, trainer2: Trainer, seed: string){
     this.battleService.postBattleRequest({trainer1, trainer2, seed}).subscribe((response) => {
-      this.resultsView!.logView.battleID = 0;
       this.resultsView!.logView.log = response.data;
       this.resultsView!.logView.hidden = false;
     });
