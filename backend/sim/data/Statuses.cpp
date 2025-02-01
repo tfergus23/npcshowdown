@@ -2,6 +2,7 @@
 #include "sim/battle/Battle.hpp"
 #include "sim/data/Moves.hpp"
 #include "sim/utils/move_functions.hpp"
+#include "sim/data/Abilities.hpp"
 
 const Status* STATUS_NONE = nullptr;
 
@@ -19,7 +20,7 @@ const Status STATUS_BURN{
     .observer{
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         auto* mu = e.moveUse;
-        if (mu->user == subject && mu->move->damageCategory == DamageCategory::PHYSICAL && mu->move != &MOVE_CONFUSION_HIT && !mu->guts){
+        if (mu->user == subject && mu->move->damageCategory == DamageCategory::PHYSICAL && mu->move != &MOVE_CONFUSION_HIT && !(mu->user->getCurrentAbility() == &ABILITY_GUTS && !mu->user->abilityState.suppressed)){
             mu->damageMod *= 0.5f;
         }
     },
