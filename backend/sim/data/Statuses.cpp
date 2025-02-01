@@ -20,7 +20,7 @@ const Status STATUS_BURN{
     .observer{
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         auto* mu = e.moveUse;
-        if (mu->user == subject && mu->move->damageCategory == DamageCategory::PHYSICAL && mu->move != &MOVE_CONFUSION_HIT && !(mu->user->getCurrentAbility() == &ABILITY_GUTS && !mu->user->abilityState.suppressed)){
+        if (mu->user == subject && mu->move->damageCategory == DamageCategory::PHYSICAL && mu->move != &MOVE_CONFUSION_HIT && !mu->user->hasAbilityUnsuppressed(&ABILITY_GUTS)){
             mu->damageMod *= 0.5f;
         }
     },

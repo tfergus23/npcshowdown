@@ -79,6 +79,7 @@ class Pokemon{
         void disableMove(const Move* move);
         void enableMove(const Move* move);
         bool isMoveDisabled(const Move* move);
+        bool hasAbilityUnsuppressed(const Ability* ability);
 
     private:
         void onSwitch();

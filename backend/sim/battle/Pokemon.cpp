@@ -312,3 +312,7 @@ void Pokemon::releaseTrap(){
 bool Pokemon::isTrapped(){
     return m_Trappers;
 }
+
+bool Pokemon::hasAbilityUnsuppressed(const Ability* ability){
+    return this->m_CurrentAbility == ability && !this->abilityState.suppressed;
+}
