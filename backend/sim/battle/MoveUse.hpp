@@ -31,6 +31,7 @@ public:
     bool isSelfDestruct = false;
     bool cantSelfDestruct = false;
     bool sun = false;
+    bool guts = false;
 
     MoveUse();
     MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle);

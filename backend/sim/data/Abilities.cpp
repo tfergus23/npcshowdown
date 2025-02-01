@@ -7,6 +7,13 @@
 using json = nlohmann::json;
 
 const Ability ABILITY_GUTS = {
+    .observer{
+    .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
+        if (subject == args.moveUse->user){
+            args.moveUse->guts = true;
+        }
+    },
+    },
     .name = "Guts",
     .modifySubjectStat = [](Stat stat,int statVal,Pokemon* subject){
         if (stat == Stat::ATTACK && subject->getStatus() != STATUS_NONE){

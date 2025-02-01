@@ -221,7 +221,7 @@ bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
         return false;
     }
     moveUse->target->applyStatus(status);
-    moveUse->battle->log(status->was);
+    moveUse->battle->log(moveUse->target->nickname + status->was);
     return true;
 }
 bool applyEffect(const Effect* effect, MoveUse* moveUse) {

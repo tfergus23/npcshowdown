@@ -165,12 +165,55 @@ const Move MOVE_SURF = {
     }
 };
 
+const Move MOVE_FLAMETHROWER = {
+    .name = "Flamethrower",
+    .type = Type::FIRE,
+    .damageCategory = DamageCategory::SPECIAL,
+    .power = 90,
+    .accuracy = 100,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::BURN,
+    .secondaryEffectChance = 10.0f,
+    .secondaryEffectValue = -1,
+    .id = 53,
+
+    //Flags
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        dealDirectDamage(myMove);
+        applySecondaryEffect(myMove, opponentMove);
+    }
+};
+
+const Move MOVE_CONFUSION_HIT = {
+    .name = "",
+    .type = Type::NONE,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 40,
+    .accuracy = 0,
+    .maxPP = 0,
+    .priority = 8,
+    .critRatio = 0,
+    .targetType = TargetType::SELF,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 0
+};
+
 const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
     {MOVE_TACKLE.name, &MOVE_TACKLE},
     {MOVE_KARATE_CHOP.name, &MOVE_KARATE_CHOP},
-    {MOVE_SURF.name, &MOVE_SURF}
+    {MOVE_SURF.name, &MOVE_SURF},
+    {MOVE_FLAMETHROWER.name, &MOVE_FLAMETHROWER}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

@@ -1,4 +1,7 @@
 #include "sim/data/Statuses.hpp"
+#include "sim/battle/Battle.hpp"
+#include "sim/data/Moves.hpp"
+#include "sim/utils/move_functions.hpp"
 
 const Status* STATUS_NONE = nullptr;
 
@@ -12,7 +15,21 @@ const Status STATUS_POISON;
 const Status STATUS_SLEEP;
 
 //TODO
-const Status STATUS_BURN;
+const Status STATUS_BURN{
+    .observer{
+    .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        auto* mu = e.moveUse;
+        if (mu->user == subject && mu->move->damageCategory == DamageCategory::PHYSICAL && mu->move != &MOVE_CONFUSION_HIT && !mu->guts){
+            mu->damageMod *= 0.5f;
+        }
+    },
+    .endOfTurn  = [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        battle->log(subject->nickname + " was hurt by it's burn!");
+        dealResidualPercentDamage(6.25f, subject,battle);
+    }
+    },
+    .was = " was burned!"
+};
 
 //TODO
 const Status STATUS_FROZEN;
