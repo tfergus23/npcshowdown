@@ -225,11 +225,9 @@ void mapIDToMove(int16_t id, const Move* move){
 }
 
 void mapIDsToMoves(){
-    mapIDToMove(MOVE_NONE.id, &MOVE_NONE);
-    mapIDToMove(MOVE_POUND.id, &MOVE_POUND);
-    mapIDToMove(MOVE_TACKLE.id, &MOVE_TACKLE);
-    mapIDToMove(MOVE_KARATE_CHOP.id, &MOVE_KARATE_CHOP);
-    mapIDToMove(MOVE_SURF.id, &MOVE_SURF);
+    for (const auto& [str, move] : moves){
+        mapIDToMove(move->id, move);
+    }
 }
 const Move* moveFromID(int16_t id){
     return idToMoveMap.at(id);

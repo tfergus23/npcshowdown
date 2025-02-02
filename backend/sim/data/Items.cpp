@@ -36,8 +36,9 @@ void mapIDToItem(int16_t id, const Item* item){
 }
 
 void mapIDsToItems(){
-    mapIDToItem(ITEM_NONE.id, &ITEM_NONE);
-    mapIDToItem(ITEM_LEFTOVERS.id, &ITEM_LEFTOVERS);
+    for (const auto& [str, item] : items){
+        mapIDToItem(item->id, item);
+    }
 }
 const Item* itemFromID(int16_t id){
     return idToItemMap.at(id);

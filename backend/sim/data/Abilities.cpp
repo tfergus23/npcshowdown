@@ -51,8 +51,9 @@ void mapIDToAbility(int16_t id, const Ability* ability){
 }
 
 void mapIDsToAbilities(){
-    mapIDToAbility(ABILITY_GUTS.id, &ABILITY_GUTS);
-    mapIDToAbility(ABILITY_TORRENT.id, &ABILITY_TORRENT);
+    for (const auto& [str, ab] : abilities){
+        mapIDToAbility(ab->id, ab);
+    }
 }
 
 const Ability* abilityFromString(const std::string& abilityName){
