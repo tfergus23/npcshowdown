@@ -36,6 +36,7 @@ void mapIDToItem(int16_t id, const Item* item){
 }
 
 void mapIDsToItems(){
+    assert(items.size() > 0);
     for (const auto& [str, item] : items){
         mapIDToItem(item->id, item);
     }

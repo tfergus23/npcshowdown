@@ -51,7 +51,7 @@ class Pokemon{
         std::array<const Move*,4> currentMoves;
         int currentHealth;
         bool isDead = false;
-        char boosts[8] = {0};
+        int8_t boosts[8] = {0};
         int triggeredCritMod = 0;
         int choiceLockedMove = -1;
         int storedPP = -1; //Meant to be used by mimic to store the PP the user had before using Mimic

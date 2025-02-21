@@ -225,6 +225,7 @@ void mapIDToMove(int16_t id, const Move* move){
 }
 
 void mapIDsToMoves(){
+    assert(moves.size() > 0);
     for (const auto& [str, move] : moves){
         mapIDToMove(move->id, move);
     }

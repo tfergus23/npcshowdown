@@ -23,6 +23,7 @@ import { UserTrainersComponent } from './user-trainers/user-trainers.component';
 import { UserTournamentsComponent } from './user-tournaments/user-tournaments.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { UserViewComponent } from './user-view/user-view.component';
+import { UserTrainersModalComponent } from './user-trainers-modal/user-trainers-modal.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { UserViewComponent } from './user-view/user-view.component';
     UserTournamentsComponent,
     SignUpComponent,
     UserViewComponent,
+    UserTrainersModalComponent,
   ],
   imports: [
     BrowserModule,

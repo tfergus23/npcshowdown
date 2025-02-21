@@ -267,7 +267,7 @@ void Pokemon::onSwitch(){
     triggeredCritMod = 0;
     currentType[0] = species->type[0];
     currentType[1] = species->type[1];
-    currentMoves = baseMoves; // Does this copy the whole array? IDK
+    currentMoves = baseMoves;
     if (storedPP >= 0 && storedPPIndex >= 0){
         currentPP[storedPPIndex] = storedPP;
         storedPP = -1;

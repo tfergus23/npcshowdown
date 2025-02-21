@@ -51,6 +51,7 @@ void mapIDToAbility(int16_t id, const Ability* ability){
 }
 
 void mapIDsToAbilities(){
+    assert(abilities.size() > 0);
     for (const auto& [str, ab] : abilities){
         mapIDToAbility(ab->id, ab);
     }
