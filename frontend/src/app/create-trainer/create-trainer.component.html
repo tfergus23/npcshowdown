@@ -1,5 +1,5 @@
 <div class="create-trainer-container">
-    <app-user-trainers-modal></app-user-trainers-modal>
+    <app-user-trainers-modal #trainerModal></app-user-trainers-modal>
     <div class="collapsible-header">
         <button class="collapse-button" (click)="toggleCollapsible()">{{this.collapseButtonSymbol}}</button>
         <label style="text-align: left;">Trainer {{trainerNum}}</label>
@@ -12,12 +12,14 @@
         <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
         <button *ngIf="this.results" (click)="showBattle(this.resultsView!.results!.trainers[this.results.bestWin.trainer1Index], this.resultsView!.results!.trainers[this.results.bestWin.trainer2Index], this.results.bestWin.seed.toString())" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
         <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
+        <button (click)="this.edit()" [hidden]="!this.showEditButton || this.editing" class="edit-trainer-button"><img src="../../assets/edit.svg" width="30" height="30"></button>
+        <button (click)="this.updateTrainer()" [hidden]="!this.showEditButton || !this.editing" class="update-trainer-button">Done</button>
     </div>
     <div class="import-save-buttons" [hidden]="this.collapsed">
         <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
-        <button [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
+        <button (click)="this.showTrainerModal()" [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
         <button (click)="download();">Save to File</button>
-        <button (click)="saveToUserProfile()" [disabled]="this.trainerAdded" [hidden]="this.app.loggedInUser == undefined">{{this.addTrainertext}}</button>
+        <button (click)="saveToUserProfile()" [disabled]="this.trainerAdded" [hidden]="this.app.loggedInUser == undefined || !this.showAddMyTrainers">{{this.addTrainertext}}</button>
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">
@@ -37,7 +39,7 @@
                 <span class="pokemon-label"><img *ngIf="this.imageStrings[i] != ''" src="../../assets/box_sprites/{{this.imageStrings[i]}}.png" width="34" height="28"> {{pokemon.nickname === "" ? pokemon.species : pokemon.nickname}}</span>
                 <button *ngIf="!this.readOnly" (click)="this.removePoke(i)" class="remove-pokemon-btn">X</button>
             </button>
-            <button (click)="this.addPoke()" [hidden]="this.trainer.team.length > 5" class="add-pokemon-btn">
+            <button (click)="this.addPoke()" [hidden]="this.trainer.team.length > 5 || this.readOnly" class="add-pokemon-btn">
                 + Add Pokemon
             </button>
         </div>

@@ -20,6 +20,11 @@ interface LogoutResponse{
   message: string
 }
 
+interface PutResponse{
+  success: boolean,
+  message: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -54,6 +59,11 @@ export class UserService {
 
   getUserTournaments(username: string) : Observable<GetResponse>{
     const response = this.http.get<GetResponse>(`${AppSettings.API_URL}user/${username}/tournaments`, {withCredentials: true});
+    return response;
+  }
+
+  updateUserTrainer(username: string, trainer: Trainer) : Observable<PutResponse>{
+    const response = this.http.put<PutResponse>(`${AppSettings.API_URL}user/${username}/trainer/${trainer.id!}`, trainer, {withCredentials: true});
     return response;
   }
 }

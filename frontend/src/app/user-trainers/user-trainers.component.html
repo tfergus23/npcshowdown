@@ -1,1 +1,10 @@
-<p>user-trainers works!</p>
+<app-data-lists [dataLists]="this.dataLists"></app-data-lists>
+<div class="profile-content">
+    <h2>{{this.app.loggedInUser?.name}}'s Trainers</h2>
+    <hr>
+    <div class="details">
+        <div *ngFor="let trainer of this.trainers; index as i" class="tournament-trainer-list">
+            <app-create-trainer [dataLists]="this.dataLists" [showEditButton]="true" [showAddMyTrainers]="false" [readOnly]="true" [collapsed]="true"  [readOnly]="true" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
+        </div>
+    </div>
+</div>

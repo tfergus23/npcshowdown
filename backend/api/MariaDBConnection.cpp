@@ -166,10 +166,24 @@ size_t MariaDBConnection::createEmptyTournament(size_t user){
     return executeInsertAndGetID(insertStmnt.get());
 }
 
-size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_t tournament){
+size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_t tournament, size_t existingID){
     assert(!(user == 0 && tournament == 0));
     assert(!(user && tournament));
-    std::string sql = "insert into trainer (user, tournament, name, trainerLevel) values (?, ?, ?, ?)";
+    std::string sql = "insert into trainer (user, tournament, name, trainerLevel";
+    if (existingID){
+        sql += ", id)";
+    }
+    else{
+        sql += ")";
+    }
+    sql += " values (?, ?, ?, ?";
+    if (existingID){
+        sql += ", ?)";
+    }
+    else{
+        sql += ")";
+    }
+
     std::unique_ptr<sql::PreparedStatement> insertTrainerStmnt(conn->prepareStatement(sql));
     if (user){
         insertTrainerStmnt->setUInt64(1, user);
@@ -186,8 +200,17 @@ size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_
     }
     insertTrainerStmnt->setString(3, trainer.trainerInfo.name);
     insertTrainerStmnt->setInt(4, (int8_t)trainer.trainerInfo.trainerLevel);
+    if (existingID){
+        insertTrainerStmnt->setUInt64(5, existingID);
+    }
 
-    size_t id = executeInsertAndGetID(insertTrainerStmnt.get());
+    size_t id = existingID; 
+    if (existingID){
+        executeInsert(insertTrainerStmnt.get());
+    }
+    else{
+        id = executeInsertAndGetID(insertTrainerStmnt.get());
+    }
 
     saveTeam(trainer.teamBlueprint, id);
     return id;
@@ -440,17 +463,18 @@ std::optional<User> MariaDBConnection::getUserData(const std::string& username){
     return result;
 }
 
-std::vector<Trainer> MariaDBConnection::getUserTrainers(const std::string& username){
+std::vector<json> MariaDBConnection::getUserTrainers(const std::string& username){
     size_t userID = userIdFromName(username);
     std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select id from trainer where user = ?"));
     selectStmnt->setUInt64(1, userID);
 
     std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
     
-    std::vector<Trainer> result;
+    std::vector<json> result;
     result.reserve(results->rowsCount());
     while (results->next()){
-        result.push_back(getTrainer(results->getUInt64(1)).value());
+        result.push_back(getTrainer(results->getUInt64(1)).value().toJSON());
+        result[result.size()-1]["id"] = results->getUInt64(1);
     }
     return result;
 }

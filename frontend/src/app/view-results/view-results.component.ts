@@ -28,12 +28,25 @@ export class ViewResultsComponent {
   errorMessage: string = "";
   interval: number = 0;
   @ViewChild('logView') logView!: BattleLogViewComponent;
+  userTournaments: Array<TournamentResultSet> | undefined;
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService){
     this.tournamentID = Number(route.snapshot.paramMap.get('id'));
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
+    });
+
+    if (localStorage.getItem('user') != null)
+    this.userService.getUserTournaments(localStorage.getItem('user') as string).subscribe((res) => {
+      if (res.success){
+        this.userTournaments = res.data;
+      }
+    }, 
+    (error) =>{
+      this.app.loggedInUser = undefined;
+      localStorage.removeItem('user');
+      console.error(error);
     });
 
     // Using two arrow functions here because apparently functions have their own 'this'
@@ -86,8 +99,8 @@ export class ViewResultsComponent {
   }
 
   userHasTournament() : boolean{
-    for (let i = 0; i < this.app.loggedInUser!.tournaments.length; i++){
-      if (this.results.id == this.app.loggedInUser!.tournaments[i].id){
+    for (let i = 0; i < this.userTournaments!.length; i++){
+      if (this.results.id == this.userTournaments![i].id){
         return true;
       }
     }

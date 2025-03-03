@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AppComponent } from '../app.component';
+import Trainer from 'src/Trainer';
 
 @Component({
   selector: 'app-user-trainers-modal',
@@ -7,6 +9,14 @@ import { Component } from '@angular/core';
 })
 export class UserTrainersModalComponent {
 
+  trainers: Array<Trainer> | undefined;
+
+  constructor(public app: AppComponent){
+    
+  }
+
+
+   
   hidden: boolean = true;
 
   close(e: MouseEvent){

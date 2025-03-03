@@ -1,0 +1,27 @@
+.profile-content{
+    overflow: hidden;
+}
+
+h2 {
+    margin-left: 50px;
+}
+
+button{
+    height: 50px;
+    width: 150px;
+}
+
+
+.details{
+    margin-left: 5%;
+    margin-top: 30px;
+}
+
+.details div{
+    margin-bottom: 70px;
+}
+
+
+.bold{
+    font-weight: bold;
+}

@@ -1,5 +1,5 @@
-<div [hidden]="this.hidden" id="modal-background" (click)="this.close($event)"  class="modal-background">
-    <div [hidden]="this.hidden" class="modal-content" (click)="$event.stopPropagation()">
+<div [hidden]="this.hidden" id="modal-background" (mousedown)="this.close($event)"   class="modal-background">
+    <div [hidden]="this.hidden" class="modal-content" (mousedown)="$event.stopPropagation()">
         <h2>My Trainers</h2>
         <p>Trainers here</p>
     </div>

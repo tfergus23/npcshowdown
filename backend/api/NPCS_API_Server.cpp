@@ -417,15 +417,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
     app.Add_Handler("GET", authorizedRoute, "/trainers", [=, this](const HTTP_Request& req, HTTP_Response& res){
         std::string username = req.path_params.at("username");
 
-
-        //TODO: Do this better
-        std::vector<Trainer> userTrainers = db.getUserTrainers(username);
-        std::vector<json> userTrainerJSONs;
-        userTrainerJSONs.reserve(userTrainers.size());
-
-        for(const auto& trainer : userTrainers){
-            userTrainers.push_back(trainer.toJSON());
-        }
+        std::vector<json> userTrainerJSONs = db.getUserTrainers(username);
 
         json response;
         response["success"] = true;
@@ -521,7 +513,7 @@ NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
 
         if (db.userTrainerExists(trainerID, userID)){
             db.deleteSavedTrainer(userID, trainerID);
-            db.saveTrainer(request, userID, 0); //TODO: This changes the trainer ID. Maybe rework it to keep the old one?
+            db.saveTrainer(request, userID, 0, trainerID);
             response["success"] = true;
             response["message"] = "OK";
             res.Send(response.dump());

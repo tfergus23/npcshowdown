@@ -108,7 +108,8 @@ input, select{
 .remove-trainer-button{
     width: 30px;
     height: 30px;
-    
+    margin-left: auto;
+    margin-right: 5px;
 }
 
 .tournament-results{
@@ -180,6 +181,32 @@ input, select{
     margin-top: 17px;
     width: 58.33px;
     text-align: center;
+}
+
+.edit-trainer-button{
+    margin-left: auto;
+    margin-right: 5px;
+    background-color: rgba(0,0,0,0);
+    width: 30px;
+    height: 30px;
+}
+
+.edit-trainer-button:hover{
+    background-color: rgb(78, 78, 79);
+}
+
+.edit-trainer-button img{
+    filter: invert(99%) sepia(9%) saturate(230%) hue-rotate(193deg) brightness(115%) contrast(100%);
+    width: 20px;
+    height: 20px;
+}
+
+.update-trainer-button{
+    margin-left: auto;
+    margin-right: 10px;
+    background-color: rgb(0, 255, 30);
+    width: fit-content;
+    height: 30px;
 }
 
 @media (max-width: 930px){

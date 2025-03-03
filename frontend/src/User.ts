@@ -7,7 +7,5 @@ export default interface User{
     token: string;
     accountCreated: string,
     lastPasswordChange: string,
-    email: string,
-    trainers: Array<Trainer>,
-    tournaments: Array<TournamentResultSet>
+    email: string
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild, ViewContainerRef } from '@angular/core';
+import { BootstrapOptions, Component, ElementRef, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { CreateBattleComponent } from '../create-battle/create-battle.component';
 import DataLists from 'src/DataLists';
 import { CreatePokemonComponent } from '../create-pokemon/create-pokemon.component';
@@ -11,6 +11,7 @@ import { TournamentResult } from 'src/TournamentResultSet';
 import { BattleService } from '../battle.service';
 import { ViewResultsComponent } from '../view-results/view-results.component';
 import { UserService } from '../user.service';
+import { UserTrainersModalComponent } from '../user-trainers-modal/user-trainers-modal.component';
 
 @Component({
   selector: 'app-create-trainer',
@@ -27,6 +28,10 @@ export class CreateTrainerComponent {
   @Input() results: TournamentResult | undefined = undefined;
   @Input() readOnly: boolean = false;
   @Input() resultsView: ViewResultsComponent | undefined;
+  @Input() showAddMyTrainers: boolean = true;
+  @Input() showEditButton: boolean = false;
+
+  editing: boolean = false;
 
   selectedIndex: number = 0;
   collapseButtonSymbol: string = "▶";
@@ -35,6 +40,10 @@ export class CreateTrainerComponent {
 
   addTrainertext: string = "Add to My Trainers";
   trainerAdded: boolean = false;
+
+  @ViewChild('trainerModal') trainerModal!: UserTrainersModalComponent;
+
+  
 
   constructor(public app: AppComponent, private battleService: BattleService, private userService: UserService){
   }
@@ -46,6 +55,17 @@ export class CreateTrainerComponent {
 
   ngOnInit(){
     this.setImagePathStrings();
+    //TODO: make this work when route changes
+    /*
+    window.addEventListener('beforeunload', (event) => {
+      if (this.editing) {
+        event.preventDefault();
+        event.returnValue = ''; // Required for some older browsers
+        return '';
+      }
+      return '';
+    });
+    */
   }
 
   ngAfterViewInit(){
@@ -212,6 +232,35 @@ export class CreateTrainerComponent {
       else{
         console.error(error);
       }
+    });
+  }
+
+  showTrainerModal(){
+    this.trainerModal.hidden = false;
+  }
+
+  edit(){
+    this.readOnly = false;
+    this.editing = true;
+    this.collapsed = false;
+  }
+
+  updateTrainer(){
+    this.userService.updateUserTrainer(localStorage.getItem('user') as string, this.trainer).subscribe((res) =>{
+      if (res.success){
+        this.readOnly = true;
+        this.editing = false;
+      }
+      else{
+        console.error(res.message);
+      }
+    },
+    (error) => {
+      if (error.status == 401){
+        this.app.loggedInUser = undefined;
+        localStorage.removeItem("user");
+      }
+      console.error(error);
     });
   }
 }

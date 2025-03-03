@@ -33,7 +33,7 @@ public:
     bool tournamentExists(size_t id);
     bool userTrainerExists(size_t id, size_t user);
     size_t createEmptyTournament(size_t user);
-    size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament);
+    size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament, size_t existingID=0);
     void saveTournament(const Tournament& tournament, size_t id);
     bool isTokenValid(const std::string& username, const std::string& token);
     std::string createUserSession(const std::string& username, const std::string& password, std::string& outToken);
@@ -41,7 +41,7 @@ public:
     void updateTokenLastUsed(const std::string& username, const std::string& token);
     size_t userIdFromName(const std::string& username);
     std::optional<User> getUserData(const std::string& username);
-    std::vector<Trainer> getUserTrainers(const std::string& username);
+    std::vector<json> getUserTrainers(const std::string& username);
     std::vector<TournamentResults> getUserTournaments(const std::string& username);
     void saveTournamentToUser(size_t user, size_t tournament);
     void deleteSavedTrainer(size_t user, size_t trainer);
