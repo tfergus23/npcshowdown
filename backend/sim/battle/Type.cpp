@@ -11,3 +11,5 @@ static_assert(typeMatchup(Type::FIGHTING, Type::NORMAL, Type::GHOST) == NOT_EFFE
 static_assert(typeMatchup(Type::FIGHTING, Type::NORMAL, Type::NONE) == SUPER_EFFECTIVE);
 static_assert(typeMatchup(Type::ELECTRIC, Type::WATER, Type::FLYING) == ULTRA_EFFECTIVE);
 static_assert(typeMatchup(Type::NORMAL, Type::ROCK, Type::STEEL) == BARELY_EFFECTIVE);
+static_assert(typeMatchup(Type::DARK, Type::STEEL, Type::NONE) == NORMAL_EFFECTIVE);
+static_assert(typeMatchup(Type::GHOST, Type::STEEL, Type::NONE) == NORMAL_EFFECTIVE);
