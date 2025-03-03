@@ -41,9 +41,9 @@ battle{battle}
     currentType[1] = species->type[1];
 
     battle->assertTrue(m_CurrentAbility != nullptr, nickname + " doesn't have an ability.");
-    m_CurrentAbility->observer.initializeState(&abilityState);
+    m_CurrentAbility->observer.initialize(this, battle,&abilityState);
     if (m_CurrentItem != &ITEM_NONE)
-        m_CurrentItem->observer.initializeState(&itemState);
+        m_CurrentItem->observer.initialize(this, battle,&itemState);
 
     empty = false;
     for (int i = 0; i < 4; i++){
@@ -98,7 +98,7 @@ const Ability* Pokemon::getCurrentAbility(){
 void Pokemon::setCurrentAbility(const Ability* ability){
     m_CurrentAbility = ability;
     abilityState.reset();
-    m_CurrentAbility->observer.initializeState(&abilityState);
+    m_CurrentAbility->observer.initialize(this, battle,&abilityState);
 }
 const Item* Pokemon::getCurrentItem(){
     return m_CurrentItem;
@@ -107,7 +107,7 @@ void Pokemon::setCurrentItem(const Item* item){
     m_CurrentItem = item;
     itemState.reset();
     if (m_CurrentItem != &ITEM_NONE)
-        m_CurrentItem->observer.initializeState(&itemState);
+        m_CurrentItem->observer.initialize(this, battle,&itemState);
 
 }
 const Status* Pokemon::getStatus(){
@@ -117,7 +117,7 @@ void Pokemon::applyStatus(const Status* status){
     m_Status = status;
     statusState.reset();
     if (m_Status != STATUS_NONE)
-        m_Status->observer.initializeState(&statusState);
+        m_Status->observer.initialize(this, battle, &statusState);
 }
 bool Pokemon::hasEffect(const Effect* effect){
     return m_Effects.count(effect) > 0;
@@ -136,7 +136,7 @@ void Pokemon::applyEffect(const Effect* effect){
     //TODO Implement the MoveEffects version here
     battle->assertTrue(!hasEffect(effect), "Tried to apply effect " + effect->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
     m_Effects[effect];
-    effect->observer.initializeState(&m_Effects[effect]);
+    effect->observer.initialize(this, battle,&m_Effects[effect]);
 }
 EffectState* Pokemon::getEffectState(const Effect* effect){
     return &m_Effects[effect];

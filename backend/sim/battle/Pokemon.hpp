@@ -59,7 +59,7 @@ class Pokemon{
         int currentPP[4];
         const Move* nextMove = nullptr;
         int nextMoveCounter = -1;
-        Type currentType[2];
+        std::array<Type,2> currentType;
         void entrap();
         void releaseTrap();
         bool isTrapped();
