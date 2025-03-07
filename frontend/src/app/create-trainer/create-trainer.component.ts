@@ -43,6 +43,8 @@ export class CreateTrainerComponent {
 
   @ViewChild('trainerModal') trainerModal!: UserTrainersModalComponent;
 
+  oldTrainer: Trainer | undefined;
+
   
 
   constructor(public app: AppComponent, private battleService: BattleService, private userService: UserService){
@@ -243,6 +245,7 @@ export class CreateTrainerComponent {
     this.readOnly = false;
     this.editing = true;
     this.collapsed = false;
+    this.oldTrainer = JSON.parse(JSON.stringify(this.trainer));
   }
 
   updateTrainer(){
@@ -262,6 +265,19 @@ export class CreateTrainerComponent {
       }
       console.error(error);
     });
+  }
+
+  revertChanges(){
+    this.trainer = this.oldTrainer!;
+    this.readOnly = true;
+    this.editing = false;
+    if (this.selectedIndex >= this.trainer.team.length){
+      this.selectedIndex = this.trainer.team.length-1;
+    }
+    if (this.selectedIndex < 0){
+      this.selectedIndex = 0;
+    }
+    this.setImagePathStrings();
   }
 }
 

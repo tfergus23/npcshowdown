@@ -6,14 +6,21 @@
         <label>{{this.trainer.name}}</label>
         <label>{{this.trainer.team.length}}/6</label>
         <label>{{this.trainer.trainerLevel}}</label>
+        
+        <!-- These only show on the results view -->
         <label *ngIf="this.results">{{this.results!.elo}}</label>
         <label *ngIf="this.results">{{this.results!.wins}}</label>
         <label *ngIf="this.results">{{this.results!.losses}}</label>
         <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
         <button *ngIf="this.results" (click)="showBattle(this.resultsView!.results!.trainers[this.results.bestWin.trainer1Index], this.resultsView!.results!.trainers[this.results.bestWin.trainer2Index], this.results.bestWin.seed.toString())" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
+
+        <!-- This only shows on the create tournament view -->
         <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
+
+        <!-- These only show on the user trainers view -->
         <button (click)="this.edit()" [hidden]="!this.showEditButton || this.editing" class="edit-trainer-button"><img src="../../assets/edit.svg" width="30" height="30"></button>
-        <button (click)="this.updateTrainer()" [hidden]="!this.showEditButton || !this.editing" class="update-trainer-button">Done</button>
+        <button (click)="this.updateTrainer()" [hidden]="!this.showEditButton || !this.editing" class="update-trainer-button">✓</button>
+        <button (click)="this.revertChanges()" [hidden]="!this.showEditButton || !this.editing" class="undo-changes-button">X</button>
     </div>
     <div class="import-save-buttons" [hidden]="this.collapsed">
         <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
