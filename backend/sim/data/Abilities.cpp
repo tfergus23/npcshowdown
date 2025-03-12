@@ -4,6 +4,7 @@
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/MoveUse.hpp"
 #include <nlohmann/json.hpp>
+#include "Moves.hpp"
 using json = nlohmann::json;
 
 const Ability ABILITY_GUTS = {
@@ -32,6 +33,25 @@ const Ability ABILITY_TORRENT = {
     .id = 67
 };
 
+const Ability ABILITY_TRUANT = {
+    .observer = {
+    .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
+        EffectState& state = subject->abilityState;
+        if (args.moveUse->user == subject && state.isTruant && args.moveUse->move != &MOVE_SWITCH){
+            args.moveUse->dontStart(subject->nickname + " is loafing around!");
+        }
+    },
+    .afterMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
+        EffectState& state = subject->abilityState;
+        if (args.moveUse->user == subject){
+            state.isTruant = !state.isTruant;
+        }
+    }
+    },
+    .name = "Truant",
+    .id = 54
+};
+
 
 
 
@@ -39,7 +59,8 @@ const Ability ABILITY_TORRENT = {
 //Mapping string of name to ability
 const std::unordered_map<std::string,const Ability*> abilities = {
     {ABILITY_GUTS.name, &ABILITY_GUTS},
-    {ABILITY_TORRENT.name, &ABILITY_TORRENT}
+    {ABILITY_TORRENT.name, &ABILITY_TORRENT},
+    {ABILITY_TRUANT.name, &ABILITY_TRUANT}
 };
 
 std::unordered_map<int16_t, const Ability*> idToAbility;

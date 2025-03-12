@@ -5,6 +5,7 @@ struct EffectState{
     int remainingTurns;
     bool suppressed;
     int substituteHealth;
+    bool isTruant;
 
     EffectState();
     void reset();

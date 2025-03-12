@@ -8,10 +8,12 @@ int main(){
 #ifndef NDEBUG
     std::cout.setf(std::ios::unitbuf);
 #endif
+    std::cout << "Creating ID mappings... ";
     mapIDsToAbilities();
     mapIDsToItems();
     mapIDsToMoves();
     mapIDsToSpecies();
+    std::cout << "Done.\n";
 
     
     NPCS_API_Server server;
