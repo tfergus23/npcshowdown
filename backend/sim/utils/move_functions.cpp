@@ -32,8 +32,8 @@ DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
         critMod = 1.5f;
         crit = true;
     }
-    float typeMod = typeMatchup(moveUse->move->type, moveUse->target->currentType[0], moveUse->target->currentType[1]);
-    float stabMod = (moveUse->user->isType(moveUse->move->type)) ? 1.5f : 1.0f;
+    float typeMod = typeMatchup(moveUse->effectiveType, moveUse->target->currentType[0], moveUse->target->currentType[1]);
+    float stabMod = (moveUse->user->isType(moveUse->effectiveType)) ? 1.5f : 1.0f;
     float random = (average) ? 92.5f / 100.0f : (float) moveUse->battle->randInt(85,101) / 100.0f;
     int damage = (int) ceil(calculateDamageBeforeMods(moveUse, crit) * moveUse->damageMod * stabMod * typeMod * critMod * random);
     DealtDamage result;

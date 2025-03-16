@@ -26,6 +26,7 @@ public:
     const Move* move;
     bool logUsed = true;
     int effectivePower = 0;
+    Type effectiveType = Type::NONE;
 
     //Flags
     bool isSelfDestruct = false;
@@ -43,8 +44,9 @@ public:
     char* getFailMessage();
     void setFailMessage(std::string_view newMessage);
 private:
+    static constexpr int FAIL_MESSAGE_LENGTH = 40;
     float m_EffectiveAccuracy;
-    char m_FailMessage[40] = "But it failed!";
+    char m_FailMessage[FAIL_MESSAGE_LENGTH] = "But it failed!";
 };
 
 bool compareMoves(const MoveUse* move1, const MoveUse* move2);

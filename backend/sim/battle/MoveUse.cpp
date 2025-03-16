@@ -7,9 +7,9 @@
 
 
 MoveUse::MoveUse(){}
-MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{(float) move->accuracy}, effectivePower{move->power}{
+MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{(float) move->accuracy}, effectivePower{move->power}, effectiveType{move->type}{
     if (move->targetType == TargetType::SELF) this->target = user;
-    m_FailMessage[39] = 0;
+    m_FailMessage[FAIL_MESSAGE_LENGTH-1] = 0;
 }
 void MoveUse::doMove(MoveUse* opponentMove){
     //Switching is a special case, since it's not really a 'move'
@@ -36,7 +36,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
     if (isSelfDestruct){
         selfDestruct(this);
     }
-    float typeMod = typeMatchup(move->type, target->currentType[0], target->currentType[1]);
+    float typeMod = typeMatchup(effectiveType, target->currentType[0], target->currentType[1]);
     if (typeMod == NOT_EFFECTIVE && move->damageCategory != DamageCategory::STATUS && move->targetType == TargetType::OPPONENT){
         battle->log("It doesn't affect " + target->nickname + "...");
         if (move->crashOnFail){
@@ -82,7 +82,7 @@ char* MoveUse::getFailMessage(){
     return m_FailMessage;
 }
 void MoveUse::setFailMessage(std::string_view newMessage){
-    strncpy(m_FailMessage, newMessage.data(), 39);
+    strncpy(m_FailMessage, newMessage.data(), FAIL_MESSAGE_LENGTH-1);
 }
 
 
