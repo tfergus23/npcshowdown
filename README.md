@@ -4,12 +4,12 @@ Pit NPC Pokemon trainers against each other in the ultimate tournament!
 Remaking [tfergus23/pokemonbattlesim](https://github.com/tfergus23/pokemonbattlesim) in C++ with a web based frontend.
 
 ## Development
-Clone the repository with 
+Clone the repository with:
 ```
 git clone git@github.com:tfergus23/npcshowdown.git --recurse-submodules
 ```
 ### Backend
-The backend executable can be built with cmake.
+The backend executable can be built with cmake:
 ```bash
 cd backend
 mkdir out
@@ -31,13 +31,17 @@ max_user_sessions=10
 max_trainers_per_user=10
 ```
 ### Frontend
-The frontend is an angular app. You can run it in dev mode with
+The frontend is an angular app.
 ```bash
 cd frontend
+npm install
+```
+
+You can run it in dev mode with:
+```bash
 ng serve
 ```
-Or build it with
+Or build it with:
 ```bash
-cd frontend
 ng build
 ```
