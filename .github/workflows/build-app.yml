@@ -59,10 +59,16 @@ jobs:
     - name: Init submodules
       run: git submodule update --init --recursive
 
+    - name: Create a Git tag
+      run: |
+        git tag -a v0.0.${{ github.run_number }} -m "Development version v0.0.${{ github.run_number }}"
+        git push origin v0.0.${{ github.run_number }}  # Push the tag to GitHub
+
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: v0.0.${{ github.run_number }}
         files: ./backend/out/npcs_sim  # Path to your executable
 
     - name: Publish release
