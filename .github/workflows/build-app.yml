@@ -12,13 +12,17 @@ jobs:
     steps:
     - name: Check out repo
       uses: actions/checkout@v4
-        
-    - name: Set up Git to use GITHUB_TOKEN for submodules
-      run: |
-        git submodule update --init --recursive --depth 1
-        git config --global url."https://github.com".insteadOf "git@github.com:"  # Ensure HTTPS is used for cloning
-        git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com".insteadOf "https://github.com"  # Authenticate using the GITHUB_TOKEN
 
+    - name: Add SSH private keys for submodule repositories
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: |
+          ${{ secrets.SSH_PRIVATE_KEY_SUBMODULE_1 }}
+          ${{ secrets.SSH_PRIVATE_KEY_SUBMODULE_2 }}
+    
+    - name: Init submodules
+      run: git submodule update --init --recursive --remote
+      
     - name: Set up C++ build environment
       run: |
         sudo apt-get update
