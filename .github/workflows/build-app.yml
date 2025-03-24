@@ -17,6 +17,7 @@ jobs:
         ssh-private-key: |
           ${{ secrets.TFLIB_SSH_KEY }}
           ${{ secrets.TFHTTP_SSH_KEY }}
+        submodules: 'recursive'
       
     - name: Set up C++ build environment
       run: |
