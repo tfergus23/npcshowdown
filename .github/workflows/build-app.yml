@@ -22,7 +22,7 @@ jobs:
           ${{ secrets.TFHTTP_SSH_KEY }}
 
     - name: Init submodules
-      run: git submodule update --init --recursive --remote
+      run: git submodule update --init --recursive
       
     - name: Set up C++ build environment
       run: |
