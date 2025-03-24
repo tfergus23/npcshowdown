@@ -14,7 +14,7 @@ The backend executable can be built with cmake.
 cd backend
 mkdir out
 cd out
-cmake --DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ./npcs_sim
 ```
