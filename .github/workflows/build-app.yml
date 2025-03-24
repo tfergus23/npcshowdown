@@ -20,6 +20,7 @@ jobs:
       
     - name: Build executable
       run: |
+        cd backend
         mkdir out
         cd out
         cmake -DCMAKE_BUILD_TYPE=Release ../
