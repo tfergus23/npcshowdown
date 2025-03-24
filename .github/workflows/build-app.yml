@@ -12,16 +12,13 @@ jobs:
     steps:
     - name: Check out repo
       uses: actions/checkout@v4
-
-    - name: Add SSH private keys for submodule repositories
-      uses: webfactory/ssh-agent@v0.7.0
       with:
-        ssh-private-key: |
-          ${{ secrets.SSH_PRIVATE_KEY_SUBMODULE_1 }}
-          ${{ secrets.SSH_PRIVATE_KEY_SUBMODULE_2 }}
+        persist-credentials: false
     
     - name: Init submodules
-      run: git submodule update --init --recursive --remote
+      run: |
+        git submodule sync --recursive
+        git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
       
     - name: Set up C++ build environment
       run: |
