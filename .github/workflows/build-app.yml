@@ -40,31 +40,35 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: npcs_sim  # The name of the artifact (this will be the file you download later)
-        path: ./out/npcs_sim  # Path to the built executable
+        path: ./backend/out/npcs_sim  # Path to the built executable
   release:
     runs-on: ubuntu-latest
     needs: build  # This ensures the build job runs first
 
     steps:
-    - name: Check out the repository
+    - name: Check out repo
       uses: actions/checkout@v4
 
-    - name: Set up Git to use GITHUB_TOKEN for submodules
-      run: |
-        git submodule update --init --recursive --depth 1
-        git config --global url."https://github.com".insteadOf "git@github.com:"  # Ensure HTTPS is used for cloning
-        git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com".insteadOf "https://github.com"  # Authenticate using the GITHUB_TOKEN
+    - name: Setting up SSH keys for private repos
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: |
+          ${{ secrets.TFLIB_SSH_KEY }}
+          ${{ secrets.TFHTTP_SSH_KEY }}
+
+    - name: Init submodules
+      run: git submodule update --init --recursive
 
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        files: ./out/npcs_sim  # Path to your executable
+        files: ./backend/out/npcs_sim  # Path to your executable
 
     - name: Publish release
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./out/npcs_sim
+        asset_path: ./backend/out/npcs_sim
         asset_name: npcs_sim
         asset_content_type: application/octet-stream
