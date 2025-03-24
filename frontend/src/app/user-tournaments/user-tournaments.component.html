@@ -2,6 +2,10 @@
     <h2>{{this.app.loggedInUser?.name}}'s Tournaments</h2>
     <hr>
     <div *ngFor="let resultSet of this.resultSets; index as i" class="tournament-result">
-        <label>yo</label>
+        <label class="horizontal-margin">Tournament #{{resultSet.id}}</label>
+        <label class="horizontal-margin">03/24/2025</label>
+        <label class="horizontal-margin">{{resultSet.user}}</label>
+        <label class="horizontal-margin">{{resultSet.results.length}} trainers</label>
+        <a class="horizontal-margin" style="margin-left: auto;" href="/results/{{resultSet.id}}">View Results</a>
     </div>
 </div>

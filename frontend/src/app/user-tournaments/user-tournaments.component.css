@@ -8,5 +8,33 @@ h2 {
 
 .tournament-result{
     margin-left: 50px;
-    background-color: var(--primary-color);
+    display: flex;
+    height: 60px;
+    background-color: var(--middle-background-color);
+    align-items: center;
+    border: 3px solid var(--dark-background-color);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.horizontal-margin{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
+@media (max-width: 577px){
+    .tournament-result{
+        margin-left: 0px;
+        font-size: 15px;
+    }
+
+    .horizontal-margin{
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 }
