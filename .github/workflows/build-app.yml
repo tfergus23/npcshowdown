@@ -70,6 +70,9 @@ jobs:
         release_name: Release v0.0.${{ github.run_number }}
         prerelease: true
 
+    - name: List output directory
+      run: ls -ltr ./backend/out/
+  
     - name: Publish release
       uses: actions/upload-release-asset@v1
       with:
