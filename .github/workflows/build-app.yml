@@ -2,7 +2,8 @@ name: Build and Release app
 
 on:
   push:
-    branches: [ "master" ]
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -59,18 +60,11 @@ jobs:
     - name: Init submodules
       run: git submodule update --init --recursive
 
-    - name: Create a Git tag
-      run: |
-        git config --global user.email "github-actions@github.com"
-        git config --global user.name "GitHub Actions"
-        git tag -a v0.0.${{ github.run_number }} -m "Development version v0.0.${{ github.run_number }}"
-        git push origin v0.0.${{ github.run_number }}  # Push the tag to GitHub
-
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v0.0.${{ github.run_number }}
+        tag_name: v0.0.0
         files: ./backend/out/npcs_sim  # Path to your executable
 
     - name: Publish release
