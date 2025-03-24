@@ -124,7 +124,7 @@ std::string getTokenFromRequest(const HTTP_Request& req){
     }
 }
 
-NPCS_API_Server::NPCS_API_Server() : app{MAX_REQUEST_SIZE}{
+NPCS_API_Server::NPCS_API_Server() {
     max_tournament_threads = getIntFromConfig(config, "tournament_threads");
     max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
 
