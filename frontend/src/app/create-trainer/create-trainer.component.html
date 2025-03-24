@@ -15,10 +15,13 @@
         <button *ngIf="this.results" (click)="showBattle(this.resultsView!.results!.trainers[this.results.bestWin.trainer1Index], this.resultsView!.results!.trainers[this.results.bestWin.trainer2Index], this.results.bestWin.seed.toString())" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
 
         <!-- This only shows on the create tournament view -->
-        <button (click)="this.removeSelf()" [hidden]="this.parent == undefined || this.readOnly" class="remove-trainer-button">X</button>
+        <button (click)="this.removeSelf()" [hidden]="!(this.parentIsCreateTournament()) || this.readOnly" class="remove-trainer-button">X</button>
 
         <!-- These only show on the user trainers view -->
-        <button (click)="this.edit()" [hidden]="!this.showEditButton || this.editing" class="edit-trainer-button"><img src="../../assets/edit.svg" width="30" height="30"></button>
+        <div [hidden]="!this.showEditButton" style="margin-left: auto;">
+            <button (click)="this.edit()" [hidden]="!this.showEditButton || this.editing" class="edit-trainer-button"><img src="../../assets/edit.svg" width="30" height="30"></button>
+            <button (click)="this.openDeleteModal()" [hidden]="!this.showEditButton || this.editing" class="delete-trainer-button"><img src="../../assets/delete.svg" width="30" height="30"></button>
+        </div>
         <button (click)="this.updateTrainer()" [hidden]="!this.showEditButton || !this.editing" class="update-trainer-button">✓</button>
         <button (click)="this.revertChanges()" [hidden]="!this.showEditButton || !this.editing" class="undo-changes-button">X</button>
     </div>
@@ -51,7 +54,7 @@
             </button>
         </div>
         <div *ngIf="this.trainer.team.length > 0" class="pokemon-details">
-            <div style="margin-right: 25px;" class="pokemon-column">
+            <div style="margin-left: 10px;" class="pokemon-column">
                 <div class="pokemon-input">
                     <div class="inline-label">Species: </div> <input type="text" list="speciesList" (focusout)="this.autoCompleteSpecies($event)" [(ngModel)]="this.trainer.team[selectedIndex].species" [readOnly]="this.readOnly">
                 </div>
@@ -82,7 +85,7 @@
                     </select>
                 </div>
             </div>
-            <div class="pokemon-column">
+            <div style="float: right; margin-right: 10px;" class="pokemon-column">
                 <div class="pokemon-input">
                     <div class="inline-label">Move 1: </div> <input type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 0)" [(ngModel)]="this.trainer.team[selectedIndex].moves[0]" [readOnly]="this.readOnly">
                 </div>
@@ -127,6 +130,16 @@
                     <input placeholder="SPE" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[5]" [readOnly]="this.readOnly">
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div [hidden]="!this.showDeleteModal" id="modal-background" (mousedown)="this.closeDeleteModal($event)"   class="modal-background">
+    <div [hidden]="!this.showDeleteModal" class="modal-content" (mousedown)="$event.stopPropagation()">
+        <h3>Are you absolutely sure you want to delete <b>{{this.trainer.name}}</b> from your profile? <br>This can't be undone.</h3>
+        <div class="confirm-buttons">
+            <button style="margin-right: 40px; background-color: rgb(0,255,0);" class="confirm-button" (click)="this.deleteFromProfile()">Yes, get rid of 'em!</button>
+            <button style="margin-left:  40px; background-color: rgb(255,0,0);" class="confirm-button" (click)="this.closeDeleteModal($event)">No wait! Keep them!</button>
         </div>
     </div>
 </div>

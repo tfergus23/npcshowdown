@@ -12,6 +12,7 @@ import { BattleService } from '../battle.service';
 import { ViewResultsComponent } from '../view-results/view-results.component';
 import { UserService } from '../user.service';
 import { UserTrainersModalComponent } from '../user-trainers-modal/user-trainers-modal.component';
+import { UserTrainersComponent } from '../user-trainers/user-trainers.component';
 
 @Component({
   selector: 'app-create-trainer',
@@ -21,7 +22,7 @@ import { UserTrainersModalComponent } from '../user-trainers-modal/user-trainers
 export class CreateTrainerComponent {
   @Input() collapsed: boolean = false;
 
-  @Input() parent: CreateTournamentComponent  | undefined = undefined;
+  @Input() parent: CreateTournamentComponent  | UserTrainersComponent | undefined = undefined;
   @Input() dataLists?: DataLists = new DataLists();
   @Input() trainerNum: string = "1";
   @Input() trainer: Trainer = createEmptyTrainer();
@@ -45,7 +46,7 @@ export class CreateTrainerComponent {
 
   oldTrainer: Trainer | undefined;
 
-  
+  showDeleteModal: boolean = false;
 
   constructor(public app: AppComponent, private battleService: BattleService, private userService: UserService){
   }
@@ -137,7 +138,7 @@ export class CreateTrainerComponent {
   }
 
   removeSelf(){
-    this.parent?.removeTrainer(this.trainerNum);
+    (this.parent as CreateTournamentComponent).removeTrainer(this.trainerNum);
   }
 
   showBattle(trainer1: Trainer, trainer2: Trainer, seed: string){
@@ -278,6 +279,30 @@ export class CreateTrainerComponent {
       this.selectedIndex = 0;
     }
     this.setImagePathStrings();
+  }
+
+  openDeleteModal(){
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(e: MouseEvent){
+    this.showDeleteModal = false;
+  }
+
+  deleteFromProfile(){
+    this.showDeleteModal = false;
+    this.userService.deleteUserTrainer(this.app.loggedInUser!.name, this.trainer.id!).subscribe(
+    (res) =>{
+      console.log("deleted trainer successfully");
+      (this.parent as UserTrainersComponent).trainers! = (this.parent as UserTrainersComponent).trainers!.filter(trainer => trainer.id != this.trainer.id);
+    },
+    (error)=>{
+      console.error(error);
+    })
+  }
+
+  parentIsCreateTournament(){
+    return this.parent instanceof CreateTournamentComponent;
   }
 }
 

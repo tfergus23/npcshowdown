@@ -66,4 +66,9 @@ export class UserService {
     const response = this.http.put<PutResponse>(`${AppSettings.API_URL}user/${username}/trainer/${trainer.id!}`, trainer, {withCredentials: true});
     return response;
   }
+
+  deleteUserTrainer(username: string, trainer: number) : Observable<PutResponse>{
+    const response = this.http.delete<PutResponse>(`${AppSettings.API_URL}user/${username}/trainer/${trainer}`, {withCredentials: true});
+    return response;
+  }
 }
