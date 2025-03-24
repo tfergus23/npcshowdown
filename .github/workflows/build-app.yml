@@ -19,8 +19,9 @@ jobs:
     
     - name: Check out repo
       uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
+
+    - name: Init submodules
+      run: git submodule update --init --recursive --remote
       
     - name: Set up C++ build environment
       run: |
