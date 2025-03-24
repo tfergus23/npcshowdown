@@ -8,8 +8,8 @@ p{
 }
 
 .questions{
-    border: 5px solid rgb(0, 255, 255);
-    background-color: rgb(41, 41, 41);
+    border: 5px solid var(--primary-color);
+    background-color: var(--dark-background-color);
     border-radius: 5px;
     padding: 5px;
 }

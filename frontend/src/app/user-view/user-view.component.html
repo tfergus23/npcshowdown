@@ -1,9 +1,9 @@
 <div class="content">
     <div class="sidebar-content">
         <div class="links">
-            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'profile') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" routerLink="profile">Profile</a>
-            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'trainers') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" routerLink="trainers">Trainers</a>
-            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'tournaments') ? 'rgb(105,105,106)' : 'rgba(41,41,41,0)'" routerLink="tournaments">Tournaments</a>
+            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'profile') ? 'var(--light-background-color)' : 'rgba(41,41,41,0)'" routerLink="profile">Profile</a>
+            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'trainers') ? 'var(--light-background-color)' : 'rgba(41,41,41,0)'" routerLink="trainers">Trainers</a>
+            <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'tournaments') ? 'var(--light-background-color)' : 'rgba(41,41,41,0)'" routerLink="tournaments">Tournaments</a>
         </div>
     </div>
     <router-outlet *ngIf="this.app.loggedInUser"></router-outlet>

@@ -14,7 +14,7 @@
     height: 50px;
     text-align: left;
     border: none;
-    background: rgb(78, 78, 79);
+    background: var(--neutral-background-color);
     border-radius: 0px;
     font-weight: bold;
     text-decoration: underline;
@@ -22,7 +22,7 @@
 }
 
 .result-column-headers button:hover{
-    background: rgb(105, 105, 106);
+    background: var(--light-background-color);
 }
 
 

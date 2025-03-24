@@ -1,6 +1,16 @@
+:root {
+    --primary-color: rgb(0, 255, 255);
+    --dark-background-color: rgb(45, 45, 46);
+    --middle-background-color: rgb(54, 54, 55);
+    --neutral-background-color:rgb(78, 78, 79);
+    --upper-background-color: rgb(84, 84, 84);
+    --light-background-color: rgb(105, 105, 106);
+}
+
+
 body{
-    background-color:rgb(78, 78, 79);
-    color:rgb(0, 255, 255);
+    background-color:var(--neutral-background-color);
+    color:var(--primary-color);
     font-family: Tahoma;
     margin: 0%;
 }
@@ -9,10 +19,10 @@ a{
     text-decoration: none;
 }
 a:visited{
-    color:rgb(0, 255, 255);
+    color:var(--primary-color);
 }
 button{
-    background-color: rgb(0, 255, 255);
+    background-color: var(--primary-color);
     border-radius: 5px;
     cursor: pointer;
     color: white;
@@ -27,23 +37,23 @@ button:disabled{
 }
 
 input {
-    background-color: rgb(45, 45, 46);
-    color:rgb(0, 255, 255);
+    background-color: var(--dark-background-color);
+    color: var(--primary-color);
     border-radius: 5px;
     outline-offset: 0px;
 }
 
 select{
-    background-color: rgb(45, 45, 46);
-    color:rgb(0, 255, 255);
+    background-color: var(--dark-background-color);
+    color:var(--primary-color);
     border-radius: 5px;
 }
 
 input:focus{
-    border-color: rgb(0, 255, 255);
+    border-color: var(--primary-color);
 
 }
 
 select:focus{
-    border-color: rgb(0, 255, 255);
+    border-color: var(--primary-color);
 }

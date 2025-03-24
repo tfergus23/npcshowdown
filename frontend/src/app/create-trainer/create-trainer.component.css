@@ -1,14 +1,14 @@
 .create-trainer-container{
     border-radius: 5px;
     margin-bottom: 10px;
-    border: 3px solid rgb(41, 41, 42);
+    border: 3px solid var(--dark-background-color);
 }
 
 .collapsible-header{
     width: 100%;
     text-align: center;
     height:50px;
-    background-color: rgb(41, 41, 42);
+    background-color: var(--dark-background-color);
     display: flex;
     align-items: center;
     color: white;
@@ -31,7 +31,7 @@
 }
 
 .collapse-button:hover{
-    background-color: rgb(105, 105, 106);
+    background-color: var(--light-background-color);
 }
 
 h2{
@@ -95,14 +95,14 @@ input, select{
     width: 16.66%;
     font-size: 15px;
     background-color: rgba(0,0,0,0);
-    border-right: 2px solid rgb(105, 105, 106);
+    border-right: 2px solid var(--light-background-color);
     border-radius: 0px;
-    color: aqua;
+    color: var(--primary-color);
     transition: background-color 0.1s;
 }
 
 .add-pokemon-btn:hover{
-    background-color: rgb(84, 84, 84);
+    background-color: var(--neutral-background-color);
 }
 
 .remove-trainer-button{
@@ -133,18 +133,18 @@ input, select{
 .best-win-button:hover{
     cursor: pointer;
     text-decoration: underline;
-    color: aqua;
+    color: var(--primary-color);
 }
 
 .pokemon-block{
     width: 100%;
     border-radius: 2px;
-    border-top: 3px solid rgb(41, 41, 42)
+    border-top: 3px solid var(--dark-background-color)
 }
 
 .pokemon-tabs{
     height:50px;
-    background-color: rgb(56, 56, 56);
+    background-color: var(--middle-background-color);
 }
 
 .pokemon-tab{
@@ -153,12 +153,12 @@ input, select{
     height: 100%;
     width: 16.66%;
     border-radius: 0px;
-    border-right: 2px solid rgb(105, 105, 106);
+    border-right: 2px solid var(--light-background-color);
     transition: background-color 0.1s;
 }
 
 .pokemon-tab:hover{
-    background-color: rgb(84, 84, 84);
+    background-color: var(--upper-background-color);
 }
 
 .pokemon-details{
@@ -191,7 +191,7 @@ input, select{
 }
 
 .edit-trainer-button:hover{
-    background-color: rgb(78, 78, 79);
+    background-color: var(--neutral-background-color);
 }
 
 .edit-trainer-button img{
@@ -208,7 +208,7 @@ input, select{
 }
 
 .delete-trainer-button:hover{
-    background-color: rgb(78, 78, 79);
+    background-color: var(--neutral-background-color);
 }
 
 .delete-trainer-button img{
@@ -304,8 +304,8 @@ input, select{
 }
 
 .remove-pokemon-btn:hover{
-    color: aqua;
-    background-color: rgb(78, 78, 79);
+    color: var(--primary-color);
+    background-color: var(--neutral-background-color);
 }
 
 img{
@@ -330,8 +330,8 @@ img{
 }
 
 .modal-content {
-   background-color: rgb(78, 78, 79);
-   border: 3px solid rgb(41, 41, 41);
+   background-color: var(--neutral-background-color);
+   border: 3px solid var(--dark-background-color);
    margin: auto;
    margin-top: 35vh;
    padding-right: 10px;

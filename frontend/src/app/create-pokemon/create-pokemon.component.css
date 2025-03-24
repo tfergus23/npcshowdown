@@ -1,7 +1,7 @@
 .container{
     margin-left: 30px;
-    background-color: rgb(54, 54, 55);
-    border: 3px solid aqua;
+    background-color: var(--middle-background-color);
+    border: 3px solid var(--primary-color);
     border-radius: 5px;
     margin-bottom: 20px;
 }
@@ -10,7 +10,7 @@
     width: 100%;
     text-align: left;
     height:70px;
-    background-color: rgb(54, 54, 55);
+    background-color: var(--middle-background-color);
     border: none;
     border-radius: 0;
     display: flex;
@@ -18,7 +18,7 @@
     align-items: center;
 }
 .collapsible-header:hover{
-    background-color: rgb(105, 105, 106);
+    background-color: var(--light-background-color);
 }
 
 .remove-poke-button{

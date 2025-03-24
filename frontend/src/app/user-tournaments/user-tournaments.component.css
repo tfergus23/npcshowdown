@@ -1,0 +1,12 @@
+h2 {
+    margin-left: 50px;
+}
+
+.profile-content{
+    overflow: hidden;
+}
+
+.tournament-result{
+    margin-left: 50px;
+    background-color: var(--primary-color);
+}

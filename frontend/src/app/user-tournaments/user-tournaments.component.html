@@ -1,1 +1,7 @@
-<p>user-tournaments works!</p>
+<div class="profile-content">
+    <h2>{{this.app.loggedInUser?.name}}'s Tournaments</h2>
+    <hr>
+    <div *ngFor="let resultSet of this.resultSets; index as i" class="tournament-result">
+        <label>yo</label>
+    </div>
+</div>

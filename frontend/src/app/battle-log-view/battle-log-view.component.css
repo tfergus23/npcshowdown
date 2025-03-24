@@ -5,7 +5,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgb(78, 78, 79);
+    background-color: var(--neutral-background-color);
     border: 5px solid rgb(41, 41, 41);
     border-radius: 3px;
 }
@@ -31,7 +31,7 @@ textarea{
     margin: auto;
     display: block;
     background-color: rgb(41, 41, 41);
-    color: aqua;
+    color: var(--primary-color);
     font-size: 16px;
 }
 

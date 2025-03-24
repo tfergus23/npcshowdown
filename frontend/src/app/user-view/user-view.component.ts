@@ -9,7 +9,7 @@ import { AppComponent } from '../app.component';
 })
 export class UserViewComponent {
 
-  selectedStyle: string = "text-decoration: underline; background-color: rgb(105,105,106);";
+  selectedStyle: string = "text-decoration: underline; background-color: var(--light-background-color);";
 
   constructor(public activatedRoute: ActivatedRoute, public app: AppComponent){
   }

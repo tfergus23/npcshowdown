@@ -45,7 +45,7 @@
     </div>
     <div [hidden]="this.collapsed" class="pokemon-block">
         <div class="pokemon-tabs">
-            <button [style.background-color]="(this.selectedIndex == i) ? 'rgb(105, 105, 106)' : ''" (click)="this.setSelectedIndex(i)" *ngFor="let pokemon of trainer.team; index as i" class="pokemon-tab">
+            <button [style.background-color]="(this.selectedIndex == i) ? 'var(--light-background-color)' : ''" (click)="this.setSelectedIndex(i)" *ngFor="let pokemon of trainer.team; index as i" class="pokemon-tab">
                 <span class="pokemon-label"><img *ngIf="this.imageStrings[i] != ''" src="../../assets/box_sprites/{{this.imageStrings[i]}}.png" width="34" height="28"> {{pokemon.nickname === "" ? pokemon.species : pokemon.nickname}}</span>
                 <button *ngIf="!this.readOnly" (click)="this.removePoke(i)" class="remove-pokemon-btn">X</button>
             </button>

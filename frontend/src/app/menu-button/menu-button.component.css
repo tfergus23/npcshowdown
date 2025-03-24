@@ -1,11 +1,11 @@
 a{
     width: 300px;
     height: 250px;
-    border-color: rgb(0, 255, 255);
+    border-color: var(--primary-color);
     border-width: 5px;
     border-style: solid;
-    background-color: rgb(78, 78, 79);
-    color: rgb(0, 255, 255);
+    background-color: var(--neutral-background-color);
+    color: var(--primary-color);
     margin: 10px;
     font-size: 35px;
     display: inline-flex;
@@ -15,10 +15,10 @@ a{
 }
 
 a:hover{
-    background-color: rgb(105, 105, 106);
+    background-color: var(--light-background-color);
 }
 
 img {
-    color: rgb(0, 255, 255);
+    color: var(--primary-color);
     filter: invert(80%) sepia(10%) saturate(5660%) hue-rotate(128deg) brightness(102%) contrast(107%);
 }
