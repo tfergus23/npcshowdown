@@ -1,0 +1,52 @@
+name: Build and Release app
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v4
+
+    - name: Set up C++ build environment
+      uses: actions/setup-cpp@v2  # This sets up the C++ toolchain
+      with:
+        compiler: 'gcc'  # You can specify 'clang' or another compiler here
+      
+    - name: Build executable
+      run: |
+        mkdir out
+        cd out
+        cmake -DCMAKE_BUILD_TYPE=Release ..
+        cmake --build .
+    - name: Upload the executable as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: npcshowdown  # The name of the artifact (this will be the file you download later)
+        path: ./out/npcs_sim  # Path to the built executable
+  release:
+    runs-on: ubuntu-latest
+    needs: build  # This ensures the build job runs first
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
+
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./out/npcs_sim  # Path to your executable
+
+    - name: Publish release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./out/npcs_sim
+        asset_name: npcshowdown
+        asset_content_type: application/octet-stream
