@@ -47,7 +47,10 @@ jobs:
 
     - name: Package App
       run: |
-        tar -czvf npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./backend/out/npcs_sim ./frontend/dist/npcshowdown/
+        mkdir package
+        cp ./backend/out/npcs_sim package/
+        cp -r ./frontend/dist/npcshowdown package/static
+        tar -czvf npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./package/
     
     - name: Create Release
       id: create_release
