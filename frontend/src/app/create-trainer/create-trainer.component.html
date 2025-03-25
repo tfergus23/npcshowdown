@@ -1,5 +1,5 @@
 <div class="create-trainer-container">
-    <app-user-trainers-modal #trainerModal></app-user-trainers-modal>
+    <app-user-trainers-modal [parent]="this" #trainerModal></app-user-trainers-modal>
     <div class="collapsible-header">
         <button class="collapse-button" (click)="toggleCollapsible()">{{this.collapseButtonSymbol}}</button>
         <label style="text-align: left;">Trainer {{trainerNum}}</label>
@@ -29,7 +29,7 @@
         <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
         <button (click)="this.showTrainerModal()" [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
         <button (click)="download();">Save to File</button>
-        <button (click)="saveToUserProfile()" [disabled]="this.trainerAdded" [hidden]="this.app.loggedInUser == undefined || !this.showAddMyTrainers">{{this.addTrainertext}}</button>
+        <button (click)="saveToUserProfile()" [hidden]="this.app.loggedInUser == undefined || !this.showAddMyTrainers">{{this.addTrainertext}}</button>
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">

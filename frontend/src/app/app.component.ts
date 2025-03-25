@@ -27,9 +27,13 @@ export class AppComponent {
         localStorage.setItem('user', res.data.name);
       }
     },(error) => {
-      this.loggedInUser = undefined;
-      localStorage.removeItem('user');
+      this.logoutUser();
       console.error(error.error.message);
     });
+  }
+
+  logoutUser(){
+    this.loggedInUser = undefined;
+    localStorage.removeItem('user');
   }
 }

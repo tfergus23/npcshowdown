@@ -24,8 +24,7 @@ export class UserTournamentsComponent {
         }
       }, 
       (error) => {
-        this.app.loggedInUser = undefined;
-        localStorage.removeItem('user');
+        this.app.logoutUser();
         console.error(error);
       });
   }

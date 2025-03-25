@@ -104,8 +104,7 @@ export class CreateTournamentComponent {
     }, (error) =>{
       if (error.status == 401){
         request.user = undefined;
-        this.app.loggedInUser = undefined;
-        localStorage.removeItem('user');
+        this.app.logoutUser();
         this.battleService.postTournamentRequest(request).subscribe((res) =>{
           this.redirectToTournamentResults(res.id);
         });

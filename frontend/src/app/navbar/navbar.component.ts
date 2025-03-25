@@ -38,21 +38,18 @@ export class NavbarComponent {
   logout(){
     if (localStorage.getItem('user') == null){
       this.dropdownDisplay = "none";
-      this.app.loggedInUser = undefined;
-      localStorage.removeItem('user');
+      this.app.logoutUser();
       return;
     }
     this.userService.logOut(localStorage.getItem('user') as string).subscribe((res) =>{
       if (res.success){
         this.dropdownDisplay = "none";
-        this.app.loggedInUser = undefined;
-        localStorage.removeItem('user');
+        this.app.logoutUser();
       }
     }, (error) =>{
       if (error.status == 401){
         this.dropdownDisplay = "none";
-        this.app.loggedInUser = undefined;
-        localStorage.removeItem('user');
+        this.app.logoutUser();
       }
       else{
         console.error(error);

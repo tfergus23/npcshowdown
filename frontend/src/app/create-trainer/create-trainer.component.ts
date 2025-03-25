@@ -40,7 +40,6 @@ export class CreateTrainerComponent {
   imageStrings: Array<string> = ["", "", "", "", "", ""];
 
   addTrainertext: string = "Add to My Trainers";
-  trainerAdded: boolean = false;
 
   @ViewChild('trainerModal') trainerModal!: UserTrainersModalComponent;
 
@@ -221,16 +220,13 @@ export class CreateTrainerComponent {
     if (this.app.loggedInUser)
     this.userService.addTrainerToUserProfile(this.app.loggedInUser.name, this.trainer).subscribe((res) => {
       console.log(`Success! Saved to ${res.id}`)
-      this.addTrainertext = "Added ✓";
-      this.trainerAdded = true;
     }, 
     (error) =>{
       if (error.status == 409){
         console.error(error.error.message);
       }
       else if (error.status == 401){
-        this.app.loggedInUser = undefined;
-        localStorage.removeItem('user');
+        this.app.logoutUser();
       }
       else{
         console.error(error);
@@ -239,7 +235,7 @@ export class CreateTrainerComponent {
   }
 
   showTrainerModal(){
-    this.trainerModal.hidden = false;
+    this.trainerModal.show();
   }
 
   edit(){

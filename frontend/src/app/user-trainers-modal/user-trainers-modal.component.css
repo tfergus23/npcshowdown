@@ -15,7 +15,57 @@
     background-color: var(--neutral-background-color);
     border: 3px solid rgb(41, 41, 41);
     margin: 5% auto;
+    margin-top: 25vh;
     padding-right: 10px;
     padding-left: 10px;
-    width: 70%; /* Could be more or less, depending on screen size */
+    width: 600px;
+}
+
+.trainers-container{
+    height: 40vh;
+    overflow-y: scroll;
+}
+
+.user-trainer{
+    width: 100%;
+    background-color: var(--dark-background-color);
+    margin-top: 3px;
+    margin-bottom: 3px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+}
+
+span{
+    display: inline-block;
+    user-select: none;
+    width: 33%;
+}
+
+button{
+    display: block;
+    width: 100px;
+    height: 35px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+@media(max-width: 650px){
+    .modal-content{
+        width: 300px;
+        margin-top: 10vh;
+    }
+
+    .trainers-container{
+        height: 60vh;
+    }
+
+    .user-trainer{
+        height: 50px;
+    }
 }

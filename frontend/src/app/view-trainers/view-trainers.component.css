@@ -1,0 +1,11 @@
+h1 {
+    width: fit-content;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.container{
+    margin: auto;
+    width: 50%;
+}

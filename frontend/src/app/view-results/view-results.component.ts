@@ -44,8 +44,7 @@ export class ViewResultsComponent {
       }
     }, 
     (error) =>{
-      this.app.loggedInUser = undefined;
-      localStorage.removeItem('user');
+      this.app.logoutUser();
       console.error(error);
     });
 
@@ -188,12 +187,9 @@ export class ViewResultsComponent {
     },
     (error) =>{
       if (error.status == 401){
-        this.app.loggedInUser = undefined;
-        localStorage.removeItem('user');
+        this.app.logoutUser();
       }
-      else{
-        console.error(error);
-      }
+      console.error(error);
     });
   }
     download(){
