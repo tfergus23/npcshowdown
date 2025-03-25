@@ -50,7 +50,8 @@ jobs:
         mkdir package
         cp ./backend/out/npcs_sim package/
         cp -r ./frontend/dist/npcshowdown package/static
-        tar -czvf npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./package/
+        cd package
+        tar -czvf ../npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./static ./npcs_sim
     
     - name: Create Release
       id: create_release
