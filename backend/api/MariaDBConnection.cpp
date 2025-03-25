@@ -26,6 +26,8 @@ json TournamentResults::toJSON(MariaDBConnection& db) const{
         data["user"] = user;
     }
     data["id"] = id;
+    data["name"] = name;
+    data["dateRan"] = dateRan;
     return data;
 }
 
@@ -107,7 +109,7 @@ std::optional<BattleResult> MariaDBConnection::getBattle(size_t id){
     };
 }
 std::optional<TournamentResults> MariaDBConnection::getTournament(size_t id){
-    std::unique_ptr<sql::PreparedStatement> doneStatement(conn->prepareStatement("select done,user,id from tournament where id = ?"));
+    std::unique_ptr<sql::PreparedStatement> doneStatement(conn->prepareStatement("select done,user,id,name,dateRan from tournament where id = ?"));
     doneStatement->setUInt64(1, id);
     std::unique_ptr<sql::ResultSet> doneResults(doneStatement->executeQuery());
     if (doneResults->rowsCount() < 1){
@@ -117,9 +119,12 @@ std::optional<TournamentResults> MariaDBConnection::getTournament(size_t id){
         throw std::runtime_error("Somehow got multiple tournamnets for id: " + std::to_string(id));
     }
 
-    TournamentResults result;
-
     doneResults->next();
+
+    TournamentResults result;
+    result.name = doneResults->getString(4);
+    result.dateRan = doneResults->getString(5);
+
     if (!doneResults->isNull(2)){
         std::unique_ptr<sql::PreparedStatement> usernameStatement(conn->prepareStatement("select name from user where id = ?"));
         usernameStatement->setUInt64(1, doneResults->getUInt64(2));
@@ -163,7 +168,16 @@ size_t MariaDBConnection::createEmptyTournament(size_t user){
     }
     insertStmnt->setBoolean(2, false);
 
-    return executeInsertAndGetID(insertStmnt.get());
+    size_t tournamentID = executeInsertAndGetID(insertStmnt.get());
+
+    std::unique_ptr<sql::PreparedStatement> updateNameStmnt(conn->prepareStatement("update tournament set name = ? where id = ?"));
+
+    updateNameStmnt->setString(1, "Tournament #" + std::to_string(tournamentID));
+    updateNameStmnt->setUInt64(2, tournamentID);
+
+    delete updateNameStmnt->executeQuery();
+
+    return tournamentID;
 }
 
 size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_t tournament, size_t existingID){

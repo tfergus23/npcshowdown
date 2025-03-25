@@ -12,6 +12,8 @@ struct TournamentResults{
     std::vector<TrainerStats> trainerStats;
     std::vector<size_t> trainers;
     std::string user = "";
+    std::string name = "";
+    std::string dateRan = "";
     size_t id = 0;
     bool ready = false;
 

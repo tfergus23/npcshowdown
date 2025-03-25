@@ -21,4 +21,6 @@ export interface TournamentResultSet{
     trainers: Array<Trainer>,
     user: string | undefined,
     id: number
+    name: string,
+    dateRan: string
 }
