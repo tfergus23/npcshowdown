@@ -2,7 +2,11 @@ name: Build and Release app
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - master
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
 
 jobs:
   build:
