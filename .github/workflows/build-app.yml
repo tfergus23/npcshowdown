@@ -24,19 +24,30 @@ jobs:
     - name: Init submodules
       run: git submodule update --init --recursive
       
-    - name: Set up C++ build environment
+    - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake
+        sudo apt install npm
       
-    - name: Build executable
+    - name: Build Executable
       run: |
         cd backend
         mkdir out
         cd out
         cmake -DCMAKE_BUILD_TYPE=Release ../
         cmake --build .
+        
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm install
+        npm install -g @angular/cli
+        ng build
 
+    - name: Package App
+      run: |
+        tar -czvf npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./backend/out/npcs_sim ./frontend/dist/npcshowdown/
     
     - name: Create Release
       id: create_release
@@ -54,6 +65,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./backend/out/npcs_sim
-        asset_name: npcs_sim
+        asset_path: ./npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz
+        asset_name: npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz
         asset_content_type: application/octet-stream
