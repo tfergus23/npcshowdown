@@ -10,7 +10,13 @@ import { UserService } from '../user.service';
 })
 export class UserTournamentsComponent {
   resultSets: Array<TournamentResultSet> = new Array<TournamentResultSet>();
+  showDeleteModal: boolean = false;
+  tournamentToDelete: number = 0;
   constructor(public app: AppComponent, private userService: UserService){
+    this.getUserTournaments();
+  }
+
+  getUserTournaments(){
     if (localStorage.getItem('user') != null)
       this.userService.getUserTournaments(localStorage.getItem('user') as string).subscribe((res) => {
         if (res.success){
@@ -22,5 +28,31 @@ export class UserTournamentsComponent {
         localStorage.removeItem('user');
         console.error(error);
       });
+  }
+
+  openDeleteModal(tournamentID: number){
+    this.showDeleteModal = true;
+    this.tournamentToDelete = tournamentID;
+  }
+
+  closeDeleteModal(){
+    this.showDeleteModal = false;
+    this.tournamentToDelete = 0;
+  }
+
+  deleteSelectedTournamentFromProfile(){
+    this.userService.deleteTournamentFromUserProfile(this.app.loggedInUser!.name, this.tournamentToDelete).subscribe((res) =>{
+      if (res.success){
+        console.log("Tournament has been removed from your profile.");
+        this.getUserTournaments();
+      }
+      else{
+        console.error(res.message);
+      }
+    },
+    (error) => {
+      console.error(error);
+    });
+    this.closeDeleteModal();
   }
 }

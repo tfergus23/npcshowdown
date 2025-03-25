@@ -27,7 +27,26 @@ a:hover{
     text-decoration: underline;
 }
 
-@media (max-width: 577px){
+.delete-tournament-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0);
+    width: 30px;
+    height: 30px;
+}
+
+.delete-tournament-button:hover{
+    background-color: var(--neutral-background-color);
+}
+
+.delete-tournament-button img{
+    filter: invert(99%) sepia(9%) saturate(230%) hue-rotate(193deg) brightness(115%) contrast(100%);
+    width: 25px;
+    height: 25px;
+}
+
+@media (max-width: 1117px){
     .tournament-result{
         margin-left: 0px;
         font-size: 15px;
@@ -36,5 +55,64 @@ a:hover{
     .horizontal-margin{
         margin-left: 10px;
         margin-right: 10px;
+    }
+}
+
+@media (max-width: 542px){
+    .tournament-result{
+        font-size: 10px;
+        height: 40px;
+    }
+}
+
+.modal-background {
+    /* Hidden by default */
+   position: fixed; 
+   z-index: 1; /* Sit on top */
+   left: 0;
+   top: 0;
+   width: 100%; /* Full width */
+   height: 100%; /* Full height */
+   overflow: auto; /* Enable scroll if needed */
+   background-color: rgb(0,0,0); /* Fallback color */
+   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+   background-color: var(--neutral-background-color);
+   border: 3px solid var(--dark-background-color);
+   margin: auto;
+   margin-top: 35vh;
+   padding-right: 10px;
+   padding-left: 10px;
+   width: 600px; /* Could be more or less, depending on screen size */
+   height: 200px;
+}
+
+.modal-content h3{
+    margin: auto;
+    width: fit-content;
+    margin-top: 10px;
+}
+
+.confirm-buttons{
+    width: fit-content;
+    margin: auto;
+    margin-top: 40px;
+}
+
+.confirm-button{
+    display: inline-block;
+    width: 200px;
+    height: 50px;
+}
+
+@media (max-width: 1034px){
+    .modal-content{
+        width: 300px;
+    }
+
+    .confirm-button{
+        width: 110px;
     }
 }

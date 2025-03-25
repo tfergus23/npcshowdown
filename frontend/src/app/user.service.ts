@@ -71,4 +71,9 @@ export class UserService {
     const response = this.http.delete<PutResponse>(`${AppSettings.API_URL}user/${username}/trainer/${trainer}`, {withCredentials: true});
     return response;
   }
+
+  deleteTournamentFromUserProfile(username: string, tournamentID: number) : Observable<PutResponse>{
+    const response = this.http.delete<PutResponse>(`${AppSettings.API_URL}user/${username}/tournament/${tournamentID}`, {withCredentials: true});
+    return response;
+  }
 }
