@@ -14,6 +14,8 @@ import {CookieService} from 'ngx-cookie-service';
 export class NavbarComponent {
   dropdownDisplay: string = "none";
 
+  displayMenuDropdown: boolean = true;
+
   constructor(public app: AppComponent, private authService: AuthenticationService, private userService: UserService, private cookieService: CookieService){}
   ngOnInit(): void {
   }
@@ -69,5 +71,13 @@ export class NavbarComponent {
 
   hideDropDown(){
     //this.dropdownDisplay = "none";
+  }
+
+  showMenuDropDown(){
+
+  }
+
+  hideMenuDropDown(){
+
   }
 }

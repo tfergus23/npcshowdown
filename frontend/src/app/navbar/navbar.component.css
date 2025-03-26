@@ -1,6 +1,9 @@
 .navBar{
   background-color:var(--dark-background-color); 
-  overflow: hidden;
+  
+  display: flex;
+  align-items: center;
+  height: 60px;
 
   --dropdown-text-size: 14px;
 }
@@ -8,18 +11,52 @@
 .navBar .logo{
   padding-left: 20px;
   padding-right: 20px;
-  float: left;
 }
-.navBar .menu {
-  float: left;
-  padding-top: 22px;
+
+
+
+.menu{
+  position: relative;
+  display: inline-block;
+  width: 150px;
+  text-align: center;
+}
+
+.menu a{
+  display: block;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.menu-dropdown{
+  background-color: var(--dark-background-color);
+  width: 150px;
+  display: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.menu-dropdown a{
+  display: block;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.menu-dropdown a:hover{
+  background-color: var(--light-background-color);
+  text-decoration: underline;
+}
+
+
+
+.menu:hover .menu-dropdown{
+  display: block;
 }
 
 .sign-up{
   margin-top: 22px;
   margin-right: 10px;
-  display: block;
-  float: right;
+  display: inline-block;
   width: fit-content;
 }
 
@@ -32,7 +69,7 @@
   width: fit-content;
   height: 100%;
   display: block;
-  float: right;
+  margin-left: auto;
   
 
 }
@@ -54,6 +91,7 @@
 .login {
   margin-top: 15px;
   width: fit-content;
+  display: inline-block;
 }
 
 .signed-in:hover{
@@ -121,4 +159,47 @@ input{
 }
 .logout :hover{
   text-decoration: underline, red;
+}
+
+@media (max-width: 1040px){
+  .navBar .logo-img{
+    content: url('../../assets/npcs_logo_small.png');
+  }
+
+  .login input{
+    width: 150px;
+  }
+
+  .menu {
+    width: 100px;
+  }
+
+  .menu-dropdown {
+    width: 100px;
+  }
+}
+
+@media (max-width: 745px) {
+  .login input{
+    width: 80px;
+  }
+  
+  .login button{
+    display: none;
+    width: 40px;
+    font-size: 12px;
+  }
+
+  .sign-up{
+    font-size: 12px;
+  }
+
+  .menu {
+    font-size: 12px;
+    width: 75px;
+  }
+
+  .menu-dropdown {
+    width: 75px;
+  }
 }

@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- menu dropdown
 - message system
 - update email
 - change password
@@ -15,6 +14,8 @@
 - align buttons properly on home
 - box sprites dont show up on results view
 - change user profile URL
+- NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '▶'. Current value: '▼'. on create-trainer
+- navbar scaling
 - mobile pass
 
 ### Extra
