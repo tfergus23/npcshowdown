@@ -577,3 +577,31 @@ bool MariaDBConnection::tournamentTrainerExists(size_t trainer){
 
     return results->rowsCount();
 }
+
+void MariaDBConnection::updateUserEmail(const std::string& username, const std::string& newEmail){
+    std::unique_ptr<sql::PreparedStatement> updateStmnt(conn->prepareStatement("update user set email = ? where name = ?"));
+
+    updateStmnt->setString(1, newEmail);
+    updateStmnt->setString(2, username);
+
+    delete updateStmnt->executeQuery();
+}
+
+bool MariaDBConnection::isUserPasswordCorrect(const std::string& username, const std::string& password){
+    std::string hash = sha256(password);
+    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select id from user where name = ? and password = ?"));
+    selectStmnt->setString(1, username);
+    selectStmnt->setString(2, hash);
+
+    std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
+    return results->rowsCount();
+}
+
+void MariaDBConnection::updateUserPassword(const std::string& username, const std::string& newPassword){
+    std::string hash = sha256(newPassword);
+    std::unique_ptr<sql::PreparedStatement> updateStmnt(conn->prepareStatement("update user set password = ?, lastPasswordChange = NOW() where name = ?"));
+    updateStmnt->setString(1, hash);
+    updateStmnt->setString(2, username);
+
+    delete updateStmnt->executeQuery();
+}

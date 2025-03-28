@@ -14,6 +14,7 @@ body{
     overflow: hidden;
     visibility: hidden;
     font-size: 16px;
+    z-index: 999;
 }
 
 @media(max-width: 518px){

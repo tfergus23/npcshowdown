@@ -59,6 +59,8 @@ export class NavbarComponent {
         this.app.showMessage("Session expired", MessageType.ERROR);
       }
       else{
+        this.dropdownDisplay = "none";
+        this.app.logoutUser();
         this.app.showMessage("Session expired", MessageType.ERROR);
       }
     });

@@ -6,16 +6,40 @@
             <span class="bold">Account Created:</span> {{this.app.loggedInUser?.accountCreated}}
         </div>
         <div class="change-password">
-            <button>Change Password</button>
+            <button (click)="this.openPasswordModal()">Change Password</button>
             <div>Last changed: {{this.app.loggedInUser?.lastPasswordChange}}</div>
         </div>
         <div class="email">
             <div class="email-line"><span class="bold">Email:</span></div>
-            <input class="email-line" value="{{this.app.loggedInUser?.email}}" type="text">
-            <button>Update</button>
+            <input id="email-input" class="email-line" value="{{this.app.loggedInUser?.email}}" type="text">
+            <button (click)="this.updateEmail()">Update</button>
         </div>
         <div>
             <button class="delete-btn">Delete Account</button>
+        </div>
+    </div>
+</div>
+
+<div [hidden]="this.hideChangePasswordModal" id="modal-background" (mousedown)="this.closePasswordModal($event)"   class="modal-background">
+    <div [hidden]="this.hideChangePasswordModal" class="modal-content" (mousedown)="$event.stopPropagation()">
+        <h2>Change Password</h2>
+        <div class="password-form">
+            <div class="form-item">
+                <label>Current Password: </label>
+                <input id="current-password" type="password">
+            </div>
+            <div class="form-item">
+                <label>New Password: </label>
+                <input id="new-password" type="password">
+            </div>
+            <div class="form-item">
+                <label>Repeat Password: </label>
+                <input id="repeat-password" type="password">
+            </div>
+        </div>
+        <div class="buttons">
+            <button (click)="this.updatePassword()" style="margin-right: 20px; background-color: rgb(0,255,0);">Change Password</button>
+            <button (click)="this.closePasswordModal($event)" style="margin-left:  20px; background-color: rgb(255,0,0);">Cancel</button>
         </div>
     </div>
 </div>

@@ -1,13 +1,15 @@
 ## App
 ### MVP
-- update email
-- change password
 - sign up
 - view results from file
+- use message box everywhere
 - password reset
+- delete account
 - news section on homepage
 - contact section on homepage
 - app settings file from server
+- Add from my trainers on tournament view
+- create trainer error messages
 - create trainer resize issues
 - fix user dropdown
 - fix popup on results screen

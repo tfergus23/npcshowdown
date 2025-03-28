@@ -248,6 +248,88 @@ NPCS_API_Server::NPCS_API_Server() {
         res.Send(response.dump());
     });
 
+    app.Add_Handler("PUT", authorizedRoute, "/email", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        std::string problems = validateEmailUpdateRequest(request);
+
+        if (problems != ""){
+            if (problems[problems.size() - 1] == '\n'){
+                problems.pop_back();
+            }
+            response["message"] = problems;
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+        
+        db.updateUserEmail(req.path_params.at("username"), request["newEmail"].get<std::string>());
+        response["success"] = true;
+        response["message"] = "OK";
+        res.Send(response.dump());
+    });
+
+    app.Add_Handler("PUT", authorizedRoute, "/password", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        std::string problems = validateUpdatePasswordRequest(request);
+
+        if (problems != ""){
+            if (problems[problems.size() - 1] == '\n'){
+                problems.pop_back();
+            }
+            response["message"] = problems;
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        std::string currentPassword = request["currentPassword"].get<std::string>();
+        std::string newPassword = request["newPassword"].get<std::string>();
+
+        if (currentPassword == newPassword){
+            response["message"] = "New password is the same as the old password.";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (!db.isUserPasswordCorrect(req.path_params.at("username"), currentPassword)){
+            response["message"] = "Incorrect password.";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        db.updateUserPassword(req.path_params.at("username"), newPassword);
+
+        response["success"] = true;
+        response["message"] = "OK";
+        res.Send(response.dump());
+    });
+
     app.Add_Handler("GET", baseRoute, "/data/species", [](const HTTP_Request& req, HTTP_Response& res){
         res.Send(SPECIES_DATA_RESPONSE);
     });

@@ -12,6 +12,8 @@ std::string validateTrainerJSON(const json& json, const std::string& trainerNumb
 std::string validateTournamentRequest(const json& json);
 std::string validateSaveTournamentRequest(const json& json);
 std::string validateAuthRequestSchema(const json& json);
+std::string validateEmailUpdateRequest(const json& json);
+std::string validateUpdatePasswordRequest(const json& json);
 size_t seedFromString(const std::string& seedString);
 std::string generateUUID();
 std::string sha256(const std::string& str);

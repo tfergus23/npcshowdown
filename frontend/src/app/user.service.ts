@@ -76,4 +76,14 @@ export class UserService {
     const response = this.http.delete<PutResponse>(`${AppSettings.API_URL}user/${username}/tournament/${tournamentID}`, {withCredentials: true});
     return response;
   }
+
+  updateUserEmail(username: string, newEmail: string) : Observable<PutResponse>{
+    const response = this.http.put<PutResponse>(`${AppSettings.API_URL}user/${username}/email`, {newEmail: newEmail}, {withCredentials: true});
+    return response;
+  }
+
+  updateUserPassword(username: string, currentPassword: string, newPassword: string) : Observable<PutResponse> {
+    const response = this.http.put<PutResponse>(`${AppSettings.API_URL}user/${username}/password`, {newPassword: newPassword, currentPassword: currentPassword}, {withCredentials: true});
+    return response;
+  }
 }
