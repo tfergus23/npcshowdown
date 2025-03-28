@@ -24,6 +24,7 @@ import { UserTournamentsComponent } from './user-tournaments/user-tournaments.co
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { UserViewComponent } from './user-view/user-view.component';
 import { UserTrainersModalComponent } from './user-trainers-modal/user-trainers-modal.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { UserTrainersModalComponent } from './user-trainers-modal/user-trainers-
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UserService } from '../user.service';
-import { AppComponent } from '../app.component';
+import { AppComponent, MessageType } from '../app.component';
 import User from 'src/User';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../authentication.service';
@@ -23,38 +23,43 @@ export class NavbarComponent {
     const username: string = (document.getElementById("user_input") as HTMLInputElement).value;
     const password: string = (document.getElementById("password_input") as HTMLInputElement).value;
     if (username == "" || password == ""){
+      this.app.showMessage("Please enter your username and password.", MessageType.ERROR);
       return;
     }
     const authResponse = this.authService.getToken(username,password);
     authResponse.subscribe((res) =>{
       if (res.success){
         this.app.setUserData(username);
+        this.app.showMessage("Login successful!", MessageType.INFO);
       }
       else{
-        console.error(res.message);
+        this.app.showMessage(res.message, MessageType.ERROR);
       }
     }, (error) => {
-      console.error(error.error.message);
+      this.app.showMessage(error.error.message, MessageType.ERROR)
     });
   }
   logout(){
     if (localStorage.getItem('user') == null){
       this.dropdownDisplay = "none";
       this.app.logoutUser();
+      this.app.showMessage("Logout successful!", MessageType.INFO);
       return;
     }
     this.userService.logOut(localStorage.getItem('user') as string).subscribe((res) =>{
       if (res.success){
         this.dropdownDisplay = "none";
         this.app.logoutUser();
+        this.app.showMessage("Logout successful!", MessageType.INFO);
       }
     }, (error) =>{
       if (error.status == 401){
         this.dropdownDisplay = "none";
         this.app.logoutUser();
+        this.app.showMessage("Session expired", MessageType.ERROR);
       }
       else{
-        console.error(error);
+        this.app.showMessage("Session expired", MessageType.ERROR);
       }
     });
 

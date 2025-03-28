@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- message system
 - update email
 - change password
 - sign up
@@ -8,6 +7,7 @@
 - password reset
 - news section on homepage
 - contact section on homepage
+- app settings file from server
 - create trainer resize issues
 - fix user dropdown
 - fix popup on results screen

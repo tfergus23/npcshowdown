@@ -4,7 +4,7 @@ import DataLists from 'src/DataLists';
 import { CreatePokemonComponent } from '../create-pokemon/create-pokemon.component';
 import Trainer, { createEmptyTrainer } from 'src/Trainer';
 import Pokemon, { createEmptyPokemon } from 'src/Pokemon';
-import { AppComponent } from '../app.component';
+import { AppComponent, MessageType } from '../app.component';
 import { JsonpInterceptor } from '@angular/common/http';
 import { CreateTournamentComponent } from '../create-tournament/create-tournament.component';
 import { TournamentResult } from 'src/TournamentResultSet';
@@ -219,17 +219,17 @@ export class CreateTrainerComponent {
   saveToUserProfile(){
     if (this.app.loggedInUser)
     this.userService.addTrainerToUserProfile(this.app.loggedInUser.name, this.trainer).subscribe((res) => {
-      console.log(`Success! Saved to ${res.id}`)
+      this.app.showMessage(`Success! Saved to ${res.id}`, MessageType.INFO);
     }, 
     (error) =>{
       if (error.status == 409){
-        console.error(error.error.message);
+        this.app.showMessage(error.error.message, MessageType.ERROR);
       }
       else if (error.status == 401){
         this.app.logoutUser();
       }
       else{
-        console.error(error);
+        this.app.showMessage(error.error.message, MessageType.ERROR);
       }
     });
   }
