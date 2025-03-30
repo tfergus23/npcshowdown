@@ -1,0 +1,31 @@
+.container{
+  height: 100px;  
+  background-color: var(--dark-background-color);
+  margin-top: 10px;
+}
+
+.column{
+    height: 100%;
+    width: 150px;
+    display: inline-block;
+}
+
+.row{
+    margin: auto;
+    width: 75%;
+}
+
+@media (max-width: 497px){
+    .row{
+        width: 100%;
+    }
+}
+
+.padding{
+    display: inline-block;
+    width: 50px;
+}
+
+a:hover{
+    text-decoration: underline;
+}

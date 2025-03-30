@@ -3,11 +3,9 @@
 - sign up
 - view results from file
 - use message box everywhere
-- password reset
+- remove email from app
 - delete account
 - news section on homepage
-- contact section on homepage
-- app settings file from server
 - Add from my trainers on tournament view
 - create trainer error messages
 - create trainer resize issues
@@ -17,7 +15,6 @@
 - box sprites dont show up on results view
 - change user profile URL
 - NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '▶'. Current value: '▼'. on create-trainer
-- navbar scaling
 - mobile pass
 
 ### Extra

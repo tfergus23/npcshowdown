@@ -1,5 +1,6 @@
 <app-navbar></app-navbar>
 <app-content></app-content>
+<app-footer></app-footer>
 <div class="messages">
     <div (mouseenter)="this.stopHideCountdown()" (mouseleave)="this.startMessageHideCountdown()" [ngStyle]="{'background-color': this.color}" [@fade]="this.hideMessage ? 'hidden' : 'visible'" class="message">
         <label>{{currentMessage}}</label>
