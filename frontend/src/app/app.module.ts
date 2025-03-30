@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -25,6 +25,11 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { UserViewComponent } from './user-view/user-view.component';
 import { UserTrainersModalComponent } from './user-trainers-modal/user-trainers-modal.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { AppConfigService } from './app-config.service';
+
+function initializeApp(appConfigService: AppConfigService) {
+  return () => appConfigService.loadAppConfig();
+}
 
 @NgModule({
   declarations: [
@@ -56,7 +61,15 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     FormsModule,
     BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [
+    AppConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [AppConfigService],
+      multi: true
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

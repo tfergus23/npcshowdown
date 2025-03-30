@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AppSettings } from 'src/AppSettings';
+import { AppConfigService } from './app-config.service';
 
 interface AuthResponse{
   success: boolean;
@@ -15,10 +15,10 @@ interface AuthResponse{
 
 export class AuthenticationService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private config: AppConfigService) { }
 
   getToken(username: string, password: string): Observable<AuthResponse>{
-    const response = this.http.post<AuthResponse>(AppSettings.API_URL + 'auth', {username: username, password: password}, {headers:{'Content-Type': 'application/json'}, withCredentials: true});
+    const response = this.http.post<AuthResponse>(this.config.getConfig().apiURL + 'auth', {username: username, password: password}, {headers:{'Content-Type': 'application/json'}, withCredentials: true});
     return response;
   }
 }
