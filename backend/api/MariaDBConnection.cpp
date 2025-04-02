@@ -605,3 +605,11 @@ void MariaDBConnection::updateUserPassword(const std::string& username, const st
 
     delete updateStmnt->executeQuery();
 }
+
+size_t MariaDBConnection::createUser(const std::string& username, const std::string& password){
+    std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into user (name, password, accountCreated, lastPasswordChange) values (?, ?, NOW(), NOW())"));
+    insertStmnt->setString(1, username);
+    insertStmnt->setString(2, sha256(password));
+
+    return executeInsertAndGetID(insertStmnt.get());
+}

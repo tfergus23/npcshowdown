@@ -10,10 +10,10 @@
 #include <iomanip>
 #include <fstream>
 #include <openssl/evp.h>
+#include "tflib/strings.h"
 
-const int MAX_NAME_SIZE = 64;
+const int MAX_NAME_SIZE = 16;
 const int MIN_PASSWORD_LENGTH = 8;
-const int MAX_PASSWORD_LENGTH = 32;
 const std::hash<std::string> hasher;
 const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
 
@@ -450,12 +450,36 @@ std::string validateUpdatePasswordRequest(const json& json){
         return problems;
     }
 
-    if (json["newPassword"].get<std::string>().size() > MAX_PASSWORD_LENGTH){
-        problems += "Password cannot be longer than " + std::to_string(MAX_PASSWORD_LENGTH) + " characters.";
+    if (json["newPassword"].get<std::string>().size() < MIN_PASSWORD_LENGTH){
+        problems += "Passwords must be at least " + std::to_string(MIN_PASSWORD_LENGTH) + " characters.\n";
     }
 
-    if (json["newPassword"].get<std::string>().size() < MIN_PASSWORD_LENGTH){
-        problems += "Passwords must be at least " + std::to_string(MIN_PASSWORD_LENGTH) + " characters.";
+    return problems;
+}
+
+std::string validateCreateUserRequest(const json& json){
+    std::string problems = "";
+
+    problems += checkForString(json, "", "username");
+    problems += checkForString(json, "", "password");
+
+    if (problems != ""){
+        return problems;
+    }
+
+    std::string username = tflib::trim(json["username"].get<std::string>());
+    std::string password = json["password"].get<std::string>();
+
+    if (username.find(' ') != std::string::npos){
+        problems += "Usernames cannot have spaces.\n";
+    }
+
+    if (username.size() > MAX_NAME_SIZE){
+        problems += "Usernames cannot be longer than " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
+    }
+
+    if (password.size() < MIN_PASSWORD_LENGTH){
+        problems += "Passwords must be at least " + std::to_string(MIN_PASSWORD_LENGTH) + " characters.\n";
     }
 
     return problems;

@@ -45,7 +45,7 @@ CREATE TABLE trainer (
     tournament bigint unsigned,
     FOREIGN KEY (tournament) 
         REFERENCES tournament(id) on delete cascade,
-    name varchar(32),
+    name varchar(16),
     trainerLevel tinyint
 );
 

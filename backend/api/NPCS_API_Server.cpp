@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <mutex>
+#include "tflib/strings.h"
 
 
 using namespace tfhttp;
@@ -723,6 +724,49 @@ NPCS_API_Server::NPCS_API_Server() {
             res.Send(response.dump());
             return;
         }
+    });
+
+    app.Add_Handler("POST", baseRoute, "/user", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        response["id"] = -1;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+        std::string problems = validateCreateUserRequest(request);
+        if (problems != ""){
+            if (problems[problems.size() - 1] == '\n'){
+                problems.pop_back();
+            }
+            response["message"] = problems;
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        std::string username = tflib::trim(request["username"].get<std::string>());
+        std::string password = request["password"].get<std::string>();
+
+        if (db.userIdFromName(username)){
+            response["message"] = "Sorry, that username is taken.";
+            res.Set_Status(409);
+            res.Send(response.dump());
+            return;
+        }
+
+        size_t userID = db.createUser(username, password);
+
+        response["success"] = true;
+        response["id"] = userID;
+        response["message"] = "OK";
+        res.Send(response.dump());
     });
 
 }

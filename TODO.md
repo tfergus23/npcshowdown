@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- sign up
 - view results from file
 - use message box everywhere
 - remove email from app
@@ -9,7 +8,10 @@
 - Add from my trainers on tournament view
 - create trainer error messages
 - create trainer resize issues
+- remove hardcoded localhost from Set-Cookie header
 - fix user dropdown
+- button spinners
+- fix footer
 - fix popup on results screen
 - align buttons properly on home
 - box sprites dont show up on results view

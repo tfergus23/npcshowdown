@@ -1,1 +1,13 @@
-<p>sign-up works!</p>
+<div *ngIf="!this.app.loggedInUser" class="container">
+    <h1>Sign Up</h1>
+    <div class="field">
+        <label>Username:</label><input [(ngModel)]="this.fields.username">
+    </div>
+    <div class="field">
+        <label>Password:</label><input type="password" [(ngModel)]="this.fields.password">
+    </div>
+    <div class="field">
+        <label>Confirm Password:</label><input type="password" [(ngModel)]="this.fields.confirmPassword">
+    </div>
+    <button (click)="this.submitCreateUser()">Create Account</button>
+</div>

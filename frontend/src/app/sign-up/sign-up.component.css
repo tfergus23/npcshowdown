@@ -1,0 +1,40 @@
+.container{
+    margin: auto;
+    margin-bottom: 560px;
+    width: fit-content;
+}
+
+h1{
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 40px;
+    margin-top: 10px;
+}
+
+.field{
+    margin: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+label{
+    font-size: 17px;
+    width: 150px;
+    display: inline-block;
+    text-align: right;
+    margin-right: 5px;
+}
+
+input{
+    height: 25px;
+    width: 220px;
+    font-size: 17px;
+}
+
+button{
+    width: 250px;
+    height: 50px;
+    margin: auto;
+    display: block;
+    margin-top: 20px;
+}

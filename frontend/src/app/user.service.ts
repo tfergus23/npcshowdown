@@ -86,4 +86,9 @@ export class UserService {
     const response = this.http.put<PutResponse>(`${this.config.getConfig().apiURL}user/${username}/password`, {newPassword: newPassword, currentPassword: currentPassword}, {withCredentials: true});
     return response;
   }
+
+  createAccount(username: string, password: string) : Observable<PostResponse> {
+    const response = this.http.post<PostResponse>(`${this.config.getConfig().apiURL}user`, {username: username, password: password}, {withCredentials: true});
+    return response;
+  }
 }

@@ -55,6 +55,7 @@ public:
     void updateUserEmail(const std::string& username, const std::string& newEmail);
     bool isUserPasswordCorrect(const std::string& username, const std::string& password);
     void updateUserPassword(const std::string& username, const std::string& newPassword);
+    size_t createUser(const std::string& username, const std::string& password);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
 private:
