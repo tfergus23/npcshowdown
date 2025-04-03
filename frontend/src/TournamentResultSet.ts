@@ -24,3 +24,13 @@ export interface TournamentResultSet{
     name: string,
     dateRan: string
 }
+
+
+export function isResultSet(data: any) : boolean{
+    return data.results && Array.isArray(data.results) &&
+           data.trainers && Array.isArray(data.trainers) &&
+           (!data.user || (data.user && typeof(data.user) == 'string')) &&
+           data.id && typeof(data.id) == 'number' &&
+           data.name && typeof(data.name) == 'string' &&
+           data.dateRan && typeof(data.dateRan) == 'string';
+}

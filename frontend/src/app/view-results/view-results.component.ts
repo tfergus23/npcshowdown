@@ -1,11 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TournamentResultSet } from 'src/TournamentResultSet';
 import { BattleService } from '../battle.service';
 import DataLists from 'src/DataLists';
 import { DataService } from '../data.service';
 import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.component';
-import { AppComponent } from '../app.component';
+import { AppComponent, MessageType } from '../app.component';
 import { UserService } from '../user.service';
 import Trainer from 'src/Trainer';
 
@@ -21,8 +21,8 @@ const SORT_BEST_WIN = 4;
   styleUrls: ['./view-results.component.css']
 })
 export class ViewResultsComponent {
-  tournamentID: number;
-  results!: TournamentResultSet;
+  tournamentID: string | null;
+  @Input() results?: TournamentResultSet;
   dataLists!: DataLists;
   mostRecentSort: number = -1;
   errorMessage: string = "";
@@ -30,8 +30,8 @@ export class ViewResultsComponent {
   @ViewChild('logView') logView!: BattleLogViewComponent;
   userTournaments: Array<TournamentResultSet> | undefined;
 
-  constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService){
-    this.tournamentID = Number(route.snapshot.paramMap.get('id'));
+  constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router){
+    this.tournamentID = route.snapshot.paramMap.get('id');
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
@@ -48,17 +48,19 @@ export class ViewResultsComponent {
       console.error(error);
     });
 
+    if (this.results) return;
+
     // Using two arrow functions here because apparently functions have their own 'this'
     this.interval = window.setInterval(() => {
-      this.battleService.getTournamentResults(this.tournamentID).subscribe(
+      this.battleService.getTournamentResults(Number(this.tournamentID)).subscribe(
         (response) => {
           if (response.success){
-            this.results = response.data;
+            this.results = response.data as TournamentResultSet;
             this.results.trainers = new Array<Trainer>();
             clearInterval(this.interval);
             for (let i = 0; i < this.results.results.length; i++){
               this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
-                this.results.trainers[this.results.results[i].index] = res.data;
+                this.results!.trainers[this.results!.results[i].index] = res.data;
               })
             }
           }
@@ -73,15 +75,15 @@ export class ViewResultsComponent {
           this.errorMessage = error.error.message;
         });
     }, 1500);
-    this.battleService.getTournamentResults(this.tournamentID).subscribe(
+    this.battleService.getTournamentResults(Number(this.tournamentID)).subscribe(
       (response) => {
         if (response.success){
-          this.results = response.data;
+          this.results = response.data as TournamentResultSet;
           this.results.trainers = new Array<Trainer>();
           clearInterval(this.interval);
           for (let i = 0; i < this.results.results.length; i++){
             this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
-              this.results.trainers[this.results.results[i].index] = res.data;
+              this.results!.trainers[this.results!.results[i].index] = res.data;
             })
           }
         }
@@ -97,9 +99,13 @@ export class ViewResultsComponent {
     });
   }
 
+  ngOnDestroy(){
+    clearInterval(this.interval);
+  }
+
   userHasTournament() : boolean{
     for (let i = 0; i < this.userTournaments!.length; i++){
-      if (this.results.id == this.userTournaments![i].id){
+      if (this.results!.id == this.userTournaments![i].id){
         return true;
       }
     }
@@ -107,25 +113,25 @@ export class ViewResultsComponent {
   }
 
   sortByELO(){
-    this.results.results.sort((r1,r2) =>{
+    this.results!.results.sort((r1,r2) =>{
       return r2.elo - r1.elo;
     });
   }
 
   sortByWins(){
-    this.results.results.sort((r1,r2) =>{
+    this.results!.results.sort((r1,r2) =>{
       return r2.wins - r1.wins;
     });
   }
 
   sortByLosses(){
-    this.results.results.sort((r1,r2) =>{
+    this.results!.results.sort((r1,r2) =>{
       return r2.losses - r1.losses;
     });
   }
 
   sortByWLRatio(){
-    this.results.results.sort((r1,r2) =>{
+    this.results!.results.sort((r1,r2) =>{
       const ratio1 = r1.wins / r1.losses;
       const ratio2 = r2.wins / r2.losses;
       return ratio2 - ratio1;
@@ -133,15 +139,15 @@ export class ViewResultsComponent {
   }
 
   sortByBestWin(){
-    this.results.results.sort((r1,r2) =>{
+    this.results!.results.sort((r1,r2) =>{
       return r2.bestWinEloDiff - r1.bestWinEloDiff;
     });
   }
 
   sortByName(){
-    this.results.results.sort((r1,r2) =>{
-      const name1 = this.results.trainers[r1.index].name;
-      const name2 = this.results.trainers[r2.index].name;
+    this.results!.results.sort((r1,r2) =>{
+      const name1 = this.results!.trainers[r1.index].name;
+      const name2 = this.results!.trainers[r2.index].name;
 
       if (name1 > name2){
         return 1;
@@ -153,18 +159,18 @@ export class ViewResultsComponent {
   }
 
   sortByPokemonCount(){
-    this.results.results.sort((r1,r2) =>{
-      const count1 = this.results.trainers[r1.index].team.length;
-      const count2 = this.results.trainers[r2.index].team.length;
+    this.results!.results.sort((r1,r2) =>{
+      const count1 = this.results!.trainers[r1.index].team.length;
+      const count2 = this.results!.trainers[r2.index].team.length;
 
       return count2 - count1;
     });
   }
 
   sortByTrainerLevel(){
-    this.results.results.sort((r1,r2) =>{
-      const level1 = this.results.trainers[r1.index].trainerLevel;
-      const level2 = this.results.trainers[r2.index].trainerLevel;
+    this.results!.results.sort((r1,r2) =>{
+      const level1 = this.results!.trainers[r1.index].trainerLevel;
+      const level2 = this.results!.trainers[r2.index].trainerLevel;
 
       if (level1 > level2){
         return 1;
@@ -176,13 +182,13 @@ export class ViewResultsComponent {
   }
 
   sortByTrainerNumber(){
-    this.results.results.sort((r1,r2) =>{
+    this.results!.results.sort((r1,r2) =>{
       return r1.index - r2.index;
     });
   }
 
   addTournamentToUser(){
-    this.userService.addTournamentToUserProfile(this.app.loggedInUser!.name, this.results.id).subscribe((res) =>{
+    this.userService.addTournamentToUserProfile(this.app.loggedInUser!.name, this.results!.id).subscribe((res) =>{
       this.app.setUserData(this.app.loggedInUser!.name);
     },
     (error) =>{
@@ -200,7 +206,7 @@ export class ViewResultsComponent {
       const data = window.URL.createObjectURL(newBlob);
       const link = document.createElement("a");
       link.href = data;
-      link.download = `tournament${this.results.id}.json`; 
+      link.download = `tournament${this.results!.id}.json`; 
       link.click();
       link.remove();
     }

@@ -79,33 +79,25 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user){
     tournamentRequestThreadCounter = tournamentRequestThreadCounter % max_tournament_threads;
     threadCounterMutex.unlock();
     mutex.lock();
-    std::cout << "Queing up a tournament on thread #" << threadNumber << '\n';
     idToThreadMutex.lock();
     idToThread[id] = threadNumber;
     idToThreadMutex.unlock();
+    std::cout << "Queing up a tournament on thread #" << threadNumber << '\n';
     queue.push_back(request);
     mutex.unlock();
 
     return id;
 }
 
-int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID){
-    idToThreadMutex.lock();
-    int threadNumber = idToThread.at(tournamentID);
-    idToThreadMutex.unlock();
+int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID, int threadNumber){
     auto& queue = queuedTournaments[threadNumber];
-    auto& mutex = queuedTournamentMutexes[threadNumber];
-
-    mutex.lock();
     int pos = 0;
     for(const auto& request : queue){
         if (request.id == tournamentID){
-            mutex.unlock();
             return pos;
         }
         pos++;
     }
-    mutex.unlock();
     return -1;
 }
 
@@ -469,31 +461,79 @@ NPCS_API_Server::NPCS_API_Server() {
             res.Send(response.dump());
             return;
         }
-        auto trQueryResult = db.getTournament(tournamentID);
-        if (trQueryResult.has_value()){
-            const TournamentResults& tr = trQueryResult.value();
-            if (!tr.ready){
-                int position = findTournamentPositionInQueue(tournamentID);
-                if (position > 0){
-                    response["message"] = "Please wait. Your tournament is in queue at position " + std::to_string(position) + ".";
-                }
-                else{
-                    response["message"] = "Please wait. Your tournament is currently being simulated.";
-                }
-                response["success"] = true; // TODO: This should probably be false
-                res.Set_Status(404); // TODO: What code should this be?
+        int threadNumber;
+        try{
+            std::unique_lock lk(idToThreadMutex);
+            threadNumber = idToThread.at(tournamentID);
+        }
+        catch (const std::out_of_range& e){
+            threadNumber = -1;
+        }
+        if (threadNumber >= 0){
+            std::unique_lock lk(queuedTournamentMutexes[threadNumber]);
+            int position = findTournamentPositionInQueue(tournamentID, threadNumber);
+            if (position > 0){
+                response["message"] = "Please wait. Your tournament is in queue at position " + std::to_string(position) + ".";
+                res.Set_Status(202);
+                response["success"] = true;
                 res.Send(response.dump());
                 return;
             }
-            response["success"] = true;
-            response["data"] = tr.toJSON(db);
-            res.Send(response.dump());
+            else if (position == 0){
+                response["message"] = "Please wait. Your tournament is currently being simulated.";
+                res.Set_Status(202);
+                response["success"] = true;
+                res.Send(response.dump());
+                return;
+            }
+            else{
+                auto trQueryResult = db.getTournament(tournamentID);
+                if (trQueryResult.has_value()){
+                    const TournamentResults& tr = trQueryResult.value();
+                    if (tr.ready){
+                        response["success"] = true;
+                        response["data"] = tr.toJSON(db);
+                        res.Send(response.dump());
+                        return;
+                    }
+                    else{
+                        throw std::runtime_error("Tournament wasn't ready: " + std::to_string(tournamentID));
+                    }
+                }
+                else{
+                    response["message"] = "Sorry, that tournament doesn't exist.";
+                    res.Set_Status(404);
+                    response["success"] = false;
+                    res.Send(response.dump());
+                    return;
+                }
+            }
         }
-        else {
-            response["message"] = "Sorry, that tournament doesn't exist.";
-            res.Set_Status(404);
-            res.Send(response.dump());
-            return;
+        else{
+            auto trQueryResult = db.getTournament(tournamentID);
+            if (trQueryResult.has_value()){
+                const TournamentResults& tr = trQueryResult.value();
+                if (tr.ready){
+                    response["success"] = true;
+                    response["data"] = tr.toJSON(db);
+                    res.Send(response.dump());
+                    return;
+                }
+                else{
+                    response["message"] = "Sorry, that tournament doesn't exist.";
+                    res.Set_Status(404);
+                    response["success"] = false;
+                    res.Send(response.dump());
+                    return;
+                }
+            }
+            else{
+                response["message"] = "Sorry, that tournament doesn't exist.";
+                res.Set_Status(404);
+                response["success"] = false;
+                res.Send(response.dump());
+                return;
+            }
         }
     });
 
@@ -796,9 +836,8 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         std::cout << "Starting tournament on thread #" << threadNumber << std::endl;
         queueMutex.lock();
         TournamentRequest req = queue.front();
-        json& request = req.requestJson;
-        queue.pop_front();
         queueMutex.unlock();
+        json& request = req.requestJson;
 
         std::vector<Trainer> trainers;
         trainers.reserve(request["trainers"].size());
@@ -811,13 +850,16 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         std::cout << "Simulating tournament...\n";
         Tournament tournament(trainers, rounds, seed);
         tournament.run();
-        std::cout << "Done simulating tournament.\n";
+        std::cout << "Done simulating " + std::to_string(req.id) + "\n";
         
         // Save tournament to DB
+        std::cout << "Saving " + std::to_string(req.id) + "\n";
         db.saveTournament(tournament, req.id);
-        idToThreadMutex.lock();
+        std::cout << "Saved " + std::to_string(req.id) + "\n";
+        std::unique_lock lk2(queueMutex);
+        queue.pop_front();
+        std::unique_lock lk(idToThreadMutex);
         idToThread.erase(req.id);
-        idToThreadMutex.unlock();
     }
     } catch (const std::exception& e){
         std::cerr << "ERROR: Uncaught exception on thread #" + std::to_string(threadNumber) + ":\n" + e.what() + "\nStopping.\n";

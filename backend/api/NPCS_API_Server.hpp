@@ -34,7 +34,7 @@ private:
     void waitForTournaments(uint32_t threadNumber);
     size_t createTournamentRequest(const json& json, size_t user);
     void startTournamentThreads();
-    int findTournamentPositionInQueue(size_t tournamentID);
+    int findTournamentPositionInQueue(size_t tournamentID, int threadNumber);
     void testTrainerSerialization();
 };
 

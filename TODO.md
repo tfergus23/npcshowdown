@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- view results from file
 - use message box everywhere
 - remove email from app
 - delete account

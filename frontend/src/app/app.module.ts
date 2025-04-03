@@ -27,6 +27,7 @@ import { UserTrainersModalComponent } from './user-trainers-modal/user-trainers-
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppConfigService } from './app-config.service';
 import { FooterComponent } from './footer/footer.component';
+import { ResultsLookupComponent } from './results-lookup/results-lookup.component';
 
 function initializeApp(appConfigService: AppConfigService) {
   return () => appConfigService.loadAppConfig();
@@ -55,6 +56,7 @@ function initializeApp(appConfigService: AppConfigService) {
     UserViewComponent,
     UserTrainersModalComponent,
     FooterComponent,
+    ResultsLookupComponent,
   ],
   imports: [
     BrowserModule,
