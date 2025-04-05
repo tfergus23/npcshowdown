@@ -470,23 +470,22 @@ NPCS_API_Server::NPCS_API_Server() {
             threadNumber = -1;
         }
         if (threadNumber >= 0){
+            // Tournament is being run currently, look it up in the queue
             std::unique_lock lk(queuedTournamentMutexes[threadNumber]);
             int position = findTournamentPositionInQueue(tournamentID, threadNumber);
-            if (position > 0){
-                response["message"] = "Please wait. Your tournament is in queue at position " + std::to_string(position) + ".";
-                res.Set_Status(202);
-                response["success"] = true;
-                res.Send(response.dump());
-                return;
-            }
-            else if (position == 0){
-                response["message"] = "Please wait. Your tournament is currently being simulated.";
+            if (position >= 0){
+                std::string message = position == 0 ? "Please wait. Your tournament is currently being simulated." : "Please wait. Your tournament is in queue at position " + std::to_string(position) + ".";
+                response["message"] = message;
                 res.Set_Status(202);
                 response["success"] = true;
                 res.Send(response.dump());
                 return;
             }
             else{
+                /*
+                If this block is ever reached, it should mean that the tournament just got removed from the queue
+                and we can assume that it has been saved to the DB, and it should be ready.
+                */
                 auto trQueryResult = db.getTournament(tournamentID);
                 if (trQueryResult.has_value()){
                     const TournamentResults& tr = trQueryResult.value();
@@ -497,19 +496,37 @@ NPCS_API_Server::NPCS_API_Server() {
                         return;
                     }
                     else{
+                        /*
+                        If the app is working properly, this block should never be reached. This should only ever
+                        be reached if a tournament just errored.
+                        */
+                    #ifdef NDEBUG
+                        response["message"] = "Sorry, that tournament doesn't exist.";
+                        res.Set_Status(404);
+                        response["success"] = false;
+                        res.Send(response.dump());
+                        return;
+                    #else
                         throw std::runtime_error("Tournament wasn't ready: " + std::to_string(tournamentID));
+                    #endif
                     }
                 }
                 else{
+                    //This block should never run. If a tournament was just in queue, it should have a record in the DB.
+                #ifdef NDEBUG
                     response["message"] = "Sorry, that tournament doesn't exist.";
                     res.Set_Status(404);
                     response["success"] = false;
                     res.Send(response.dump());
                     return;
+                #else
+                    throw std::runtime_error("Tournament was just in queue but somehow not in database: " + std::to_string(tournamentID));
+                #endif
                 }
             }
         }
         else{
+            // Tournament is not being run currently, look it up in the DB
             auto trQueryResult = db.getTournament(tournamentID);
             if (trQueryResult.has_value()){
                 const TournamentResults& tr = trQueryResult.value();
@@ -520,7 +537,8 @@ NPCS_API_Server::NPCS_API_Server() {
                     return;
                 }
                 else{
-                    response["message"] = "Sorry, that tournament doesn't exist.";
+                    // If the tournament isn't being run and its not ready, something went wrong with it. 
+                    response["message"] = "Sorry, something went wrong with this tournament. Please try sending it again with a different seed.";
                     res.Set_Status(404);
                     response["success"] = false;
                     res.Send(response.dump());
@@ -528,6 +546,7 @@ NPCS_API_Server::NPCS_API_Server() {
                 }
             }
             else{
+                // If its not being run and its not in the DB, it doesn't exist
                 response["message"] = "Sorry, that tournament doesn't exist.";
                 res.Set_Status(404);
                 response["success"] = false;
@@ -806,6 +825,25 @@ NPCS_API_Server::NPCS_API_Server() {
         response["success"] = true;
         response["id"] = userID;
         response["message"] = "OK";
+        res.Send(response.dump());
+    });
+
+    app.Add_Handler("DELETE", authorizedRoute, "/", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        std::string username = req.path_params.at("username");
+
+        bool result = db.deleteUser(username);
+
+
+        json response;
+        if (!result){
+            response["success"] = false;
+            response["message"] = "That user doesn't exist.";
+            res.Send(response.dump());
+            return;
+        }
+
+        response["success"] = true;
+        response["message"] = "User deleted successfully.";
         res.Send(response.dump());
     });
 

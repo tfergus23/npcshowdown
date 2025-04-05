@@ -613,3 +613,16 @@ size_t MariaDBConnection::createUser(const std::string& username, const std::str
 
     return executeInsertAndGetID(insertStmnt.get());
 }
+
+bool MariaDBConnection::deleteUser(const std::string& username){
+    size_t userID = userIdFromName(username);
+    if (!userID){
+        return false;
+    }
+
+    std::unique_ptr<sql::PreparedStatement> deleteStmnt(conn->prepareStatement("delete from user where id = ?"));
+    deleteStmnt->setUInt64(1, userID);
+
+    delete deleteStmnt->executeQuery();
+    return true;
+}
