@@ -36,7 +36,6 @@ export class CreateBattleComponent {
   }
 
   submit(){
-    console.log(this.pointerEvents);
     let seedValue = this.seed.nativeElement.querySelector('input')!.value.trim();
     this.battleService.postBattleRequest({
       trainer1: this.trainers.get(0)!.getJSON(),

@@ -49,12 +49,11 @@ export class ResultsLookupComponent {
             this.results = results;
           }
           else{
-            alert("Invalid results file.");
+            this.app.showMessage("Invalid results file.", MessageType.ERROR);
           }
         }
         catch(error){
-          console.log(error);
-          alert("Invalid results file.");
+          this.app.showMessage("Invalid results file.", MessageType.ERROR);
         }
 
       })

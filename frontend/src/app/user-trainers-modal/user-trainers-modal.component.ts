@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AppComponent } from '../app.component';
+import { AppComponent, MessageType } from '../app.component';
 import Trainer from 'src/Trainer';
 import { UserService } from '../user.service';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
@@ -25,7 +25,7 @@ export class UserTrainersModalComponent {
         this.trainers = res.data;
       }
       else{
-        console.error(res.message);
+        this.app.showMessage(res.message, MessageType.ERROR);
         this.close(new MouseEvent(''));
       }
     },
@@ -33,7 +33,7 @@ export class UserTrainersModalComponent {
       if (error.status == 401){
         this.app.logoutUser();
       }
-      console.error(error);
+      this.app.showMessage(error.error.message, MessageType.ERROR);
       this.close(new MouseEvent(''));
     });
     this.hidden = false;

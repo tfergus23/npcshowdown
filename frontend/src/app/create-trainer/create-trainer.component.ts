@@ -113,8 +113,7 @@ export class CreateTrainerComponent {
           this.selectedIndex = 0;
         }
         catch(error){
-          console.log(error);
-          alert("Invalid trainer file.");
+          this.app.showMessage("Invalid trainer file.", MessageType.ERROR);
         }
 
       })
@@ -252,7 +251,7 @@ export class CreateTrainerComponent {
         this.editing = false;
       }
       else{
-        console.error(res.message);
+        this.app.showMessage(res.message, MessageType.ERROR);
       }
     },
     (error) => {
@@ -260,7 +259,7 @@ export class CreateTrainerComponent {
         this.app.loggedInUser = undefined;
         localStorage.removeItem("user");
       }
-      console.error(error);
+      this.app.showMessage(error.error.message, MessageType.ERROR);
     });
   }
 
@@ -289,11 +288,11 @@ export class CreateTrainerComponent {
     this.showDeleteModal = false;
     this.userService.deleteUserTrainer(this.app.loggedInUser!.name, this.trainer.id!).subscribe(
     (res) =>{
-      console.log("deleted trainer successfully");
+      this.app.showMessage("Trained deleted from your profile.", MessageType.INFO);
       (this.parent as UserTrainersComponent).trainers! = (this.parent as UserTrainersComponent).trainers!.filter(trainer => trainer.id != this.trainer.id);
     },
     (error)=>{
-      console.error(error);
+      this.app.showMessage(error.error.message, MessageType.ERROR);
     })
   }
 

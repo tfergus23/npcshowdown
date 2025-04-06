@@ -41,7 +41,7 @@ export class AppComponent {
       }
     },(error) => {
       this.logoutUser();
-      console.error(error.error.message);
+      this.showMessage(error.error.message, MessageType.ERROR);
     });
   }
 

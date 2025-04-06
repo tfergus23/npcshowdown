@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AppComponent } from '../app.component';
+import { AppComponent, MessageType } from '../app.component';
 import Trainer from 'src/Trainer';
 import { UserService } from '../user.service';
 import DataLists from 'src/DataLists';
@@ -22,7 +22,7 @@ export class UserTrainersComponent {
     }, 
     (error) => {
       this.app.logoutUser();
-      console.error(error);
+      this.app.showMessage(error.error.message, MessageType.ERROR);
     });
 
     this.dataService.getAllData().subscribe((res) =>{

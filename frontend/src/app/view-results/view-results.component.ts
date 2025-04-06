@@ -45,7 +45,7 @@ export class ViewResultsComponent {
     }, 
     (error) =>{
       this.app.logoutUser();
-      console.error(error);
+      this.app.showMessage(error.error.message, MessageType.ERROR);
     });
 
     if (this.results) return;
@@ -195,7 +195,7 @@ export class ViewResultsComponent {
       if (error.status == 401){
         this.app.logoutUser();
       }
-      console.error(error);
+      this.app.showMessage(error.error.message, MessageType.ERROR);
     });
   }
     download(){

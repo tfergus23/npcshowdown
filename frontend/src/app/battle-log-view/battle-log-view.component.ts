@@ -13,7 +13,6 @@ export class BattleLogViewComponent {
   hide(){
     this.hidden = true;
     if (this.onHide){
-      console.log("calling onhide");
       this.onHide();
     }
   }

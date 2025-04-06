@@ -1,5 +1,5 @@
 import { Component, ViewChild, ViewContainerRef } from '@angular/core';
-import { AppComponent } from '../app.component';
+import { AppComponent, MessageType } from '../app.component';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
 import { DataService } from '../data.service';
 import DataLists from 'src/DataLists';
@@ -65,7 +65,7 @@ export class CreateTournamentComponent {
             }
           }
           catch(error){
-            console.log(error); // TODO: Show this to the user somehow.
+            this.app.showMessage("One or more files were not able to be imported.", MessageType.ERROR);
             if (i+1 == files!.length){
               this.importingTrainers = false;
             }
@@ -101,16 +101,21 @@ export class CreateTournamentComponent {
     };
     this.battleService.postTournamentRequest(request).subscribe((res) =>{
       this.redirectToTournamentResults(res.id);
-    }, (error) =>{
+    }, 
+    (error) =>{
       if (error.status == 401){
         request.user = undefined;
+        this.app.showMessage("Session expired. Please log in again.", MessageType.ERROR);
         this.app.logoutUser();
         this.battleService.postTournamentRequest(request).subscribe((res) =>{
           this.redirectToTournamentResults(res.id);
+        }, 
+        (err) => {
+          this.app.showMessage(err.error.message, MessageType.ERROR);
         });
       }
       else{
-        console.error(error);
+        this.app.showMessage(error.error.message, MessageType.ERROR);
       }
     });
   }

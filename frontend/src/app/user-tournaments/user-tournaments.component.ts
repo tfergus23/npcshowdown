@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AppComponent } from '../app.component';
+import { AppComponent, MessageType } from '../app.component';
 import { TournamentResultSet } from 'src/TournamentResultSet';
 import { UserService } from '../user.service';
 
@@ -25,7 +25,7 @@ export class UserTournamentsComponent {
       }, 
       (error) => {
         this.app.logoutUser();
-        console.error(error);
+        this.app.showMessage(error.error.message, MessageType.ERROR);
       });
   }
 
@@ -42,15 +42,15 @@ export class UserTournamentsComponent {
   deleteSelectedTournamentFromProfile(){
     this.userService.deleteTournamentFromUserProfile(this.app.loggedInUser!.name, this.tournamentToDelete).subscribe((res) =>{
       if (res.success){
-        console.log("Tournament has been removed from your profile.");
+        this.app.showMessage("Tournament has been removed from your profile.", MessageType.INFO);
         this.getUserTournaments();
       }
       else{
-        console.error(res.message);
+        this.app.showMessage(res.message, MessageType.ERROR);
       }
     },
     (error) => {
-      console.error(error);
+      this.app.showMessage(error.error.message, MessageType.ERROR);
     });
     this.closeDeleteModal();
   }
