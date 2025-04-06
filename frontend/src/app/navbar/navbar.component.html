@@ -9,6 +9,7 @@
             <a routerLink="/results">Results</a>
         </div>
     </div>
+    <a routerLink="/about" class="about">ABOUT</a>
     <div class="user-container">
         <a href="signup" *ngIf="!app.loggedInUser" class="sign-up">Sign Up</a>
         <button (click)="this.showDropDown()" (focusout)="this.hideDropDown()" *ngIf="app.loggedInUser" class="signed-in">

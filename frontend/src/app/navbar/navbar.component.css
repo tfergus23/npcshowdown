@@ -13,7 +13,12 @@
   padding-right: 20px;
 }
 
-
+.about{
+  color: aqua;
+}
+.about:hover{
+  text-decoration: underline;
+}
 
 .menu{
   position: relative;
@@ -197,6 +202,10 @@ input{
   .menu {
     font-size: 12px;
     width: 75px;
+  }
+
+  .about {
+    font-size: 12px
   }
 
   .menu-dropdown {

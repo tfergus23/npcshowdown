@@ -11,9 +11,11 @@ import { UserTournamentsComponent } from './user-tournaments/user-tournaments.co
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { UserViewComponent } from './user-view/user-view.component';
 import { ResultsLookupComponent } from './results-lookup/results-lookup.component';
+import { AboutComponent } from './about/about.component';
 
 const routes: Routes = [
   {path: "", component: HomeComponent},
+  {path: "about", component: AboutComponent},
   {path: "battle", component: CreateBattleComponent},
   {path: "tournament", component: CreateTournamentComponent},
   {path: "trainers", component: ViewTrainersComponent},

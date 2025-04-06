@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- news section on homepage
 - Add from my trainers on tournament view
 - create trainer error messages
 - create trainer resize issues
@@ -13,6 +12,7 @@
 - box sprites dont show up on results view
 - change user profile URL
 - NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '▶'. Current value: '▼'. on create-trainer
+- Remember create battle/tournament (save to localstorage)
 - mobile pass
 
 ### Extra

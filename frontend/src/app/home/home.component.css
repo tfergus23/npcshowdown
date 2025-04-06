@@ -1,6 +1,49 @@
 .menuButtons{
-    width: 85%;
+    width: 100%;
     padding-top: 2%;
     margin: auto;
     text-align: center;
+    width: 1280px;
+}
+
+
+
+.section{
+    text-align: left;
+    margin: auto;
+    width: 1280px;
+}
+
+h1{
+    margin: 20px;
+    margin-left: 5px;
+}
+
+.section-content{
+    border: 5px solid var(--primary-color);
+    background-color: var(--dark-background-color);
+    border-radius: 5px;
+    padding: 5px;
+    color: white;
+    margin: 5px;
+}
+
+@media (max-width: 1308px){
+    .menuButtons{
+        width: 639px;
+    }
+
+    .section{
+        width: 639px;
+    }
+}
+
+@media (max-width: 639px){
+    .menuButtons{
+        width: 100%;
+    }
+
+    .section{
+        width: 100%;
+    }
 }

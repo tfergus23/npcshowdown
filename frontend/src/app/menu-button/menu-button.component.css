@@ -6,12 +6,12 @@ a{
     border-style: solid;
     background-color: var(--neutral-background-color);
     color: var(--primary-color);
-    margin: 10px;
     font-size: 35px;
     display: inline-flex;
     justify-content: center;
     align-items: end;
     border-radius: 5px;
+    margin: 5px;
 }
 
 a:hover{

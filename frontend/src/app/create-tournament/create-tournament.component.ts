@@ -54,6 +54,7 @@ export class CreateTournamentComponent {
           if (i+1 == files!.length){
             this.importingTrainers = false;
           }
+          this.app.showMessage("One or more files were not able to be imported.", MessageType.ERROR);
           continue;
         }
         file?.text().then(text => {
