@@ -15,7 +15,7 @@
             <button (click)="this.updateEmail()">Update</button>
         </div>
         <div>
-            <button class="delete-btn">Delete Account</button>
+            <button (click)="this.openDeleteModal()" class="delete-btn">Delete Account</button>
         </div>
     </div>
 </div>
@@ -40,6 +40,31 @@
         <div class="buttons">
             <button (click)="this.updatePassword()" style="margin-right: 20px; background-color: rgb(0,255,0);">Change Password</button>
             <button (click)="this.closePasswordModal($event)" style="margin-left:  20px; background-color: rgb(255,0,0);">Cancel</button>
+        </div>
+    </div>
+</div>
+<div [hidden]="this.deleteStage < 1" class="delete-modal-background" (mousedown)="this.closeDeleteModal()">
+    <div (mousedown)="$event.stopPropagation()" [hidden]="this.deleteStage != 1" class="delete-modal-content">
+        <div style="margin: 10px;">
+            <p>
+                Are you sure you want to delete your account?
+            </p>
+            <p>
+                <b>All of your saved trainers will be deleted forever. Additionally, all tournaments you ran will be deleted immediately, meaning you and nobody else will be able to view them.</b>
+            </p>
+            <div class="buttons">
+                <button (click)="this.openConfirm()" style="background-color: rgb(0,255,0);">Yes</button><span style="margin-left: 20px;"></span><button (click)="this.closeDeleteModal()" style="background-color: rgb(255,0,0);">No</button>
+            </div>
+        </div>
+    </div>
+    <div (mousedown)="$event.stopPropagation()" [hidden]="this.deleteStage != 2" class="delete-modal-content">
+        <div style="margin: 10px;">
+            <p>
+                Are you <b>absolutely</b> sure you want to do this?
+            </p>
+            <div style="margin-top: auto;" class="buttons">
+                <button [ngStyle]="{'background-color': this.disableDeleteButton ? 'var(--dark-background-color)' : 'rgb(0,255,0)'}" [disabled]="this.disableDeleteButton" (click)="this.deleteAccount()" style="background-color: rgb(0,255,0);">Yes</button><span style="margin-left: 20px;"></span><button (click)="this.closeDeleteModal()" style="background-color: rgb(255,0,0);">No</button>
+            </div>
         </div>
     </div>
 </div>

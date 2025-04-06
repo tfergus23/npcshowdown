@@ -3,6 +3,7 @@ import { AppComponent, MessageType } from '../app.component';
 import { UserService } from '../user.service';
 import { CookieService } from 'ngx-cookie-service';
 import { resetFakeAsyncZone } from '@angular/core/testing';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -11,8 +12,10 @@ import { resetFakeAsyncZone } from '@angular/core/testing';
 })
 export class UserProfileComponent {
   hideChangePasswordModal: boolean = true;
+  deleteStage: number = 0;
+  disableDeleteButton: boolean = true;
 
-  constructor(public app: AppComponent, private userService: UserService, private cookieService: CookieService){}
+  constructor(public app: AppComponent, private userService: UserService, private cookieService: CookieService, private router: Router){}
 
   ngOnInit(){
     if (localStorage.getItem('user') != null)
@@ -78,6 +81,39 @@ export class UserProfileComponent {
       else{
         this.app.showMessage(error.error.message, MessageType.ERROR);
       }
+    });
+  }
+
+  openDeleteModal(){
+    this.deleteStage++;
+  }
+
+  closeDeleteModal(){
+    this.deleteStage = 0;
+  }
+
+  openConfirm(){
+    this.deleteStage++;
+    this.disableDeleteButton = true;
+    setTimeout(() => {
+      this.disableDeleteButton = false;
+    }, 1500)
+  }
+
+  deleteAccount(){
+    this.deleteStage = 0;
+    this.userService.deleteUser(this.app.loggedInUser!.name).subscribe((res) => {
+      if (res.success){
+        this.app.logoutUser();
+        this.router.navigateByUrl('/');
+        this.app.showMessage("Your account has been successfully deleted.", MessageType.INFO);
+      }
+      else{
+        this.app.showMessage(res.message, MessageType.ERROR);
+      }
+    },
+    (error) => {
+      this.app.showMessage(error.error.message, MessageType.ERROR);
     });
   }
 }

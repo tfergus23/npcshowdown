@@ -91,4 +91,9 @@ export class UserService {
     const response = this.http.post<PostResponse>(`${this.config.getConfig().apiURL}user`, {username: username, password: password}, {withCredentials: true});
     return response;
   }
+
+  deleteUser(username: string) : Observable<PutResponse> {
+    const response = this.http.delete<PutResponse>(`${this.config.getConfig().apiURL}user/${username}`, {withCredentials: true});
+    return response;
+  }
 }

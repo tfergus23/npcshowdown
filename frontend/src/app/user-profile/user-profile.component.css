@@ -71,7 +71,7 @@ button{
 
 .modal-content {
    background-color: var(--neutral-background-color);
-   border: 3px solid rgb(41, 41, 41);
+   border: 3px solid var(--dark-background-color);
    margin: 5% auto;
    margin-top: 25vh;
    padding-right: 10px;
@@ -126,4 +126,23 @@ h2{
     .password-form label{
         text-align: left;
     }
+}
+
+.delete-modal-background {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.delete-modal-content{
+    background-color: var(--neutral-background-color);
+    border: 3px solid var(--dark-background-color);
+    width: 400px;
+    height: fit-content;
+    margin: auto;
+    margin-top: 25vh;
 }
