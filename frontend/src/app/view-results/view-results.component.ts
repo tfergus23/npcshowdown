@@ -189,7 +189,21 @@ export class ViewResultsComponent {
 
   addTournamentToUser(){
     this.userService.addTournamentToUserProfile(this.app.loggedInUser!.name, this.results!.id).subscribe((res) =>{
-      this.app.setUserData(this.app.loggedInUser!.name);
+      if (res.success){
+        this.app.setUserData(this.app.loggedInUser!.name);
+        this.userService.getUserTournaments(localStorage.getItem('user') as string).subscribe((res) => {
+          if (res.success){
+            this.userTournaments = res.data;
+          }
+        }, 
+        (error) =>{
+          this.app.logoutUser();
+          this.app.showMessage(error.error.message, MessageType.ERROR);
+        });
+      }
+      else{
+        this.app.showMessage(res.message, MessageType.ERROR);
+      }
     },
     (error) =>{
       if (error.status == 401){
