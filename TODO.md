@@ -2,7 +2,6 @@
 ### MVP
 - use message box everywhere
 - remove email from app
-- delete account
 - news section on homepage
 - Add from my trainers on tournament view
 - create trainer error messages
