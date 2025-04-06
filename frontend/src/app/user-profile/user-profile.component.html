@@ -9,11 +9,6 @@
             <button (click)="this.openPasswordModal()">Change Password</button>
             <div>Last changed: {{this.app.loggedInUser?.lastPasswordChange}}</div>
         </div>
-        <div class="email">
-            <div class="email-line"><span class="bold">Email:</span></div>
-            <input id="email-input" class="email-line" value="{{this.app.loggedInUser?.email}}" type="text">
-            <button (click)="this.updateEmail()">Update</button>
-        </div>
         <div>
             <button (click)="this.openDeleteModal()" class="delete-btn">Delete Account</button>
         </div>

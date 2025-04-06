@@ -8,8 +8,7 @@ create table user (
     name varchar(16),
     password char(64),
     accountCreated DATE,
-    lastPasswordChange DATE,
-    email varchar(255)
+    lastPasswordChange DATE
 );
 
 create unique index user_name_index on user (name);
@@ -123,4 +122,4 @@ create table saved_tournaments (
 
 CREATE INDEX saved_tournaments_user_index on saved_tournaments(user);
 
-insert into user (name, password, accountCreated, lastPasswordChange, email) values ("admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", NOW(), NOW(), "guybro@dudemail.com");
+insert into user (name, password, accountCreated, lastPasswordChange) values ("admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", NOW(), NOW());

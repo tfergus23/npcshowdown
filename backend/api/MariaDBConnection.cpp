@@ -457,7 +457,7 @@ void MariaDBConnection::executeInsert(sql::PreparedStatement* stmnt){
 }
 
 std::optional<User> MariaDBConnection::getUserData(const std::string& username){
-    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select id,name,accountCreated,lastPasswordChange,email from user where name = ?"));
+    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select id,name,accountCreated,lastPasswordChange from user where name = ?"));
     selectStmnt->setString(1, username);
     std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
     std::optional<User> result;
@@ -470,8 +470,7 @@ std::optional<User> MariaDBConnection::getUserData(const std::string& username){
         results->getUInt64(1),
         std::string(results->getString(2)),
         std::string(results->getString(3)),
-        std::string(results->getString(4)),
-        std::string(results->getString(5))
+        std::string(results->getString(4))
     );
 
     return result;
@@ -576,15 +575,6 @@ bool MariaDBConnection::tournamentTrainerExists(size_t trainer){
     std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
 
     return results->rowsCount();
-}
-
-void MariaDBConnection::updateUserEmail(const std::string& username, const std::string& newEmail){
-    std::unique_ptr<sql::PreparedStatement> updateStmnt(conn->prepareStatement("update user set email = ? where name = ?"));
-
-    updateStmnt->setString(1, newEmail);
-    updateStmnt->setString(2, username);
-
-    delete updateStmnt->executeQuery();
 }
 
 bool MariaDBConnection::isUserPasswordCorrect(const std::string& username, const std::string& password){

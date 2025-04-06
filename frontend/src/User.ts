@@ -6,6 +6,5 @@ export default interface User{
     id: number;
     token: string;
     accountCreated: string,
-    lastPasswordChange: string,
-    email: string
+    lastPasswordChange: string
 }

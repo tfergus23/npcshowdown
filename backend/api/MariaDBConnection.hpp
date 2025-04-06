@@ -25,7 +25,6 @@ struct User{
     std::string name;
     std::string accountCreated;
     std::string lastPasswordChange;
-    std::string email;
 };
 
 class MariaDBConnection{
@@ -52,7 +51,6 @@ public:
     int userTrainerCount(size_t user);
     bool userHasTournamentSaved(size_t user, size_t tournament);
     bool tournamentTrainerExists(size_t trainer);
-    void updateUserEmail(const std::string& username, const std::string& newEmail);
     bool isUserPasswordCorrect(const std::string& username, const std::string& password);
     void updateUserPassword(const std::string& username, const std::string& newPassword);
     size_t createUser(const std::string& username, const std::string& password);

@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- remove email from app
 - news section on homepage
 - Add from my trainers on tournament view
 - create trainer error messages
