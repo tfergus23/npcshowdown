@@ -221,14 +221,9 @@ export class CreateTrainerComponent {
       this.app.showMessage(`Success! Saved to ${res.id}`, MessageType.INFO);
     }, 
     (error) =>{
-      if (error.status == 409){
-        this.app.showMessage(error.error.message, MessageType.ERROR);
-      }
-      else if (error.status == 401){
+      this.app.showMessage(error.error.message.split("\n")[0], MessageType.ERROR);
+      if (error.status == 401){
         this.app.logoutUser();
-      }
-      else{
-        this.app.showMessage(error.error.message, MessageType.ERROR);
       }
     });
   }

@@ -28,6 +28,7 @@ export class ViewResultsComponent {
   errorMessage: string = "";
   interval: number = 0;
   @ViewChild('logView') logView!: BattleLogViewComponent;
+  @Input() showSaveButtons: boolean = true;
   userTournaments: Array<TournamentResultSet> | undefined;
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router){

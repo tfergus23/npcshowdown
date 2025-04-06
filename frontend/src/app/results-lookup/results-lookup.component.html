@@ -5,4 +5,4 @@
     <h3  style="display: inline-block; padding-left: 20px; padding-right: 20px;">OR</h3>
     <button style="display: inline-block;" (click)="this.importFromFile()" class="import">Import from File</button>
 </div>
-<app-view-results *ngIf="this.results" [results]="this.results"></app-view-results>
+<app-view-results *ngIf="this.results" [results]="this.results" [showSaveButtons]="false"></app-view-results>
