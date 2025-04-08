@@ -1,8 +1,6 @@
 ## App
 ### MVP
 - Add from my trainers on tournament view
-- create trainer error messages
-- create trainer resize issues
 - remove hardcoded localhost from Set-Cookie header
 - fix user dropdown
 - button spinners

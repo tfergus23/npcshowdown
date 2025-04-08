@@ -93,7 +93,10 @@ export class CreateTrainerComponent {
   }
 
   setFromJson(json: Trainer){
-    this.trainer = json;
+    this.trainer.team = json.team;
+    this.trainer.id = json.id;
+    this.trainer.trainerLevel = json.trainerLevel;
+    this.trainer.name = json.name;
     this.setImagePathStrings();
   }
 
@@ -103,7 +106,7 @@ export class CreateTrainerComponent {
     input.addEventListener('change', (event) => {
       let file = input.files?.item(0);
       if (file != undefined && file.size > 8192){
-        alert("File too big.");
+        this.app.showMessage("File too big.", MessageType.ERROR);
         return;
       }
       file?.text().then(text => {
@@ -140,6 +143,7 @@ export class CreateTrainerComponent {
   }
 
   showBattle(trainer1: Trainer, trainer2: Trainer, seed: string){
+    if (!trainer1 || ! trainer2) return;
     this.battleService.postBattleRequest({trainer1, trainer2, seed}).subscribe((response) => {
       this.resultsView!.logView.log = response.data;
       this.resultsView!.logView.hidden = false;

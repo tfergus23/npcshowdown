@@ -7,10 +7,8 @@
         <button [disabled]="this.importingTrainers" (click)="addFromFiles()">Add From File</button>
         <button [hidden]="this.app.loggedInUser == undefined">Add From My Trainers</button>
     </div>
-    <div class="trainer-list-container">
-        <div *ngFor="let trainer of trainers; index as i" class="tournament-trainer-list">
-            <app-create-trainer [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
-        </div>
+    <div *ngFor="let trainer of trainers; index as i" class="tournament-trainer-list">
+        <app-create-trainer [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
     </div>
     <div class="seed-field">
         <label class="seed-label">Seed (Optional):</label>
@@ -20,5 +18,6 @@
         <label class="seed-label">Rounds:</label>
         <input [(ngModel)]="rounds" class="seed-input" type="number">
     </div>
+    <app-error-box [errors]="this.errors"></app-error-box>
     <button (click)="submitTournament()" [disabled]="this.numBattles() >20000 || this.importingTrainers" class="submit-btn">Run Tournament ({{this.numBattles()}} battles) {{this.numBattles() > 20000 ? '(Too many! 20000 max)' : ''}}</button>
 </div>

@@ -12,7 +12,7 @@
         <label *ngIf="this.results">{{this.results!.wins}}</label>
         <label *ngIf="this.results">{{this.results!.losses}}</label>
         <label *ngIf="this.results">{{this.results!.losses > 0 ? (this.results!.wins / this.results!.losses).toFixed(2) : "Never lost!"}}</label>
-        <button *ngIf="this.results" (click)="showBattle(this.resultsView!.results!.trainers[this.results.bestWin.trainer1Index], this.resultsView!.results!.trainers[this.results.bestWin.trainer2Index], this.results.bestWin.seed.toString())" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
+        <button *ngIf="this.results" [disabled]="this.results.bestWin.trainer1Index < 0 || this.results.bestWin.trainer2Index < 0" (click)="showBattle(this.resultsView!.results!.trainers[this.results.bestWin.trainer1Index], this.resultsView!.results!.trainers[this.results.bestWin.trainer2Index], this.results.bestWin.seed.toString())" class="best-win-button">{{this.results!.bestWinEloDiff > 0 ? "+" : ""}}{{this.results!.wins > 0 ? this.results!.bestWinEloDiff : "Never won!"}}</button>
 
         <!-- This only shows on the create tournament view -->
         <button (click)="this.removeSelf()" [hidden]="!(this.parentIsCreateTournament()) || this.readOnly" class="remove-trainer-button">X</button>
@@ -33,11 +33,10 @@
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">
-            <label>Name: </label>
-            <input [(ngModel)]="this.trainer.name" [readonly]="this.readOnly">
+            <div class="inline-label">Species: </div> <input type="text" [(ngModel)]="this.trainer.name" [readOnly]="this.readOnly">
         </div>
         <div class="trainer-level">
-            <label>AI Level: </label>
+            <div class="inline-label">AI Level: </div>
             <select [(ngModel)]="this.trainer.trainerLevel" [disabled]="this.readOnly">
                 <option *ngFor="let level of dataLists?.trainerLevelList" value="{{level}}">{{level}}</option>
             </select>
@@ -54,7 +53,7 @@
             </button>
         </div>
         <div *ngIf="this.trainer.team.length > 0" class="pokemon-details">
-            <div style="margin-left: 10px;" class="pokemon-column">
+            <div class="pokemon-column">
                 <div class="pokemon-input">
                     <div class="inline-label">Species: </div> <input type="text" list="speciesList" (focusout)="this.autoCompleteSpecies($event)" [(ngModel)]="this.trainer.team[selectedIndex].species" [readOnly]="this.readOnly">
                 </div>
@@ -85,7 +84,7 @@
                     </select>
                 </div>
             </div>
-            <div style="float: right; margin-right: 10px;" class="pokemon-column">
+            <div class="pokemon-column">
                 <div class="pokemon-input">
                     <div class="inline-label">Move 1: </div> <input type="text" list="moveList" (focusout)="this.autoCompleteMove($event, 0)" [(ngModel)]="this.trainer.team[selectedIndex].moves[0]" [readOnly]="this.readOnly">
                 </div>

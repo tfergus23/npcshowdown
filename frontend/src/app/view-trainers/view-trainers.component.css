@@ -8,5 +8,10 @@ h1 {
 .container{
     margin: auto;
     width: 915px;
-    margin-bottom: 500px;
+}
+
+@media (max-width: 915px){
+    .container{
+        width: 100%;
+    }
 }

@@ -25,3 +25,9 @@ button{
 .bold{
     font-weight: bold;
 }
+
+@media (max-width: 1000px){
+    .details{
+        margin-left: 0px;
+    }
+}

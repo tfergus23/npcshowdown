@@ -6,15 +6,7 @@
         <app-create-trainer [dataLists]="dataLists" [trainerNum]="'2'"></app-create-trainer>
     </div>
 
-    <div [hidden]="errors.length == 0" class="errors-box">
-        <div class="errors-messages">
-            <label>The following problems occurred:</label>
-            <ul>
-                <li *ngFor="let error of errors">{{error}}</li>
-            </ul>
-        </div>
-
-    </div>
+    <app-error-box [errors]="this.errors"></app-error-box>
 
     <div class="battle-seed" #seed>
         <label>Seed (Optional): </label>

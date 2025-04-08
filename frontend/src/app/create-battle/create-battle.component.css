@@ -35,20 +35,6 @@ hr{
     margin-right: auto;
 }
 
-.errors-box{
-    background-color: rgb(46, 3, 3);
-    height: fit-content;
-    border: 3px solid red;
-    border-radius: 3px;
-    margin-bottom: 20px;
-}
-
-.errors-messages{
-    height: fit-content;
-    width:fit-content;
-    color: rgb(255, 164, 164);
-    padding: 20px;
-}
 
 input, select{
     width: 350px;
@@ -67,5 +53,9 @@ input, select{
 
     .submit-battle-button{
         width: 95%;
+    }
+
+    .battle-seed input{
+        width: 150px;
     }
 }

@@ -235,6 +235,12 @@ input, select{
     margin-right: 10px;
 }
 
+.pokemon-column{
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 9px;
+}
+
 @media (max-width: 930px){
     .pokemon-tabs{
         height: 120px;
@@ -253,12 +259,30 @@ input, select{
 
     .pokemon-column{
         width: 100%;
+        margin-left: 0px;
+        vertical-align: baseline;
     }
     .pokemon-details input{
         width: 100%;
     }
 
     .pokemon-details select{
+        width: 100%;
+    }
+
+    .trainer-info input{
+        width: 100%;
+    }
+
+    .trainer-info select{
+        width: 100%;
+    }
+
+    .trainer-level{
+        width: 100%;
+    }
+
+    .trainer-name{
         width: 100%;
     }
 
@@ -274,11 +298,14 @@ input, select{
     .stat-value-input .inline-label{
         display: none;
     }
-}
 
-.pokemon-column{
-    display: inline-block;
-    vertical-align: top;
+    .collapsible-header{
+        font-size: 10px;
+    }
+
+    .collapsible-header button{
+        font-size: 10px
+    }
 }
 
 .pokemon-input{
@@ -368,3 +395,9 @@ img{
     }
 }
 
+@media (max-width: 861px){
+    .import-save-buttons button{
+        width: 46%;
+        font-size: 9px;
+    }
+}

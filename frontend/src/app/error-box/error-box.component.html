@@ -1,0 +1,8 @@
+<div [hidden]="errors.length == 0" class="errors-box">
+    <div class="errors-messages">
+        <label>The following problems occurred:</label>
+        <ul>
+            <li *ngFor="let error of errors">{{error}}</li>
+        </ul>
+    </div>
+</div>

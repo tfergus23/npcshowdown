@@ -19,6 +19,7 @@ export class CreateTournamentComponent {
   rounds: number = 25;
   seed: string = "";
   importingTrainers: boolean = false;
+  errors: Array<string> = [];
 
   constructor(public app: AppComponent, private dataService: DataService, private battleService: BattleService){}
 
@@ -116,7 +117,7 @@ export class CreateTournamentComponent {
         });
       }
       else{
-        this.app.showMessage(error.error.message, MessageType.ERROR);
+        this.errors = error.error.message.split("\n");
       }
     });
   }
