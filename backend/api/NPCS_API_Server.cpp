@@ -866,15 +866,16 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         
         // Save tournament to DB
         std::cout << "Saving " + std::to_string(req.id) + "\n";
-        //auto saveStart = std::chrono::high_resolution_clock::now();
+        
+        auto saveStart = std::chrono::high_resolution_clock::now();
         db.saveTournament(tournament, req.id);
-        //auto saveEnd = std::chrono::high_resolution_clock::now();
+        auto saveEnd = std::chrono::high_resolution_clock::now();
         std::cout << "Saved " + std::to_string(req.id) + "\n";
         std::unique_lock lk2(queueMutex);
         queue.pop_front();
         std::unique_lock lk(idToThreadMutex);
         idToThread.erase(req.id);
-        /*
+        
         int64_t tournMS = std::chrono::duration_cast<std::chrono::milliseconds>(tournEnd - tournStart).count();
         int64_t saveMS = std::chrono::duration_cast<std::chrono::milliseconds>(saveEnd - saveStart).count();
         totalMsTourn += tournMS;
@@ -882,9 +883,9 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         tournamentsRan++;
         float avgtournSeconds = (float) totalMsTourn / (float)tournamentsRan / 1000.0f;
         float avgsaveSeconds = (float) totalMsSave /(float) tournamentsRan / 1000.0f;
-        */
-        //std::cout << "Average tournament time for thread " + std::to_string(threadNumber) + ": " + std::to_string(avgtournSeconds) + " seconds\n";
-        //std::cout << "Average save time for thread " + std::to_string(threadNumber) + "      : " + std::to_string(avgsaveSeconds) + " seconds\n";
+        
+        std::cout << "Average tournament time for thread " + std::to_string(threadNumber) + ": " + std::to_string(avgtournSeconds) + " seconds\n";
+        std::cout << "Average save time for thread " + std::to_string(threadNumber) + "      : " + std::to_string(avgsaveSeconds) + " seconds\n";
     }
     } catch (const std::exception& e){
         std::cerr << "ERROR: Uncaught exception on thread #" + std::to_string(threadNumber) + ":\n" + e.what() + "\nStopping.\n";

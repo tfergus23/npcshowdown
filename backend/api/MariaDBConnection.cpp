@@ -245,13 +245,80 @@ size_t MariaDBConnection::saveBattle(int trainer1, int trainer2, size_t seed, si
 
 void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
     std::vector<size_t> trainers;
-    //auto startTrainers = std::chrono::high_resolution_clock::now();
+    std::string trainerSQL = "insert into trainer (tournament, name, trainerLevel) values ";
     for (auto& trainer : tournament.trainers){
-        trainers.push_back(saveTrainer(trainer, 0, id));
+        trainerSQL += "(?, ?, ?),";
     }
-    //auto endTrainers = std::chrono::high_resolution_clock::now();
-    //std::cout << "Time spent saving trainers: " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(endTrainers - startTrainers).count() / 1000.0f) + "\n";
+    trainerSQL.pop_back();
+    trainerSQL += " returning id";
+    std::unique_ptr<sql::PreparedStatement> insertTrainersStmnt(conn->prepareStatement(trainerSQL));
+    int trainerColumnIndex = 1;
+    for (auto& trainer : tournament.trainers){
+        insertTrainersStmnt->setUInt64(trainerColumnIndex++, id);
+        insertTrainersStmnt->setString(trainerColumnIndex++, trainer.trainerInfo.name);
+        insertTrainersStmnt->setInt(trainerColumnIndex++, (int8_t)trainer.trainerInfo.trainerLevel);
+    }
 
+    mostRecentKeyMutex.lock();
+    std::unique_ptr<sql::ResultSet> insertTrainerResults(insertTrainersStmnt->executeQuery());
+    mostRecentKeyMutex.unlock();
+    
+    while (insertTrainerResults->next()){
+        trainers.push_back(insertTrainerResults->getUInt64(1));
+    }
+
+    assert(trainers.size() == tournament.trainers.size());
+
+    std::string pokemonSQL = "insert into pokemon (trainer, position, species, level, move1, move2, move3, move4, abilityID, gender, nature, itemID, nickname, hpIV, atkIV, defIV, spaIV, spdIV, speIV, hpEV, atkEV, defEV, spaEV, spdEV, speEV) values ";
+
+    
+    for (const auto& trainer : tournament.trainers){
+        for (const auto& poke : trainer.teamBlueprint){
+            pokemonSQL += "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),";
+        }
+    }
+    pokemonSQL.pop_back();
+
+    std::unique_ptr<sql::PreparedStatement> pokemonInsertStmnt(conn->prepareStatement(pokemonSQL));
+
+    int trainerIndex = 0;
+    int32_t pokemonColumnIndex = 1;
+    for (const auto& trainer : tournament.trainers){
+        int32_t teamIndex = 0;
+        for (const auto& poke : trainer.teamBlueprint){
+            pokemonInsertStmnt->setUInt64(pokemonColumnIndex++, trainers[trainerIndex]);
+            pokemonInsertStmnt->setInt(pokemonColumnIndex++, teamIndex);
+            pokemonInsertStmnt->setShort(pokemonColumnIndex++, speciesFromString(poke.species)->id);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.level);
+            pokemonInsertStmnt->setShort(pokemonColumnIndex++, moveFromString(poke.moves[0])->id);
+            pokemonInsertStmnt->setShort(pokemonColumnIndex++, moveFromString(poke.moves[1])->id);
+            pokemonInsertStmnt->setShort(pokemonColumnIndex++, moveFromString(poke.moves[2])->id);
+            pokemonInsertStmnt->setShort(pokemonColumnIndex++, moveFromString(poke.moves[3])->id);
+            pokemonInsertStmnt->setShort(pokemonColumnIndex++, abilityFromString(poke.abilityName)->id);
+            pokemonInsertStmnt->setString(pokemonColumnIndex++, poke.gender); //This might not work?
+            pokemonInsertStmnt->setInt(pokemonColumnIndex++, (int8_t) natureFromString(poke.nature));
+            pokemonInsertStmnt->setShort(pokemonColumnIndex++, itemFromString(poke.itemName)->id);
+            pokemonInsertStmnt->setString(pokemonColumnIndex++, poke.nickname);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.ivs[0]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.ivs[1]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.ivs[2]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.ivs[3]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.ivs[4]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.ivs[5]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.evs[0]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.evs[1]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.evs[2]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.evs[3]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.evs[4]);
+            pokemonInsertStmnt->setUInt(pokemonColumnIndex++, poke.evs[5]);
+            teamIndex++;
+        }
+        trainerIndex++;
+    }
+
+    assert(trainerIndex == trainers.size());
+
+    executeInsert(pokemonInsertStmnt.get());
 
     std::string sql = "insert into trainer_stats (tournament, trainerIndex, trainer, elo, wins, losses, bestWin, bestWinEloDiff) values";
 
