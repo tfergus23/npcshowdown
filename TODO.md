@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- Add from my trainers on tournament view
 - fix user dropdown
 - button spinners
 - fix footer
@@ -11,7 +10,6 @@
 - Remember create battle/tournament (save to localstorage)
 - Add recents to results lookup
 - Delete old tournaments on startup (update lastUnsave)
-- view results shows nothing while in queue
 - mobile pass
 
 ### Extra

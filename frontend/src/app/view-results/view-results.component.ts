@@ -8,6 +8,7 @@ import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.compo
 import { AppComponent, MessageType } from '../app.component';
 import { UserService } from '../user.service';
 import Trainer from 'src/Trainer';
+import GetResponse from 'src/GetResponse';
 
 const SORT_ELO = 0;
 const SORT_WINS = 1;
@@ -55,48 +56,18 @@ export class ViewResultsComponent {
     this.interval = window.setInterval(() => {
       this.battleService.getTournamentResults(Number(this.tournamentID)).subscribe(
         (response) => {
-          if (response.success){
-            this.results = response.data as TournamentResultSet;
-            this.results.trainers = new Array<Trainer>();
-            clearInterval(this.interval);
-            for (let i = 0; i < this.results.results.length; i++){
-              this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
-                this.results!.trainers[this.results!.results[i].index] = res.data;
-              })
-            }
-          }
-          else{
-            this.errorMessage = response.message;
-          }
+          this.getTournamentSuccess(response);
         },
         (error) => {
-          if (!error.error.success){
-            clearInterval(this.interval);
-          }
-          this.errorMessage = error.error.message;
+          this.getTournamentError(error);
         });
     }, 1500);
     this.battleService.getTournamentResults(Number(this.tournamentID)).subscribe(
       (response) => {
-        if (response.success){
-          this.results = response.data as TournamentResultSet;
-          this.results.trainers = new Array<Trainer>();
-          clearInterval(this.interval);
-          for (let i = 0; i < this.results.results.length; i++){
-            this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
-              this.results!.trainers[this.results!.results[i].index] = res.data;
-            })
-          }
-        }
-        else{
-          this.errorMessage = response.message;
-        }
+        this.getTournamentSuccess(response);
       },
       (error) => {
-        if (!error.error.success){
-          clearInterval(this.interval);
-        }
-        this.errorMessage = error.error.message;
+        this.getTournamentError(error);
     });
   }
 
@@ -213,7 +184,7 @@ export class ViewResultsComponent {
       this.app.showMessage(error.error.message, MessageType.ERROR);
     });
   }
-    download(){
+  download(){
       const json = this.results;
       const newBlob = new Blob([JSON.stringify(json, null, 4)], {
         type: 'application/json'
@@ -224,5 +195,28 @@ export class ViewResultsComponent {
       link.download = `tournament${this.results!.id}.json`; 
       link.click();
       link.remove();
+  }
+
+  getTournamentSuccess(response: GetResponse){
+    if (response.data.status == 'done'){
+      this.results = response.data as TournamentResultSet;
+      this.results.trainers = new Array<Trainer>();
+      clearInterval(this.interval);
+      for (let i = 0; i < this.results.results.length; i++){
+        this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
+          this.results!.trainers[this.results!.results[i].index] = res.data;
+        })
+      }
     }
+    else{
+      this.errorMessage = response.message;
+    }
+  }
+
+  getTournamentError(error: any){
+    if (!error.error.success){
+      clearInterval(this.interval);
+    }
+    this.errorMessage = error.error.message;
+  }
 }

@@ -225,8 +225,11 @@ size_t MariaDBConnection::saveTrainer(const Trainer& trainer, size_t user, size_
     else{
         id = executeInsertAndGetID(insertTrainerStmnt.get());
     }
-
+    //auto saveStart = std::chrono::high_resolution_clock::now();
     saveTeam(trainer.teamBlueprint, id);
+    //auto saveEnd = std::chrono::high_resolution_clock::now();
+
+    //std::cout << "Time spent saving team: " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(saveEnd - saveStart).count() / 1000.0f) + "\n";
     return id;
 }
 
@@ -242,25 +245,13 @@ size_t MariaDBConnection::saveBattle(int trainer1, int trainer2, size_t seed, si
 
 void MariaDBConnection::saveTournament(const Tournament& tournament, size_t id){
     std::vector<size_t> trainers;
+    //auto startTrainers = std::chrono::high_resolution_clock::now();
     for (auto& trainer : tournament.trainers){
         trainers.push_back(saveTrainer(trainer, 0, id));
     }
+    //auto endTrainers = std::chrono::high_resolution_clock::now();
+    //std::cout << "Time spent saving trainers: " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(endTrainers - startTrainers).count() / 1000.0f) + "\n";
 
-    /*
-    std::vector<TrainerStats> stats;
-    std::unordered_map<size_t,size_t> addedBattles;
-    for (auto stat : tournament.trainerStats){
-        if (!addedBattles.contains(stat.bestWin) && stat.bestWin >= 0){
-            BattleResult bestWin = tournament.results[stat.bestWin];
-            bestWin.trainer1 = trainers[bestWin.trainer1];
-            bestWin.trainer2 = trainers[bestWin.trainer2];
-            bestWin.winner = trainers[bestWin.winner];
-            addedBattles[stat.bestWin] = saveBattle(bestWin, id);
-        }
-        stat.bestWin = addedBattles[stat.bestWin];
-        stats.push_back(stat);
-    }
-    */
 
     std::string sql = "insert into trainer_stats (tournament, trainerIndex, trainer, elo, wins, losses, bestWin, bestWinEloDiff) values";
 

@@ -443,6 +443,7 @@ NPCS_API_Server::NPCS_API_Server() {
                 response["message"] = message;
                 res.Set_Status(202);
                 response["success"] = true;
+                response["data"] = {{"status", "queued"}};
                 res.Send(response.dump());
                 return;
             }
@@ -457,6 +458,7 @@ NPCS_API_Server::NPCS_API_Server() {
                     if (tr.ready){
                         response["success"] = true;
                         response["data"] = tr.toJSON(db);
+                        response["data"]["status"] = "done";
                         res.Send(response.dump());
                         return;
                     }
@@ -498,6 +500,7 @@ NPCS_API_Server::NPCS_API_Server() {
                 if (tr.ready){
                     response["success"] = true;
                     response["data"] = tr.toJSON(db);
+                    response["data"]["status"] = "done";
                     res.Send(response.dump());
                     return;
                 }
@@ -831,16 +834,20 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
     try{
     auto& queue = this->queuedTournaments[threadNumber];
     auto& queueMutex = this->queuedTournamentMutexes[threadNumber];
+    int tournamentsRan = 0;
+    int64_t totalMsTourn = 0;
+    int64_t totalMsSave = 0;
     while(true){
         //TODO: Not this
         while(queue.size() == 0){
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
-        std::cout << "Starting tournament on thread #" << threadNumber << std::endl;
         queueMutex.lock();
         TournamentRequest req = queue.front();
         queueMutex.unlock();
         json& request = req.requestJson;
+
+        std::cout << "Starting tournament " + std::to_string(req.id) + " on thread #" << threadNumber << std::endl;
 
         std::vector<Trainer> trainers;
         trainers.reserve(request["trainers"].size());
@@ -851,18 +858,33 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         int rounds = request["rounds"].get<int>();
 
         std::cout << "Simulating tournament...\n";
+        auto tournStart = std::chrono::high_resolution_clock::now();
         Tournament tournament(trainers, rounds, seed);
         tournament.run();
+        auto tournEnd = std::chrono::high_resolution_clock::now();
         std::cout << "Done simulating " + std::to_string(req.id) + "\n";
         
         // Save tournament to DB
         std::cout << "Saving " + std::to_string(req.id) + "\n";
+        //auto saveStart = std::chrono::high_resolution_clock::now();
         db.saveTournament(tournament, req.id);
+        //auto saveEnd = std::chrono::high_resolution_clock::now();
         std::cout << "Saved " + std::to_string(req.id) + "\n";
         std::unique_lock lk2(queueMutex);
         queue.pop_front();
         std::unique_lock lk(idToThreadMutex);
         idToThread.erase(req.id);
+        /*
+        int64_t tournMS = std::chrono::duration_cast<std::chrono::milliseconds>(tournEnd - tournStart).count();
+        int64_t saveMS = std::chrono::duration_cast<std::chrono::milliseconds>(saveEnd - saveStart).count();
+        totalMsTourn += tournMS;
+        totalMsSave += saveMS;
+        tournamentsRan++;
+        float avgtournSeconds = (float) totalMsTourn / (float)tournamentsRan / 1000.0f;
+        float avgsaveSeconds = (float) totalMsSave /(float) tournamentsRan / 1000.0f;
+        */
+        //std::cout << "Average tournament time for thread " + std::to_string(threadNumber) + ": " + std::to_string(avgtournSeconds) + " seconds\n";
+        //std::cout << "Average save time for thread " + std::to_string(threadNumber) + "      : " + std::to_string(avgsaveSeconds) + " seconds\n";
     }
     } catch (const std::exception& e){
         std::cerr << "ERROR: Uncaught exception on thread #" + std::to_string(threadNumber) + ":\n" + e.what() + "\nStopping.\n";

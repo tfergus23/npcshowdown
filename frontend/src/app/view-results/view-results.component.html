@@ -22,7 +22,7 @@
             <app-create-trainer [resultsView]="this" [collapsed]="true" [results]="result" [dataLists]="this.dataLists" [readOnly]="true" [trainer]="this.results.trainers[result.index]" [trainerNum]="(result.index+1).toString()"></app-create-trainer>
         </div>
     </div>
-    <div *ngIf="!this.results">
+    <div *ngIf="!this.results" class="error-message">
         {{this.errorMessage}}
     </div>
 </div>

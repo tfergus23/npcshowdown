@@ -12,13 +12,13 @@ class Tournament{
 public:
     std::vector<TrainerStats> trainerStats;
     std::vector<BattleResult> results;
+    std::vector<Trainer>& trainers;
     int rounds;
     float totalBattles;
     const size_t seed;
 
     Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed);
     void run();
-    std::vector<Trainer>& trainers;
 private:
     std::default_random_engine m_Generator;
 
