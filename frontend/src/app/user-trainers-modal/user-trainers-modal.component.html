@@ -3,12 +3,12 @@
         <h2>My Trainers</h2>
         <hr>
         <div class="trainers-container">
-            <div [ngStyle]="{'background-color': this.selectedIndex == i ? 'var(--light-background-color)' : 'var(--dark-background-color)'}" *ngFor="let trainer of this.trainers; index as i" (click)="this.selectTrainer(i)" (dblclick)="this.importSelectedTrainer()" class="user-trainer">
+            <div [ngStyle]="{'background-color': this.selectedIndecies.includes(i) ? 'var(--light-background-color)' : 'var(--dark-background-color)'}" *ngFor="let trainer of this.trainers; index as i" (click)="this.selectTrainer(i)" (dblclick)="this.onDoubleClick()" class="user-trainer">
                 <span class="horizontal-margin">{{trainer.name}}</span>
                 <span class="horizontal-margin">{{trainer.team.length}}/6</span>
                 <span class="horizontal-margin">{{trainer.trainerLevel}}</span>
             </div>
         </div>
-        <button (click)="this.importSelectedTrainer()">Done</button>
+        <button (click)="this.importSelectedTrainers()">Done</button>
     </div>
 </div>

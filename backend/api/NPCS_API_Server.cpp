@@ -18,7 +18,6 @@ using json = nlohmann::json;
 
 #define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With,Set-Cookie"
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
-const size_t MAX_REQUEST_SIZE = 524288;
 
 const std::string SPECIES_DATA_RESPONSE = createSpeciesDataResponse();
 const std::string ABILITY_DATA_RESPONSE = createAbilityDataResponse();

@@ -6,6 +6,7 @@ import DataLists from 'src/DataLists';
 import Trainer, { createEmptyTrainer } from 'src/Trainer';
 import TournamentRequest from 'src/TournamentRequest';
 import { BattleService } from '../battle.service';
+import { UserTrainersModalComponent } from '../user-trainers-modal/user-trainers-modal.component';
 
 @Component({
   selector: 'app-create-tournament',
@@ -14,6 +15,7 @@ import { BattleService } from '../battle.service';
 })
 export class CreateTournamentComponent {
   @ViewChild('tournamentTrainerList', {read: ViewContainerRef}) trainerList!: ViewContainerRef;
+  @ViewChild('trainerModal') trainerModal!: UserTrainersModalComponent;
   trainers: Array<Trainer> = new Array<Trainer>();
   dataLists!: DataLists;
   rounds: number = 25;
@@ -120,5 +122,9 @@ export class CreateTournamentComponent {
         this.errors = error.error.message.split("\n");
       }
     });
+  }
+
+  openTrainersModal(){
+    this.trainerModal.show();
   }
 }

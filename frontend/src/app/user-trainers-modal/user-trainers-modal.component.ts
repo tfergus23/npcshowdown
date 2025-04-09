@@ -3,6 +3,7 @@ import { AppComponent, MessageType } from '../app.component';
 import Trainer from 'src/Trainer';
 import { UserService } from '../user.service';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
+import { CreateTournamentComponent } from '../create-tournament/create-tournament.component';
 
 @Component({
   selector: 'app-user-trainers-modal',
@@ -11,9 +12,10 @@ import { CreateTrainerComponent } from '../create-trainer/create-trainer.compone
 })
 export class UserTrainersModalComponent {
 
-  @Input() parent!: CreateTrainerComponent;
+  @Input() parent!: CreateTrainerComponent | CreateTournamentComponent;
+  @Input() selectMultiple: boolean = false;
   trainers: Array<Trainer> | undefined;
-  selectedIndex: number = -1;
+  selectedIndecies: Array<number> = [];
   hidden: boolean = true;
 
   constructor(public app: AppComponent, private userSerivce: UserService){
@@ -41,16 +43,46 @@ export class UserTrainersModalComponent {
   
   close(e: MouseEvent){
     this.hidden = true;
-    this.selectedIndex = -1;
+    this.selectedIndecies = [];
   }
 
   selectTrainer(index: number){
-    this.selectedIndex = index;
+    if (this.selectMultiple){
+      if (this.selectedIndecies.includes(index)){
+        this.selectedIndecies.splice(this.selectedIndecies.indexOf(index), 1);
+      }
+      else{
+        this.selectedIndecies.push(index);
+      }
+    }
+    else{
+      if (this.selectedIndecies.includes(index)){
+        return;
+      }
+      else{
+        this.selectedIndecies.pop();
+        this.selectedIndecies.push(index);
+      }
+    }
   }
 
-  importSelectedTrainer(){
-    if (this.selectedIndex >= 0)
-    this.parent.setFromJson(this.trainers![this.selectedIndex]);
+  importSelectedTrainers(){
+    if (this.selectedIndecies.length > 0){
+      if (this.parent instanceof CreateTrainerComponent){
+        this.parent.setFromJson(this.trainers![this.selectedIndecies[0]]);
+      }
+      else if (this.parent instanceof CreateTournamentComponent){
+        for (let index of this.selectedIndecies){
+          this.parent.trainers.push(this.trainers![index]);
+        }
+      }
+    }
     this.close(new MouseEvent(''));
+  }
+
+  onDoubleClick(){
+    if (!this.selectMultiple){
+      this.importSelectedTrainers();
+    }
   }
 }

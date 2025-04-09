@@ -1,11 +1,12 @@
 <app-data-lists [dataLists]="this.dataLists"></app-data-lists>
+<app-user-trainers-modal [parent]="this" [selectMultiple]="true" #trainerModal></app-user-trainers-modal>
 <div class="container">
     <h1>Create a Tournament</h1>
     <h2>Trainers</h2>
     <div class="add-buttons">
         <button [disabled]="this.importingTrainers" (click)="addEmptyTrainer()">Add New</button>
         <button [disabled]="this.importingTrainers" (click)="addFromFiles()">Add From File</button>
-        <button [hidden]="this.app.loggedInUser == undefined">Add From My Trainers</button>
+        <button (click)="this.openTrainersModal()" [hidden]="this.app.loggedInUser == undefined">Add From My Trainers</button>
     </div>
     <div *ngFor="let trainer of trainers; index as i" class="tournament-trainer-list">
         <app-create-trainer [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
