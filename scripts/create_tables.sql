@@ -33,7 +33,8 @@ create table tournament (
     FOREIGN KEY (user) 
         REFERENCES user(id) on delete cascade,
     name varchar(32),
-    done boolean not null
+    done boolean not null,
+    ip varchar(15)
 );
 
 CREATE TABLE trainer (

@@ -29,8 +29,12 @@ private:
     std::unordered_map<size_t,int> idToThread;
     std::mutex idToThreadMutex;
     MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"));
+    const std::string websiteURL = config.get("website_url");
+    const std::string domain = getDomainFromURL();
+    const int port = getIntFromConfig(config, "port");
 
     std::string getToken(const std::string& username, const std::string& password);
+    std::string getDomainFromURL();
     void waitForTournaments(uint32_t threadNumber);
     size_t createTournamentRequest(const json& json, size_t user);
     void startTournamentThreads();

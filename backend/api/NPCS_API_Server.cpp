@@ -16,8 +16,6 @@
 using namespace tfhttp;
 using json = nlohmann::json;
 
-#define PORT 3000
-#define WEBSITE_URL "http://localhost:4200"
 #define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With,Set-Cookie"
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
 const size_t MAX_REQUEST_SIZE = 524288;
@@ -29,11 +27,6 @@ const std::string NATURE_DATA_RESPONSE = createNatureDataResponse();
 const std::string MOVE_DATA_RESPONSE = createMoveDataResponse();
 const std::string ALL_DATA_RESPONSE = createAllDataResponse();
 
-bool addCORSHeaderMiddleware(const HTTP_Request& req, HTTP_Response& res){
-    res.headers["Access-Control-Allow-Origin"] = WEBSITE_URL;
-    res.headers["Access-Control-Allow-Credentials"] = "true";
-    return true;
-}
 
 void preflightHandler(const HTTP_Request& req, HTTP_Response& res){
     res.headers["Access-Control-Allow-Methods"] = ALLOWED_METHODS;
@@ -136,6 +129,12 @@ NPCS_API_Server::NPCS_API_Server() {
     Route* baseRoute = app.Create_Route("/api");
     Route* authorizedRoute = app.Create_Route("/api/user/:username");
 
+    auto addCORSHeaderMiddleware = [=, this](const HTTP_Request& req, HTTP_Response& res){
+        res.headers["Access-Control-Allow-Origin"] = websiteURL;
+        res.headers["Access-Control-Allow-Credentials"] = "true";
+        return true;
+    };
+
     //Add middlewares
     app.base_route.Use(addCORSHeaderMiddleware);
     baseRoute->Use(addCORSHeaderMiddleware);
@@ -148,7 +147,7 @@ NPCS_API_Server::NPCS_API_Server() {
         std::string token = getTokenFromRequest(req);
         if (db.isTokenValid(username, token)){
             db.updateTokenLastUsed(username, token);
-            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=localhost";
+            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
             return true;
         }
         else{
@@ -818,7 +817,7 @@ NPCS_API_Server::NPCS_API_Server() {
 
 int NPCS_API_Server::run(){
     startTournamentThreads();
-    app.Listen(PORT);
+    app.Listen(port);
     return 0;
 }
 
@@ -929,4 +928,17 @@ void NPCS_API_Server::testTrainerSerialization(){
     assert(t.hashCode() == tdb.hashCode());
     assert(tjs.hashCode() == tdb.hashCode());
     std::cout << t.hashCode() << '\n';
+}
+
+std::string NPCS_API_Server::getDomainFromURL(){
+    size_t start = websiteURL.find("//");
+    if (start == std::string::npos){
+        start = 0;
+    }
+    else{
+        start += 2;
+    }
+    size_t end = websiteURL.find(':', start);
+    size_t size = end - start;
+    return websiteURL.substr(start, size);
 }

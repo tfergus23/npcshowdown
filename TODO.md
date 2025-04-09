@@ -1,17 +1,17 @@
 ## App
 ### MVP
 - Add from my trainers on tournament view
-- remove hardcoded localhost from Set-Cookie header
 - fix user dropdown
 - button spinners
 - fix footer
 - fix popup on results screen
-- align buttons properly on home
 - box sprites dont show up on results view
 - change user profile URL
 - NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '▶'. Current value: '▼'. on create-trainer
 - Remember create battle/tournament (save to localstorage)
 - Add recents to results lookup
+- Delete old tournaments on startup (update lastUnsave)
+- view results shows nothing while in queue
 - mobile pass
 
 ### Extra
