@@ -12,7 +12,7 @@ import {CookieService} from 'ngx-cookie-service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
-  dropdownDisplay: string = "none";
+  showUserDropdown: boolean = false;
 
   displayMenuDropdown: boolean = true;
 
@@ -41,25 +41,25 @@ export class NavbarComponent {
   }
   logout(){
     if (localStorage.getItem('user') == null){
-      this.dropdownDisplay = "none";
+      this.showUserDropdown = false;
       this.app.logoutUser();
       this.app.showMessage("Logout successful!", MessageType.INFO);
       return;
     }
     this.userService.logOut(localStorage.getItem('user') as string).subscribe((res) =>{
       if (res.success){
-        this.dropdownDisplay = "none";
+        this.showUserDropdown = false;
         this.app.logoutUser();
         this.app.showMessage("Logout successful!", MessageType.INFO);
       }
     }, (error) =>{
       if (error.status == 401){
-        this.dropdownDisplay = "none";
+        this.showUserDropdown = false;
         this.app.logoutUser();
         this.app.showMessage("Session expired", MessageType.ERROR);
       }
       else{
-        this.dropdownDisplay = "none";
+        this.showUserDropdown = false;
         this.app.logoutUser();
         this.app.showMessage("Session expired", MessageType.ERROR);
       }
@@ -67,17 +67,13 @@ export class NavbarComponent {
 
   }
 
-  showDropDown(){
-    if (this.dropdownDisplay == "block"){
-      this.dropdownDisplay = "none";
-    }
-    else{
-      this.dropdownDisplay = "block";
-    }
+  toggleUserDropDown(){
+    this.showUserDropdown = !this.showUserDropdown;
   }
 
   hideDropDown(){
-    //this.dropdownDisplay = "none";
+    if (this.showUserDropdown)
+    this.showUserDropdown = false;
   }
 
   showMenuDropDown(){

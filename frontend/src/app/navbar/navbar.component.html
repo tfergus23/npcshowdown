@@ -10,15 +10,15 @@
         </div>
     </div>
     <a routerLink="/about" class="about">ABOUT</a>
-    <div class="user-container">
+    <div (appClickOutside)="this.hideDropDown()" class="user-container">
         <a href="signup" *ngIf="!app.loggedInUser" class="sign-up">Sign Up</a>
-        <button (click)="this.showDropDown()" (focusout)="this.hideDropDown()" *ngIf="app.loggedInUser" class="signed-in">
+        <button (click)="this.toggleUserDropDown()" *ngIf="app.loggedInUser" class="signed-in">
             <div class="username">{{app.loggedInUser.name}}▼</div>
         </button>
-        <div [style.display]="this.dropdownDisplay" class="dropdown-content">
-            <a routerLink="user/{{this.app.loggedInUser?.name}}/profile">Profile</a>
-            <a routerLink="user/{{this.app.loggedInUser?.name}}/trainers">Saved Trainers</a>
-            <a routerLink="user/{{this.app.loggedInUser?.name}}/tournaments">Saved Tournaments</a>
+        <div *ngIf="this.showUserDropdown" class="dropdown-content">
+            <a routerLink="user/{{this.app.loggedInUser?.name}}/profile" (click)="this.hideDropDown()">Profile</a>
+            <a routerLink="user/{{this.app.loggedInUser?.name}}/trainers" (click)="this.hideDropDown()">Saved Trainers</a>
+            <a routerLink="user/{{this.app.loggedInUser?.name}}/tournaments" (click)="this.hideDropDown()">Saved Tournaments</a>
             <button (click)="this.logout()">Logout</button>
         </div>
         <div *ngIf="!app.loggedInUser" class="login">

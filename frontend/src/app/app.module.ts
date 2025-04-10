@@ -29,6 +29,7 @@ import { AppConfigService } from './app-config.service';
 import { FooterComponent } from './footer/footer.component';
 import { ResultsLookupComponent } from './results-lookup/results-lookup.component';
 import { ErrorBoxComponent } from './error-box/error-box.component';
+import { ClickOutsideDirective } from './click-outside.directive';
 
 function initializeApp(appConfigService: AppConfigService) {
   return () => appConfigService.loadAppConfig();
@@ -59,6 +60,7 @@ function initializeApp(appConfigService: AppConfigService) {
     FooterComponent,
     ResultsLookupComponent,
     ErrorBoxComponent,
+    ClickOutsideDirective,
   ],
   imports: [
     BrowserModule,
