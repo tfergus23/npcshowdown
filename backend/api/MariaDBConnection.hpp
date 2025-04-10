@@ -4,6 +4,7 @@
 #include "sim/tournament/Tournament.hpp"
 #include "mariadb/conncpp.hpp"
 #include "api_utils.hpp"
+#include <optional>
 
 using json = nlohmann::json;
 

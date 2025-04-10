@@ -4,14 +4,12 @@
 #include "sim/data/Weathers.hpp"
 #include "sim/data/Items.hpp"
 #include <iostream>
-#define DEBUG_LOG 0
 
-Battle::Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed) :
+Battle::Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions& debugOptions) :
 m_Player1{trainer1.trainerInfo},
 m_Player2{trainer2.trainerInfo},
 m_Seed{seed},
-//player1Team{{Pokemon(&(trainer1->teamBlueprint[0]), this),Pokemon(&(trainer1->teamBlueprint[1]), this),Pokemon(&(trainer1->teamBlueprint[2]), this),Pokemon(&(trainer1->teamBlueprint[3]), this),Pokemon(&(trainer1->teamBlueprint[4]), this),Pokemon(&(trainer1->teamBlueprint[5]), this)}},
-//player2Team{{Pokemon(&(trainer2->teamBlueprint[0]), this),Pokemon(&(trainer2->teamBlueprint[1]), this),Pokemon(&(trainer2->teamBlueprint[2]), this),Pokemon(&(trainer2->teamBlueprint[3]), this),Pokemon(&(trainer2->teamBlueprint[4]), this),Pokemon(&(trainer2->teamBlueprint[5]), this)}},
+debugOptions{debugOptions},
 m_Generator{std::default_random_engine(m_Seed)}
 {
     for (int i = 0; i < trainer1.teamBlueprint.size(); i++){
@@ -44,12 +42,10 @@ void Battle::log(std::string_view message){
 }
 
 void Battle::debug(std::string_view message){
-#if DEBUG_LOG
-    if (doLogging){
+    if (doLogging && debugOptions.debugLogging){
         battleLog += message;
         battleLog.push_back('\n');
     }
-#endif
 }
 
 void Battle::assertTrue(bool condition, std::string_view message){

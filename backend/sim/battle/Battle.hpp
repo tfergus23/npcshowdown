@@ -15,8 +15,14 @@
 
 class Trainer;
 
+struct DebugOptions{
+    bool debugLogging = false;
+    bool averageDamage = false;
+};
+
 class Battle{
 public:
+    DebugOptions debugOptions;
     const TrainerInfo* getPlayer1() const;
     const TrainerInfo* getPlayer2() const;
     std::array<Pokemon,6> player1Team;
@@ -44,7 +50,7 @@ public:
     int randInt(int min, int max);
     size_t getSeed();
 
-    Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed);
+    Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions& debugOptions = DebugOptions());
     void addMoves(const Move* move1, const Move* move2);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1);
@@ -64,6 +70,8 @@ public:
     void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
     void logCurrentStatus();
     void simulate();
+
+    MoveUse m_Turn[2];
 private:
     TrainerInfo m_Player1;
     TrainerInfo m_Player2;
@@ -73,7 +81,6 @@ private:
     std::default_random_engine m_Generator;
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;
-    MoveUse m_Turn[2];
     std::unordered_map<const FieldEffect*, EffectState> m_Player1FieldEffects;
     std::unordered_map<const FieldEffect*, EffectState> m_Player2FieldEffects;
     std::vector<const FieldEffect*> m_EffectsToRemove1;

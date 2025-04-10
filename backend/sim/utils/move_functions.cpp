@@ -51,7 +51,7 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
         }
         return 0;
     }
-    DealtDamage dealtDamage = calculateDirectDamage(moveUse);
+    DealtDamage dealtDamage = calculateDirectDamage(moveUse, moveUse->battle->debugOptions.averageDamage);
     dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
     if (dealtDamage.damage > 0){
         if (logEffectiveness){
