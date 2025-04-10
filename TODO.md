@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- fix user dropdown
 - button spinners
 - fix footer
 - fix popup on results screen
