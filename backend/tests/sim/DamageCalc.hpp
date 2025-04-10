@@ -1,7 +1,8 @@
 #include "sim/battle/Battle.hpp"
 #include "sim/data/Moves.hpp"
+#include "gtest/gtest.h"
 
-int main(){
+TEST(DamageCalcTest, StandardSpecialAttack){
     PokemonBlueprint blastoise(
         "Blastoise",
         100,
@@ -29,12 +30,24 @@ int main(){
     Trainer t1("test1", {blastoise}, TrainerLevel::WILD);
     Trainer t2("test2", {snorlax}, TrainerLevel::WILD);
 
+    constexpr int EXPECTED_DAMAGE = 101;
 
     Battle battle(t1,t2,0, {.averageDamage = true});
     battle.addMoves(&MOVE_SURF, &MOVE_TACKLE);
     battle.doMove();
     int damage = battle.m_Turn[0].damageDone;
 
-    assert(damage == 102);
-    return 0;
+    EXPECT_EQ(damage, EXPECTED_DAMAGE);
+}
+
+TEST(DamageCalcTest, StandardPhysicalAttack){
+
+}
+
+TEST(DamageCalcTest, HitsDefSpecialAttack){
+    
+}
+
+TEST(DamageCalcTest, HitsSPDefPhysicalAttack){
+    
 }
