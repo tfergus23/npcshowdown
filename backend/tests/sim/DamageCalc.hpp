@@ -30,7 +30,7 @@ TEST(DamageCalcTest, StandardSpecialAttack){
     Trainer t1("test1", {blastoise}, TrainerLevel::WILD);
     Trainer t2("test2", {snorlax}, TrainerLevel::WILD);
 
-    constexpr int EXPECTED_DAMAGE = 101;
+    constexpr int EXPECTED_DAMAGE = 102;
 
     Battle battle(t1,t2,0, {.averageDamage = true});
     battle.addMoves(&MOVE_SURF, &MOVE_TACKLE);

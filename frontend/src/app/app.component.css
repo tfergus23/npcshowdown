@@ -42,3 +42,9 @@ label{
     width: fit-content;
     margin: auto;
 }
+
+app-spinning-button{
+    display: block;
+    width: 100px;
+    margin: auto;
+}

@@ -19,11 +19,14 @@ export class CreateBattleComponent {
   errors: Array<string> = [];
   logLines: Array<string> = [];
   showingBattle: boolean = false;
+  submittingBattle: boolean = false;
+  whileSubmittingBattle = () => {return this.submittingBattle;}
   @ViewChild('logView') logView!: BattleLogViewComponent
   constructor(private dataService: DataService, private battleService: BattleService){
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
+      console.log(response!.data);
     },
     (error) => {
       this.errors.push(SERVICE_DOWN_RESPONSE)
@@ -35,7 +38,10 @@ export class CreateBattleComponent {
     
   }
 
+  onSubmit = () => {this.submit()}
+
   submit(){
+    this.submittingBattle = true;
     let seedValue = this.seed.nativeElement.querySelector('input')!.value.trim();
     this.battleService.postBattleRequest({
       trainer1: this.trainers.get(0)!.getJSON(),
@@ -43,12 +49,14 @@ export class CreateBattleComponent {
       seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue
     }).subscribe(
       (response) => {
+        this.submittingBattle = false;
         this.errors = [];
         this.logView.log = response.data;
         this.logView.hidden = false;
         
       },
       (error) => {
+        this.submittingBattle = false;
         this.showErrorResponse(error);
       });
   }

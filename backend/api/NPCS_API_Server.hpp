@@ -34,6 +34,13 @@ private:
     const std::string domain = getDomainFromURL();
     const int port = getIntFromConfig(config, "port");
 
+    const std::string SPECIES_DATA_RESPONSE;
+    const std::string ABILITY_DATA_RESPONSE;
+    const std::string ITEM_DATA_RESPONSE;
+    const std::string NATURE_DATA_RESPONSE;
+    const std::string MOVE_DATA_RESPONSE;
+    const std::string ALL_DATA_RESPONSE;
+
     std::string getToken(const std::string& username, const std::string& password);
     std::string getDomainFromURL();
     void waitForTournaments(uint32_t threadNumber);

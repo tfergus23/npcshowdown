@@ -19,18 +19,16 @@ using json = nlohmann::json;
 #define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With,Set-Cookie"
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
 
-const std::string SPECIES_DATA_RESPONSE = createSpeciesDataResponse();
-const std::string ABILITY_DATA_RESPONSE = createAbilityDataResponse();
-const std::string ITEM_DATA_RESPONSE = createItemDataResponse();
-const std::string NATURE_DATA_RESPONSE = createNatureDataResponse();
-const std::string MOVE_DATA_RESPONSE = createMoveDataResponse();
-const std::string ALL_DATA_RESPONSE = createAllDataResponse();
-
 
 void preflightHandler(const HTTP_Request& req, HTTP_Response& res){
     res.headers["Access-Control-Allow-Methods"] = ALLOWED_METHODS;
     res.headers["Access-Control-Allow-Headers"] = ALLOWED_HEADERS;
     res.Send("");
+}
+
+bool debugDelayMiddleware(const HTTP_Request& req, HTTP_Response& res){
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    return true;
 }
 
 std::string createAllDataResponse(){
@@ -109,7 +107,14 @@ std::string getTokenFromRequest(const HTTP_Request& req){
     }
 }
 
-NPCS_API_Server::NPCS_API_Server() {
+NPCS_API_Server::NPCS_API_Server() :
+ SPECIES_DATA_RESPONSE{createSpeciesDataResponse()},
+ ABILITY_DATA_RESPONSE{createAbilityDataResponse()},
+ ITEM_DATA_RESPONSE{createItemDataResponse()},
+ NATURE_DATA_RESPONSE{createNatureDataResponse()},
+ MOVE_DATA_RESPONSE{createMoveDataResponse()},
+ ALL_DATA_RESPONSE{createAllDataResponse()}
+ {
     max_tournament_threads = getIntFromConfig(config, "tournament_threads");
     max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
 
@@ -158,6 +163,10 @@ NPCS_API_Server::NPCS_API_Server() {
 
     });
 
+    // Fake delay for debugging
+    baseRoute->Use(debugDelayMiddleware);
+    authorizedRoute->Use(debugDelayMiddleware);
+
     //Add preflight handler to all paths
     app.Add_Handler("OPTIONS", "*", preflightHandler);
 
@@ -188,7 +197,7 @@ NPCS_API_Server::NPCS_API_Server() {
                 return;
             }
 
-            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=localhost";
+            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
 
             response["success"] = true;
             response["message"] = "OK";
@@ -288,11 +297,11 @@ NPCS_API_Server::NPCS_API_Server() {
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", baseRoute, "/data/species", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/data/species", [=,this](const HTTP_Request& req, HTTP_Response& res){
         res.Send(SPECIES_DATA_RESPONSE);
     });
 
-    app.Add_Handler("GET", baseRoute, "/data", [](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/data", [=,this](const HTTP_Request& req, HTTP_Response& res){
         res.Send(ALL_DATA_RESPONSE);
     });
 

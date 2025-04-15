@@ -39,13 +39,17 @@ h2{
     padding-right: 20px;
 }
 
-.import-save-buttons button{
+.import-save-buttons button, app-spinning-button{
+    display: inline-block;
     margin-left: 5px;
     margin-right: 5px;
     margin-top: 10px;
     margin-bottom: 10px;
     height: 40px;
     width: 200px;
+    font-size: 15px;
+    --btn-font-size: 15px;
+    --spinner-size: 10px;
 }
 
 .import-save-buttons button:disabled{
@@ -395,9 +399,11 @@ img{
     }
 }
 
-@media (max-width: 861px){
-    .import-save-buttons button{
+@media (max-width: 906px){
+    .import-save-buttons button, app-spinning-button{
         width: 46%;
         font-size: 9px;
+        --btn-font-size: 9px;
+        --spinner-size: 5px;
     }
 }

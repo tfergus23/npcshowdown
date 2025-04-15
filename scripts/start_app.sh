@@ -5,7 +5,7 @@ if [ $? -ne 0 ]; then
     exit $?
 fi
 ~/bin/startmysql
-nohup ./npcs_sim &>api.log &
+nohup ./npcshowdown &>api.log &
 cd -
 cd frontend
 nohup ng serve &

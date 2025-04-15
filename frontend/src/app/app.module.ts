@@ -30,6 +30,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ResultsLookupComponent } from './results-lookup/results-lookup.component';
 import { ErrorBoxComponent } from './error-box/error-box.component';
 import { ClickOutsideDirective } from './click-outside.directive';
+import { SpinningButtonComponent } from './spinning-button/spinning-button.component';
 
 function initializeApp(appConfigService: AppConfigService) {
   return () => appConfigService.loadAppConfig();
@@ -61,6 +62,7 @@ function initializeApp(appConfigService: AppConfigService) {
     ResultsLookupComponent,
     ErrorBoxComponent,
     ClickOutsideDirective,
+    SpinningButtonComponent,
   ],
   imports: [
     BrowserModule,

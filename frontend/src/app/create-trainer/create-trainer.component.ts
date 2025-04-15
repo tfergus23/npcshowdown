@@ -46,6 +46,8 @@ export class CreateTrainerComponent {
   oldTrainer: Trainer | undefined;
 
   showDeleteModal: boolean = false;
+  addingToProfile: boolean = false;
+  whileAddingToProfile = () => {return this.addingToProfile};
 
   constructor(public app: AppComponent, private battleService: BattleService, private userService: UserService){
   }
@@ -219,17 +221,23 @@ export class CreateTrainerComponent {
     this.trainer.team[this.selectedIndex].moves[index] = "";
   }
 
+  onSaveToUserProfile = () => {this.saveToUserProfile()};
+
   saveToUserProfile(){
-    if (this.app.loggedInUser)
-    this.userService.addTrainerToUserProfile(this.app.loggedInUser.name, this.trainer).subscribe((res) => {
-      this.app.showMessage(`Success! Saved to ${res.id}`, MessageType.INFO);
-    }, 
-    (error) =>{
-      this.app.showMessage(error.error.message.split("\n")[0], MessageType.ERROR);
-      if (error.status == 401){
-        this.app.logoutUser();
-      }
-    });
+    if (this.app.loggedInUser){
+      this.addingToProfile = true;
+      this.userService.addTrainerToUserProfile(this.app.loggedInUser.name, this.trainer).subscribe((res) => {
+        this.addingToProfile = false;
+        this.app.showMessage(`Success! Saved to ${res.id}`, MessageType.INFO);
+      }, 
+      (error) =>{
+        this.addingToProfile = false;
+        this.app.showMessage(error.error.message.split("\n")[0], MessageType.ERROR);
+        if (error.status == 401){
+          this.app.logoutUser();
+        }
+      });
+    }
   }
 
   showTrainerModal(){

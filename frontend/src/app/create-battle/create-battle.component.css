@@ -26,6 +26,8 @@ hr{
     width: 500px;
     height: 80px;
     font-size: 20px;
+    --btn-font-size: 20px;
+    --spinner-size: 20px;
 }
 
 .battle-seed{

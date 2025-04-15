@@ -26,10 +26,10 @@
         <button (click)="this.revertChanges()" [hidden]="!this.showEditButton || !this.editing" class="undo-changes-button">X</button>
     </div>
     <div class="import-save-buttons" [hidden]="this.collapsed">
-        <button (click)="loadFromFile();" [hidden]="this.readOnly">Import from File</button>
-        <button (click)="this.showTrainerModal()" [hidden]="this.app.loggedInUser == undefined || this.readOnly">Import from My Trainers</button>
+        <button (click)="loadFromFile();" *ngIf="!this.readOnly">Import from File</button>
+        <button (click)="this.showTrainerModal()" *ngIf="this.app.loggedInUser && !this.readOnly">Import from My Trainers</button>
         <button (click)="download();">Save to File</button>
-        <button (click)="saveToUserProfile()" [hidden]="this.app.loggedInUser == undefined || !this.showAddMyTrainers">{{this.addTrainertext}}</button>
+        <app-spinning-button [loadWhile]="whileAddingToProfile" [click]="onSaveToUserProfile" *ngIf="this.app.loggedInUser && this.showAddMyTrainers" [text]="this.addTrainertext"></app-spinning-button>
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">

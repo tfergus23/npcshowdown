@@ -76,6 +76,10 @@ export class AppComponent {
       clearInterval(this.currentMessageInterval);
     }, 3000);
   }
+
+  tru(){
+    return true;
+  }
 }
 
 export enum MessageType{

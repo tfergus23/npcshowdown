@@ -12,7 +12,7 @@
         <label>Seed (Optional): </label>
         <input>
     </div>
-    <button class="submit-battle-button" (click)="submit()">Simulate Battle!</button>
+    <app-spinning-button [loadWhile]="whileSubmittingBattle" class="submit-battle-button" [click]="onSubmit" [text]="'Simulate Battle!'"></app-spinning-button>
     <ul>
         <li *ngFor="let line of logLines">{{line}}</li>
     </ul>
