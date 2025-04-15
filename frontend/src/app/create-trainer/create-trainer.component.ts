@@ -221,9 +221,7 @@ export class CreateTrainerComponent {
     this.trainer.team[this.selectedIndex].moves[index] = "";
   }
 
-  onSaveToUserProfile = () => {this.saveToUserProfile()};
-
-  saveToUserProfile(){
+  saveToUserProfile = () => {
     if (this.app.loggedInUser){
       this.addingToProfile = true;
       this.userService.addTrainerToUserProfile(this.app.loggedInUser.name, this.trainer).subscribe((res) => {

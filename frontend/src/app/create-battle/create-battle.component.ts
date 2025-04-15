@@ -38,9 +38,7 @@ export class CreateBattleComponent {
     
   }
 
-  onSubmit = () => {this.submit()}
-
-  submit(){
+  submit = () => {
     this.submittingBattle = true;
     let seedValue = this.seed.nativeElement.querySelector('input')!.value.trim();
     this.battleService.postBattleRequest({

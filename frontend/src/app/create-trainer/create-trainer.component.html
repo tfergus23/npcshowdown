@@ -29,7 +29,7 @@
         <button (click)="loadFromFile();" *ngIf="!this.readOnly">Import from File</button>
         <button (click)="this.showTrainerModal()" *ngIf="this.app.loggedInUser && !this.readOnly">Import from My Trainers</button>
         <button (click)="download();">Save to File</button>
-        <app-spinning-button [loadWhile]="whileAddingToProfile" [click]="onSaveToUserProfile" *ngIf="this.app.loggedInUser && this.showAddMyTrainers" [text]="this.addTrainertext"></app-spinning-button>
+        <app-spinning-button [loadWhile]="whileAddingToProfile" [click]="saveToUserProfile" *ngIf="this.app.loggedInUser && this.showAddMyTrainers" [text]="this.addTrainertext"></app-spinning-button>
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">
