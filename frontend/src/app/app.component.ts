@@ -26,6 +26,7 @@ export class AppComponent {
   hideMessage: boolean = true;
   currentMessageInterval: NodeJS.Timer | undefined = undefined;
   color: string = COLOR_INFO;
+  public gettingUserData: boolean = false;
 
   constructor(private userService: UserService, private authService: AuthenticationService, private cookieService: CookieService){}
   ngOnInit(){
@@ -34,12 +35,15 @@ export class AppComponent {
   }
 
   setUserData(username: string){
+    this.gettingUserData = true;
     this.userService.getUserData(username).subscribe((res) =>{
+      this.gettingUserData = false;
       if (res.success){
         this.loggedInUser = res.data;
         localStorage.setItem('user', res.data.name);
       }
     },(error) => {
+      this.gettingUserData = false;
       this.logoutUser();
       this.showMessage(error.error.message, MessageType.ERROR);
     });

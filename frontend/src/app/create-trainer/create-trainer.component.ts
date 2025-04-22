@@ -35,7 +35,6 @@ export class CreateTrainerComponent {
   editing: boolean = false;
 
   selectedIndex: number = 0;
-  collapseButtonSymbol: string = "▶";
 
   imageStrings: Array<string> = ["", "", "", "", "", ""];
 
@@ -54,7 +53,6 @@ export class CreateTrainerComponent {
 
   public toggleCollapsible() {
     this.collapsed = !this.collapsed;
-    this.collapseButtonSymbol = (this.collapsed) ? "▶" : "▼";
   }
 
   ngOnInit(){
@@ -70,10 +68,6 @@ export class CreateTrainerComponent {
       return '';
     });
     */
-  }
-
-  ngAfterViewInit(){
-    this.collapseButtonSymbol = (this.collapsed) ? "▶" : "▼";
   }
 
   addPoke(){

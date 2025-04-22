@@ -1,7 +1,7 @@
 <div class="create-trainer-container">
     <app-user-trainers-modal [parent]="this" #trainerModal></app-user-trainers-modal>
     <div class="collapsible-header">
-        <button class="collapse-button" (click)="toggleCollapsible()">{{this.collapseButtonSymbol}}</button>
+        <button class="collapse-button" (click)="toggleCollapsible()">{{this.collapsed ? '▶' : '▼'}}</button>
         <label style="text-align: left;">Trainer {{trainerNum}}</label>
         <label>{{this.trainer.name}}</label>
         <label>{{this.trainer.team.length}}/6</label>

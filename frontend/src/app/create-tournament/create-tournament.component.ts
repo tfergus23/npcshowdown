@@ -22,6 +22,8 @@ export class CreateTournamentComponent {
   seed: string = "";
   importingTrainers: boolean = false;
   errors: Array<string> = [];
+  submittingTournament: boolean = false;
+  whileSubmittingTournament = () => {return this.submittingTournament;};
 
   constructor(public app: AppComponent, private dataService: DataService, private battleService: BattleService){}
 
@@ -96,13 +98,14 @@ export class CreateTournamentComponent {
     a.remove();
   }
 
-  submitTournament(){
+  submitTournament = () => {
     let request: TournamentRequest = {
       trainers: this.trainers,
       seed: this.seed == "" ? Math.round((Math.random() * 2147483647)).toString() : this.seed,
       rounds: this.rounds,
       user: this.app.loggedInUser ? this.app.loggedInUser.name : undefined
     };
+    this.submittingTournament = true;
     this.battleService.postTournamentRequest(request).subscribe((res) =>{
       this.redirectToTournamentResults(res.id);
     }, 
@@ -115,10 +118,12 @@ export class CreateTournamentComponent {
           this.redirectToTournamentResults(res.id);
         }, 
         (err) => {
+          this.submittingTournament = false;
           this.app.showMessage(err.error.message, MessageType.ERROR);
         });
       }
       else{
+        this.submittingTournament = false;
         this.errors = error.error.message.split("\n");
       }
     });
@@ -126,5 +131,9 @@ export class CreateTournamentComponent {
 
   openTrainersModal(){
     this.trainerModal.show();
+  }
+
+  submitText(){
+    return `Run Tournament (${this.numBattles()} battles) ${this.numBattles() > 20000 ? '(Too many! 20000 max)' : ''}`;
   }
 }

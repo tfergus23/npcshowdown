@@ -19,7 +19,7 @@
     </div>
     <div *ngIf="this.results" class="trainer-list-container">
         <div *ngFor="let result of results.results; index as i" class="tournament-trainer-list">
-            <app-create-trainer [resultsView]="this" [collapsed]="true" [results]="result" [dataLists]="this.dataLists" [readOnly]="true" [trainer]="this.results.trainers[result.index]" [trainerNum]="(result.index+1).toString()"></app-create-trainer>
+            <app-create-trainer *ngIf="this.results.trainers[result.index]" [resultsView]="this" [collapsed]="true" [results]="result" [dataLists]="this.dataLists" [readOnly]="true" [trainer]="this.results.trainers[result.index]" [trainerNum]="(result.index+1).toString()"></app-create-trainer>
         </div>
     </div>
     <div *ngIf="!this.results" class="error-message">

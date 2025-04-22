@@ -10,4 +10,5 @@ export class SpinningButtonComponent {
   @Input() loadWhile: Function = ()=>{return false;};
   @Input() style: { [klass: string]: any; } = {};
   @Input() text: string = "";
+  @Input() disabled: boolean = false;
 }

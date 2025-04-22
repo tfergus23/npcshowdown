@@ -60,7 +60,7 @@ html, body{
 }
 
 
-.submit-btn{
+app-spinning-button{
     display: block;
     width: 500px;
     height: 50px;
@@ -75,7 +75,7 @@ html, body{
 }
 
 @media (max-width: 521px){
-    .submit-btn{
+    app-spinning-button{
         width: 300px;
     }
 

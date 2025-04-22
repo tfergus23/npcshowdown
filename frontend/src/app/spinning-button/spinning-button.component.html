@@ -1,4 +1,4 @@
-<button (click)="click()" [disabled]="loadWhile()" [ngStyle]="this.style">
+<button (click)="click()" [disabled]="loadWhile() || this.disabled" [ngStyle]="this.style">
     <span *ngIf="!loadWhile()">{{this.text}}</span>
     <span *ngIf="loadWhile()" class="spinner"></span>
   </button>

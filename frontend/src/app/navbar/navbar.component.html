@@ -10,10 +10,10 @@
         </div>
     </div>
     <a routerLink="/about" class="about">ABOUT</a>
-    <div (appClickOutside)="this.hideDropDown()" class="user-container">
+    <div *ngIf="!this.app.gettingUserData" (appClickOutside)="this.hideDropDown()" class="user-container">
         <a href="signup" *ngIf="!app.loggedInUser" class="sign-up">Sign Up</a>
         <button (click)="this.toggleUserDropDown()" *ngIf="app.loggedInUser" class="signed-in">
-            <div class="username">{{app.loggedInUser.name}}▼</div>
+            <div class="username">{{app.loggedInUser!.name}}▼</div>
         </button>
         <div *ngIf="this.showUserDropdown" class="dropdown-content">
             <a routerLink="user/{{this.app.loggedInUser?.name}}/profile" (click)="this.hideDropDown()">Profile</a>
@@ -27,4 +27,5 @@
             <button class="loginBtn" type="button" (click)="login()">Sign In</button>
         </div>
     </div>
+    <app-spinner *ngIf="this.app.gettingUserData" [size]="'15px'"></app-spinner>
 </nav>

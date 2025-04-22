@@ -20,5 +20,5 @@
         <input [(ngModel)]="rounds" class="seed-input" type="number">
     </div>
     <app-error-box [errors]="this.errors"></app-error-box>
-    <button (click)="submitTournament()" [disabled]="this.numBattles() >20000 || this.importingTrainers" class="submit-btn">Run Tournament ({{this.numBattles()}} battles) {{this.numBattles() > 20000 ? '(Too many! 20000 max)' : ''}}</button>
+    <app-spinning-button [disabled]="this.numBattles() >20000 || this.importingTrainers"  [loadWhile]="this.whileSubmittingTournament" [click]="this.submitTournament" [text]="this.submitText()"></app-spinning-button>
 </div>

@@ -26,6 +26,7 @@ export class NavbarComponent {
       this.app.showMessage("Please enter your username and password.", MessageType.ERROR);
       return;
     }
+    this.app.gettingUserData = true;
     const authResponse = this.authService.getToken(username,password);
     authResponse.subscribe((res) =>{
       if (res.success){
@@ -33,9 +34,11 @@ export class NavbarComponent {
         this.app.showMessage("Login successful!", MessageType.INFO);
       }
       else{
+        this.app.gettingUserData = false;
         this.app.showMessage(res.message, MessageType.ERROR);
       }
     }, (error) => {
+      this.app.gettingUserData = false;
       this.app.showMessage(error.error.message, MessageType.ERROR)
     });
   }
@@ -46,13 +49,16 @@ export class NavbarComponent {
       this.app.showMessage("Logout successful!", MessageType.INFO);
       return;
     }
+    this.app.gettingUserData = true;
     this.userService.logOut(localStorage.getItem('user') as string).subscribe((res) =>{
+      this.app.gettingUserData = false;
       if (res.success){
         this.showUserDropdown = false;
         this.app.logoutUser();
         this.app.showMessage("Logout successful!", MessageType.INFO);
       }
     }, (error) =>{
+      this.app.gettingUserData = false;
       if (error.status == 401){
         this.showUserDropdown = false;
         this.app.logoutUser();
