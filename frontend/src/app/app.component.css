@@ -48,3 +48,11 @@ app-spinning-button{
     width: 100px;
     margin: auto;
 }
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    width: 100%;
+}

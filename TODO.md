@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- fix footer
 - change user profile URL
 - Remember create battle/tournament (save to localstorage)
 - Add recents to results lookup

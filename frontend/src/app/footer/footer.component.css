@@ -1,7 +1,7 @@
-.container{
+footer{
   height: 100px;  
   background-color: var(--dark-background-color);
-  margin-top: 10px;
+  margin-top: auto;
 }
 
 .column{
