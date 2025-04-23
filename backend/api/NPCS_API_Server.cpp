@@ -164,8 +164,8 @@ NPCS_API_Server::NPCS_API_Server() :
     });
 
     // Fake delay for debugging
-    baseRoute->Use(debugDelayMiddleware);
-    authorizedRoute->Use(debugDelayMiddleware);
+    //baseRoute->Use(debugDelayMiddleware);
+    //authorizedRoute->Use(debugDelayMiddleware);
 
     //Add preflight handler to all paths
     app.Add_Handler("OPTIONS", "*", preflightHandler);

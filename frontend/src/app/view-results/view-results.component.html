@@ -1,7 +1,8 @@
 <div class="container">
     <h1 *ngIf="this.results">Showing results for {{this.results.name}}</h1>
     <div class="save-download-buttons">
-        <button (click)="this.download()" *ngIf="this.results && this.showSaveButtons">Save To File</button><button *ngIf="this.results && this.app.loggedInUser && this.userTournaments && this.showSaveButtons" (click)="this.addTournamentToUser()" [disabled]="this.userHasTournament()">{{this.userHasTournament() ? "Saved ✓" : "Add to My Tournaments"}}</button>
+        <button (click)="this.download()" *ngIf="this.results && this.showSaveButtons">Save To File</button>
+        <app-spinning-button *ngIf="this.results && this.app.loggedInUser && this.userTournaments && this.showSaveButtons" [style]="{'background-color': this.addButtonBackground()}" [loadWhile]="whileAddingToUser" [click]="this.addTournamentToUser" [disabled]="this.userHasTournament()" [text]="this.saveTournamentText()"></app-spinning-button>
     </div>
     <p *ngIf="this.results && this.results.user">Submitted by user <span class="bold">{{this.results.user}}</span> on <b>{{this.results.dateRan}}</b></p>
     <p *ngIf="this.results && !this.results.user">Submitted by an anonymous user on on <b>{{this.results.dateRan}}</b></p>
@@ -21,9 +22,11 @@
         <div *ngFor="let result of results.results; index as i" class="tournament-trainer-list">
             <app-create-trainer *ngIf="this.results.trainers[result.index]" [resultsView]="this" [collapsed]="true" [results]="result" [dataLists]="this.dataLists" [readOnly]="true" [trainer]="this.results.trainers[result.index]" [trainerNum]="(result.index+1).toString()"></app-create-trainer>
         </div>
+        <app-spinner *ngIf="this.results.results.length != this.results.trainers.length" [size]="'30px'"></app-spinner>
     </div>
     <div *ngIf="!this.results" class="error-message">
         {{this.errorMessage}}
     </div>
+    <app-spinner *ngIf="!this.results" [size]="'50px'"></app-spinner>
 </div>
 <app-battle-log-view #logView></app-battle-log-view>

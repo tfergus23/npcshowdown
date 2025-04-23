@@ -12,21 +12,27 @@ export class UserTournamentsComponent {
   resultSets: Array<TournamentResultSet> = new Array<TournamentResultSet>();
   showDeleteModal: boolean = false;
   tournamentToDelete: number = 0;
+  fetchingTournaments: boolean = false;
   constructor(public app: AppComponent, private userService: UserService){
     this.getUserTournaments();
   }
 
   getUserTournaments(){
-    if (localStorage.getItem('user') != null)
+    if (localStorage.getItem('user') != null){
+      this.fetchingTournaments = true;
       this.userService.getUserTournaments(localStorage.getItem('user') as string).subscribe((res) => {
+        this.fetchingTournaments = false;
         if (res.success){
           this.resultSets = res.data;
         }
       }, 
       (error) => {
+        this.fetchingTournaments = false;
         this.app.logoutUser();
         this.app.showMessage(error.error.message, MessageType.ERROR);
       });
+    }
+
   }
 
   openDeleteModal(tournamentID: number){

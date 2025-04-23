@@ -11,16 +11,20 @@ import { isResultSet, TournamentResultSet } from 'src/TournamentResultSet';
 })
 export class ResultsLookupComponent {
   results?: TournamentResultSet;
+  fetchingTournament: boolean = false;
+  whileFetchingTournament = () => {return this.fetchingTournament};
   constructor(public app: AppComponent, private router: Router, private battleService: BattleService){}
 
-  searchForTournament(){
+  searchForTournament = () =>{
     const input = document.getElementById('tournament-lookup-search-btn') as HTMLInputElement;
     const value = input.value;
     if (!Number.isInteger(Number(value)) || Number(value) < 1){
       this.app.showMessage("Please enter a valid tournament ID.", MessageType.ERROR);
       return;
     }
+    this.fetchingTournament = true;
     this.battleService.getTournamentResults(Number(value)).subscribe((res) =>{
+      this.fetchingTournament = false;
       if (res.success){
         this.router.navigateByUrl(`/results/${value}`);
       }
@@ -29,11 +33,12 @@ export class ResultsLookupComponent {
       }
     },
     (error) =>{
+      this.fetchingTournament = false;
       this.app.showMessage(error.error.message, MessageType.ERROR);
     });
   }
 
-  importFromFile(){
+  importFromFile = () => {
     let input = document.createElement("input");
     input.type = 'file';
     input.addEventListener('change', (event) => {

@@ -1,7 +1,7 @@
 <div class="profile-content">
     <h2>{{this.app.loggedInUser?.name}}'s Profile</h2>
     <hr>
-    <div class="details">
+    <div *ngIf="!this.app.gettingUserData" class="details">
         <div class="created">
             <span class="bold">Account Created:</span> {{this.app.loggedInUser?.accountCreated}}
         </div>
@@ -13,6 +13,7 @@
             <button (click)="this.openDeleteModal()" class="delete-btn">Delete Account</button>
         </div>
     </div>
+    <app-spinner *ngIf="this.app.gettingUserData" [size]="'30px'"></app-spinner>
 </div>
 
 <div [hidden]="this.hideChangePasswordModal" id="modal-background" (mousedown)="this.closePasswordModal($event)"   class="modal-background">

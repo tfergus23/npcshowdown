@@ -9,7 +9,15 @@
 }
 
 .search-container .search{
-    height: 30px;
+    width: 75px;
+    height: 50px;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+app-spinning-button{
+    width: 75px;
+    height: 50px;
     display: inline-block;
     margin-left: 5px;
 }

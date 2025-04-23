@@ -31,6 +31,8 @@ export class ViewResultsComponent {
   @ViewChild('logView') logView!: BattleLogViewComponent;
   @Input() showSaveButtons: boolean = true;
   userTournaments: Array<TournamentResultSet> | undefined;
+  addingToUser: boolean = false;
+  whileAddingToUser = () => {return this.addingToUser;};
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router){
     this.tournamentID = route.snapshot.paramMap.get('id');
@@ -159,16 +161,19 @@ export class ViewResultsComponent {
     });
   }
 
-  addTournamentToUser(){
+  addTournamentToUser = () => {
+    this.addingToUser = true;
     this.userService.addTournamentToUserProfile(this.app.loggedInUser!.name, this.results!.id).subscribe((res) =>{
       if (res.success){
         this.app.setUserData(this.app.loggedInUser!.name);
         this.userService.getUserTournaments(localStorage.getItem('user') as string).subscribe((res) => {
+          this.addingToUser = false;
           if (res.success){
             this.userTournaments = res.data;
           }
         }, 
         (error) =>{
+          this.addingToUser = false;
           this.app.logoutUser();
           this.app.showMessage(error.error.message, MessageType.ERROR);
         });
@@ -178,6 +183,7 @@ export class ViewResultsComponent {
       }
     },
     (error) =>{
+      this.addingToUser = false;
       if (error.status == 401){
         this.app.logoutUser();
       }
@@ -218,5 +224,21 @@ export class ViewResultsComponent {
       clearInterval(this.interval);
     }
     this.errorMessage = error.error.message;
+  }
+
+  saveTournamentText(){
+    return this.userHasTournament() ? "Saved ✓" : "Add to My Tournaments";
+  }
+
+  addButtonBackground(){
+    if (this.userHasTournament()){
+      return 'rgb(0,255,0)';
+    }
+    else if (this.addingToUser){
+      return 'gray';
+    }
+    else{
+      return 'aqua';
+    }
   }
 }

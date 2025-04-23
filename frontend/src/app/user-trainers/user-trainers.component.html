@@ -4,5 +4,6 @@
     <hr>
     <div class="details">
         <app-create-trainer *ngFor="let trainer of this.trainers; index as i" [parent]="this" [dataLists]="this.dataLists" [showEditButton]="true" [showAddMyTrainers]="false" [readOnly]="true" [collapsed]="true"  [readOnly]="true" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
+        <app-spinner *ngIf="this.fetchingTrainers" [size]="'30px'"></app-spinner>
     </div>
 </div>

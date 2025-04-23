@@ -17,12 +17,15 @@ export class UserTrainersModalComponent {
   trainers: Array<Trainer> | undefined;
   selectedIndecies: Array<number> = [];
   hidden: boolean = true;
+  fetchingTrainers: boolean = false;
 
   constructor(public app: AppComponent, private userSerivce: UserService){
   }
 
   show(){
+    this.fetchingTrainers = true;
     this.userSerivce.getUserTrainers(localStorage.getItem('user') as string).subscribe((res) => {
+      this.fetchingTrainers = false;
       if (res.success){
         this.trainers = res.data;
       }
@@ -32,6 +35,7 @@ export class UserTrainersModalComponent {
       }
     },
     (error) =>{
+      this.fetchingTrainers = false;
       if (error.status == 401){
         this.app.logoutUser();
       }

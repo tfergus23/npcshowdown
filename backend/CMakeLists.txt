@@ -23,6 +23,8 @@ add_executable (npcshowdown main.cpp ${api})
 
 if (NPCS_BUILD_TESTS)
     include(FetchContent)
+    include(CTest)
+    enable_testing()
     FetchContent_Declare(
     googletest
     # Specify the commit you depend on and update it regularly.
@@ -32,6 +34,8 @@ if (NPCS_BUILD_TESTS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
     add_executable(npcs_tests ${PROJECT_SOURCE_DIR}/tests/tests.cpp)
+    
+    add_test(NAME Tests COMMAND npcs_tests)
 endif()
 
 include_directories(

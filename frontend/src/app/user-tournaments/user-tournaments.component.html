@@ -9,7 +9,8 @@
         <a class="horizontal-margin" style="margin-left: auto;" href="/results/{{resultSet.id}}">View Results</a>
         <button class="horizontal-margin" (click)="this.openDeleteModal(resultSet.id)" class="delete-tournament-button"><img src="../../assets/delete.svg" width="30" height="30"></button>
     </div>
-    <div style="margin: 50px;" [hidden]="this.resultSets.length > 0">You have no tournaments lol</div>
+    <div style="margin: 50px;" [hidden]="this.resultSets.length > 0 || this.fetchingTournaments">You have no tournaments lol</div>
+    <app-spinner *ngIf="this.fetchingTournaments" [size]="'30px'"></app-spinner>
 </div>
 <div [hidden]="!this.showDeleteModal" id="modal-background" (mousedown)="this.closeDeleteModal()"   class="modal-background">
     <div [hidden]="!this.showDeleteModal" class="modal-content" (mousedown)="$event.stopPropagation()">

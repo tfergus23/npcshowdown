@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- button spinners
 - fix footer
 - change user profile URL
 - Remember create battle/tournament (save to localstorage)
@@ -9,6 +8,7 @@
 - edit tournament name
 - sample trainers
 - mobile pass
+- ip rate limitting
 
 ### Extra
 - saved tournaments sort options

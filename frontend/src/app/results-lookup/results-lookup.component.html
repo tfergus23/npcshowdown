@@ -1,8 +1,10 @@
 <div *ngIf="!this.results" class="search-container">
     <h2>View Tournament Results</h2>
     <h3 style="display: inline-block; padding-right: 5px;">Lookup by ID:</h3>
-    <input (keyup.enter)="this.searchForTournament()" id="tournament-lookup-search-btn"> <button (click)="this.searchForTournament()" class="search">Search</button>
+    <input (keyup.enter)="this.searchForTournament()" id="tournament-lookup-search-btn"> 
+    <app-spinning-button [click]="this.searchForTournament" [loadWhile]="this.whileFetchingTournament" [text]="'Search'"></app-spinning-button>
     <h3  style="display: inline-block; padding-left: 20px; padding-right: 20px;">OR</h3>
     <button style="display: inline-block;" (click)="this.importFromFile()" class="import">Import from File</button>
+
 </div>
 <app-view-results *ngIf="this.results" [results]="this.results" [showSaveButtons]="false"></app-view-results>
