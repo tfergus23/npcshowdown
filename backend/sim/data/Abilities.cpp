@@ -10,7 +10,7 @@ using json = nlohmann::json;
 const Ability ABILITY_GUTS = {
     .name = "Guts",
     .modifySubjectStat = [](Stat stat,int statVal,Pokemon* subject){
-        if (stat == Stat::ATTACK && subject->getStatus() != STATUS_NONE){
+        if (stat == Stat::ATTACK && subject->getStatus() != &STATUS_NONE){
             float newVal = (float) statVal * 1.5f;
             subject->battle->debug("Guts active");
             return (int) floor(newVal);
@@ -35,14 +35,17 @@ const Ability ABILITY_TORRENT = {
 
 const Ability ABILITY_TRUANT = {
     .observer = {
+    .initialize = [](Pokemon* subject, Battle* battle){
+        subject->abilityState.truantState = TruantState();
+    },
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
-        EffectState& state = subject->abilityState;
+        TruantState& state = subject->abilityState.truantState;
         if (args.moveUse->user == subject && state.isTruant && args.moveUse->move != &MOVE_SWITCH){
             args.moveUse->dontStart(subject->nickname + " is loafing around!");
         }
     },
     .afterMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
-        EffectState& state = subject->abilityState;
+        TruantState& state = subject->abilityState.truantState;
         if (args.moveUse->user == subject){
             state.isTruant = !state.isTruant;
         }

@@ -1,7 +1,7 @@
 #pragma once
 #include "sim/battle/Status.hpp"
 
-extern const Status* STATUS_NONE;
+extern const Status STATUS_NONE;
 
 //TODO
 extern const Status STATUS_PARALYSIS;

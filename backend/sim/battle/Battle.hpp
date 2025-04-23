@@ -7,7 +7,7 @@
 #include "sim/data/Weathers.hpp"
 #include "sim/battle/FieldEffect.hpp"
 #include "sim/battle/MoveUse.hpp"
-#include "sim/battle/EffectState.hpp"
+#include "sim/battle/ObserverState.hpp"
 #include "sim/battle/Event.hpp"
 #include "sim/battle/EventArgs.hpp"
 #include <random>
@@ -32,7 +32,7 @@ public:
     int player1Switching = -1; //-1 indicates no switch. >= 0 indicates position of pokemon
     int player2Switching = -1;
     bool isTurnOver = false;
-    const Weather* weather = WEATHER_NONE;
+    const Weather* weather = &WEATHER_NONE;
     int turns = 1;
     bool isBattleOver = false;
     bool isDraw = false;
@@ -57,7 +57,7 @@ public:
     void switchIfNecessary();
     void addFieldEffect(bool side, const FieldEffect* fieldEffect);
     bool sideHasFieldEffect(bool side, const FieldEffect* fieldEffect);
-    EffectState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
+    ObserverState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
     void log(std::string_view str);
     void debug(std::string_view str);
@@ -81,8 +81,8 @@ private:
     std::default_random_engine m_Generator;
     Pokemon* m_FasterPokemon;
     Pokemon* m_SlowerPokemon;
-    std::unordered_map<const FieldEffect*, EffectState> m_Player1FieldEffects;
-    std::unordered_map<const FieldEffect*, EffectState> m_Player2FieldEffects;
+    std::unordered_map<const FieldEffect*, ObserverState> m_Player1FieldEffects;
+    std::unordered_map<const FieldEffect*, ObserverState> m_Player2FieldEffects;
     std::vector<const FieldEffect*> m_EffectsToRemove1;
     std::vector<const FieldEffect*> m_EffectsToRemove2;
     void removeMarkedFieldEffects(bool side);

@@ -41,9 +41,9 @@ battle{battle}
     currentType[1] = species->type[1];
 
     battle->assertTrue(m_CurrentAbility != nullptr, nickname + " doesn't have an ability.");
-    m_CurrentAbility->observer.initialize(this, battle,&abilityState);
+    m_CurrentAbility->observer.initialize(this, battle);
     if (m_CurrentItem != &ITEM_NONE)
-        m_CurrentItem->observer.initialize(this, battle,&itemState);
+        m_CurrentItem->observer.initialize(this, battle);
 
     empty = false;
     for (int i = 0; i < 4; i++){
@@ -97,17 +97,15 @@ const Ability* Pokemon::getCurrentAbility(){
 }
 void Pokemon::setCurrentAbility(const Ability* ability){
     m_CurrentAbility = ability;
-    abilityState.reset();
-    m_CurrentAbility->observer.initialize(this, battle,&abilityState);
+    m_CurrentAbility->observer.initialize(this, battle);
 }
 const Item* Pokemon::getCurrentItem(){
     return m_CurrentItem;
 }
 void Pokemon::setCurrentItem(const Item* item){
     m_CurrentItem = item;
-    itemState.reset();
     if (m_CurrentItem != &ITEM_NONE)
-        m_CurrentItem->observer.initialize(this, battle,&itemState);
+        m_CurrentItem->observer.initialize(this, battle);
 
 }
 const Status* Pokemon::getStatus(){
@@ -115,9 +113,8 @@ const Status* Pokemon::getStatus(){
 }
 void Pokemon::applyStatus(const Status* status){
     m_Status = status;
-    statusState.reset();
-    if (m_Status != STATUS_NONE)
-        m_Status->observer.initialize(this, battle, &statusState);
+    if (m_Status != &STATUS_NONE)
+        m_Status->observer.initialize(this, battle);
 }
 bool Pokemon::hasEffect(const Effect* effect){
     return m_Effects.count(effect) > 0;
@@ -136,9 +133,9 @@ void Pokemon::applyEffect(const Effect* effect){
     //TODO Implement the MoveEffects version here
     battle->assertTrue(!hasEffect(effect), "Tried to apply effect " + effect->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
     m_Effects[effect];
-    effect->observer.initialize(this, battle,&m_Effects[effect]);
+    effect->observer.initialize(this, battle);
 }
-EffectState* Pokemon::getEffectState(const Effect* effect){
+ObserverState* Pokemon::getEffectState(const Effect* effect){
     return &m_Effects[effect];
 }
 
@@ -226,17 +223,17 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
     //Still run this if we just died
     if (isDead && !(event == Event::POKEMON_DEATH && args.eventSubject == this)) return;
 
-    if (getCurrentItem() != &ITEM_NONE && !itemState.suppressed) getCurrentItem()->observer.handleEvent(event,this, battle, args);
+    if (getCurrentItem() != &ITEM_NONE && !isItemSuppressed()) getCurrentItem()->observer.handleEvent(event,this, battle, args);
     if (getCurrentItem() != &ITEM_NONE && event == Event::END_OF_TURN) getCurrentItem()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);
 
-    if (getStatus() != STATUS_NONE && !statusState.suppressed) getStatus()->observer.handleEvent(event,this, battle, args);
-    if (getStatus() != STATUS_NONE && event == Event::END_OF_TURN) getStatus()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);
+    if (getStatus() != &STATUS_NONE && !isStatusSuppressed()) getStatus()->observer.handleEvent(event,this, battle, args);
+    if (getStatus() != &STATUS_NONE && event == Event::END_OF_TURN) getStatus()->observer.handleEvent(Event::PRIORITY_END_OF_TURN,this, battle, args);
 
 
-    if (!abilityState.suppressed) getCurrentAbility()->observer.handleEvent(event,this, battle, args);
+    if (!isAbilitySuppressed()) getCurrentAbility()->observer.handleEvent(event,this, battle, args);
     if (event == Event::END_OF_TURN) getCurrentAbility()->observer.handleEvent(Event::PRIORITY_END_OF_TURN, this, battle, args);
     for (auto [effect,state] : m_Effects){
-        if (!state.suppressed) effect->observer.handleEvent(event, this, battle, args);
+        effect->observer.handleEvent(event, this, battle, args);
         if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, this, battle, args);
     }
     removeMarkedEffects();
@@ -251,7 +248,7 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
         lastMoveUsed = nullptr;
         break;
     case Event::POKEMON_DEATH:
-        m_Status = STATUS_NONE;
+        m_Status = &STATUS_NONE;
         onSwitch();
     default:
         break;
@@ -259,7 +256,12 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
 }
 
 void Pokemon::onSwitch(){
-    m_CurrentAbility = m_BaseAbility;
+    setCurrentAbility(m_BaseAbility);
+    m_CurrentItem->observer.initialize(this, battle);
+    m_Status->observer.initialize(this, battle);
+    m_AbilitySuppressors = 0;
+    m_ItemSuppressors = 0;
+    m_StatusSuppressors = 0;
     resetBoosts();
     choiceLockedMove = -1;
     m_Trappers = 0;
@@ -314,5 +316,33 @@ bool Pokemon::isTrapped(){
 }
 
 bool Pokemon::hasAbilityUnsuppressed(const Ability* ability){
-    return this->m_CurrentAbility == ability && !this->abilityState.suppressed;
+    return this->m_CurrentAbility == ability && !isAbilitySuppressed();
+}
+
+void Pokemon::suppressAbility(){
+    m_AbilitySuppressors++;
+}
+void Pokemon::allowAbility(){
+    m_AbilitySuppressors--;
+}
+bool Pokemon::isAbilitySuppressed(){
+    return m_AbilitySuppressors > 0;
+}
+void Pokemon::suppressItem(){
+    m_ItemSuppressors++;
+}
+void Pokemon::allowItem(){
+    m_ItemSuppressors--;
+}
+bool Pokemon::isItemSuppressed(){
+    return m_ItemSuppressors > 0;
+}
+void Pokemon::suppressStatus(){
+    m_StatusSuppressors++;
+}
+void Pokemon::allowStatus(){
+    m_StatusSuppressors--;
+}
+bool Pokemon::isStatusSuppressed(){
+    return m_StatusSuppressors > 0;
 }

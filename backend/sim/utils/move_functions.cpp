@@ -10,9 +10,9 @@
 int dealDamage(int damage, MoveUse* moveUse){
     bool isPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon;
     if (moveUse->battle->sideHasFieldEffect(isPlayer1, &FIELD_EFFECT_SUBSTITUTE)){
-        EffectState* subState = moveUse->battle->getFieldEffectState(isPlayer1, &FIELD_EFFECT_SUBSTITUTE);
-        if (damage > subState->substituteHealth) damage = subState->substituteHealth;
-        subState->substituteHealth -= damage;
+        SubstituteState& subState = moveUse->battle->getFieldEffectState(isPlayer1, &FIELD_EFFECT_SUBSTITUTE)->substituteState;
+        if (damage > subState.health) damage = subState.health;
+        subState.health -= damage;
         if (damage > 0) moveUse->battle->log(moveUse->target->nickname + "'s Substitute absorbed the attack!");
     }
     else{
@@ -194,7 +194,7 @@ void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle) {
 }
 bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
     //TODO: Why are these separate if blocks?
-    if (moveUse->target->getStatus() != STATUS_NONE) {
+    if (moveUse->target->getStatus() != &STATUS_NONE) {
         if (logTypeFailure) moveUse->battle->log("But it failed!");
         return false;
     }
@@ -263,13 +263,13 @@ bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle,
 
 }
 bool changeBattleWeather(const Weather* newWeather, Battle* battle) {
-    if (battle->weather != WEATHER_NONE && battle->weather == newWeather) {
+    if (battle->weather != &WEATHER_NONE && battle->weather == newWeather) {
         battle->log("But it failed!");
         return false;
     }
     else {
         battle->weather = newWeather;
-        if (newWeather != WEATHER_NONE) battle->log(newWeather->beginText);
+        if (newWeather != &WEATHER_NONE) battle->log(newWeather->beginText);
         return true;
     }
 }

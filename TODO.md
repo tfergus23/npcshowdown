@@ -18,7 +18,6 @@
 ## Sim
 
 ### MVP
-- Rewrite observer states to use unions
 - Implement all statuses
 - Implement all weathers
 - Implement all gen 1 moves

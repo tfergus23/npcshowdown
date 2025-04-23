@@ -11,11 +11,10 @@
 #include "sim/data/Species.hpp"
 #include "sim/data/Items.hpp"
 #include "sim/data/Statuses.hpp"
-#include "sim/battle/EffectState.hpp"
+#include "sim/battle/ObserverState.hpp"
 #include <vector>
 
 class Move;
-struct EffectState;
 class PokemonBlueprint;
 
 class Pokemon{
@@ -37,17 +36,17 @@ class Pokemon{
         //Battle state
         const Ability* getCurrentAbility();
         void setCurrentAbility(const Ability* ability);
-        EffectState abilityState;
+        ObserverState abilityState;
         const Item* getCurrentItem();
         void setCurrentItem(const Item* item);
-        EffectState itemState;
+        ObserverState itemState;
         const Status* getStatus();
         void applyStatus(const Status* status);
-        EffectState statusState;
+        ObserverState statusState;
         bool hasEffect(const Effect* effect);
         void removeEffect(const Effect* effect);
         void applyEffect(const Effect* effect);
-        EffectState* getEffectState(const Effect* effect);
+        ObserverState* getEffectState(const Effect* effect);
         std::array<const Move*,4> currentMoves;
         int currentHealth;
         bool isDead = false;
@@ -81,17 +80,30 @@ class Pokemon{
         bool isMoveDisabled(const Move* move);
         bool hasAbilityUnsuppressed(const Ability* ability);
 
+        void suppressAbility();
+        void allowAbility();
+        bool isAbilitySuppressed();
+        void suppressItem();
+        void allowItem();
+        bool isItemSuppressed();
+        void suppressStatus();
+        void allowStatus();
+        bool isStatusSuppressed();
+
     private:
         void onSwitch();
         const Ability* m_BaseAbility;
         const Ability* m_CurrentAbility;
         const Item* m_BaseItem = &ITEM_NONE;
         const Item* m_CurrentItem = &ITEM_NONE;
-        const Status* m_Status = STATUS_NONE;
-        std::unordered_map<const Effect*,EffectState> m_Effects;
+        const Status* m_Status = &STATUS_NONE;
+        std::unordered_map<const Effect*,ObserverState> m_Effects;
         std::vector<const Effect*> m_EffectsToRemove;
         void removeMarkedEffects();
         Gender m_Gender;
         std::unordered_map<const Move*, int> m_DisabledMoves;
         int8_t m_Trappers = 0;
+        int8_t m_AbilitySuppressors = 0;
+        int8_t m_ItemSuppressors = 0;
+        int8_t m_StatusSuppressors = 0;
 };

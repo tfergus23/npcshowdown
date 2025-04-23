@@ -5,7 +5,7 @@ const Effect EFFECT_CONFUSED;
 
 const Effect EFFECT_ROOST = {
     .observer = {
-    .initialize = [](Pokemon* subject, Battle* battle, EffectState* state){
+    .initialize = [](Pokemon* subject, Battle* battle){
         if (!subject->isType(Type::FLYING)) return;
         
         Type otherType = subject->currentType[0] == Type::FLYING ? subject->currentType[1] : subject->currentType[0];

@@ -4,7 +4,7 @@
 #include "sim/utils/move_functions.hpp"
 #include "sim/data/Abilities.hpp"
 
-const Status* STATUS_NONE = nullptr;
+const Status STATUS_NONE;
 
 //TODO
 const Status STATUS_PARALYSIS;
