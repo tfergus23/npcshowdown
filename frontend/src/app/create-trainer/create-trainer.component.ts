@@ -81,6 +81,7 @@ export class CreateTrainerComponent {
     if (this.selectedIndex == this.trainer.team.length){
       this.selectedIndex--;
     }
+    console.log(this.selectedIndex);
     this.setImagePathStrings();
   }
 
@@ -93,6 +94,9 @@ export class CreateTrainerComponent {
     this.trainer.id = json.id;
     this.trainer.trainerLevel = json.trainerLevel;
     this.trainer.name = json.name;
+    if (this.trainer.team.length > 0){
+      this.selectedIndex = 0;
+    }
     this.setImagePathStrings();
   }
 
