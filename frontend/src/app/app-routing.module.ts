@@ -21,7 +21,7 @@ const routes: Routes = [
   {path: "trainers", component: ViewTrainersComponent},
   {path: "results", component: ResultsLookupComponent},
   {path: "results/:id", component: ViewResultsComponent},
-  {path: "user/:username", component: UserViewComponent, children:[
+  {path: "user", component: UserViewComponent, children:[
     {path: "profile", component: UserProfileComponent},
     {path: "trainers", component: UserTrainersComponent},
     {path: "tournaments", component: UserTournamentsComponent},

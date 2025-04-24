@@ -16,9 +16,9 @@
             <div class="username">{{app.loggedInUser!.name}}▼</div>
         </button>
         <div *ngIf="this.showUserDropdown" class="dropdown-content">
-            <a routerLink="user/{{this.app.loggedInUser?.name}}/profile" (click)="this.hideDropDown()">Profile</a>
-            <a routerLink="user/{{this.app.loggedInUser?.name}}/trainers" (click)="this.hideDropDown()">Saved Trainers</a>
-            <a routerLink="user/{{this.app.loggedInUser?.name}}/tournaments" (click)="this.hideDropDown()">Saved Tournaments</a>
+            <a routerLink="user/profile" (click)="this.hideDropDown()">Profile</a>
+            <a routerLink="user/trainers" (click)="this.hideDropDown()">Saved Trainers</a>
+            <a routerLink="user/tournaments" (click)="this.hideDropDown()">Saved Tournaments</a>
             <button (click)="this.logout()">Logout</button>
         </div>
         <div *ngIf="!app.loggedInUser" class="login">
