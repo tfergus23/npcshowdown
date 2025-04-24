@@ -1,5 +1,6 @@
 ## App
 ### MVP
+- properly URL encode/decode
 - Remember create battle/tournament (save to localstorage)
 - Add recents to results lookup
 - Delete old tournaments on startup (update lastUnsave)
