@@ -7,6 +7,7 @@ project ("NPCShowdown")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_compile_options(-Werror -Wreturn-type)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/tfhttp)
 
