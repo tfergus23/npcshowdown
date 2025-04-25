@@ -107,6 +107,16 @@ std::string getTokenFromRequest(const HTTP_Request& req){
     }
 }
 
+inline void sendProblemResponse(std::string& problems, json& response, HTTP_Response& res){
+    if (problems[problems.size() - 1] == '\n'){
+        problems.pop_back();
+    }
+    response["message"] = problems;
+    response["success"] = false;
+    res.Set_Status(400);
+    res.Send(response.dump());
+}
+
 NPCS_API_Server::NPCS_API_Server() :
  SPECIES_DATA_RESPONSE{createSpeciesDataResponse()},
  ABILITY_DATA_RESPONSE{createAbilityDataResponse()},
@@ -115,8 +125,6 @@ NPCS_API_Server::NPCS_API_Server() :
  MOVE_DATA_RESPONSE{createMoveDataResponse()},
  ALL_DATA_RESPONSE{createAllDataResponse()}
  {
-    max_tournament_threads = getIntFromConfig(config, "tournament_threads");
-    max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
 
     if (max_tournament_threads < 1){
         throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
@@ -177,13 +185,7 @@ NPCS_API_Server::NPCS_API_Server() :
             json body = json::parse(req.body);
             std::string problems = validateAuthRequestSchema(body);
             if (problems != ""){
-                if (problems[problems.size() - 1] == '\n'){
-                    problems.pop_back();
-                }
-                response["message"] = problems;
-                response["success"] = false;
-                res.Set_Status(400);
-                res.Send(response.dump());
+                sendProblemResponse(problems, response, res);
                 return;
             }
             std::string token;
@@ -264,12 +266,7 @@ NPCS_API_Server::NPCS_API_Server() :
         std::string problems = validateUpdatePasswordRequest(request);
 
         if (problems != ""){
-            if (problems[problems.size() - 1] == '\n'){
-                problems.pop_back();
-            }
-            response["message"] = problems;
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendProblemResponse(problems, response, res);
             return;
         }
 
@@ -321,12 +318,7 @@ NPCS_API_Server::NPCS_API_Server() :
         }
         std::string problems = validateBattleRequest(request);
         if (problems != ""){
-            if (problems[problems.size() - 1] == '\n'){
-                problems.pop_back();
-            }
-            response["message"] = problems;
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendProblemResponse(problems, response, res);
             return;
         }
 
@@ -360,12 +352,7 @@ NPCS_API_Server::NPCS_API_Server() :
         }
         std::string problems = validateTournamentRequest(request);
         if (problems != ""){
-            if (problems[problems.size() - 1] == '\n'){
-                problems.pop_back();
-            }
-            response["message"] = problems;
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendProblemResponse(problems, response, res);
             return;
         }
         size_t userID = 0;
@@ -562,13 +549,7 @@ NPCS_API_Server::NPCS_API_Server() :
         }
         std::string problems = validateTrainerJSON(request, "");
         if (problems != ""){
-            if (problems[problems.size() - 1] == '\n'){
-                problems.pop_back();
-            }
-            response["message"] = problems;
-            response["success"] = false;
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendProblemResponse(problems, response, res);
             return;
         }
 
@@ -618,13 +599,7 @@ NPCS_API_Server::NPCS_API_Server() :
         }
         std::string problems = validateTrainerJSON(request, "");
         if (problems != ""){
-            if (problems[problems.size() - 1] == '\n'){
-                problems.pop_back();
-            }
-            response["message"] = problems;
-            response["success"] = false;
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendProblemResponse(problems, response, res);
             return;
         }
 
@@ -778,12 +753,7 @@ NPCS_API_Server::NPCS_API_Server() :
         }
         std::string problems = validateCreateUserRequest(request);
         if (problems != ""){
-            if (problems[problems.size() - 1] == '\n'){
-                problems.pop_back();
-            }
-            response["message"] = problems;
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendProblemResponse(problems, response, res);
             return;
         }
 

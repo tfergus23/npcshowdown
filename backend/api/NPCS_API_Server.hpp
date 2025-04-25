@@ -20,8 +20,6 @@ public:
 private:
     tfhttp::HTTP_Server app;
     tflib::ini_file config = tflib::ini_file("npcs_config.ini", false);
-    int max_tournament_threads = 0;
-    int max_trainers_per_user = 0;
     std::deque<TournamentRequest>* queuedTournaments = nullptr;
     std::mutex* queuedTournamentMutexes = nullptr;
     int tournamentRequestThreadCounter = 0;
@@ -30,10 +28,15 @@ private:
     std::mutex idToThreadMutex;
     std::mutex saveTournamentMutex;
     MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"));
+
+    //Config vars
+    const int max_tournament_threads = getIntFromConfig(config, "tournament_threads");
+    const int max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
     const std::string websiteURL = config.get("website_url");
     const std::string domain = getDomainFromURL();
     const int port = getIntFromConfig(config, "port");
 
+    //Canned data responses
     const std::string SPECIES_DATA_RESPONSE;
     const std::string ABILITY_DATA_RESPONSE;
     const std::string ITEM_DATA_RESPONSE;
