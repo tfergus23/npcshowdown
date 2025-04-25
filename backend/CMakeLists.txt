@@ -12,13 +12,10 @@ add_compile_options(-Werror -Wreturn-type)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/tfhttp)
 
 # Add source to this project's executable.
-FILE(GLOB battle ${PROJECT_SOURCE_DIR}/sim/battle/*.cpp)
-FILE(GLOB data ${PROJECT_SOURCE_DIR}/sim/data/*.cpp)
-FILE(GLOB tournament ${PROJECT_SOURCE_DIR}/sim/tournament/*.cpp)
-FILE(GLOB utils ${PROJECT_SOURCE_DIR}/sim/utils/*.cpp)
+FILE(GLOB_RECURSE sim ${PROJECT_SOURCE_DIR}/sim/*.cpp)
 FILE(GLOB api ${PROJECT_SOURCE_DIR}/api/*.cpp)
 
-add_library(npcs_sim ${battle} ${data} ${utils} ${tournament})
+add_library(npcs_sim ${sim})
 
 add_executable (npcshowdown main.cpp ${api})
 

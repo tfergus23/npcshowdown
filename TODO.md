@@ -4,9 +4,11 @@
 - Add recents to results lookup
 - Delete old tournaments on startup (update lastUnsave)
 - edit tournament name
-- sample trainers
+- record error battles
+- admin view
 - mobile pass
 - ip rate limitting
+- sample trainers
 
 ### Extra
 - saved tournaments sort options
