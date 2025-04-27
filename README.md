@@ -1,15 +1,26 @@
 # NPC Showdown
 Pit NPC Pokemon trainers against each other in the ultimate tournament!
 
-Remaking [tfergus23/pokemonbattlesim](https://github.com/tfergus23/pokemonbattlesim) in C++ with a web based frontend.
+[Website](https://npcshowdown.com)
+
+## Introduction
+NPC Showdown is both a web API and interface for simulating round robin tournaments between NPC Pokemon trainers that you create. Once the tournament is simulated, you can compare the performance of each trainer by looking at stats such as ELO, wins/losses, and biggest upsets.
+
+## Prerequisites
+- CMake ≥ 3.22
+- MariaDB server
+- Node.js + npm
+- Angular CLI (`npm install -g @angular/cli`)
 
 ## Development
 Clone the repository with:
 ```
 git clone git@github.com:tfergus23/npcshowdown.git --recurse-submodules
 ```
-### Backend
-The backend executable can be built with cmake:
+### Database
+The app relies on a MariaDB database to function. Once created, the tables can be created using `scripts/create_tables.sql`.
+### API
+The API executable can be built with cmake:
 ```bash
 cd backend
 mkdir out
@@ -18,7 +29,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DNPCS_BUILD_TESTS=True ..
 cmake --build .
 ./npcshowdown
 ```
-The backend attempts to connect to a MariaDB database on startup. The configuration for this needs to be in a file called `npcs_config.ini`. If this file isn't found, the following defaults will be used:
+The executable attempts to connect to the MariaDB database on startup. The configuration for this needs to be in a file called `npcs_config.ini`. You can copy `npcs_config.ini.example` to get started, or, if this file isn't found, the following defaults will be used:
 ```ini
 tournament_threads=8
 db_user=root
@@ -33,7 +44,7 @@ serve_static=0
 static_dir=./static/
 ```
 ### Frontend
-The frontend is an angular app.
+The frontend is an angular app. By default, the app is served on port 4200 for testing.
 ```bash
 cd frontend
 npm install
