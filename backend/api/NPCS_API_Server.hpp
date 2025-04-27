@@ -19,7 +19,19 @@ public:
     int run();
 private:
     tfhttp::HTTP_Server app;
-    tflib::ini_file config = tflib::ini_file("npcs_config.ini", false);
+    tflib::ini_file config = tflib::ini_file("npcs_config.ini",{
+        {"", "tournament_threads", "8"},
+        {"", "db_user", "root"},
+        {"", "db_password", "password"},
+        {"", "db_host", "localhost"},
+        {"", "db_name", "npcs_test"},
+        {"", "max_user_sessions", "10"},
+        {"", "max_trainers_per_user", "10"},
+        {"", "website_url", "http://localhost:4200"},
+        {"", "port", "3000"},
+        {"", "serve_static", "0"},
+        {"", "static_dir", "./static/"},
+    }, false);
     std::deque<TournamentRequest>* queuedTournaments = nullptr;
     std::mutex* queuedTournamentMutexes = nullptr;
     int tournamentRequestThreadCounter = 0;
