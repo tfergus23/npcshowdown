@@ -34,13 +34,19 @@ export class CreateTournamentComponent {
     });
   }
 
+  ngAfterViewInit(){
+    setTimeout(() => {this.loadEntries()});
+  }
+
   addEmptyTrainer(){
     this.trainers.push(createEmptyTrainer());
+    this.saveEntries();
   }
 
  removeTrainer(trainerNumber: string){
   let index: number = parseInt(trainerNumber) - 1;
   this.trainers.splice(index,1);
+  this.saveEntries();
  }
 
   addFromFiles(){
@@ -66,6 +72,7 @@ export class CreateTournamentComponent {
           try{
             let trainer: Trainer = JSON.parse(text) as Trainer;
             this.trainers.push(trainer);
+            this.saveEntries();
             if (i+1 == files!.length){
               this.importingTrainers = false;
             }
@@ -135,5 +142,25 @@ export class CreateTournamentComponent {
 
   submitText(){
     return `Run Tournament (${this.numBattles()} battles) ${this.numBattles() > 20000 ? '(Too many! 20000 max)' : ''}`;
+  }
+
+  saveEntries = () => {
+    const entries: TournamentRequest = {
+      trainers: this.trainers,
+      seed: this.seed,
+      rounds: this.rounds,
+      user: undefined
+    };
+    localStorage.setItem('create-tournament', JSON.stringify(entries));
+  }
+
+  loadEntries(){
+    const entriesString = localStorage.getItem('create-tournament');
+    if (entriesString != null){
+      const entries = JSON.parse(entriesString);
+      this.trainers = entries.trainers;
+      this.seed = entries.seed;
+      this.rounds = entries.rounds;
+    }
   }
 }

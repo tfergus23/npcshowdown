@@ -26,7 +26,6 @@ export class CreateBattleComponent {
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
-      console.log(response!.data);
     },
     (error) => {
       this.errors.push(SERVICE_DOWN_RESPONSE)
@@ -34,8 +33,8 @@ export class CreateBattleComponent {
   }
   pointerEvents?: string;
 
-  ngOnInit() : void{
-    
+  ngAfterViewInit(){
+    setTimeout(() => {this.loadEntries()});
   }
 
   submit = () => {
@@ -74,6 +73,25 @@ export class CreateBattleComponent {
     }
     else{
       this.errors.push(SERVICE_DOWN_RESPONSE);
+    }
+  }
+
+  saveEntries = () => {
+    const entries = {
+      trainer1: this.trainers.get(0)!.getJSON(),
+      trainer2: this.trainers.get(1)!.getJSON(),
+      seed: this.seed.nativeElement.querySelector('input')!.value.trim()
+    };
+    localStorage.setItem('create-battle', JSON.stringify(entries));
+  }
+
+  loadEntries(){
+    const entriesString = localStorage.getItem('create-battle');
+    if (entriesString != null){
+      const entries = JSON.parse(entriesString);
+      this.trainers.get(0)!.setFromJson(entries.trainer1);
+      this.trainers.get(1)!.setFromJson(entries.trainer2);
+      this.seed.nativeElement.querySelector('input')!.value = entries.seed;
     }
   }
   

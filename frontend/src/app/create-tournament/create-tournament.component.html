@@ -9,7 +9,7 @@
         <button (click)="this.openTrainersModal()" [hidden]="this.app.loggedInUser == undefined">Add From My Trainers</button>
     </div>
     <div *ngFor="let trainer of trainers; index as i" class="tournament-trainer-list">
-        <app-create-trainer [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
+        <app-create-trainer [onEdit]="this.saveEntries" [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
     </div>
     <div class="seed-field">
         <label class="seed-label">Seed (Optional):</label>

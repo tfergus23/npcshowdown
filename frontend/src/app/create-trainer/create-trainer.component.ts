@@ -31,6 +31,7 @@ export class CreateTrainerComponent {
   @Input() resultsView: ViewResultsComponent | undefined;
   @Input() showAddMyTrainers: boolean = true;
   @Input() showEditButton: boolean = false;
+  @Input() onEdit: Function = () => {};
 
   editing: boolean = false;
 
@@ -74,6 +75,7 @@ export class CreateTrainerComponent {
     this.trainer.team.push(createEmptyPokemon());
     this.selectedIndex = this.trainer.team.length-1;
     this.setImagePathStrings();
+    this.callOnEdit();
   }
 
   removePoke(index: number){
@@ -83,6 +85,7 @@ export class CreateTrainerComponent {
     }
     console.log(this.selectedIndex);
     this.setImagePathStrings();
+    this.callOnEdit();
   }
 
   getJSON() : Trainer{
@@ -98,6 +101,7 @@ export class CreateTrainerComponent {
       this.selectedIndex = 0;
     }
     this.setImagePathStrings();
+    this.callOnEdit();
   }
 
   loadFromFile(){
@@ -170,11 +174,13 @@ export class CreateTrainerComponent {
       if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
         this.trainer.team[this.selectedIndex].species = dataList.options[i].value;
         this.setImagePathStrings();
+        this.callOnEdit();
         return;
       }
     }
     this.trainer.team[this.selectedIndex].species = "";
     this.setImagePathStrings();
+    this.callOnEdit();
   }
 
   autoCompleteItem(event: FocusEvent){
@@ -185,10 +191,12 @@ export class CreateTrainerComponent {
       let inputVal = input.value.toLowerCase().trim();
       if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
         this.trainer.team[this.selectedIndex].itemName = dataList.options[i].value;
+        this.callOnEdit();
         return;
       }
     }
     this.trainer.team[this.selectedIndex].itemName = "";
+    this.callOnEdit();
   }
 
   autoCompleteAbility(event: FocusEvent){
@@ -199,10 +207,12 @@ export class CreateTrainerComponent {
       let inputVal = input.value.toLowerCase().trim();
       if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
         this.trainer.team[this.selectedIndex].abilityName = dataList.options[i].value;
+        this.callOnEdit();
         return;
       }
     }
     this.trainer.team[this.selectedIndex].abilityName = "";
+    this.callOnEdit();
   }
 
   autoCompleteMove(event: FocusEvent, index: number){
@@ -213,10 +223,12 @@ export class CreateTrainerComponent {
       let inputVal = input.value.toLowerCase().trim();
       if (dataList.options[i].value.toLowerCase().includes(inputVal) && inputVal != ""){
         this.trainer.team[this.selectedIndex].moves[index] = dataList.options[i].value;
+        this.callOnEdit();
         return;
       }
     }
     this.trainer.team[this.selectedIndex].moves[index] = "";
+    this.callOnEdit();
   }
 
   saveToUserProfile = () => {
@@ -301,6 +313,13 @@ export class CreateTrainerComponent {
 
   parentIsCreateTournament(){
     return this.parent instanceof CreateTournamentComponent;
+  }
+
+  callOnEdit(){
+    if (!this.readOnly){
+      console.log('onEdit');
+      this.onEdit();
+    } 
   }
 }
 

@@ -33,11 +33,11 @@
     </div>
     <div class="trainer-info" [hidden]="this.collapsed" #trainerInfo>
         <div class="trainer-name">
-            <div class="inline-label">Name: </div> <input type="text" [(ngModel)]="this.trainer.name" [readOnly]="this.readOnly">
+            <div class="inline-label">Name: </div> <input type="text" [(ngModel)]="this.trainer.name" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
         </div>
         <div class="trainer-level">
             <div class="inline-label">AI Level: </div>
-            <select [(ngModel)]="this.trainer.trainerLevel" [disabled]="this.readOnly">
+            <select [(ngModel)]="this.trainer.trainerLevel" [disabled]="this.readOnly" (focusout)="this.callOnEdit()">
                 <option *ngFor="let level of dataLists?.trainerLevelList" value="{{level}}">{{level}}</option>
             </select>
         </div>
@@ -64,22 +64,22 @@
                     <div class="inline-label">Item: </div> <input type="text" list="itemList" (focusout)="this.autoCompleteItem($event)" [(ngModel)]="this.trainer.team[selectedIndex].itemName" [readOnly]="this.readOnly">
                 </div>
                 <div class="pokemon-input">
-                    <div class="inline-label">Level: </div> <input type="number" min="0" max="100" [(ngModel)]="this.trainer.team[selectedIndex].level" [readOnly]="this.readOnly">
+                    <div class="inline-label">Level: </div> <input type="number" min="0" max="100" [(ngModel)]="this.trainer.team[selectedIndex].level" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
                 </div>
                 <div class="pokemon-input">
                     <div class="inline-label">Gender: </div>
-                    <select [(ngModel)]="this.trainer.team[selectedIndex].gender" [disabled]="this.readOnly">
+                    <select [(ngModel)]="this.trainer.team[selectedIndex].gender" [disabled]="this.readOnly" (focusout)="this.callOnEdit()">
                         <option value="Random">Random</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
                 </div>
                 <div class="pokemon-input">
-                    <div class="inline-label">Nickname: </div> <input type="text" [(ngModel)]="this.trainer.team[selectedIndex].nickname" [readOnly]="this.readOnly">
+                    <div class="inline-label">Nickname: </div> <input type="text" [(ngModel)]="this.trainer.team[selectedIndex].nickname" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
                 </div>
                 <div class="pokemon-input">
                     <div class="inline-label">Nature: </div>
-                    <select [(ngModel)]="this.trainer.team[selectedIndex].nature" [disabled]="this.readOnly">
+                    <select [(ngModel)]="this.trainer.team[selectedIndex].nature" [disabled]="this.readOnly" (focusout)="this.callOnEdit()">
                         <option *ngFor="let nature of dataLists?.natureList" value="{{nature}}">{{nature}}</option>
                     </select>
                 </div>
@@ -110,23 +110,23 @@
                     <div class="inline-label">
                         EVs: 
                     </div>
-                    <input placeholder="HP" type="number" min="0" max="255"  [(ngModel)]="this.trainer.team[selectedIndex].evs[0]" [readOnly]="this.readOnly">
-                    <input placeholder="ATK" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[1]" [readOnly]="this.readOnly">
-                    <input placeholder="DEF" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[2]" [readOnly]="this.readOnly">
-                    <input placeholder="SPA" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[3]" [readOnly]="this.readOnly">
-                    <input placeholder="SPD" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[4]" [readOnly]="this.readOnly">
-                    <input placeholder="SPE" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[5]" [readOnly]="this.readOnly">
+                    <input placeholder="HP" type="number" min="0" max="255"  [(ngModel)]="this.trainer.team[selectedIndex].evs[0]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="ATK" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[1]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="DEF" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[2]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="SPA" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[3]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="SPD" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[4]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="SPE" type="number" min="0" max="255" [(ngModel)]="this.trainer.team[selectedIndex].evs[5]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
                 </div>
                 <div class="stat-value-input">
                     <div class="inline-label">
                         IVs: 
                     </div>
-                    <input placeholder="HP" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[0]" [readOnly]="this.readOnly">
-                    <input placeholder="ATK" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[1]" [readOnly]="this.readOnly">
-                    <input placeholder="DEF" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[2]" [readOnly]="this.readOnly">
-                    <input placeholder="SPA" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[3]" [readOnly]="this.readOnly">
-                    <input placeholder="SPD" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[4]" [readOnly]="this.readOnly">
-                    <input placeholder="SPE" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[5]" [readOnly]="this.readOnly">
+                    <input placeholder="HP" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[0]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="ATK" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[1]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="DEF" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[2]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="SPA" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[3]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="SPD" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[4]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <input placeholder="SPE" type="number" min="0" max="31" [(ngModel)]="this.trainer.team[selectedIndex].ivs[5]" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
                 </div>
             </div>
         </div>

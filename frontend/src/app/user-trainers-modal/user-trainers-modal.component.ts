@@ -74,11 +74,13 @@ export class UserTrainersModalComponent {
     if (this.selectedIndecies.length > 0){
       if (this.parent instanceof CreateTrainerComponent){
         this.parent.setFromJson(this.trainers![this.selectedIndecies[0]]);
+        this.parent.callOnEdit();
       }
       else if (this.parent instanceof CreateTournamentComponent){
         for (let index of this.selectedIndecies){
           this.parent.trainers.push(this.trainers![index]);
         }
+        this.parent.saveEntries();
       }
     }
     this.close(new MouseEvent(''));
