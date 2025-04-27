@@ -175,6 +175,15 @@ NPCS_API_Server::NPCS_API_Server() :
     //baseRoute->Use(debugDelayMiddleware);
     //authorizedRoute->Use(debugDelayMiddleware);
 
+    // If serving frontend
+    if (serveStatic){
+        app.Set_Static_Directory(staticDir);
+        app.Set_Default_Handler([=,this] (const HTTP_Request& req, HTTP_Response& res){
+            res.Send_File(staticDir + "/index.html");
+        });
+        std::cout << "Serving static files in " << staticDir << '\n';
+    }
+
     //Add preflight handler to all paths
     app.Add_Handler("OPTIONS", "*", preflightHandler);
 

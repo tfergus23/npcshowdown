@@ -28,7 +28,7 @@ private:
         {"", "max_user_sessions", "10"},
         {"", "max_trainers_per_user", "10"},
         {"", "website_url", "http://localhost:4200"},
-        {"", "port", "3000"},
+        {"", "api_port", "3000"},
         {"", "serve_static", "0"},
         {"", "static_dir", "./static/"},
     }, false);
@@ -45,7 +45,9 @@ private:
     const int max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
     const std::string websiteURL = config.get("website_url");
     const std::string domain = getDomainFromURL();
-    const int port = getIntFromConfig(config, "port");
+    const int port = getIntFromConfig(config, "api_port");
+    const bool serveStatic = getIntFromConfig(config, "serve_static");
+    const std::string staticDir = config.get("static_dir");
 
     //Canned data responses
     const std::string SPECIES_DATA_RESPONSE;
