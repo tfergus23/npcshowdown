@@ -1,0 +1,60 @@
+.tournament-result{
+    display: flex;
+    height: 60px;
+    background-color: var(--middle-background-color);
+    align-items: center;
+    border: 3px solid var(--dark-background-color);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.horizontal-margin{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
+.delete-tournament-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0);
+    width: 30px;
+    height: 30px;
+}
+
+.delete-tournament-button:hover{
+    background-color: var(--neutral-background-color);
+}
+
+.delete-tournament-button img{
+    filter: invert(99%) sepia(9%) saturate(230%) hue-rotate(193deg) brightness(115%) contrast(100%);
+    width: 25px;
+    height: 25px;
+}
+
+@media (max-width: 1117px){
+    .tournament-result{
+        font-size: 15px;
+    }
+
+    .horizontal-margin{
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 542px){
+    .tournament-result{
+        font-size: 10px;
+        height: 40px;
+    }
+    .horizontal-margin{
+        margin-left: 3px;
+        margin-right: 3px;
+    }
+}

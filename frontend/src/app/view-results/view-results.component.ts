@@ -9,6 +9,7 @@ import { AppComponent, MessageType } from '../app.component';
 import { UserService } from '../user.service';
 import Trainer from 'src/Trainer';
 import GetResponse from 'src/GetResponse';
+import { AppConfigService } from '../app-config.service';
 
 const SORT_ELO = 0;
 const SORT_WINS = 1;
@@ -34,7 +35,7 @@ export class ViewResultsComponent {
   addingToUser: boolean = false;
   whileAddingToUser = () => {return this.addingToUser;};
 
-  constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router){
+  constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router, private appConfig: AppConfigService){
     this.tournamentID = route.snapshot.paramMap.get('id');
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
@@ -213,6 +214,7 @@ export class ViewResultsComponent {
           this.results!.trainers[this.results!.results[i].index] = res.data;
         })
       }
+      this.addToRecents();
     }
     else{
       this.errorMessage = response.message;
@@ -240,5 +242,21 @@ export class ViewResultsComponent {
     else{
       return 'aqua';
     }
+  }
+
+  addToRecents(){
+    let stored = localStorage.getItem('recent-tournaments');
+    let newList = new Array<number>();
+    if (stored != null){
+      newList = JSON.parse(stored);
+    }
+    if (!newList.includes(this.results!.id)){
+      const toRemove = newList.length - this.appConfig.getConfig().maxRecentTournaments + 1;
+      for (let i = 0; i < toRemove; i++){
+        newList.shift();
+      }
+      newList.push(this.results!.id);
+    }
+    localStorage.setItem('recent-tournaments', JSON.stringify(newList));
   }
 }

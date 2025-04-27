@@ -1,6 +1,12 @@
 .search-container{
-    width: fit-content;
+    width: 75%;
     margin: auto;
+}
+
+@media (max-width: 874px){
+    .search-container{
+        width: 100%;
+    }
 }
 
 .search-container input{

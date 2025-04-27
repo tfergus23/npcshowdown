@@ -4,6 +4,11 @@ import { BattleService } from '../battle.service';
 import { AppComponent, MessageType } from '../app.component';
 import { isResultSet, TournamentResultSet } from 'src/TournamentResultSet';
 
+interface RecentTournament {
+  id: number;
+  index: number;
+}
+
 @Component({
   selector: 'app-results-lookup',
   templateUrl: './results-lookup.component.html',
@@ -12,8 +17,30 @@ import { isResultSet, TournamentResultSet } from 'src/TournamentResultSet';
 export class ResultsLookupComponent {
   results?: TournamentResultSet;
   fetchingTournament: boolean = false;
+  recentTournaments: Array<TournamentResultSet> = new Array<TournamentResultSet>();
   whileFetchingTournament = () => {return this.fetchingTournament};
   constructor(public app: AppComponent, private router: Router, private battleService: BattleService){}
+
+  ngOnInit(){
+    let storedRecents = localStorage.getItem('recent-tournaments');
+    if (storedRecents != null){
+      let recentIDs: Array<number> = JSON.parse(storedRecents);
+      let recentTournaments: Array<RecentTournament> = new Array<RecentTournament>();
+      recentIDs.forEach((id: number, index: number) => {
+        recentTournaments.push({id: id, index: recentIDs.length - index - 1});
+      });
+      recentTournaments.forEach((recent) =>{
+        this.battleService.getTournamentResults(recent.id).subscribe((res) =>{
+          if (res.success){
+            this.recentTournaments[recent.index] = res.data;
+          }
+        },
+        (error) =>{
+
+        });
+      });
+    }
+  }
 
   searchForTournament = () =>{
     const input = document.getElementById('tournament-lookup-search-btn') as HTMLInputElement;

@@ -1,13 +1,8 @@
 <div class="profile-content">
     <h2>{{this.app.loggedInUser?.name}}'s Tournaments</h2>
     <hr>
-    <div [hidden]="this.resultSets.length <= 0" *ngFor="let resultSet of this.resultSets; index as i"  class="tournament-result">
-        <label class="horizontal-margin">{{resultSet.name != "" ? resultSet.name : "Tournament #" + resultSet.id}}</label>
-        <label class="horizontal-margin">{{resultSet.dateRan}}</label>
-        <label class="horizontal-margin">{{resultSet.user ? resultSet.user : 'Anonymous'}}</label>
-        <label class="horizontal-margin">{{resultSet.results.length}} trainers</label>
-        <a class="horizontal-margin" style="margin-left: auto;" href="/results/{{resultSet.id}}">View Results</a>
-        <button class="horizontal-margin" (click)="this.openDeleteModal(resultSet.id)" class="delete-tournament-button"><img src="../../assets/delete.svg" width="30" height="30"></button>
+    <div class="info-container">
+        <app-results-info [hidden]="this.resultSets.length <= 0" *ngFor="let resultSet of this.resultSets; index as i" [resultSet]="resultSet" [parent]="this" [deleteable]="true"  class="tournament-result"></app-results-info>
     </div>
     <div style="margin: 50px;" [hidden]="this.resultSets.length > 0 || this.fetchingTournaments">You have no tournaments lol</div>
     <app-spinner *ngIf="this.fetchingTournaments" [size]="'30px'"></app-spinner>

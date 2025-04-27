@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- Add recents to results lookup
 - Delete old tournaments on startup (update lastUnsave)
 - edit tournament name
 - record error battles
