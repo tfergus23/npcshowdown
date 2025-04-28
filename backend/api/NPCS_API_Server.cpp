@@ -137,6 +137,11 @@ NPCS_API_Server::NPCS_API_Server() :
     queuedTournaments = new std::deque<TournamentRequest>[max_tournament_threads];
     queuedTournamentMutexes = new std::mutex[max_tournament_threads];
 
+    std::cout << "Deleting unsaved tournaments older than " << keepTournamentDays << " days...\n";
+    int numDeletedTournaments = db.deleteOldTournaments(keepTournamentDays);
+    std::cout << "Deleted " << numDeletedTournaments << " tournaments.\n";
+    
+
     //Create routes
     Route* baseRoute = app.Create_Route("/api");
     Route* authorizedRoute = app.Create_Route("/api/user/:username");

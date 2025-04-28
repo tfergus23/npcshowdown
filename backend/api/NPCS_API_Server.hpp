@@ -26,11 +26,12 @@ private:
         {"", "db_host", "localhost"},
         {"", "db_name", "npcs_test"},
         {"", "max_user_sessions", "10"},
-        {"", "max_trainers_per_user", "10"},
+        {"", "max_trainers_per_user", "150"},
         {"", "website_url", "http://localhost:4200"},
         {"", "api_port", "3000"},
         {"", "serve_static", "0"},
         {"", "static_dir", "./static/"},
+        {"", "keep_tournament_days", "7"},
     }, false);
     std::deque<TournamentRequest>* queuedTournaments = nullptr;
     std::mutex* queuedTournamentMutexes = nullptr;
@@ -48,6 +49,7 @@ private:
     const int port = getIntFromConfig(config, "api_port");
     const bool serveStatic = getIntFromConfig(config, "serve_static");
     const std::string staticDir = config.get("static_dir");
+    const int keepTournamentDays = getIntFromConfig(config, "keep_tournament_days");
 
     //Canned data responses
     const std::string SPECIES_DATA_RESPONSE;

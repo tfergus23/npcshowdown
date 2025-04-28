@@ -586,6 +586,10 @@ void MariaDBConnection::deleteSavedTournament(size_t user, size_t tournament){
     deleteStmnt->setUInt64(2, tournament);
 
     delete deleteStmnt->executeQuery();
+
+    std::unique_ptr<sql::PreparedStatement> updateStatement(conn->prepareStatement("update tournament set lastUnsave=NOW() where id = ?"));
+    updateStatement->setUInt64(1, tournament);
+    delete updateStatement->executeQuery();
 }
 
 bool MariaDBConnection::tournamentExists(size_t id){
@@ -673,4 +677,11 @@ bool MariaDBConnection::deleteUser(const std::string& username){
 
     delete deleteStmnt->executeQuery();
     return true;
+}
+
+int MariaDBConnection::deleteOldTournaments(int maxAllowedDays){
+    std::unique_ptr<sql::PreparedStatement> deleteStmnt(conn->prepareStatement("delete from tournament where lastUnsave <= CURDATE() - INTERVAL ? DAY and not exists (select 1 from saved_tournaments where saved_tournaments.tournament = tournament.id)"));
+    deleteStmnt->setInt(1, maxAllowedDays);
+    deleteStmnt->execute();
+    return deleteStmnt->getUpdateCount();
 }

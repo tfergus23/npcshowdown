@@ -56,6 +56,7 @@ public:
     void updateUserPassword(const std::string& username, const std::string& newPassword);
     size_t createUser(const std::string& username, const std::string& password);
     bool deleteUser(const std::string& username);
+    int deleteOldTournaments(int maxAllowedDays);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
 private:

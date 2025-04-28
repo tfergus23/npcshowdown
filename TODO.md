@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- Delete old tournaments on startup (update lastUnsave)
 - edit tournament name
 - record error battles
 - admin view
