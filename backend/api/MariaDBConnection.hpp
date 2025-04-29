@@ -2,7 +2,7 @@
 #include "sim/battle/Battle.hpp"
 #include "sim/tournament/BattleResult.hpp"
 #include "sim/tournament/Tournament.hpp"
-#include "mariadb/conncpp.hpp"
+#include "conncpp.hpp"
 #include "api_utils.hpp"
 #include <optional>
 
