@@ -31,6 +31,11 @@ bool debugDelayMiddleware(const HTTP_Request& req, HTTP_Response& res){
     return true;
 }
 
+bool jsonContentTypeMiddleware(const HTTP_Request& req, HTTP_Response& res){
+    res.headers["Content-Type"] = "application/json";
+    return true;
+}
+
 std::string createAllDataResponse(){
     json response;
 
@@ -153,9 +158,13 @@ NPCS_API_Server::NPCS_API_Server() :
     };
 
     //Add middlewares
+
+    // CORS
     app.base_route.Use(addCORSHeaderMiddleware);
     baseRoute->Use(addCORSHeaderMiddleware);
     authorizedRoute->Use(addCORSHeaderMiddleware);
+
+    //Authorization
     authorizedRoute->Use([=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
@@ -176,9 +185,15 @@ NPCS_API_Server::NPCS_API_Server() :
 
     });
 
+    // Content type
+    baseRoute->Use(jsonContentTypeMiddleware);
+    authorizedRoute->Use(jsonContentTypeMiddleware);
+
     // Fake delay for debugging
-    //baseRoute->Use(debugDelayMiddleware);
-    //authorizedRoute->Use(debugDelayMiddleware);
+#if DEBUG_DELAY
+    baseRoute->Use(debugDelayMiddleware);
+    authorizedRoute->Use(debugDelayMiddleware);
+#endif
 
     // If serving frontend
     if (serveStatic){
