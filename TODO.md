@@ -5,6 +5,7 @@
 - admin view
 - mobile pass
 - ip rate limitting
+- https
 - sample trainers
 
 ### Extra
