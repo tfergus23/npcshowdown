@@ -827,7 +827,7 @@ NPCS_API_Server::NPCS_API_Server() :
 
 int NPCS_API_Server::run(){
     startTournamentThreads();
-    app.Listen(port);
+    app.Listen();
     return 0;
 }
 

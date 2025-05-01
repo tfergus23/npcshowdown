@@ -18,7 +18,6 @@ public:
     ~NPCS_API_Server();
     int run();
 private:
-    tfhttp::HTTP_Server app;
     tflib::ini_file config = tflib::ini_file("npcs_config.ini",{
         {"", "tournament_threads", "8"},
         {"", "db_user", "root"},
@@ -33,13 +32,6 @@ private:
         {"", "static_dir", "./static/"},
         {"", "keep_tournament_days", "7"},
     }, false);
-    std::deque<TournamentRequest>* queuedTournaments = nullptr;
-    std::mutex* queuedTournamentMutexes = nullptr;
-    int tournamentRequestThreadCounter = 0;
-    std::mutex threadCounterMutex;
-    std::unordered_map<size_t,int> idToThread;
-    std::mutex idToThreadMutex;
-    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"));
 
     //Config vars
     const int max_tournament_threads = getIntFromConfig(config, "tournament_threads");
@@ -50,6 +42,17 @@ private:
     const bool serveStatic = getIntFromConfig(config, "serve_static");
     const std::string staticDir = config.get("static_dir");
     const int keepTournamentDays = getIntFromConfig(config, "keep_tournament_days");
+
+    tfhttp::HTTP_Server app = tfhttp::HTTP_Server(tfhttp::HTTP_Server::Options{
+        .port = (uint16_t)port
+    });
+    std::deque<TournamentRequest>* queuedTournaments = nullptr;
+    std::mutex* queuedTournamentMutexes = nullptr;
+    int tournamentRequestThreadCounter = 0;
+    std::mutex threadCounterMutex;
+    std::unordered_map<size_t,int> idToThread;
+    std::mutex idToThreadMutex;
+    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"));
 
     //Canned data responses
     const std::string SPECIES_DATA_RESPONSE;
