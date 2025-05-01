@@ -34,13 +34,13 @@ jobs:
         sudo apt-get install -y build-essential cmake
         sudo apt install npm
       
-    - name: Build Executable
+    - name: Build Backend and Run Tests
       run: |
         cd backend
-        mkdir out
-        cd out
-        cmake -DCMAKE_BUILD_TYPE=Release ../
+        cmake --preset release
+        cd out/release
         cmake --build .
+        ./npcs_tests
         
     - name: Build Frontend
       run: |
@@ -51,11 +51,11 @@ jobs:
 
     - name: Package App
       run: |
-        mkdir package
-        cp ./backend/out/npcs_sim package/
+        mkdir -p package
+        cp ./backend/out/release/npcshowdown package/
         cp -r ./frontend/dist/npcshowdown package/static
         cd package
-        tar -czvf ../npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./static ./npcs_sim
+        tar -czvf ../npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./static ./npcshowdown
     
     - name: Create Release
       id: create_release
