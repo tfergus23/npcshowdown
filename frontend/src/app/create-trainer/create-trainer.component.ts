@@ -160,7 +160,12 @@ export class CreateTrainerComponent {
 
   setImagePathStrings(){
     for (let i = 0; i < this.trainer.team.length; i++){
-      this.imageStrings[i] = this.trainer.team[i].species.toLowerCase();
+      let string: string = this.trainer.team[i].species.toLowerCase();
+      //Windows doesn't like : in file paths
+      if (this.trainer.team[i].species == "Type: Null"){
+        string = "type_null";
+      }
+      this.imageStrings[i] = string;
     }
   }
 
