@@ -1,0 +1,30 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 22
+    },
+    "configurePresets": [
+      {
+        "name": "debug",
+        "displayName": "Debug",
+        "description": "Build with Debug configuration to ./out/debug/",
+        "binaryDir": "${sourceDir}/out/debug",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug",
+          "NPCS_BUILD_TESTS": true
+        }
+      },
+      {
+        "name": "release",
+        "displayName": "Release",
+        "description": "Build with Release configuration to ./out/release/",
+        "binaryDir": "${sourceDir}/out/release",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "NPCS_BUILD_TESTS": true
+        }
+      }
+    ]
+  }
+  
