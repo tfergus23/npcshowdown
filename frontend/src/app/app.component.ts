@@ -1,9 +1,10 @@
-import { Component, enableProdMode } from '@angular/core';
+import { Component, enableProdMode, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import User from '../User'
 import { UserService } from './user.service';
 import { AuthenticationService } from './authentication.service';
 import { CookieService } from 'ngx-cookie-service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { ViewResultsComponent } from './view-results/view-results.component';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class AppComponent {
   currentMessageInterval: NodeJS.Timer | undefined = undefined;
   color: string = COLOR_INFO;
   public gettingUserData: boolean = false;
+  public resultsComponent: ViewResultsComponent | undefined = undefined;
 
   constructor(private userService: UserService, private authService: AuthenticationService, private cookieService: CookieService){}
   ngOnInit(){
@@ -52,6 +54,9 @@ export class AppComponent {
   logoutUser(){
     this.loggedInUser = undefined;
     localStorage.removeItem('user');
+    if (this.resultsComponent?.editingTournamentName){
+      this.resultsComponent.editingTournamentName = false;
+    }
   }
 
   showMessage(message: string, type: MessageType){

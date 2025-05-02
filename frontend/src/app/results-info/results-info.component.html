@@ -1,5 +1,5 @@
 <div *ngIf="this.resultSet" class="tournament-result">
-    <label class="horizontal-margin">{{resultSet.name != "" ? resultSet.name : "Tournament #" + resultSet.id}}</label>
+    <label class="horizontal-margin name">{{this.resultSetName()}}</label>
     <label class="horizontal-margin">{{resultSet.dateRan}}</label>
     <label class="horizontal-margin">{{resultSet.user ? resultSet.user : 'Anonymous'}}</label>
     <label class="horizontal-margin">{{resultSet.results.length}} trainers</label>

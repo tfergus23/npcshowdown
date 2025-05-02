@@ -109,4 +109,10 @@ export class UserService {
     const response = this.http.delete<PutResponse>(`${this.config.getConfig().apiURL}user/${username}`, {withCredentials: true});
     return response;
   }
+
+  updateTournamentName(tournament: number, username: string, newName: string) : Observable<PutResponse>{
+    username = encodeURIComponent(username);
+    const response = this.http.put<PutResponse>(`${this.config.getConfig().apiURL}user/${username}/tournament/${tournament}`,{newName: newName}, {withCredentials: true});
+    return response;
+  }
 }

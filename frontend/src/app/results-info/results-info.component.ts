@@ -15,4 +15,8 @@ export class ResultsInfoComponent {
   openDeleteModal(id: number){
     this.parent?.openDeleteModal(id);
   }
+
+  resultSetName(): string{
+    return this.resultSet.name == "" ? "Tournament #" + String(this.resultSet.id) : this.resultSet.name;
+  }
 }

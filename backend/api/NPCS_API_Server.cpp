@@ -789,6 +789,22 @@ NPCS_API_Server::NPCS_API_Server() :
             return;
         }
 
+        std::string newName = tflib::trim(request["newName"].get<std::string>());
+
+        if (newName == ""){
+            response["message"] = "Please provide a name for the tournament.";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (newName.size() > 32){
+            response["message"] = "Tournament names cannot be longer than 32 characters.";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
         size_t tournamentID = 0;
         try{
             tournamentID = stoul(req.path_params.at("id"));
@@ -802,7 +818,14 @@ NPCS_API_Server::NPCS_API_Server() :
             return;
         }
 
-        bool result = db.updateTournamentName(tournamentID, req.path_params.at("username"), request["newName"].get<std::string>());
+        if (db.tournamentHasName(tournamentID, newName)){
+            response["message"] = "OK";
+            response["success"] = true;
+            res.Send(response.dump());
+            return;
+        }
+
+        bool result = db.updateTournamentName(tournamentID, req.path_params.at("username"), newName);
         if (!result){
             response["message"] = "Unauthorized: You can only change the name of tournaments you ran and you must have been logged in when you ran them.";
             res.Set_Status(401);

@@ -700,3 +700,11 @@ bool MariaDBConnection::updateTournamentName(size_t tournament, const std::strin
     updateStmnt->execute();
     return updateStmnt->getUpdateCount();
 }
+
+bool MariaDBConnection::tournamentHasName(size_t tournament, const std::string& name){
+    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select id from tournament where id = ? and BINARY name = ?"));
+    selectStmnt->setUInt64(1, tournament);
+    selectStmnt->setString(2, name);
+    std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
+    return results->rowsCount();
+}

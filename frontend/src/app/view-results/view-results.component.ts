@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, effect, ElementRef, Input, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TournamentResultSet } from 'src/TournamentResultSet';
 import { BattleService } from '../battle.service';
@@ -34,12 +34,14 @@ export class ViewResultsComponent {
   @Input() showSaveButtons: boolean = true;
   userTournaments: Array<TournamentResultSet> | undefined;
   addingToUser: boolean = false;
-  editingTournamentName: boolean = false;
+  public editingTournamentName: boolean = false;
   newTournamentName: string = "";
+  @ViewChild('tournamentNameInput') tournamentNameInput!: ElementRef;
   whileAddingToUser = () => {return this.addingToUser;};
   
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router, private appConfig: AppConfigService){
+    this.app.resultsComponent = this; // So the app can unset editingTournamentName when the user logs out
     this.tournamentID = route.snapshot.paramMap.get('id');
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
@@ -76,19 +78,10 @@ export class ViewResultsComponent {
       (error) => {
         this.getTournamentError(error);
     });
-
-
   }
 
   ngOnDestroy(){
     clearInterval(this.interval);
-  }
-
-  ngOnChanges(){
-    if (!this.app.loggedInUser){
-      this.editingTournamentName = false;
-    }
-    console.log("what the fuck");
   }
 
   userHasTournament() : boolean{
@@ -276,9 +269,28 @@ export class ViewResultsComponent {
   beginEditingTournamentName(){
     this.editingTournamentName = true;
     this.newTournamentName = this.results!.name;
+    setTimeout(() => {
+      this.tournamentNameInput.nativeElement.focus();
+      this.tournamentNameInput.nativeElement.select();
+    });
   }
 
   updateTournamentName(){
-    this.editingTournamentName = false;
+    if (this.newTournamentName == this.results!.name){
+      this.editingTournamentName = false;
+      return;
+    }
+    this.userService.updateTournamentName(this.results!.id, this.app.loggedInUser!.name, this.newTournamentName).subscribe((res) => {
+      if (res.success){
+        this.editingTournamentName = false;
+        this.results!.name = this.newTournamentName;
+      }
+      else{
+        this.app.showMessage(res.message, MessageType.ERROR);
+      }
+    },
+    (error) =>{
+      this.app.showMessage(error.error.message, MessageType.ERROR);
+    });
   }
 }

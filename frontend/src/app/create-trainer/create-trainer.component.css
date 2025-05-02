@@ -160,6 +160,7 @@ input, select{
     border-radius: 0px;
     border-right: 2px solid var(--light-background-color);
     transition: background-color 0.1s;
+    overflow-x: hidden;
 }
 
 .pokemon-tab:hover{
