@@ -6,6 +6,6 @@
     <h3  style="display: inline-block; padding-left: 20px; padding-right: 20px;">OR</h3>
     <button style="display: inline-block;" (click)="this.importFromFile()" class="import">Import from File</button>
     <h1>Recently Viewed</h1>
-    <app-results-info [hidden]="this.recentTournaments.length <= 0" *ngFor="let resultSet of this.recentTournaments; index as i" [resultSet]="resultSet" [deleteable]="false"  class="tournament-result"></app-results-info>
+    <app-results-info *ngFor="let resultSet of this.recentTournaments; index as i" [hidden]="!resultSet || this.recentTournaments.length <= 0" [resultSet]="resultSet" [deleteable]="false"  class="tournament-result"></app-results-info>
 </div>
 <app-view-results *ngIf="this.results" [results]="this.results" [showSaveButtons]="false"></app-view-results>

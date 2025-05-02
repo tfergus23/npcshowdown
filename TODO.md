@@ -3,8 +3,8 @@
 - edit tournament name
 - record error battles
 - admin view
-- mobile pass
 - ip rate limitting
+- mobile pass
 - sample trainers
 
 ### Extra

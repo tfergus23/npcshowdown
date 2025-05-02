@@ -60,8 +60,8 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user){
-    size_t id = db.createEmptyTournament(user);
+size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user, const std::string& name){
+    size_t id = db.createEmptyTournament(user, name);
     TournamentRequest request{
         .requestJson = json,
         .id = id,
@@ -399,8 +399,12 @@ NPCS_API_Server::NPCS_API_Server() :
                 return;
             }
         }
+        std::string tournamentName = "";
+        if (request.contains("name")){
+            tournamentName = tflib::trim(request["name"].get<std::string>());
+        }
 
-        size_t id  = createTournamentRequest(request, userID);
+        size_t id  = createTournamentRequest(request, userID, tournamentName);
 
         // Send back tournament ID
         response["success"] = true;
@@ -764,6 +768,51 @@ NPCS_API_Server::NPCS_API_Server() :
             res.Send(response.dump());
             return;
         }
+    });
+
+    app.Add_Handler("PUT", authorizedRoute, "/tournament/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+        std::string problems = checkForString(request, "", "newName");
+        if (problems != ""){
+            sendProblemResponse(problems, response, res);
+            return;
+        }
+
+        size_t tournamentID = 0;
+        try{
+            tournamentID = stoul(req.path_params.at("id"));
+        }
+        catch (...){}
+
+        if (!tournamentID || !db.tournamentExists(tournamentID)){
+            response["message"] = "Sorry, that tournament doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        bool result = db.updateTournamentName(tournamentID, req.path_params.at("username"), request["newName"].get<std::string>());
+        if (!result){
+            response["message"] = "Unauthorized: You can only change the name of tournaments you ran and you must have been logged in when you ran them.";
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
+
+        response["message"] = "OK";
+        response["success"] = true;
+        res.Send(response.dump());
     });
 
     app.Add_Handler("POST", baseRoute, "/user", [=, this](const HTTP_Request& req, HTTP_Response& res){

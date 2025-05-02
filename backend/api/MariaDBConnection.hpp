@@ -34,7 +34,7 @@ public:
     std::optional<TournamentResults> getTournament(size_t id);
     bool tournamentExists(size_t id);
     bool userTrainerExists(size_t id, size_t user);
-    size_t createEmptyTournament(size_t user);
+    size_t createEmptyTournament(size_t user, const std::string& name);
     size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament, size_t existingID=0);
     void saveTournament(const Tournament& tournament, size_t id);
     bool isTokenValid(const std::string& username, const std::string& token);
@@ -57,6 +57,7 @@ public:
     size_t createUser(const std::string& username, const std::string& password);
     bool deleteUser(const std::string& username);
     int deleteOldTournaments(int maxAllowedDays);
+    bool updateTournamentName(size_t tournament, const std::string& username, const std::string& newName);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
 private:

@@ -17,7 +17,6 @@ const int MIN_PASSWORD_LENGTH = 8;
 const std::hash<std::string> hasher;
 const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
 
-//TODO: Use these
 std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName){
     std::string problems = "";
     if (!json.contains(fieldName)){
@@ -288,6 +287,11 @@ std::string validateTournamentRequest(const json& json){
     //user is optional
     if (json.contains("user") && !json["user"].is_string()){
         problems += "Bad Request: 'user' must be of type string, was " + std::string(json["user"].type_name()) + "\n";
+    }
+
+    //Name is optional
+    if (json.contains("name") && !json["name"].is_string()){
+        problems += "Bad Request: 'name' must be of type string, was " + std::string(json["name"].type_name()) + "\n";
     }
 
     if (problems != ""){

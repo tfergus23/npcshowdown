@@ -65,7 +65,7 @@ private:
     std::string getToken(const std::string& username, const std::string& password);
     std::string getDomainFromURL();
     void waitForTournaments(uint32_t threadNumber);
-    size_t createTournamentRequest(const json& json, size_t user);
+    size_t createTournamentRequest(const json& json, size_t user, const std::string& name);
     void startTournamentThreads();
     int findTournamentPositionInQueue(size_t tournamentID, int threadNumber);
     void testTrainerSerialization();

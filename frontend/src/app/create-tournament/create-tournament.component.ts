@@ -20,6 +20,7 @@ export class CreateTournamentComponent {
   dataLists!: DataLists;
   rounds: number = 25;
   seed: string = "";
+  name: string = "";
   importingTrainers: boolean = false;
   errors: Array<string> = [];
   submittingTournament: boolean = false;
@@ -110,6 +111,7 @@ export class CreateTournamentComponent {
       trainers: this.trainers,
       seed: this.seed == "" ? Math.round((Math.random() * 2147483647)).toString() : this.seed,
       rounds: this.rounds,
+      name: this.name,
       user: this.app.loggedInUser ? this.app.loggedInUser.name : undefined
     };
     this.submittingTournament = true;
@@ -149,6 +151,7 @@ export class CreateTournamentComponent {
       trainers: this.trainers,
       seed: this.seed,
       rounds: this.rounds,
+      name: this.name,
       user: undefined
     };
     localStorage.setItem('create-tournament', JSON.stringify(entries));
@@ -161,6 +164,7 @@ export class CreateTournamentComponent {
       this.trainers = entries.trainers;
       this.seed = entries.seed;
       this.rounds = entries.rounds;
+      this.name = entries.name;
     }
   }
 }

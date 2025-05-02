@@ -158,7 +158,7 @@ std::optional<TournamentResults> MariaDBConnection::getTournament(size_t id){
     return result;
 }
 
-size_t MariaDBConnection::createEmptyTournament(size_t user){
+size_t MariaDBConnection::createEmptyTournament(size_t user, const std::string& name){
     std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into tournament (user, done, lastUnsave) values (?,?,NOW())"));
     if (user){
         insertStmnt->setUInt64(1, user);
@@ -172,7 +172,12 @@ size_t MariaDBConnection::createEmptyTournament(size_t user){
 
     std::unique_ptr<sql::PreparedStatement> updateNameStmnt(conn->prepareStatement("update tournament set name = ? where id = ?"));
 
-    updateNameStmnt->setString(1, "Tournament #" + std::to_string(tournamentID));
+    if (name == ""){
+        updateNameStmnt->setString(1, "Tournament #" + std::to_string(tournamentID));
+    }
+    else{
+        updateNameStmnt->setString(1, name);
+    }
     updateNameStmnt->setUInt64(2, tournamentID);
 
     delete updateNameStmnt->executeQuery();
@@ -684,4 +689,14 @@ int MariaDBConnection::deleteOldTournaments(int maxAllowedDays){
     deleteStmnt->setInt(1, maxAllowedDays);
     deleteStmnt->execute();
     return deleteStmnt->getUpdateCount();
+}
+
+bool MariaDBConnection::updateTournamentName(size_t tournament, const std::string& username, const std::string& newName){
+    size_t userID = userIdFromName(username);
+    std::unique_ptr<sql::PreparedStatement> updateStmnt(conn->prepareStatement("update tournament set name = ? where id = ? and user = ?"));
+    updateStmnt->setString(1, newName);
+    updateStmnt->setUInt64(2, tournament);
+    updateStmnt->setUInt64(3, userID);
+    updateStmnt->execute();
+    return updateStmnt->getUpdateCount();
 }

@@ -19,3 +19,4 @@ size_t seedFromString(const std::string& seedString);
 std::string generateUUID();
 std::string sha256(const std::string& str);
 int getIntFromConfig(tflib::ini_file& config, const std::string& key);
+std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName);

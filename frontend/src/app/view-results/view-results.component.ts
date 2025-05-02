@@ -10,6 +10,7 @@ import { UserService } from '../user.service';
 import Trainer from 'src/Trainer';
 import GetResponse from 'src/GetResponse';
 import { AppConfigService } from '../app-config.service';
+import { CheckboxControlValueAccessor } from '@angular/forms';
 
 const SORT_ELO = 0;
 const SORT_WINS = 1;
@@ -33,7 +34,10 @@ export class ViewResultsComponent {
   @Input() showSaveButtons: boolean = true;
   userTournaments: Array<TournamentResultSet> | undefined;
   addingToUser: boolean = false;
+  editingTournamentName: boolean = false;
+  newTournamentName: string = "";
   whileAddingToUser = () => {return this.addingToUser;};
+  
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router, private appConfig: AppConfigService){
     this.tournamentID = route.snapshot.paramMap.get('id');
@@ -72,10 +76,19 @@ export class ViewResultsComponent {
       (error) => {
         this.getTournamentError(error);
     });
+
+
   }
 
   ngOnDestroy(){
     clearInterval(this.interval);
+  }
+
+  ngOnChanges(){
+    if (!this.app.loggedInUser){
+      this.editingTournamentName = false;
+    }
+    console.log("what the fuck");
   }
 
   userHasTournament() : boolean{
@@ -258,5 +271,14 @@ export class ViewResultsComponent {
       newList.push(this.results!.id);
     }
     localStorage.setItem('recent-tournaments', JSON.stringify(newList));
+  }
+
+  beginEditingTournamentName(){
+    this.editingTournamentName = true;
+    this.newTournamentName = this.results!.name;
+  }
+
+  updateTournamentName(){
+    this.editingTournamentName = false;
   }
 }
