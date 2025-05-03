@@ -50,7 +50,7 @@ public:
     int randInt(int min, int max);
     size_t getSeed();
 
-    Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions& debugOptions = DebugOptions());
+    Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions&& debugOptions = DebugOptions());
     void addMoves(const Move* move1, const Move* move2);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1);

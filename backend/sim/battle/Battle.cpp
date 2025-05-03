@@ -5,7 +5,7 @@
 #include "sim/data/Items.hpp"
 #include <iostream>
 
-Battle::Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions& debugOptions) :
+Battle::Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions&& debugOptions) :
 m_Player1{trainer1.trainerInfo},
 m_Player2{trainer2.trainerInfo},
 m_Seed{seed},
