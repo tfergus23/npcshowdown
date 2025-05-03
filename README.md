@@ -1,10 +1,10 @@
 # NPC Showdown
-Pit NPC Pokemon trainers against each other in the ultimate tournament!
+⚔️ Pit NPC Pokemon trainers against each other in the ultimate tournament!
 
 [Website](https://npcshowdown.com)
 
 ## Introduction
-NPC Showdown is both a web API and interface for simulating round robin tournaments between NPC Pokemon trainers that you create. Once the tournament is simulated, you can compare the performance of each trainer by looking at stats such as ELO, wins/losses, and biggest upsets.
+NPC Showdown is a web app and API for simulating round-robin tournaments between custom NPC Pokémon trainers. After a tournament runs, you can compare trainer performance using stats like ELO, win/loss records, and biggest upsets.
 
 ## Dependencies
 - [CMake ≥ 3.22](https://cmake.org/download/)
