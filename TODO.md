@@ -1,6 +1,5 @@
 ## App
 ### MVP
-- record error battles
 - admin view
 - ip rate limitting
 - view results add button doesn't return when you log back in

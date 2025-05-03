@@ -69,10 +69,10 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user, c
     };
     threadCounterMutex.lock();
     int threadNumber = tournamentRequestThreadCounter++;
-    auto& queue = queuedTournaments[threadNumber];
-    auto& mutex = queuedTournamentMutexes[threadNumber];
     tournamentRequestThreadCounter = tournamentRequestThreadCounter % max_tournament_threads;
     threadCounterMutex.unlock();
+    auto& queue = queuedTournaments[threadNumber];
+    auto& mutex = queuedTournamentMutexes[threadNumber];
     mutex.lock();
     idToThreadMutex.lock();
     idToThread[id] = threadNumber;
@@ -357,6 +357,14 @@ NPCS_API_Server::NPCS_API_Server() :
         size_t seed = seedFromString(request["seed"].get<std::string>());
         Battle battle(trainer1, trainer2, seed);
         battle.simulate();
+
+        if (battle.invalid){
+            db.saveErrorBattle(request.dump());
+            response["message"] = "Sorry, something went wrong with that battle. A bug report has been submitted.";
+            res.Set_Status(500);
+            res.Send(response.dump());
+            return;
+        }
 
         // Send back battle ID
         response["success"] = true;
@@ -943,6 +951,14 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
         tournament.run();
         auto tournEnd = std::chrono::high_resolution_clock::now();
         std::cout << "Done simulating " + std::to_string(req.id) + "\n";
+
+        for (const auto& errorBattle : tournament.errorBattles){
+            json battleJson;
+            battleJson["trainer1"] = trainers[errorBattle.trainer1].toJSON();
+            battleJson["trainer2"] = trainers[errorBattle.trainer2].toJSON();
+            battleJson["seed"] = errorBattle.seed;
+            db.saveErrorBattle(battleJson.dump());
+        }
         
         // Save tournament to DB
         std::cout << "Saving " + std::to_string(req.id) + "\n";

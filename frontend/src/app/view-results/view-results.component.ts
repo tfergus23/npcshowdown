@@ -38,6 +38,7 @@ export class ViewResultsComponent {
   newTournamentName: string = "";
   @ViewChild('tournamentNameInput') tournamentNameInput!: ElementRef;
   whileAddingToUser = () => {return this.addingToUser;};
+  awaitingResults: boolean = true;
   
 
   constructor(private route: ActivatedRoute, private battleService: BattleService, private dataService: DataService, public app: AppComponent, private userService: UserService, private router: Router, private appConfig: AppConfigService){
@@ -215,6 +216,7 @@ export class ViewResultsComponent {
       this.results = response.data as TournamentResultSet;
       this.results.trainers = new Array<Trainer>();
       clearInterval(this.interval);
+      this.awaitingResults = false;
       for (let i = 0; i < this.results.results.length; i++){
         this.battleService.getTournamentTrainer(this.results.results[i].id).subscribe((res)=>{
           this.results!.trainers[this.results!.results[i].index] = res.data;
@@ -230,6 +232,7 @@ export class ViewResultsComponent {
   getTournamentError(error: any){
     if (!error.error.success){
       clearInterval(this.interval);
+      this.awaitingResults = false;
     }
     this.errorMessage = error.error.message;
   }

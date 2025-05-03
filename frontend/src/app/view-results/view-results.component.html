@@ -33,6 +33,6 @@
     <div *ngIf="!this.results" class="error-message">
         {{this.errorMessage}}
     </div>
-    <app-spinner *ngIf="!this.results" [size]="'50px'"></app-spinner>
+    <app-spinner *ngIf="this.awaitingResults" [size]="'50px'"></app-spinner>
 </div>
 <app-battle-log-view #logView></app-battle-log-view>

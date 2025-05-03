@@ -11,7 +11,7 @@ float calculateTotalBattles(int entrants, int rounds);
 class Tournament{
 public:
     std::vector<TrainerStats> trainerStats;
-    std::vector<BattleResult> results;
+    std::vector<BattleResult> errorBattles;
     std::vector<Trainer>& trainers;
     int rounds;
     float totalBattles;
@@ -21,6 +21,7 @@ public:
     void run();
 private:
     std::default_random_engine m_Generator;
+    std::vector<BattleResult> m_Results;
 
     int randInt(int min, int max);
     void setBiggestUpsets();

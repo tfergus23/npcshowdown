@@ -17,7 +17,7 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
         throw std::runtime_error("Need at least " + std::to_string(MIN_TOURNAMENT_TRAINERS) + " trainers for a tournament, " + std::to_string(trainers.size()) + " supplied.");
     }
 
-    this->results.reserve(totalBattles);
+    this->m_Results.reserve(totalBattles);
 
     int id = 0;
     for (auto& trainer : trainers){
@@ -53,8 +53,12 @@ void Tournament::run(){
                 Battle battle(trainers[trainer1], trainers[trainer2], randInt(0, INT_MAX));
                 battle.doLogging = false;
                 battle.simulate();
+                if (battle.invalid){
+                    errorBattles.push_back({j, k, battle.getSeed(), -1});
+                    continue;
+                }
                 int winner = determineBattleWinner(battle, j, k);
-                results.push_back({j, k, battle.getSeed(), winner});
+                m_Results.push_back({j, k, battle.getSeed(), winner});
                 if (!battle.isDraw){
                     int loserIndex = winner == trainer1 ? trainer2 : trainer1;
                     TrainerStats& winnerStats = trainerStats[winner];
@@ -79,8 +83,8 @@ int Tournament::randInt(int min, int max){
 }
 
 void Tournament::setBiggestUpsets(){
-    for (int i = 0; i < results.size(); i++){
-        BattleResult& result = results[i];
+    for (int i = 0; i < m_Results.size(); i++){
+        BattleResult& result = m_Results[i];
 
         if (result.winner == -1) continue;
         TrainerStats& winner = trainerStats[result.winner];

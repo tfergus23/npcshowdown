@@ -708,3 +708,13 @@ bool MariaDBConnection::tournamentHasName(size_t tournament, const std::string& 
     std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
     return results->rowsCount();
 }
+
+void MariaDBConnection::saveErrorBattle(const std::string& battleJsonDump){
+    size_t hash = fnv1a_hash_64(battleJsonDump);
+
+    std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert IGNORE into error_battle (hash, request, dateRan, acknowledged) values (?,?,NOW(),?)"));
+    insertStmnt->setUInt64(1, hash);
+    insertStmnt->setString(2, battleJsonDump);
+    insertStmnt->setBoolean(3, false);
+    executeInsert(insertStmnt.get());
+}

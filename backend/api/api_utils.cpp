@@ -488,3 +488,17 @@ std::string validateCreateUserRequest(const json& json){
 
     return problems;
 }
+
+std::uint64_t fnv1a_hash_64(const std::string& str) {
+    const std::uint64_t FNV_OFFSET_BASIS = 14695981039346656037ull;
+    const std::uint64_t FNV_PRIME = 1099511628211ull;
+
+    std::uint64_t hash = FNV_OFFSET_BASIS;
+
+    for (char c : str) {
+        hash ^= static_cast<std::uint8_t>(c);
+        hash *= FNV_PRIME;
+    }
+
+    return hash;
+}

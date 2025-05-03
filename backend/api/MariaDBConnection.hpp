@@ -59,6 +59,7 @@ public:
     int deleteOldTournaments(int maxAllowedDays);
     bool updateTournamentName(size_t tournament, const std::string& username, const std::string& newName);
     bool tournamentHasName(size_t tournament, const std::string& name);
+    void saveErrorBattle(const std::string& battleJsonDump);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
 private:
