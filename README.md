@@ -17,19 +17,17 @@ The application currently only supports development on Linux.
 
 Clone the repository with:
 ```
-git clone git@github.com:tfergus23/npcshowdown.git --recurse-submodules
+git clone --branch dev --single-branch git@github.com:tfergus23/npcshowdown.git --recurse-submodules
 ```
+And then run the setup script:
+```
+cd npcshowdown
+./setup.sh
+```
+This will check that you have installed the dependencies, create build files for the backend, and run npm install for the frontend.
 ### Database
 The app relies on a MariaDB database to function. Once created, the tables can be created using `scripts/create_tables.sql`. This will create a database called `npcs_test` (it will drop it first if it already exists) and create an admin user for you to log in with.
-### API
-The API executable can be built with cmake:
-```bash
-cd backend
-cmake --preset debug
-cd out/debug
-cmake --build .
-./npcshowdown
-```
+
 The executable attempts to connect to the MariaDB database on startup. The configuration for this needs to be in a file called `npcs_config.ini` in the output directory. You can copy `backend/npcs_config.ini.example` to get started, or, if this file isn't found, the following defaults will be used:
 ```ini
 db_user=root
@@ -37,22 +35,14 @@ db_password=password
 db_host=localhost
 db_name=npcs_test
 ```
-### Frontend
-The frontend is an angular app.
-```bash
-cd frontend
-npm install
+### Running
+You can run the app locally with:
 ```
-
-You can run it in dev mode with:
-```bash
-ng serve
+./run_dev.sh
 ```
-By default, the app is served on port 4200 for testing.
+This will:
+- Build the backend executable
+- Start serving the frontend in dev mode
+- Start the database service
 
-
-You can also build the angular app with:
-```bash
-ng build
-```
-and then serve the build directory statically. The backend executable can also serve the frontend if the serve_static flag and static_dir variable is set in the config.
+By default, the website can be accessed at http://localhost:4200. Killing this script with ctrl-c or by closing the terminal will run `scripts/stop_app.sh`, which will kill the web, app, and database processes.
