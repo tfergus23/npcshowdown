@@ -1,8 +1,15 @@
 .container{
     text-align: left;
     margin: auto;
-    width: 68%;
+    width: 1000px;
 }
+
+@media (max-width: 1005px){
+    .container{
+        width: 100%;
+    }
+}
+
 p{
     color: white;
 }
