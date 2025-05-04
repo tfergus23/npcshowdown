@@ -21,7 +21,7 @@ private:
     tflib::ini_file config = tflib::ini_file("npcs_config.ini",{
         {"", "tournament_threads", "8"},
         {"", "db_user", "root"},
-        {"", "db_password", "password"},
+        {"", "db_password", ""},
         {"", "db_host", "localhost"},
         {"", "db_name", "npcs_test"},
         {"", "max_user_sessions", "10"},

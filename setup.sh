@@ -14,6 +14,11 @@ if ! mysql --version | grep -q "MariaDB"; then
     exit 1
 fi
 
+if ! command -v mariadb-install-db &> /dev/null; then
+    echo "MariaDB install script not found (mariadb-install-db). Make sure you have MariaDB Server."
+    exit 1
+fi
+
 echo "MariaDB is installed."
 
 # Check if `cmake` command exists
@@ -69,5 +74,29 @@ cd ..
 
 cd backend
 cmake --preset debug
+cd ..
+mkdir -p data/data
+cd data
+touch my.cnf
+echo "[mysqld]" >> my.cnf
+echo "datadir=./data" >> my.cnf
+echo "socket=./mysql.sock" >> my.cnf
+echo "port=3306" >> my.cnf
+echo "log-error=./mariadb.err" >> my.cnf
+echo "pid-file=./mariadb.pid" >> my.cnf
 
-echo "You are all set. Make sure the database is running, then run ./run_dev.sh to start the app."
+mariadb-install-db --auth-root-authentication-method=normal --defaults-file=./my.cnf
+
+mysqld --defaults-file=./my.cnf --user=$USER &
+echo "Waiting for MariaDB to start..."
+until mysqladmin ping --socket=./data/mysql.sock --silent; do
+    sleep 1
+done
+
+mysql --socket ./data/mysql.sock -u root < ../scripts/create_tables.sql
+
+kill "$(head -1 ./mariadb.pid)"
+
+cd ..
+
+echo "You are all set. Run ./run_dev.sh to start the app."

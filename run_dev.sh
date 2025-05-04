@@ -12,7 +12,15 @@ cmake --build .
 if [ $? -ne 0 ]; then
     exit $?
 fi
-sudo /etc/init.d/mariadb start
+cd -
+cd data
+mysqld --defaults-file=./my.cnf --user=$USER &
+echo "Waiting for MariaDB to start..."
+until mysqladmin ping --socket=./data/mysql.sock --silent; do
+    sleep 1
+done
+cd ..
+cd backend/out/debug
 ./npcshowdown &> api.log &
 cd -
 cd frontend
