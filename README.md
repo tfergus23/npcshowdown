@@ -8,7 +8,7 @@ NPC Showdown is a web app and API for simulating round-robin tournaments between
 
 ## Dependencies
 - [CMake ≥ 3.22](https://cmake.org/download/)
-- [MariaDB server](https://mariadb.org/download/?t=mariadb&p=mariadb&r=11.4.5&os=Linux&i=systemd&mirror=acorn) (An existing database is not needed, just make sure the bin is in your path)
+- [MariaDB server](https://mariadb.org/download/?t=mariadb&p=mariadb&r=11.4.5&os=Linux&i=systemd&mirror=acorn) (An existing database instance is not needed, just make sure the bin and scripts directories are in your path)
 - [Node.js + npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - Angular CLI (`npm install -g @angular/cli`)
 
