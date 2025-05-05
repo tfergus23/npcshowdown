@@ -14,7 +14,7 @@ if [ $? -ne 0 ]; then
 fi
 cd -
 cd data
-mysqld --defaults-file=./my.cnf --user=$USER &
+mariadbd --defaults-file=./my.cnf --user=$USER &
 echo "Waiting for MariaDB to start..."
 until mysqladmin ping --socket=./data/mysql.sock --silent; do
     sleep 1

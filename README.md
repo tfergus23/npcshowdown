@@ -14,7 +14,7 @@ NPC Showdown is a web app and API for simulating round-robin tournaments between
   - Ubuntu/Debian: `sudo apt install cmake`
   - Fedora: `sudo dnf install cmake`
   - Arch: `sudo pacman -S cmake`
-- [MariaDB server](https://mariadb.org/download/) (A running system service is *not* required — it's used locally via the setup scripts. You just need to have the `bin` and `scripts` directories in your PATH)
+- [MariaDB Server (Stable) >= 10.4](https://mariadb.org/download/) (An existing instance is not needed; a local one will be created for testing. You just need the server tools in your PATH.)
   - Ubuntu/Debian: `sudo apt install mariadb-server`
   - Fedora: `sudo dnf install mariadb`
   - Arch: `sudo pacman -S mariadb`
