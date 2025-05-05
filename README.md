@@ -11,19 +11,27 @@ NPC Showdown is a web app and API for simulating round-robin tournaments between
 
 ### Dependencies
 - [CMake ≥ 3.22](https://cmake.org/download/)
-  - Ubuntu/Debian: `sudo apt install cmake`
-  - Fedora: `sudo dnf install cmake`
-  - Arch: `sudo pacman -S cmake`
+  - Ubuntu/Debian:
+    ```
+    sudo apt install cmake
+    ```
 - [MariaDB Server (Stable) >= 10.4](https://mariadb.org/download/) (An existing instance is not needed; a local one will be created for testing. You just need the server tools in your PATH.)
-  - Ubuntu/Debian: `sudo apt install mariadb-server`
-  - Fedora: `sudo dnf install mariadb`
-  - Arch: `sudo pacman -S mariadb`
+  - Ubuntu/Debian:
+    ```
+    sudo apt install mariadb-server
+    # If you don't want the daemon to always be running
+    sudo systemctl disable mariadb
+    sudo systemctl stop mariadb
+    ```
 - [Node.js + npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-  - Ubuntu/Debian: `sudo apt install nodejs npm`
-  - Fedora: `sudo dnf install nodejs npm`
-  - Arch: `sudo pacman -S nodejs npm`
+  - Ubuntu/Debian:
+    ```
+    sudo apt install nodejs npm
+    ```
 - Angular CLI
-  - `npm install -g @angular/cli`
+    ```
+    sudo npm install -g @angular/cli
+    ```
 ### Setup
 Clone the repository with:
 ```
