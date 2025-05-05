@@ -9,7 +9,6 @@ include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options(-Werror -Wreturn-type)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/tfhttp)
 
@@ -20,6 +19,14 @@ FILE(GLOB api ${PROJECT_SOURCE_DIR}/api/*.cpp)
 add_library(npcs_sim ${sim})
 
 add_executable (npcshowdown main.cpp ${api})
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(npcs_sim PRIVATE -Werror -Wreturn-type)
+	target_compile_options(npcshowdown PRIVATE -Werror -Wreturn-type)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(npcs_sim PRIVATE /WX)
+	target_compile_options(npcshowdown PRIVATE /WX)
+endif()
 
 # Fetch the MariaDB C Connector (required dependency)
 FetchContent_Declare(
@@ -34,8 +41,13 @@ set(INSTALL_PLUGINDIR {CMAKE_BINARY_DIR}/lib)
 set(WITH_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(MARIADB_LINK_DYNAMIC OFF CACHE BOOL "" FORCE)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # mariadb-c doesn't set this if its a subproject for some reason, even though they are needed for it to build.
+	ADD_DEFINITIONS(-DWIN32_LEAN_AND_MEAN -DNOGDI)
+endif()
 
 FetchContent_MakeAvailable(mariadb_c)
+
 
 # Fetch the MariaDB C++ Connector
 FetchContent_Declare(
@@ -83,12 +95,15 @@ include_directories(
 )
 
 
+find_package(OpenSSL REQUIRED)
+
+
 target_link_libraries(npcs_sim TFLib)
 
 target_link_libraries(npcshowdown PRIVATE
     tfhttp 
     TFLib 
-    crypto
+    OpenSSL::Crypto
     npcs_sim
     mariadbcpp-static
     mariadbclient
