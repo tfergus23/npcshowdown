@@ -81,7 +81,7 @@ cd ..
 mkdir -p data/data
 cd data
 touch my.cnf
-echo "[mysqld]" >> my.cnf
+echo "[mysqld]" > my.cnf
 echo "datadir=./data" >> my.cnf
 echo "socket=./mysql.sock" >> my.cnf
 echo "port=3307" >> my.cnf
