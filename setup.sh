@@ -84,7 +84,7 @@ touch my.cnf
 echo "[mysqld]" >> my.cnf
 echo "datadir=./data" >> my.cnf
 echo "socket=./mysql.sock" >> my.cnf
-echo "port=3306" >> my.cnf
+echo "port=3307" >> my.cnf
 echo "log-error=./mariadb.err" >> my.cnf
 echo "pid-file=./mariadb.pid" >> my.cnf
 

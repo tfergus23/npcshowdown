@@ -61,7 +61,7 @@ public:
     bool tournamentHasName(size_t tournament, const std::string& name);
     void saveErrorBattle(const std::string& battleJsonDump);
 
-    MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions);
+    MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions, const std::string& port);
 private:
     std::unique_ptr<sql::Connection> conn;
     const int maxUserSessions = 1;

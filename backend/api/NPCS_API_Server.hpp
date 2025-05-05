@@ -24,6 +24,7 @@ private:
         {"", "db_password", ""},
         {"", "db_host", "localhost"},
         {"", "db_name", "npcs_test"},
+        {"", "db_port", "3307"},
         {"", "max_user_sessions", "10"},
         {"", "max_trainers_per_user", "150"},
         {"", "website_url", "http://localhost:4200"},
@@ -52,7 +53,7 @@ private:
     std::mutex threadCounterMutex;
     std::unordered_map<size_t,int> idToThread;
     std::mutex idToThreadMutex;
-    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"));
+    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"), config.get("db_port"));
 
     //Canned data responses
     const std::string SPECIES_DATA_RESPONSE;

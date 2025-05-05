@@ -31,9 +31,9 @@ json TournamentResults::toJSON(MariaDBConnection& db) const{
     return data;
 }
 
-MariaDBConnection::MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions) : maxUserSessions{maxUserSessions}{
+MariaDBConnection::MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions, const std::string& port) : maxUserSessions{maxUserSessions}{
     sql::Driver* driver= sql::mariadb::get_driver_instance();
-    sql::SQLString url("jdbc:mariadb://" + host + ":3306/" + database);
+    sql::SQLString url("jdbc:mariadb://" + host + ":" + port + "/" + database);
     sql::Properties properties({{"user", username}, {"password", password}});
     conn = std::unique_ptr<sql::Connection>(driver->connect(url, properties));
     if (maxUserSessions < 1){
