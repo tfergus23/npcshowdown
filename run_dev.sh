@@ -1,12 +1,16 @@
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 on_interrupt() {
-    ./scripts/stop_app.sh
+    $SCRIPT_DIR/scripts/stop_app.sh
 }
 
 on_hangup() {
-    ./scripts/stop_app.sh
+    $SCRIPT_DIR/scripts/stop_app.sh
 }
 
-./scripts/stop_app.sh
+trap on_interrupt SIGINT
+trap on_hangup SIGHUP
+$SCRIPT_DIR/scripts/stop_app.sh
 cd backend/out/debug
 cmake --build .
 if [ $? -ne 0 ]; then
@@ -23,9 +27,6 @@ cd ..
 cd backend/out/debug
 ./npcshowdown &> api.log &
 cd -
+tail -f backend/out/debug/api.log &
 cd frontend
-ng serve &
-cd -
-trap on_interrupt SIGINT
-trap on_hangup SIGHUP
-tail -f backend/out/debug/api.log
+ng serve
