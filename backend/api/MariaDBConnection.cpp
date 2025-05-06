@@ -520,7 +520,7 @@ void MariaDBConnection::executeInsert(sql::PreparedStatement* stmnt){
 }
 
 std::optional<User> MariaDBConnection::getUserData(const std::string& username){
-    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select id,name,accountCreated,lastPasswordChange from user where name = ?"));
+    std::unique_ptr<sql::PreparedStatement> selectStmnt(conn->prepareStatement("select id,name,accountCreated,lastPasswordChange,isAdmin from user where name = ?"));
     selectStmnt->setString(1, username);
     std::unique_ptr<sql::ResultSet> results(selectStmnt->executeQuery());
     std::optional<User> result;
@@ -533,7 +533,8 @@ std::optional<User> MariaDBConnection::getUserData(const std::string& username){
         results->getUInt64(1),
         std::string(results->getString(2)),
         std::string(results->getString(3)),
-        std::string(results->getString(4))
+        std::string(results->getString(4)),
+        results->getBoolean(5)
     );
 
     return result;
@@ -664,9 +665,10 @@ void MariaDBConnection::updateUserPassword(const std::string& username, const st
 }
 
 size_t MariaDBConnection::createUser(const std::string& username, const std::string& password){
-    std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into user (name, password, accountCreated, lastPasswordChange) values (?, ?, NOW(), NOW())"));
+    std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into user (name, password, accountCreated, lastPasswordChange, isAdmin) values (?, ?, NOW(), NOW(), ?)"));
     insertStmnt->setString(1, username);
     insertStmnt->setString(2, sha256(password));
+    insertStmnt->setBoolean(3, false);
 
     return executeInsertAndGetID(insertStmnt.get());
 }
@@ -717,4 +719,33 @@ void MariaDBConnection::saveErrorBattle(const std::string& battleJsonDump){
     insertStmnt->setString(2, battleJsonDump);
     insertStmnt->setBoolean(3, false);
     executeInsert(insertStmnt.get());
+}
+
+size_t MariaDBConnection::getTotalErrorBattles(){
+    std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("select count(*) from error_battle"));
+    std::unique_ptr<sql::ResultSet> results(stmnt->executeQuery());
+    results->next();
+    return results->getUInt64(1);
+}
+std::vector<ErrorBattle> MariaDBConnection::getErrorBattles(uint32_t page, uint32_t count){
+    uint32_t offset = page * count;
+    std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("select request,dateRan,hash from error_battle order by dateRan desc limit ? offset ?"));
+    stmnt->setUInt(1, count);
+    stmnt->setUInt(2, offset);
+    std::unique_ptr<sql::ResultSet> results(stmnt->executeQuery());
+    std::vector<ErrorBattle> result;
+    result.reserve(results->rowsCount());
+    while (results->next()){
+        result.emplace_back(std::string(results->getString(1)), std::string(results->getString(2)), results->getUInt64(3));
+    }
+    return result;
+}
+
+bool MariaDBConnection::deleteErrorBattle(size_t hash){
+    std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("delete from error_battle where hash = ?"));
+    stmnt->setUInt64(1, hash);
+
+    stmnt->executeUpdate();
+
+    return stmnt->getUpdateCount();
 }

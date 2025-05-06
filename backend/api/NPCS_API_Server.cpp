@@ -264,6 +264,7 @@ NPCS_API_Server::NPCS_API_Server() :
         data["name"] = user.name;
         data["accountCreated"] = user.accountCreated;
         data["lastPasswordChange"] = user.lastPasswordChange;
+        data["isAdmin"] = user.isAdmin;
         response["success"] = true;
         response["message"] = "OK";
         response["data"] = data;
@@ -903,6 +904,154 @@ NPCS_API_Server::NPCS_API_Server() :
         res.Send(response.dump());
     });
 
+    app.Add_Handler("GET", authorizedRoute, "/errors/count", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+
+        const User& user = db.getUserData(req.path_params.at("username")).value();
+        if (!user.isAdmin){
+            response["message"] = "You must be an admin to access this data.";
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
+
+        auto count = db.getTotalErrorBattles();
+
+        response["data"] = count;
+        response["message"] = "OK";
+        response["success"] = true;
+        res.Send(response.dump());
+    });
+
+    app.Add_Handler("GET", authorizedRoute, "/errors", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+
+        const User& user = db.getUserData(req.path_params.at("username")).value();
+        if (!user.isAdmin){
+            response["message"] = "You must be an admin to access this data.";
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (!req.query_params.contains("page") || req.query_params.at("page").size() < 1){
+            response["message"] = "Bad Request: Unsupplied required query parameter: 'page'";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (!req.query_params.contains("count") || req.query_params.at("count").size() < 1){
+            response["message"] = "Bad Request: Unsupplied required query parameter: 'count'";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (!isUnsignedInteger(req.query_params.at("page")[0])){
+            response["message"] = "Bad Request: Query parameter 'page' must be a valid unsigned signed integer.";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        if (!isUnsignedInteger(req.query_params.at("count")[0])){
+            response["message"] = "Bad Request: Query parameter 'count' must be a valid unsigned signed integer.";
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+
+        uint32_t page = stoul(req.query_params.at("page")[0]);
+        uint32_t count = stoul(req.query_params.at("count")[0]);
+
+        auto errorBattles = db.getErrorBattles(page, count);
+        std::vector<json> jsons;
+        jsons.reserve(errorBattles.size());
+        for (auto& battle : errorBattles){
+            json json;
+            json["battle"] = battle.request;
+            json["dateRan"] = battle.dateRan;
+            json["hash"] = std::to_string(battle.hash);
+            jsons.push_back(json);
+        }
+
+        response["success"] = true;
+        response["message"] = "OK";
+        response["data"] = jsons;
+        res.Send(response.dump());
+    });
+
+    app.Add_Handler("DELETE", authorizedRoute, "/error/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+
+        const User& user = db.getUserData(req.path_params.at("username")).value();
+        if (!user.isAdmin){
+            response["message"] = "You must be an admin to access this data.";
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
+        size_t id = 0;
+        try {
+            id = stoul(req.path_params.at("id"));
+        }
+        catch (...){
+            response["message"] = "That error battle doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        bool deleted = db.deleteErrorBattle(id);
+
+        if (!deleted){
+            response["message"] = "That error battle doesn't exist.";
+            res.Set_Status(404);
+            res.Send(response.dump());
+            return;
+        }
+
+        response["success"] = true;
+        response["message"] = "OK";
+        res.Send(response.dump());
+    });
+
+    app.Add_Handler("POST", authorizedRoute, "/error", [=, this](const HTTP_Request& req, HTTP_Response& res){
+        json response;
+        response["success"] = false;
+        response["id"] = -1;
+        json request;
+        try {
+            request = json::parse(req.body);
+        }
+        catch (const json::parse_error& e){
+            response["message"] = "Bad Request: " + std::string(e.what());
+            res.Set_Status(400);
+            res.Send(response.dump());
+            return;
+        }
+        std::string problems = validateBattleRequest(request);
+        if (problems != ""){
+            sendProblemResponse(problems, response, res);
+            return;
+        }
+
+        // Simulate Battle
+        Trainer trainer1(request["trainer1"]);
+        Trainer trainer2(request["trainer2"]);
+        size_t seed = seedFromString(request["seed"].get<std::string>());
+        Battle battle(trainer1, trainer2, seed);
+        battle.simulate();
+
+        response["success"] = true;
+        response["data"] = battle.battleLog;
+        response["message"] = "OK";
+        res.Send(response.dump());
+    });
 }
 
 int NPCS_API_Server::run(){

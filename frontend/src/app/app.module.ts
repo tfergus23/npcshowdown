@@ -33,6 +33,7 @@ import { ClickOutsideDirective } from './click-outside.directive';
 import { SpinningButtonComponent } from './spinning-button/spinning-button.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ResultsInfoComponent } from './results-info/results-info.component';
+import { AdminViewComponent } from './admin-view/admin-view.component';
 
 function initializeApp(appConfigService: AppConfigService) {
   return () => appConfigService.loadAppConfig();
@@ -67,6 +68,7 @@ function initializeApp(appConfigService: AppConfigService) {
     SpinningButtonComponent,
     SpinnerComponent,
     ResultsInfoComponent,
+    AdminViewComponent,
   ],
   imports: [
     BrowserModule,

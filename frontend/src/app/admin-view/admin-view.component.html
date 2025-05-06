@@ -1,0 +1,31 @@
+<div *ngIf="this.app.loggedInUser && this.app.loggedInUser.isAdmin" class="is-admin">
+    <h1>Super Secret Cool Guy Admin View</h1>
+    <hr>
+    <h2>Error Battles</h2>
+    <div *ngIf="this.errorBattles.length > 0" class="error-battle-container">
+        <div *ngFor="let battle of errorBattles; index as i" class="error-battle">
+            <label>{{battle.dateRan}}</label>
+            <div class="right">
+                <button (click)="this.viewBattle(i)">View</button>
+                <button (click)="this.downloadBattle(i)">Download</button>
+                <button (click)="this.acknowledgeBattle(i)">Acknowledge</button>
+            </div>
+        </div>
+    </div>
+    <div style="margin-left: 50px;" *ngIf="this.errorBattles.length == 0">
+        No errors to report! Yay!
+    </div>
+    <div *ngIf="this.errorBattles.length > 0" class="page-btns">
+        <button (click)="this.changePage(-1)"><</button>
+        <label>{{this.page + 1}}</label>
+        <button (click)="this.changePage(1)">></button>
+        <label>{{this.page * this.BATTLES_PER_PAGE  + 1}} - {{this.battlesOnPage()}} of {{this.totalBattles}}</label>
+    </div>
+</div>
+<app-battle-log-view #logView></app-battle-log-view>
+
+
+
+<div *ngIf="!this.app.loggedInUser || !this.app.loggedInUser.isAdmin" class="not-admin">
+    <p>Hey, you can't be here! Guards! Guards!</p>
+</div>

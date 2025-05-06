@@ -1,9 +1,10 @@
 ## App
 ### MVP
-- admin view
 - ip rate limitting
 - view results add button doesn't return when you log back in
+- cooler battle view
 - mobile pass
+- fix the BigInt problem
 - sample trainers
 
 ### Extra

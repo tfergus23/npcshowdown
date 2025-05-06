@@ -26,6 +26,13 @@ struct User{
     std::string name;
     std::string accountCreated;
     std::string lastPasswordChange;
+    bool isAdmin;
+};
+
+struct ErrorBattle{
+    std::string request;
+    std::string dateRan;
+    size_t hash = 0;
 };
 
 class MariaDBConnection{
@@ -60,6 +67,9 @@ public:
     bool updateTournamentName(size_t tournament, const std::string& username, const std::string& newName);
     bool tournamentHasName(size_t tournament, const std::string& name);
     void saveErrorBattle(const std::string& battleJsonDump);
+    size_t getTotalErrorBattles();
+    std::vector<ErrorBattle> getErrorBattles(uint32_t page, uint32_t count);
+    bool deleteErrorBattle(size_t hash);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions, const std::string& port);
 private:

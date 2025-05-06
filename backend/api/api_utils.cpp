@@ -502,3 +502,15 @@ std::uint64_t fnv1a_hash_64(const std::string& str) {
 
     return hash;
 }
+
+bool isUnsignedInteger(const std::string& str) {
+    try {
+        size_t pos;
+        size_t num = std::stoul(str, &pos);
+        return pos == str.size() && num <= UINT32_MAX; // Ensure the whole string was converted
+    } catch (const std::invalid_argument& e) {
+        return false; // Not a number at all
+    } catch (const std::out_of_range& e) {
+        return false; // Number out of int range
+    }
+}

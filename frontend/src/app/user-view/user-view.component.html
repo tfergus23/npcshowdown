@@ -4,6 +4,7 @@
             <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'profile') ? 'var(--light-background-color)' : 'rgba(41,41,41,0)'" routerLink="profile">Profile</a>
             <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'trainers') ? 'var(--light-background-color)' : 'rgba(41,41,41,0)'" routerLink="trainers">Trainers</a>
             <a [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'tournaments') ? 'var(--light-background-color)' : 'rgba(41,41,41,0)'" routerLink="tournaments">Tournaments</a>
+            <a *ngIf="this.app.loggedInUser && this.app.loggedInUser.isAdmin" [style.background-color]="(this.activatedRoute.snapshot.children[0].routeConfig?.path == 'admin') ? 'var(--light-background-color)' : 'rgba(41,41,41,0)'" routerLink="admin">Admin</a>
         </div>
     </div>
     <router-outlet *ngIf="this.app.loggedInUser"></router-outlet>

@@ -21,3 +21,4 @@ std::string sha256(const std::string& str);
 int getIntFromConfig(tflib::ini_file& config, const std::string& key);
 std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName);
 std::uint64_t fnv1a_hash_64(const std::string& str);
+bool isUnsignedInteger(const std::string& str);

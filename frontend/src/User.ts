@@ -6,5 +6,6 @@ export default interface User{
     id: number;
     token: string;
     accountCreated: string,
-    lastPasswordChange: string
+    lastPasswordChange: string,
+    isAdmin: boolean
 }

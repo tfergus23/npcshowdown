@@ -8,7 +8,8 @@ create table user (
     name varchar(16),
     password char(64),
     accountCreated DATE,
-    lastPasswordChange DATE
+    lastPasswordChange DATE,
+    isAdmin boolean
 );
 
 create unique index user_name_index on user (name);
@@ -134,4 +135,4 @@ create index ack_error_battle_index on error_battle(acknowledged);
 create index date_error_battle_index on error_battle(dateRan);
 create index ack_date_error_battle_index on error_battle(acknowledged, dateRan);
 
-insert into user (name, password, accountCreated, lastPasswordChange) values ("admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", NOW(), NOW());
+insert into user (name, password, accountCreated, lastPasswordChange, isAdmin) values ("admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", NOW(), NOW(), 1);

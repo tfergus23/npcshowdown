@@ -13,4 +13,8 @@ export class UserViewComponent {
 
   constructor(public activatedRoute: ActivatedRoute, public app: AppComponent){
   }
+
+  ngAfterViewInit(){
+    console.log(this.app.loggedInUser?.isAdmin);
+  }
 }
