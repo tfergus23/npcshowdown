@@ -4,8 +4,8 @@
     </div>
     <div class="tournament-name" *ngIf="!this.editingTournamentName && this.results">{{this.results.name}}</div>
     <input class="tournament-name-input" [(ngModel)]="this.newTournamentName" (keydown.enter)="this.updateTournamentName()" *ngIf="this.editingTournamentName" #tournamentNameInput>
-    <button class="edit-btn" *ngIf="!this.editingTournamentName && this.app.loggedInUser && this.app.loggedInUser.name == this.results?.user" (click)="this.beginEditingTournamentName()">Edit</button>
-    <button class="edit-btn" *ngIf="this.editingTournamentName && this.app.loggedInUser && this.app.loggedInUser.name == this.results?.user" (click)="this.updateTournamentName()">Done</button>
+    <button class="edit-btn" *ngIf="!this.editingTournamentName && this.app.loggedInUser && this.app.loggedInUser.name == this.results?.user && this.showSaveButtons" (click)="this.beginEditingTournamentName()">Edit</button>
+    <button class="edit-btn" *ngIf="this.editingTournamentName && this.app.loggedInUser && this.app.loggedInUser.name == this.results?.user && this.showSaveButtons" (click)="this.updateTournamentName()">Done</button>
     <div class="save-download-buttons">
         <button (click)="this.download()" *ngIf="this.results && this.showSaveButtons">Save To File</button>
         <app-spinning-button *ngIf="this.results && this.app.loggedInUser && this.userTournaments && this.showSaveButtons" [style]="{'background-color': this.addButtonBackground()}" [loadWhile]="whileAddingToUser" [click]="this.addTournamentToUser" [disabled]="this.userHasTournament()" [text]="this.saveTournamentText()"></app-spinning-button>

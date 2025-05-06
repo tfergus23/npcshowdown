@@ -106,4 +106,5 @@ kill "$(head -1 ./mariadb.pid)"
 
 cd ..
 
+echo ""
 echo "You are all set. Run ./run_dev.sh to start the app."
