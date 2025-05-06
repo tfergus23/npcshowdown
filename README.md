@@ -18,10 +18,7 @@ NPC Showdown is a web app and API for simulating round-robin tournaments between
 - [MariaDB Server (Stable) >= 10.4](https://mariadb.org/download/) (An existing instance is not needed; a local one will be created for testing. You just need the server tools in your PATH.)
   - Ubuntu/Debian:
     ```
-    sudo apt install mariadb-server
-    # If you don't want the daemon to always be running
-    sudo systemctl disable mariadb
-    sudo systemctl stop mariadb
+    sudo apt install mariadb-server-core mariadb-client
     ```
 - [Node.js + npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
   - Ubuntu/Debian:
