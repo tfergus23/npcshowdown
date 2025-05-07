@@ -29,7 +29,8 @@ const Status STATUS_BURN{
         dealResidualPercentDamage(6.25f, subject,battle);
     }
     },
-    .was = " was burned!"
+    .was = " was burned!",
+    .name = "burn"
 };
 
 //TODO

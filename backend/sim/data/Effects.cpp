@@ -1,6 +1,8 @@
 #include "sim/data/Effects.hpp"
 #include "sim/battle/Battle.hpp"
 
+const Effect EFFECT_NONE;
+
 const Effect EFFECT_CONFUSED;
 
 const Effect EFFECT_ROOST = {

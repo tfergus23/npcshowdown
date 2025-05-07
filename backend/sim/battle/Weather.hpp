@@ -6,4 +6,5 @@ class Weather {
 public:
     Observer observer;
     std::string beginText;
+    std::string name;
 };

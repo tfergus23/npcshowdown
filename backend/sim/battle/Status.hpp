@@ -7,4 +7,5 @@ class Status {
 public:
     Observer observer;
     std::string was;
+    std::string name;
 };

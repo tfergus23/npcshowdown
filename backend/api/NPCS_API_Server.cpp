@@ -240,7 +240,7 @@ NPCS_API_Server::NPCS_API_Server() :
                 res.Send(response.dump());
                 return;
             }
-            
+
             {
                 std::unique_lock lk(ipFailedLoginsMutex);
                 ipFailedLogins[req.ip].reset();

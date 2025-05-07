@@ -351,3 +351,194 @@ void Battle::simulate(){
 const char* BattleAssertionFailedException::what() const noexcept {
     return m_Message.c_str();
 }
+
+static const char* eventTypeStrings[] = {
+    "MESSAGE",
+    "RANGED_ATTACK",
+    "MELEE_ATTACK",
+    "DAMAGE_TAKEN",
+    "HEALING_RECEIVED",
+    "POKEMON_ENTER",
+    "POKEMON_LEAVE",
+    "POKEMON_FAINT",
+    "APPLY_STATUS",
+    "APPLY_VOLATILE",
+    "APPLY_FIELD_EFFECT",
+    "WEATHER_CHANGE",
+    "STAT_CHANGE",
+    "DEBUG_MESSAGE"
+};
+
+static const char* getEventTypeString(LogEventType type){
+    assert((int)type <= (int)LogEventType::DEBUG_MESSAGE);
+    return eventTypeStrings[(int)type];
+}
+
+LogEventType LogEvent::type(){
+    return m_type;
+}
+const std::string& LogEvent::message(){
+    return m_message;
+}
+const LogEventData& LogEvent::data(){
+    return m_data;
+}
+json LogEvent::toJSON(){
+    json result;
+    result["message"] = m_message;
+    result["type"] = getEventTypeString(m_type);
+    json data;
+    switch (m_type)
+    {
+    case LogEventType::MESSAGE:
+        break;
+    case LogEventType::RANGED_ATTACK:
+        data["attackerIsPlayer"] = m_data.attack.attackerIsPlayer;
+        break;
+    case LogEventType::MELEE_ATTACK:
+        data["attackerIsPlayer"] = m_data.attack.attackerIsPlayer;
+        break;
+    case LogEventType::DAMAGE_TAKEN:
+        data["damage"] = m_data.damage.damage;
+        break;
+    case LogEventType::HEALING_RECEIVED:
+        data["healing"] = m_data.healing.healing;
+        break;
+    case LogEventType::POKEMON_ENTER:
+        data["isPlayer1"] = m_data.pokemonAction.isPlayer1;
+        break;
+    case LogEventType::POKEMON_LEAVE:
+        data["isPlayer1"] = m_data.pokemonAction.isPlayer1;
+        break;
+    case LogEventType::POKEMON_FAINT:
+        data["isPlayer1"] = m_data.pokemonAction.isPlayer1;
+        break;
+    case LogEventType::APPLY_STATUS:
+        data["status"] = m_data.applyStatus.status->name;
+        data["appliedToPlayer1"] = m_data.applyStatus.appliedToPlayer1;
+        break;
+    case LogEventType::APPLY_VOLATILE:
+        data["effect"] = m_data.applyVolatile.effect->name;
+        data["appliedToPlayer1"] = m_data.applyVolatile.appliedToPlayer1;
+        break;
+    case LogEventType::APPLY_FIELD_EFFECT:
+        data["fieldEffect"] = m_data.applyFieldEffect.fieldEffect->name;
+        data["appliedToPlayer1Side"] = m_data.applyFieldEffect.appliedToPlayer1Side;
+        break;
+    case LogEventType::WEATHER_CHANGE:
+        data["weather"] = m_data.weatherChange.weather->name;
+        break;
+    case LogEventType::STAT_CHANGE:
+        data["stat"] = (int) m_data.statChange.stat;
+        data["change"] = (int) m_data.statChange.change;
+        break;
+    case LogEventType::DEBUG_MESSAGE:
+        break;
+    default:
+        break;
+    }
+    result["data"] = data;
+    return result;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message) : m_type{type}, m_message{message}{}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const AttackData& data) : m_type{type}, m_message{message}{
+    this->m_data.attack = data;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const DamageData& data) : m_type{type}, m_message{message}{
+    this->m_data.damage = data;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const HealingData& data) : m_type{type}, m_message{message}{
+    this->m_data.healing = data;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const PokemonActionData& data) : m_type{type}, m_message{message}{
+    this->m_data.pokemonAction = data;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyStatusData& data) : m_type{type}, m_message{message}{
+    this->m_data.applyStatus = data;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyVolatileData& data) : m_type{type}, m_message{message}{
+    this->m_data.applyVolatile = data;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const StatChangeData& data) : m_type{type}, m_message{message}{
+    this->m_data.statChange = data;
+}
+
+LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyFieldEffectData& data) : m_type{type}, m_message{message}{
+    this->m_data.applyFieldEffect = data;
+}
+LogEvent::LogEvent(LogEventType type, const std::string& message, const WeatherChangeData& data) : m_type{type}, m_message{message}{
+    this->m_data.weatherChange = data;
+}
+
+void Battle::logMessage(std::string_view message){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::MESSAGE, std::string(message));
+}
+void Battle::logRangedAttack(std::string_view message, const AttackData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::RANGED_ATTACK, std::string(message), data);
+}
+void Battle::logMeleeAttack(std::string_view message, const AttackData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::MELEE_ATTACK, std::string(message), data);
+}
+void Battle::logDamageTaken(std::string_view message, const DamageData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::DAMAGE_TAKEN, std::string(message), data);
+}
+void Battle::logHealing(std::string_view message, const HealingData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::HEALING_RECEIVED, std::string(message), data);
+}
+void Battle::logPokemonEnter(std::string_view message, const PokemonActionData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::POKEMON_ENTER, std::string(message), data);
+}
+void Battle::logPokemonLeave(std::string_view message, const PokemonActionData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::POKEMON_LEAVE, std::string(message), data);
+}
+void Battle::logPokemonFaint(std::string_view message, const PokemonActionData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::POKEMON_FAINT, std::string(message), data);
+}
+void Battle::logApplyStatus(std::string_view message, const ApplyStatusData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::APPLY_STATUS, std::string(message), data);
+}
+void Battle::logApplyVolatile(std::string_view message, const ApplyVolatileData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::APPLY_VOLATILE, std::string(message), data);
+}
+void Battle::logApplyFieldEffect(std::string_view message, const ApplyFieldEffectData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::APPLY_FIELD_EFFECT, std::string(message), data);
+}
+void Battle::logChangeWeather(std::string_view message, const WeatherChangeData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::WEATHER_CHANGE, std::string(message), data);
+}
+void Battle::logStatChange(std::string_view message, const StatChangeData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::STAT_CHANGE, std::string(message), data);
+}
+
+const std::vector<LogEvent>& Battle::eventLog(){
+    return m_EventLog;
+}
+
+json Battle::eventsJson(){
+    std::vector<json> result;
+    for (auto& event : m_EventLog){
+        result.push_back(event.toJSON());
+    }
+    return result;
+}

@@ -12,12 +12,108 @@
 #include "sim/battle/EventArgs.hpp"
 #include <random>
 #include <unordered_map>
+#include "sim/data/Effects.hpp"
+#include "sim/data/FieldEffects.hpp"
 
 class Trainer;
 
 struct DebugOptions{
     bool debugLogging = false;
     bool averageDamage = false;
+};
+
+enum class LogEventType {
+    MESSAGE,
+    RANGED_ATTACK,
+    MELEE_ATTACK,
+    DAMAGE_TAKEN,
+    HEALING_RECEIVED,
+    POKEMON_ENTER,
+    POKEMON_LEAVE,
+    POKEMON_FAINT,
+    APPLY_STATUS,
+    APPLY_VOLATILE,
+    APPLY_FIELD_EFFECT,
+    WEATHER_CHANGE,
+    STAT_CHANGE,
+    DEBUG_MESSAGE
+};
+
+struct AttackData{
+    bool attackerIsPlayer = true;
+};
+
+struct DamageData{
+    int damage = 0;
+};
+
+struct HealingData {
+    int healing = 0;
+};
+
+struct PokemonActionData{
+    bool isPlayer1 = true;
+};
+
+struct ApplyStatusData {
+    bool appliedToPlayer1 = true;
+    const Status* status = &STATUS_NONE;
+};
+
+struct ApplyVolatileData {
+    bool appliedToPlayer1 = true;
+    const Effect* effect = &EFFECT_NONE;
+};
+
+struct ApplyFieldEffectData {
+    bool appliedToPlayer1Side = true;
+    const FieldEffect* fieldEffect = &FIELD_EFFECT_NONE;
+};
+
+struct WeatherChangeData {
+    const Weather* weather = &WEATHER_NONE;
+};
+
+struct StatChangeData {
+    Stat stat = Stat::ATTACK;
+    int change = 0;
+};
+
+
+union LogEventData {
+    AttackData attack;
+    DamageData damage;
+    HealingData healing;
+    PokemonActionData pokemonAction;
+    ApplyStatusData applyStatus;
+    ApplyVolatileData applyVolatile;
+    StatChangeData statChange;
+    ApplyFieldEffectData applyFieldEffect;
+    WeatherChangeData weatherChange;
+
+    LogEventData(){}
+};
+
+struct LogEvent {
+public:
+    LogEventType type();
+    const std::string& message();
+    const LogEventData& data();
+    json toJSON();
+    LogEvent(LogEventType type, const std::string& message);
+    LogEvent(LogEventType type, const std::string& message, const AttackData& data);
+    LogEvent(LogEventType type, const std::string& message, const DamageData& data);
+    LogEvent(LogEventType type, const std::string& message, const HealingData& data);
+    LogEvent(LogEventType type, const std::string& message, const PokemonActionData& data);
+    LogEvent(LogEventType type, const std::string& message, const ApplyStatusData& data);
+    LogEvent(LogEventType type, const std::string& message, const ApplyVolatileData& data);
+    LogEvent(LogEventType type, const std::string& message, const ApplyFieldEffectData& data);
+    LogEvent(LogEventType type, const std::string& message, const StatChangeData& data);
+    LogEvent(LogEventType type, const std::string& message, const WeatherChangeData& data);
+private:
+    LogEventType m_type;
+    std::string m_message;
+    LogEventData m_data;
 };
 
 class Battle{
@@ -60,6 +156,21 @@ public:
     ObserverState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
     void log(std::string_view str);
+    void logMessage(std::string_view message);
+    void logRangedAttack(std::string_view message, const AttackData& data);
+    void logMeleeAttack(std::string_view message, const AttackData& data);
+    void logDamageTaken(std::string_view message, const DamageData& data);
+    void logHealing(std::string_view message, const HealingData& data);
+    void logPokemonEnter(std::string_view message, const PokemonActionData& data);
+    void logPokemonLeave(std::string_view message, const PokemonActionData& data);
+    void logPokemonFaint(std::string_view message, const PokemonActionData& data);
+    void logApplyStatus(std::string_view message, const ApplyStatusData& data);
+    void logApplyVolatile(std::string_view message, const ApplyVolatileData& data);
+    void logApplyFieldEffect(std::string_view message, const ApplyFieldEffectData& data);
+    void logChangeWeather(std::string_view message, const WeatherChangeData& data);
+    void logStatChange(std::string_view message, const StatChangeData& data);
+    const std::vector<LogEvent>& eventLog();
+    json eventsJson();
     void debug(std::string_view str);
     void assertTrue(bool condition, std::string_view message = "");
 
@@ -85,6 +196,7 @@ private:
     std::unordered_map<const FieldEffect*, ObserverState> m_Player2FieldEffects;
     std::vector<const FieldEffect*> m_EffectsToRemove1;
     std::vector<const FieldEffect*> m_EffectsToRemove2;
+    std::vector<LogEvent> m_EventLog;
     void removeMarkedFieldEffects(bool side);
     void setPokemonHandlerOrder();
     void setMoveOrder();

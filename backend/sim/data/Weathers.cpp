@@ -3,4 +3,7 @@
 const Weather WEATHER_NONE;
 
 //TODO
-const Weather WEATHER_SUN;
+const Weather WEATHER_SUN = {
+    .beginText = "The sunlight became harsh!",
+    .name = "Sun",
+};
