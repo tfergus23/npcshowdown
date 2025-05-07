@@ -25,7 +25,7 @@ const Status STATUS_BURN{
         }
     },
     .endOfTurn  = [](Pokemon* subject, Battle* battle, const EventArgs& e){
-        battle->log(subject->nickname + " was hurt by it's burn!");
+        battle->logMessage(subject->nickname + " was hurt by it's burn!");
         dealResidualPercentDamage(6.25f, subject,battle);
     }
     },

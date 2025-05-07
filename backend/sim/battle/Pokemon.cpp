@@ -178,7 +178,7 @@ int Pokemon::getStat(Stat stat, bool crit){
     finalStatValue = m_CurrentAbility->modifySubjectStat(stat, finalStatValue, this);
     return finalStatValue;
 }
-int Pokemon::getStatRaw(Stat stat){
+int Pokemon::getStatRaw(Stat stat) const{
     switch (stat)
     {
     case Stat::HP:

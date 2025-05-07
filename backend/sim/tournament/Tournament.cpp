@@ -32,7 +32,7 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
 
 int determineBattleWinner(Battle& battle, int trainer1, int trainer2){
     if (!battle.isBattleOver){
-        throw std::runtime_error("Can't determine result if the battle was never ran.\nBattle:\n\n" + battle.battleLog);
+        throw std::runtime_error("Can't determine result if the battle was never ran.");
     }
     if (battle.isDraw){
         return -1; //TODO: Is this a problem?

@@ -13,12 +13,12 @@ int dealDamage(int damage, MoveUse* moveUse){
         SubstituteState& subState = moveUse->battle->getFieldEffectState(isPlayer1, &FIELD_EFFECT_SUBSTITUTE)->substituteState;
         if (damage > subState.health) damage = subState.health;
         subState.health -= damage;
-        if (damage > 0) moveUse->battle->log(moveUse->target->nickname + "'s Substitute absorbed the attack!");
+        if (damage > 0) moveUse->battle->logMessage(moveUse->target->nickname + "'s Substitute absorbed the attack!");
     }
     else{
         if (damage >= moveUse->target->currentHealth) damage = moveUse->canKill ? moveUse->target->currentHealth : moveUse->target->currentHealth -1;
         moveUse->target->currentHealth -= damage;
-        if (damage > 0) moveUse->battle->log(moveUse->target->nickname + " took " + std::to_string(damage) + " damage!");
+        if (damage > 0) moveUse->battle->logDamageTaken(moveUse->target->nickname + " took " + std::to_string(damage) + " damage!", {.recipientIsPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .damage = damage});
     }
     return damage;
 }
@@ -46,7 +46,7 @@ DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
 int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     if (!moveUse->canDealDamage){
         if (!moveUse->loggedFailure){
-            moveUse->battle->log(moveUse->getFailMessage());
+            moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return 0;
@@ -56,15 +56,15 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     if (dealtDamage.damage > 0){
         if (logEffectiveness){
             moveUse->battle->assertTrue(dealtDamage.typeMod != NOT_EFFECTIVE, "Move tried to deal damage when NOT_EFFECTIVE");
-            if (dealtDamage.typeMod == SUPER_EFFECTIVE) moveUse->battle->log("It's Super Effective!");
-            else if (dealtDamage.typeMod == ULTRA_EFFECTIVE) moveUse->battle->log("It's ULTRA Effective!");
-            else if (dealtDamage.typeMod == NOT_VERY_EFFECTIVE) moveUse->battle->log("It's not very effective...");
-            else if (dealtDamage.typeMod == BARELY_EFFECTIVE) moveUse->battle->log("It's barely effective...");
+            if (dealtDamage.typeMod == SUPER_EFFECTIVE) moveUse->battle->logMessage("It's Super Effective!");
+            else if (dealtDamage.typeMod == ULTRA_EFFECTIVE) moveUse->battle->logMessage("It's ULTRA Effective!");
+            else if (dealtDamage.typeMod == NOT_VERY_EFFECTIVE) moveUse->battle->logMessage("It's not very effective...");
+            else if (dealtDamage.typeMod == BARELY_EFFECTIVE) moveUse->battle->logMessage("It's barely effective...");
             else if (dealtDamage.typeMod == 1.0f);
             else moveUse->battle->assertTrue(false, "Looks like we got a rounding error on our hands boys: " + std::to_string(dealtDamage.typeMod));
         }
         if (dealtDamage.crit){
-            moveUse->battle->log("Critical hit!");
+            moveUse->battle->logMessage("Critical hit!");
         }
     }
     moveUse->battle->raiseEvent(Event::POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
@@ -106,7 +106,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
         }
         bool success = applyEffect(&EFFECT_CONFUSED, moveUse);
         if (success) {
-            moveUse->battle->log(moveUse->target->nickname + " became confused!");
+            moveUse->battle->logApplyVolatile(moveUse->target->nickname + " became confused!", {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = &EFFECT_CONFUSED});
         }
         return success;
     }
@@ -139,7 +139,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
 int dealFlatDamage(int damage, MoveUse* moveUse) {
     if (!moveUse->canDealDamage) {
         if (!moveUse->loggedFailure) {
-            moveUse->battle->log(moveUse->getFailMessage());
+            moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return 0;
@@ -152,7 +152,7 @@ int dealFlatDamage(int damage, MoveUse* moveUse) {
 }
 bool selfDestruct(MoveUse* moveUse) {
     if (moveUse->cantSelfDestruct) {
-        moveUse->battle->log(moveUse->getFailMessage());
+        moveUse->battle->logMessage(moveUse->getFailMessage());
         return false;
     }
     moveUse->user->currentHealth -= moveUse->user->currentHealth;
@@ -164,7 +164,7 @@ int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle) {
     int damage = (int) floor(target->getStat(Stat::HP) * (percent / 100.0f));
     if (damage > target->currentHealth) damage = target->currentHealth;
     target->currentHealth -= damage;
-    if (damage > 0) battle->log(target->nickname + " took " + std::to_string(damage) + " damage.");
+    if (damage > 0) battle->logDamageTaken(target->nickname + " took " + std::to_string(damage) + " damage.", {.recipientIsPlayer1 = target == battle->player1ActivePokemon, .damage = damage});
     return damage;
 }
 
@@ -173,14 +173,13 @@ int dealPercentDamage(float percent, MoveUse* moveUse) {
     int damage = (int)floor(moveUse->target->getStat(Stat::HP) * (percent / 100.0f));
     if (damage > moveUse->target->currentHealth) damage = moveUse->target->currentHealth;
     int damageDealt = dealDamage(damage, moveUse);
-    if (damageDealt > 0) moveUse->battle->log(moveUse->target->nickname + " took " + std::to_string(damage) + " damage.");
     return damageDealt;
 }
 int giveHealing(int healing, Pokemon* recipient, Battle* battle) {
     int recipientHP = recipient->getStat(Stat::HP);
     int healingToGive = (recipient->currentHealth + healing > recipientHP) ? recipientHP - recipient->currentHealth : healing;
     recipient->currentHealth += healingToGive;
-    if (healingToGive > 0) battle->log(recipient->nickname + " was healed for " + std::to_string(healing) + " health.");
+    if (healingToGive > 0) battle->logHealing(recipient->nickname + " was healed for " + std::to_string(healing) + " health.", {.recipientIsPlayer1 = recipient == battle->player1ActivePokemon, .healing = healing});
     return healingToGive;
 }
 void givePercentHealing(float percent, Pokemon* recipient, Battle* battle) {
@@ -195,12 +194,12 @@ void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle) {
 bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
     //TODO: Why are these separate if blocks?
     if (moveUse->target->getStatus() != &STATUS_NONE) {
-        if (logTypeFailure) moveUse->battle->log("But it failed!");
+        if (logTypeFailure) moveUse->battle->logMessage("But it failed!");
         return false;
     }
     if (!moveUse->canApplyStatus || moveUse->target->isDead) {
         if (!moveUse->loggedFailure) {
-            moveUse->battle->log(moveUse->getFailMessage());
+            moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return false;
@@ -209,37 +208,38 @@ bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
         return false;
     }
     if (status == &STATUS_BURN && moveUse->target->isType(Type::FIRE)) {
-        if (logTypeFailure) moveUse->battle->log("It doesn't affect " + moveUse->target->nickname + "...");
+        if (logTypeFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
     if ((status == &STATUS_POISON || status == &STATUS_BAD_POISON) && (moveUse->target->isType(Type::POISON) || moveUse->target->isType(Type::STEEL))) {
-        if (logTypeFailure) moveUse->battle->log("It doesn't affect " + moveUse->target->nickname + "...");
+        if (logTypeFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
     if (status == &STATUS_PARALYSIS && moveUse->target->isType(Type::ELECTRIC)) {
-        if (logTypeFailure) moveUse->battle->log("It doesn't affect " + moveUse->target->nickname + "...");
+        if (logTypeFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
     moveUse->target->applyStatus(status);
-    moveUse->battle->log(moveUse->target->nickname + status->was);
+    moveUse->battle->logApplyStatus(moveUse->target->nickname + status->was, {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .status = status});
     return true;
 }
 bool applyEffect(const Effect* effect, MoveUse* moveUse) {
     if (!moveUse->canApplyStatus || moveUse->target->isDead) {
         if (!moveUse->loggedFailure) {
-            moveUse->battle->log(moveUse->getFailMessage());
+            moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return false;
     }
     moveUse->target->applyEffect(effect);
+    moveUse->battle->logApplyVolatile(effect->was != "" ? moveUse->target->nickname + effect->was : "", {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = effect});
     return true;
 }
 bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange) {
     int currentMod = pokemon->boosts[(int)stat];
     int actualChange = 0;
     if ((!moveUse->canLowerStats && change < 0) || (!moveUse->canRaiseStats && change > 0)) {
-        if (logNoChange) battle->log(moveUse->getFailMessage());
+        if (logNoChange) battle->logMessage(moveUse->getFailMessage());
         return false;
     }
     if (change > 0) {
@@ -251,25 +251,25 @@ bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle,
     pokemon->boosts[(int)stat] += actualChange;
     if (actualChange == 0 && change != 0) {
         const std::string adjective = (change > 0) ? "higher" : "lower";
-        if (logNoChange) battle->log(pokemon->nickname + "'s " + statNames[(int)stat] + " can't go any " + adjective + "!");
+        if (logNoChange) battle->logMessage(pokemon->nickname + "'s " + statNames[(int)stat] + " can't go any " + adjective + "!");
         return false;
     }
     else {
         std::string verb = (actualChange > 0) ? "rose" : "fell";
         std::string adverb = (abs(actualChange) > 1) ? " sharply" : "";
-        battle->log(pokemon->nickname + "'s " + statNames[(int)stat] + " " + verb + adverb + "!");
+        battle->logStatChange(pokemon->nickname + "'s " + statNames[(int)stat] + " " + verb + adverb + "!", {.stat = stat, .change = actualChange});
         return true;
     }
 
 }
 bool changeBattleWeather(const Weather* newWeather, Battle* battle) {
     if (battle->weather != &WEATHER_NONE && battle->weather == newWeather) {
-        battle->log("But it failed!");
+        battle->logMessage("But it failed!");
         return false;
     }
     else {
         battle->weather = newWeather;
-        if (newWeather != &WEATHER_NONE) battle->log(newWeather->beginText);
+        if (newWeather != &WEATHER_NONE) battle->logChangeWeather(newWeather->beginText, {.weather = newWeather});
         return true;
     }
 }
@@ -300,7 +300,7 @@ bool genderCompatible(Gender gender1, Gender gender2) {
     return gender1 != gender2;
 }
 void crash(Pokemon* user, Battle* battle) {
-    battle->log(user->nickname + " kept going and crashed!");
+    battle->logMessage(user->nickname + " kept going and crashed!");
     dealResidualPercentDamage(50.0f, user, battle);
 }
 
@@ -310,7 +310,7 @@ int dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool lo
         int recoil = (int) ceil((float) damage * recoilMultiplier);
         int recoilDamage = (moveUse->user->currentHealth - recoil < 0) ? moveUse->user->currentHealth : recoil;
         moveUse->user->currentHealth -= recoilDamage;
-        moveUse->battle->log(moveUse->user->nickname + " took " + std::to_string(recoilDamage) + " damage as recoil!");
+        moveUse->battle->logDamageTaken(moveUse->user->nickname + " took " + std::to_string(recoilDamage) + " damage as recoil!", {.recipientIsPlayer1 = moveUse->user == moveUse->battle->player1ActivePokemon, .damage = recoilDamage});
     }
     return damage;
 }

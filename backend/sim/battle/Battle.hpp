@@ -40,14 +40,16 @@ enum class LogEventType {
 };
 
 struct AttackData{
-    bool attackerIsPlayer = true;
+    bool attackerIsPlayer1 = true;
 };
 
 struct DamageData{
+    bool recipientIsPlayer1 = true;
     int damage = 0;
 };
 
 struct HealingData {
+    bool recipientIsPlayer1 = true;
     int healing = 0;
 };
 
@@ -133,11 +135,12 @@ public:
     bool isBattleOver = false;
     bool isDraw = false;
     const TrainerInfo* winner;
-    std::string battleLog = "";
+    //std::string battleLog = "";
     int weatherSuppressors = 0;
     int moveNumber = 0;
     bool doLogging = true;
     bool invalid = false;
+    std::string errorMessage = "";
 
     //Used by the Use2MovesThenSwitch AI to count how many moves it used so far
     int player1SwitchCounter = 0;
@@ -155,7 +158,7 @@ public:
     bool sideHasFieldEffect(bool side, const FieldEffect* fieldEffect);
     ObserverState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
-    void log(std::string_view str);
+    //void log(std::string_view str);
     void logMessage(std::string_view message);
     void logRangedAttack(std::string_view message, const AttackData& data);
     void logMeleeAttack(std::string_view message, const AttackData& data);
@@ -171,6 +174,7 @@ public:
     void logStatChange(std::string_view message, const StatChangeData& data);
     const std::vector<LogEvent>& eventLog();
     json eventsJson();
+    std::string textLog();
     void debug(std::string_view str);
     void assertTrue(bool condition, std::string_view message = "");
 
@@ -179,7 +183,6 @@ public:
     void raiseEvent(Event event, const EventArgs& args);
     void killTheDead();
     void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
-    void logCurrentStatus();
     void simulate();
 
     MoveUse m_Turn[2];

@@ -15,22 +15,29 @@ void MoveUse::doMove(MoveUse* opponentMove){
     //Switching is a special case, since it's not really a 'move'
     if(this->move == &MOVE_SWITCH){
         const TrainerInfo* trainer = battle->player1ActivePokemon == user ? battle->getPlayer1() : battle->getPlayer2();
-        battle->log(trainer->name + " withdrew " + user->nickname + "!");
+        battle->logPokemonLeave(trainer->name + " withdrew " + user->nickname + "!", {.isPlayer1 = battle->player1ActivePokemon == user});
         return;
     }
     battle->raiseEvent(Event::BEFORE_MOVE, EventArgs(nullptr, this));
     move->beforeChecks(this, opponentMove);
     if (wontStart){
-        battle->log(m_FailMessage);
+        battle->logMessage(m_FailMessage);
         return;
     }
-    if (logUsed) battle->log(user->nickname + " used " + move->name + "!");
+    if (logUsed){
+        if (move->contact){
+            battle->logMeleeAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
+        }
+        else{
+            battle->logRangedAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
+        }
+    } 
     if (willFail){
-        battle->log(m_FailMessage);
+        battle->logMessage(m_FailMessage);
         return;
     }
     if (target->isDead){
-        battle->log(m_FailMessage);
+        battle->logMessage(m_FailMessage);
         return;
     }
     if (isSelfDestruct){
@@ -38,7 +45,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
     }
     float typeMod = typeMatchup(effectiveType, target->currentType[0], target->currentType[1]);
     if (typeMod == NOT_EFFECTIVE && move->damageCategory != DamageCategory::STATUS && move->targetType == TargetType::OPPONENT){
-        battle->log("It doesn't affect " + target->nickname + "...");
+        battle->logMessage("It doesn't affect " + target->nickname + "...");
         if (move->crashOnFail){
             crash(user, battle);
         }
@@ -51,7 +58,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
     m_EffectiveAccuracy = move->accuracy * accuracyMultiplier * user->getCurrentAbility()->accuracyMultiplier;
     battle->debug("Accuracy: " + std::to_string(m_EffectiveAccuracy));
     if (move->accuracy != 0 && m_EffectiveAccuracy < (float) battle->randInt(1,101) && move->targetType == TargetType::OPPONENT){
-        battle->log(user->nickname + "'s attack missed!");
+        battle->logMessage(user->nickname + "'s attack missed!");
         if (move->crashOnFail){
             crash(user,battle);
         }

@@ -69,7 +69,7 @@ class Pokemon{
         Pokemon();
         Pokemon(const PokemonBlueprint* blueprint, Battle* battle);
         int getStat(Stat stat, bool crit = false);
-        int getStatRaw(Stat stat);
+        int getStatRaw(Stat stat) const;
         void resetBoosts();
         void handleEvent(Event event, const EventArgs& args);
         bool shouldDie();

@@ -387,7 +387,7 @@ NPCS_API_Server::NPCS_API_Server() :
 
         // Send back battle ID
         response["success"] = true;
-        response["data"] = battle.battleLog;
+        response["data"] = battle.eventsJson();
         response["message"] = "OK";
         res.Send(response.dump());
     });
@@ -1086,7 +1086,7 @@ NPCS_API_Server::NPCS_API_Server() :
         battle.simulate();
 
         response["success"] = true;
-        response["data"] = battle.battleLog;
+        response["data"] = battle.textLog();
         response["message"] = "OK";
         res.Send(response.dump());
     });
