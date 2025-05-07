@@ -12,6 +12,19 @@ struct TournamentRequest{
     size_t user = 0;
 };
 
+typedef std::chrono::time_point<std::chrono::high_resolution_clock> TimePoint;
+struct FailedLoginState {
+    uint32_t numFails = 0;
+    TimePoint nextAllowed = std::chrono::high_resolution_clock::now();
+
+    bool canTryAgain();
+    void increment();
+    void reset();
+private:
+    std::mutex mut;
+
+};
+
 class NPCS_API_Server{
 public:
     NPCS_API_Server();
@@ -32,6 +45,8 @@ private:
         {"", "serve_static", "0"},
         {"", "static_dir", "./static/"},
         {"", "keep_tournament_days", "7"},
+        {"", "max_tournaments_per_day", "10000"},
+        {"", "max_signups_per_day", "3"},
     }, false);
 
     //Config vars
@@ -43,6 +58,8 @@ private:
     const bool serveStatic = getIntFromConfig(config, "serve_static");
     const std::string staticDir = config.get("static_dir");
     const int keepTournamentDays = getIntFromConfig(config, "keep_tournament_days");
+    const int maxTournamentsPerDay = getIntFromConfig(config, "max_tournaments_per_day");
+    const int maxSignUpsPerDay = getIntFromConfig(config, "max_signups_per_day");
 
     tfhttp::HTTP_Server app = tfhttp::HTTP_Server(tfhttp::HTTP_Server::Options{
         .port = (uint16_t)port
@@ -54,6 +71,10 @@ private:
     std::unordered_map<size_t,int> idToThread;
     std::mutex idToThreadMutex;
     MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"), config.get("db_port"));
+    std::unordered_map<std::string, uint32_t> ipSignUps;
+    std::mutex ipSignUpsMutex;
+    std::unordered_map<std::string, FailedLoginState> ipFailedLogins;
+    std::mutex ipFailedLoginsMutex;
 
     //Canned data responses
     const std::string SPECIES_DATA_RESPONSE;
@@ -66,7 +87,7 @@ private:
     std::string getToken(const std::string& username, const std::string& password);
     std::string getDomainFromURL();
     void waitForTournaments(uint32_t threadNumber);
-    size_t createTournamentRequest(const json& json, size_t user, const std::string& name);
+    size_t createTournamentRequest(const json& json, size_t user, const std::string& name, const std::string& ip);
     void startTournamentThreads();
     int findTournamentPositionInQueue(size_t tournamentID, int threadNumber);
     void testTrainerSerialization();

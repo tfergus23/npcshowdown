@@ -38,6 +38,8 @@ create table tournament (
     ip varchar(15)
 );
 
+create index tournament_ip_date_index on tournament(ip);
+
 CREATE TABLE trainer (
     id BIGINT unsigned PRIMARY KEY AUTO_INCREMENT,
     user bigint unsigned,

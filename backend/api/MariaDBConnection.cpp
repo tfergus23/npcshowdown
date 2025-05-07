@@ -158,8 +158,8 @@ std::optional<TournamentResults> MariaDBConnection::getTournament(size_t id){
     return result;
 }
 
-size_t MariaDBConnection::createEmptyTournament(size_t user, const std::string& name){
-    std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into tournament (user, done, lastUnsave) values (?,?,NOW())"));
+size_t MariaDBConnection::createEmptyTournament(size_t user, const std::string& name, const std::string& ip){
+    std::unique_ptr<sql::PreparedStatement> insertStmnt(conn->prepareStatement("insert into tournament (user, done, lastUnsave, ip, dateRan) values (?,?,NOW(),?,NOW())"));
     if (user){
         insertStmnt->setUInt64(1, user);
     }
@@ -167,6 +167,7 @@ size_t MariaDBConnection::createEmptyTournament(size_t user, const std::string& 
         insertStmnt->setNull(1, sql::Types::BIGINT);
     }
     insertStmnt->setBoolean(2, false);
+    insertStmnt->setString(3, ip);
 
     size_t tournamentID = executeInsertAndGetID(insertStmnt.get());
 
@@ -748,4 +749,12 @@ bool MariaDBConnection::deleteErrorBattle(size_t hash){
     stmnt->executeUpdate();
 
     return stmnt->getUpdateCount();
+}
+
+size_t MariaDBConnection::getTournamentsFromIPToday(const std::string& ip){
+    std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("select count(*) from tournament where ip = ? and dateRan = CURDATE()"));
+    stmnt->setString(1, ip);
+    std::unique_ptr<sql::ResultSet> results(stmnt->executeQuery());
+    results->next();
+    return results->getUInt64(1);
 }

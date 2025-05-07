@@ -41,7 +41,7 @@ public:
     std::optional<TournamentResults> getTournament(size_t id);
     bool tournamentExists(size_t id);
     bool userTrainerExists(size_t id, size_t user);
-    size_t createEmptyTournament(size_t user, const std::string& name);
+    size_t createEmptyTournament(size_t user, const std::string& name, const std::string& ip);
     size_t saveTrainer(const Trainer& trainer, size_t user, size_t tournament, size_t existingID=0);
     void saveTournament(const Tournament& tournament, size_t id);
     bool isTokenValid(const std::string& username, const std::string& token);
@@ -70,6 +70,7 @@ public:
     size_t getTotalErrorBattles();
     std::vector<ErrorBattle> getErrorBattles(uint32_t page, uint32_t count);
     bool deleteErrorBattle(size_t hash);
+    size_t getTournamentsFromIPToday(const std::string& ip);
 
     MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions, const std::string& port);
 private:

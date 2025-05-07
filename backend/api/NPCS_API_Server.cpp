@@ -19,6 +19,8 @@ using json = nlohmann::json;
 #define ALLOWED_HEADERS "Authorization,Content-Type,X-Requested-With,Set-Cookie"
 #define ALLOWED_METHODS "GET,POST,PUT,DELETE,OPTIONS"
 
+constexpr int MAX_ALLOWED_LOGIN_ATTEMPTS = 5;
+
 
 void preflightHandler(const HTTP_Request& req, HTTP_Response& res){
     res.headers["Access-Control-Allow-Methods"] = ALLOWED_METHODS;
@@ -60,8 +62,8 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user, const std::string& name){
-    size_t id = db.createEmptyTournament(user, name);
+size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user, const std::string& name, const std::string& ip){
+    size_t id = db.createEmptyTournament(user, name, ip);
     TournamentRequest request{
         .requestJson = json,
         .id = id,
@@ -210,6 +212,13 @@ NPCS_API_Server::NPCS_API_Server() :
     //Add API handlers 
     app.Add_Handler("POST", baseRoute, "/auth", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
+        if (!ipFailedLogins[req.ip].canTryAgain()){
+            response["message"] = "Too many failed logins from your IP. Please wait until trying again.";
+            response["success"] = false;
+            res.Set_Status(429);
+            res.Send(response.dump());
+            return;
+        }
         try {
             json body = json::parse(req.body);
             std::string problems = validateAuthRequestSchema(body);
@@ -221,11 +230,20 @@ NPCS_API_Server::NPCS_API_Server() :
             problems = db.createUserSession(body["username"], body["password"], token);
 
             if (problems != ""){
+                if (problems == "Invalid credentials"){
+                    std::unique_lock lk(ipFailedLoginsMutex);
+                    ipFailedLogins[req.ip].increment();
+                }
                 response["message"] = problems;
                 response["success"] = false;
                 res.Set_Status(401);
                 res.Send(response.dump());
                 return;
+            }
+            
+            {
+                std::unique_lock lk(ipFailedLoginsMutex);
+                ipFailedLogins[req.ip].reset();
             }
 
             res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
@@ -408,12 +426,21 @@ NPCS_API_Server::NPCS_API_Server() :
                 return;
             }
         }
+        size_t ipTournaments = db.getTournamentsFromIPToday(req.ip);
+        std::cout << ipTournaments << '\n';
+        if (ipTournaments >= maxTournamentsPerDay){
+            response["message"] = "Too many tournaments requested from your IP today. Please try again tomorrow.";
+            res.Set_Status(429);
+            res.Send(response.dump());
+            return;
+        }
+
         std::string tournamentName = "";
         if (request.contains("name")){
             tournamentName = tflib::trim(request["name"].get<std::string>());
         }
 
-        size_t id  = createTournamentRequest(request, userID, tournamentName);
+        size_t id  = createTournamentRequest(request, userID, tournamentName, req.ip);
 
         // Send back tournament ID
         response["success"] = true;
@@ -877,7 +904,18 @@ NPCS_API_Server::NPCS_API_Server() :
             return;
         }
 
+        if (ipSignUps[req.ip] >= maxSignUpsPerDay){
+            response["message"] = "Too many sign-ups from your IP today. Please try again tomorrow.";
+            res.Set_Status(429);
+            res.Send(response.dump());
+            return;
+        }
+
         size_t userID = db.createUser(username, password);
+
+        ipSignUpsMutex.lock();
+        ipSignUps[req.ip]++;
+        ipSignUpsMutex.unlock();
 
         response["success"] = true;
         response["id"] = userID;
@@ -1208,4 +1246,23 @@ std::string NPCS_API_Server::getDomainFromURL(){
     size_t end = websiteURL.find(':', start);
     size_t size = end - start;
     return websiteURL.substr(start, size);
+}
+
+bool FailedLoginState::canTryAgain(){
+    return std::chrono::high_resolution_clock::now() >= nextAllowed;
+}
+void FailedLoginState::increment(){
+    std::unique_lock lk(mut);
+    this->numFails++;
+    std::cout << "incrementd failed login " << numFails << '\n';
+    int excessAttempts = numFails - MAX_ALLOWED_LOGIN_ATTEMPTS;
+    if (excessAttempts > 0){
+        nextAllowed = std::chrono::high_resolution_clock::now() + std::chrono::minutes(1 * excessAttempts);
+    }
+}
+
+void FailedLoginState::reset(){
+    std::unique_lock lk(mut);
+    nextAllowed = std::chrono::high_resolution_clock::now();
+    numFails = 0;
 }
