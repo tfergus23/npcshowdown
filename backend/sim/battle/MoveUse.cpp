@@ -25,11 +25,17 @@ void MoveUse::doMove(MoveUse* opponentMove){
         return;
     }
     if (logUsed){
-        if (move->contact){
-            battle->logMeleeAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
+        if (move->targetType == TargetType::OPPONENT){
+            if (move->contact){
+                battle->logMeleeAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
+            }
+            else{
+                battle->logRangedAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
+            }
         }
         else{
-            battle->logRangedAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
+            //TODO: Maybe make this it's own event
+            battle->logMessage(user->nickname + " used " + move->name + "!");
         }
     } 
     if (willFail){

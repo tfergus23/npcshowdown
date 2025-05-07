@@ -1086,7 +1086,7 @@ NPCS_API_Server::NPCS_API_Server() :
         battle.simulate();
 
         response["success"] = true;
-        response["data"] = battle.textLog();
+        response["data"] = battle.textLog() + "\n" + battle.errorMessage;
         response["message"] = "OK";
         res.Send(response.dump());
     });
