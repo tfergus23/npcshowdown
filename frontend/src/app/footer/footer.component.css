@@ -1,7 +1,6 @@
 footer{
   height: 100px;  
   background-color: var(--dark-background-color);
-  margin-top: auto;
 }
 
 .column{

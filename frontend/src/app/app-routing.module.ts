@@ -13,6 +13,7 @@ import { UserViewComponent } from './user-view/user-view.component';
 import { ResultsLookupComponent } from './results-lookup/results-lookup.component';
 import { AboutComponent } from './about/about.component';
 import { AdminViewComponent } from './admin-view/admin-view.component';
+import { BattleViewerComponent } from './battle-viewer/battle-viewer.component';
 
 const routes: Routes = [
   {path: "", component: HomeComponent},
@@ -29,6 +30,7 @@ const routes: Routes = [
     {path: "admin", component: AdminViewComponent},
   ]},
   {path: "signup", component: SignUpComponent},
+  {path: "battle-viewer", component: BattleViewerComponent},
 ];
 
 @NgModule({
