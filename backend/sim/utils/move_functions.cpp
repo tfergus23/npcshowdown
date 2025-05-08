@@ -19,6 +19,7 @@ int dealDamage(int damage, MoveUse* moveUse){
         if (damage >= moveUse->target->currentHealth) damage = moveUse->canKill ? moveUse->target->currentHealth : moveUse->target->currentHealth -1;
         moveUse->target->currentHealth -= damage;
         if (damage > 0) moveUse->battle->logDamageTaken(moveUse->target->nickname + " took " + std::to_string(damage) + " damage!", {.recipientIsPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .damage = damage});
+        moveUse->battle->killTheDead();
     }
     return damage;
 }
@@ -61,7 +62,7 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
             else if (dealtDamage.typeMod == NOT_VERY_EFFECTIVE) moveUse->battle->logMessage("It's not very effective...");
             else if (dealtDamage.typeMod == BARELY_EFFECTIVE) moveUse->battle->logMessage("It's barely effective...");
             else if (dealtDamage.typeMod == 1.0f);
-            else moveUse->battle->assertTrue(false, "Looks like we got a rounding error on our hands boys: " + std::to_string(dealtDamage.typeMod));
+            else moveUse->battle->assertTrue(false, "Unhandled type effectiveness: " + std::to_string(dealtDamage.typeMod));
         }
         if (dealtDamage.crit){
             moveUse->battle->logMessage("Critical hit!");
@@ -101,13 +102,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
         return changeStatModifier(Stat::SPEED, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
     case SecondaryEffect::CONFUSE:
     {
-        if (moveUse->target->hasEffect(&EFFECT_CONFUSED)) {
-            return false;
-        }
-        bool success = applyEffect(&EFFECT_CONFUSED, moveUse);
-        if (success) {
-            moveUse->battle->logApplyVolatile(moveUse->target->nickname + " became confused!", {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = &EFFECT_CONFUSED});
-        }
+        bool success = applyEffect(&EFFECT_CONFUSED, moveUse, false);
         return success;
     }
     case SecondaryEffect::FLINCH:
@@ -191,14 +186,13 @@ void givePercentHealing(float percent, Pokemon* recipient, Battle* battle) {
 void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle) {
     giveHealing(healing, recipient, battle);
 }
-bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
-    //TODO: Why are these separate if blocks?
+bool applyStatus(const Status* status, MoveUse* moveUse, bool logFailure) {
     if (moveUse->target->getStatus() != &STATUS_NONE) {
-        if (logTypeFailure) moveUse->battle->logMessage("But it failed!");
+        if (logFailure) moveUse->battle->logMessage("But it failed!");
         return false;
     }
     if (!moveUse->canApplyStatus || moveUse->target->isDead) {
-        if (!moveUse->loggedFailure) {
+        if (!moveUse->loggedFailure && logFailure) {
             moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
@@ -208,24 +202,24 @@ bool applyStatus(const Status* status, MoveUse* moveUse, bool logTypeFailure) {
         return false;
     }
     if (status == &STATUS_BURN && moveUse->target->isType(Type::FIRE)) {
-        if (logTypeFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
+        if (logFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
     if ((status == &STATUS_POISON || status == &STATUS_BAD_POISON) && (moveUse->target->isType(Type::POISON) || moveUse->target->isType(Type::STEEL))) {
-        if (logTypeFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
+        if (logFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
     if (status == &STATUS_PARALYSIS && moveUse->target->isType(Type::ELECTRIC)) {
-        if (logTypeFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
+        if (logFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
     moveUse->target->applyStatus(status);
     moveUse->battle->logApplyStatus(moveUse->target->nickname + status->was, {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .status = status});
     return true;
 }
-bool applyEffect(const Effect* effect, MoveUse* moveUse) {
-    if (!moveUse->canApplyStatus || moveUse->target->isDead) {
-        if (!moveUse->loggedFailure) {
+bool applyEffect(const Effect* effect, MoveUse* moveUse, bool logFailure) {
+    if (!moveUse->canApplyStatus || moveUse->target->isDead || moveUse->target->hasEffect(effect)) {
+        if (logFailure && !moveUse->loggedFailure) {
             moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }

@@ -3,7 +3,10 @@
 
 const Effect EFFECT_NONE;
 
-const Effect EFFECT_CONFUSED;
+const Effect EFFECT_CONFUSED = {
+    .name = "Confused",
+    .was = " became confused!"
+};
 
 const Effect EFFECT_ROOST = {
     .observer = {

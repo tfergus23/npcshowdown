@@ -186,8 +186,8 @@ const Move MOVE_FLAMETHROWER = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamage(myMove);
-        applySecondaryEffect(myMove, opponentMove);
+        int damage = dealDirectDamage(myMove);
+        if (damage > 0) applySecondaryEffect(myMove, opponentMove);
     }
 };
 
@@ -204,7 +204,10 @@ const Move MOVE_CONFUSION_HIT = {
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
-    .id = 0
+    .id = 0,
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        dealDirectDamage(myMove);
+    }
 };
 
 const std::unordered_map<std::string, const Move*> moves = {
