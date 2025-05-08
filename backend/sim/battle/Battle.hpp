@@ -55,6 +55,7 @@ struct HealingData {
 
 struct PokemonActionData{
     bool isPlayer1 = true;
+    int newPokeIndex = -1;
 };
 
 struct ApplyStatusData {
@@ -182,7 +183,7 @@ public:
     //void raiseEndOfTurn();
     void raiseEvent(Event event, const EventArgs& args);
     void killTheDead();
-    void setActivePokemon(bool isPlayer1, Pokemon* newPokemon);
+    void setActivePokemon(bool isPlayer1, int newPokeIndex);
     void simulate();
 
     MoveUse m_Turn[2];

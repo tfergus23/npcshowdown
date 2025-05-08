@@ -18,8 +18,8 @@ m_Generator{std::default_random_engine(m_Seed)}
     for (int i = 0; i < trainer2.teamBlueprint.size(); i++){
         player2Team[i] = Pokemon(&trainer2.teamBlueprint[i], this);
     }
-    setActivePokemon(IS_PLAYER_ONE, &(player1Team[0]));
-    setActivePokemon(IS_PLAYER_TWO, &(player2Team[0]));
+    setActivePokemon(IS_PLAYER_ONE, 0);
+    setActivePokemon(IS_PLAYER_TWO, 0);
     setPokemonHandlerOrder();
     raiseEvent(Event::POKEMON_ENTER, EventArgs(m_FasterPokemon, nullptr));
     raiseEvent(Event::POKEMON_ENTER, EventArgs(m_SlowerPokemon, nullptr));
@@ -115,7 +115,7 @@ Pokemon* Battle::switchPokemon(bool isPlayer1){
     Pokemon* newPoke = &team[newPokePosition];
     assertTrue(currentPoke != newPoke, "Tried to switch in a Pokemon that is already in.");
     raiseEvent(Event::POKEMON_SWITCH, EventArgs(currentPoke, nullptr));
-    setActivePokemon(isPlayer1, newPoke);
+    setActivePokemon(isPlayer1, newPokePosition);
     raiseEvent(Event::POKEMON_ENTER, EventArgs(newPoke, nullptr));
     if (m_Turn[1].move != &MOVE_SWITCH && m_Turn[1].target == currentPoke) m_Turn[1].target = newPoke;
     newPokePosition = -1;
@@ -281,14 +281,16 @@ void Battle::setPokemonHandlerOrder(){
     }
 }
 
-void Battle::setActivePokemon(bool isPlayer1, Pokemon* newPokemon){
+void Battle::setActivePokemon(bool isPlayer1, int newPokeIndex){
     if (isPlayer1){
+        Pokemon* newPokemon = &player1Team[newPokeIndex];
         player1ActivePokemon = newPokemon;
-        logPokemonEnter(m_Player1.name + " sent out " + newPokemon->nickname + "!", {.isPlayer1 = isPlayer1});
+        logPokemonEnter(m_Player1.name + " sent out " + newPokemon->nickname + "!", {.isPlayer1 = isPlayer1, .newPokeIndex = newPokeIndex});
     }
     else{
+        Pokemon* newPokemon = &player2Team[newPokeIndex];
         player2ActivePokemon = newPokemon;
-        logPokemonEnter(m_Player2.name + " sent out " + newPokemon->nickname + "!", {.isPlayer1 = isPlayer1});
+        logPokemonEnter(m_Player2.name + " sent out " + newPokemon->nickname + "!", {.isPlayer1 = isPlayer1, .newPokeIndex = newPokeIndex});
     }
 }
 
@@ -375,11 +377,12 @@ json LogEvent::toJSON(){
         data["damage"] = m_data.damage.damage;
         break;
     case LogEventType::HEALING_RECEIVED:
-        data["recipientIsPlayer1"] = m_data.damage.recipientIsPlayer1;
+        data["recipientIsPlayer1"] = m_data.healing.recipientIsPlayer1;
         data["healing"] = m_data.healing.healing;
         break;
     case LogEventType::POKEMON_ENTER:
         data["isPlayer1"] = m_data.pokemonAction.isPlayer1;
+        data["newPokeIndex"] = m_data.pokemonAction.newPokeIndex;
         break;
     case LogEventType::POKEMON_LEAVE:
         data["isPlayer1"] = m_data.pokemonAction.isPlayer1;
