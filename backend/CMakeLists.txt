@@ -80,10 +80,11 @@ if (NPCS_BUILD_TESTS)
     # For Windows: Prevent overriding the parent project's compiler/linker settings
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
-    add_executable(npcs_tests ${PROJECT_SOURCE_DIR}/tests/tests.cpp)
+    add_executable(npcs_tests ${PROJECT_SOURCE_DIR}/tests/tests.cpp  ${PROJECT_SOURCE_DIR}/api/api_utils.cpp)
+    file(COPY ${PROJECT_SOURCE_DIR}/tests/sim/test_battles DESTINATION ${CMAKE_BINARY_DIR})
     
     add_test(NAME Tests COMMAND npcs_tests)
-    target_link_libraries(npcs_tests npcs_sim gtest_main)
+    target_link_libraries(npcs_tests npcs_sim gtest_main OpenSSL::Crypto)
 endif()
 
 include_directories(
