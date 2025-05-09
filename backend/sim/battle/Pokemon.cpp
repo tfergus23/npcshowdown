@@ -36,7 +36,7 @@ battle{battle}
         evs[i] = blueprint->evs[i];
         ivs[i] = blueprint->ivs[i];
     }
-    //TODO: Set species data
+
     currentType[0] = species->type[0];
     currentType[1] = species->type[1];
 
