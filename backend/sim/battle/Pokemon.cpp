@@ -79,7 +79,7 @@ battle{battle}
             }
         }
         else{
-            m_Gender = genders.at(blueprint->gender);
+            m_Gender = stringToGender.at(blueprint->gender);
         }
         break;
     }
@@ -139,7 +139,7 @@ ObserverState* Pokemon::getEffectState(const Effect* effect){
     return &m_Effects[effect];
 }
 
-Gender Pokemon::getGender(){
+Gender Pokemon::getGender() const{
     return m_Gender;
 }
 

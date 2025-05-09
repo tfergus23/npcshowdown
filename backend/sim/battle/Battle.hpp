@@ -36,7 +36,8 @@ enum class LogEventType {
     APPLY_FIELD_EFFECT,
     WEATHER_CHANGE,
     STAT_CHANGE,
-    DEBUG_MESSAGE
+    DEBUG_MESSAGE,
+    _COUNT
 };
 
 struct AttackData{

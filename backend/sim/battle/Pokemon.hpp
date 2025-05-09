@@ -29,7 +29,7 @@ class Pokemon{
         const Ability* getBaseAbility();
         const Item* getBaseItem();
         std::array<const Move*,4> baseMoves;
-        Gender getGender();
+        Gender getGender() const;
         Nature nature;
 
 

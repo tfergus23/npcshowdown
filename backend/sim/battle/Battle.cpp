@@ -326,7 +326,7 @@ const char* BattleAssertionFailedException::what() const noexcept {
     return m_Message.c_str();
 }
 
-static const char* eventTypeStrings[] = {
+static const char* const eventTypeStrings[] = {
     "MESSAGE",
     "RANGED_ATTACK",
     "MELEE_ATTACK",
@@ -343,8 +343,14 @@ static const char* eventTypeStrings[] = {
     "DEBUG_MESSAGE"
 };
 
+template <typename T, std::size_t N>
+static constexpr std::size_t arrayLength(const T (&)[N]) noexcept {
+    return N;
+}
+static_assert(arrayLength(eventTypeStrings) == (int) LogEventType::_COUNT, "Missing event type string!");
+
 static const char* getEventTypeString(LogEventType type){
-    assert((int)type <= (int)LogEventType::DEBUG_MESSAGE);
+    assert((int)type < (int)LogEventType::_COUNT);
     return eventTypeStrings[(int)type];
 }
 
@@ -355,6 +361,7 @@ const std::string& LogEvent::message(){
     return m_message;
 }
 const LogEventData& LogEvent::data(){
+    assert(m_type != LogEventType::MESSAGE && m_type != LogEventType::DEBUG_MESSAGE && "Tried to access log event data for message event. There isn't any. Don't do this.");
     return m_data;
 }
 json LogEvent::toJSON(){
@@ -418,42 +425,16 @@ json LogEvent::toJSON(){
     return result;
 }
 
-LogEvent::LogEvent(LogEventType type, const std::string& message) : m_type{type}, m_message{message}{}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const AttackData& data) : m_type{type}, m_message{message}{
-    this->m_data.attack = data;
-}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const DamageData& data) : m_type{type}, m_message{message}{
-    this->m_data.damage = data;
-}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const HealingData& data) : m_type{type}, m_message{message}{
-    this->m_data.healing = data;
-}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const PokemonActionData& data) : m_type{type}, m_message{message}{
-    this->m_data.pokemonAction = data;
-}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyStatusData& data) : m_type{type}, m_message{message}{
-    this->m_data.applyStatus = data;
-}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyVolatileData& data) : m_type{type}, m_message{message}{
-    this->m_data.applyVolatile = data;
-}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const StatChangeData& data) : m_type{type}, m_message{message}{
-    this->m_data.statChange = data;
-}
-
-LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyFieldEffectData& data) : m_type{type}, m_message{message}{
-    this->m_data.applyFieldEffect = data;
-}
-LogEvent::LogEvent(LogEventType type, const std::string& message, const WeatherChangeData& data) : m_type{type}, m_message{message}{
-    this->m_data.weatherChange = data;
-}
+LogEvent::LogEvent(LogEventType type, const std::string& message) :                                     m_type{type}, m_message{message}{}
+LogEvent::LogEvent(LogEventType type, const std::string& message, const AttackData& data) :             m_type{type}, m_message{message}{ this->m_data.attack = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const DamageData& data) :             m_type{type}, m_message{message}{ this->m_data.damage = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const HealingData& data) :            m_type{type}, m_message{message}{ this->m_data.healing = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const PokemonActionData& data) :      m_type{type}, m_message{message}{ this->m_data.pokemonAction = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyStatusData& data) :        m_type{type}, m_message{message}{ this->m_data.applyStatus = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyVolatileData& data) :      m_type{type}, m_message{message}{ this->m_data.applyVolatile = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const StatChangeData& data) :         m_type{type}, m_message{message}{ this->m_data.statChange = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyFieldEffectData& data) :   m_type{type}, m_message{message}{ this->m_data.applyFieldEffect = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const WeatherChangeData& data) :      m_type{type}, m_message{message}{ this->m_data.weatherChange = data; }
 
 void Battle::logMessage(std::string_view message){
     if (!doLogging) return;
@@ -520,6 +501,8 @@ static json trainerEventJson(const TrainerInfo& trainer, const std::array<Pokemo
         if (poke.empty) continue;
         json data;
         data["species"] = poke.species->name;
+        data["level"] = poke.level;
+        data["gender"] = genderToString.at(poke.getGender());
         data["maxHealth"] = poke.getStatRaw(Stat::HP);
         teamJSON.push_back(data);
     }
