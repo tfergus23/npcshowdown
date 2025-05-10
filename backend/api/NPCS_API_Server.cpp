@@ -219,36 +219,10 @@ NPCS_API_Server::NPCS_API_Server() :
             res.Send(response.dump());
             return;
         }
+        json body;
         try {
-            json body = json::parse(req.body);
-            std::string problems = validateAuthRequestSchema(body);
-            if (problems != ""){
-                sendProblemResponse(problems, response, res);
-                return;
-            }
-            std::string token;
-            problems = db.createUserSession(body["username"], body["password"], token);
-
-            if (problems != ""){
-                if (problems == "Invalid credentials"){
-                    std::unique_lock lk(ipFailedLoginsMutex);
-                    ipFailedLogins[req.ip].increment();
-                }
-                response["message"] = problems;
-                response["success"] = false;
-                res.Set_Status(401);
-                res.Send(response.dump());
-                return;
-            }
-
-            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
-
-            response["success"] = true;
-            response["message"] = "OK";
-            response["token"] = token;
-            res.Send(response.dump());
-
-        } 
+            body = json::parse(req.body);
+        }
         catch (const json::parse_error& e){
             response["success"] = false;
             response["message"] = "Bad Request: " + std::string(e.what());
@@ -256,6 +230,32 @@ NPCS_API_Server::NPCS_API_Server() :
             res.Send(response.dump());
             return;
         }
+        std::string problems = validateAuthRequestSchema(body);
+        if (problems != ""){
+            sendProblemResponse(problems, response, res);
+            return;
+        }
+        std::string token;
+        problems = db.createUserSession(body["username"], body["password"], token);
+
+        if (problems != ""){
+            if (problems == "Invalid credentials"){
+                std::unique_lock lk(ipFailedLoginsMutex);
+                ipFailedLogins[req.ip].increment();
+            }
+            response["message"] = problems;
+            response["success"] = false;
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
+
+        res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
+
+        response["success"] = true;
+        response["message"] = "OK";
+        response["token"] = token;
+        res.Send(response.dump());
     });
 
     app.Add_Handler("GET", authorizedRoute, "/", [=, this](const HTTP_Request& req, HTTP_Response& res){
