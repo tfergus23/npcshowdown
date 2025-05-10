@@ -241,11 +241,6 @@ NPCS_API_Server::NPCS_API_Server() :
                 return;
             }
 
-            {
-                std::unique_lock lk(ipFailedLoginsMutex);
-                ipFailedLogins[req.ip].reset();
-            }
-
             res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
 
             response["success"] = true;
@@ -1249,12 +1244,15 @@ std::string NPCS_API_Server::getDomainFromURL(){
 }
 
 bool FailedLoginState::canTryAgain(){
+    int excessAttempts = numFails - MAX_ALLOWED_LOGIN_ATTEMPTS;
+    if (excessAttempts > 0 && std::chrono::high_resolution_clock::now() >= nextAllowed + std::chrono::minutes(30)){
+        reset();
+    }
     return std::chrono::high_resolution_clock::now() >= nextAllowed;
 }
 void FailedLoginState::increment(){
     std::unique_lock lk(mut);
     this->numFails++;
-    std::cout << "incrementd failed login " << numFails << '\n';
     int excessAttempts = numFails - MAX_ALLOWED_LOGIN_ATTEMPTS;
     if (excessAttempts > 0){
         nextAllowed = std::chrono::high_resolution_clock::now() + std::chrono::minutes(1 * excessAttempts);

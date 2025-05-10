@@ -16,6 +16,7 @@ typedef std::chrono::time_point<std::chrono::high_resolution_clock> TimePoint;
 struct FailedLoginState {
     uint32_t numFails = 0;
     TimePoint nextAllowed = std::chrono::high_resolution_clock::now();
+    TimePoint nextReset = std::chrono::high_resolution_clock::now();
 
     bool canTryAgain();
     void increment();
