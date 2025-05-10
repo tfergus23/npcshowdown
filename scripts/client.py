@@ -36,11 +36,11 @@ def bad_auth_request():
 def get_admin_token():
     body = {
         'username': 'admin',
-        'password': 'admin'
+        'password': 'adminn'
     }
     res = requests.post(f'{url}/auth', json=body)
     print(res.text)
 
 #flood_with_tournaments()
-#get_admin_token()
-bad_auth_request()
+get_admin_token()
+#bad_auth_request()

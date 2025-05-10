@@ -101,7 +101,7 @@ int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID, int thre
 static const std::string TOKEN_COOKIE_START = "token=";
 static const std::string BEARER_AUTH_SCHEME = "Bearer ";
 
-std::string getTokenFromRequest(const HTTP_Request& req, std::string& error){
+static std::string getTokenFromRequest(const HTTP_Request& req, std::string& error){
     if (req.Has_Header("Cookie")){
         std::stringstream cookieHeader(req.Get_Header("Cookie"));
         for (std::string cookie; std::getline(cookieHeader, cookie, ';');){
@@ -235,13 +235,17 @@ NPCS_API_Server::NPCS_API_Server() :
     //Add API handlers 
     app.Add_Handler("POST", baseRoute, "/auth", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
-        if (!ipFailedLogins[req.ip].canTryAgain()){
-            response["message"] = "Too many failed logins from your IP. Please wait until trying again.";
-            response["success"] = false;
-            res.Set_Status(429);
-            res.Send(response.dump());
-            return;
+        {
+            std::unique_lock lk(ipFailedLoginsMutex);
+            if (!ipFailedLogins[req.ip].canTryAgain()){
+                response["message"] = "Too many failed logins from your IP. Please wait before trying again.";
+                response["success"] = false;
+                res.Set_Status(429);
+                res.Send(response.dump());
+                return;
+            }
         }
+
         json body;
         try {
             body = json::parse(req.body);
