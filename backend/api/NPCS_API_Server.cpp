@@ -103,7 +103,11 @@ const std::string TOKEN_COOKIE_START = "token=";
 std::string getTokenFromRequest(const HTTP_Request& req){
     if (req.headers.contains("Cookie")){
         const std::string& cookieHeader = req.headers.at("Cookie");
-        size_t cookieBegin = cookieHeader.find(TOKEN_COOKIE_START) + TOKEN_COOKIE_START.size();
+        size_t tokenStartPos = cookieHeader.find(TOKEN_COOKIE_START);
+        if (tokenStartPos == std::string::npos){
+            return "";
+        }
+        size_t cookieBegin = tokenStartPos + TOKEN_COOKIE_START.size();
         return cookieHeader.substr(cookieBegin, 32);
     }
     else if (req.headers.contains("Authorization")){
