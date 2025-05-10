@@ -46,7 +46,7 @@ public:
     void saveTournament(const Tournament& tournament, size_t id);
     bool isTokenValid(const std::string& username, const std::string& token);
     std::string createUserSession(const std::string& username, const std::string& password, std::string& outToken);
-    void deleteUserSession(const std::string& username, const std::string & token);
+    bool deleteUserSession(const std::string& username, const std::string & token);
     void updateTokenLastUsed(const std::string& username, const std::string& token);
     size_t userIdFromName(const std::string& username);
     std::optional<User> getUserData(const std::string& username);

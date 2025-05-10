@@ -405,13 +405,14 @@ std::string MariaDBConnection::createUserSession(const std::string& username, co
     return "";
 }
 
-void MariaDBConnection::deleteUserSession(const std::string& username, const std::string & token){
+bool MariaDBConnection::deleteUserSession(const std::string& username, const std::string & token){
     size_t userID = userIdFromName(username);
     std::unique_ptr<sql::PreparedStatement> deleteSessionStmnt(conn->prepareStatement("delete from user_session where user = ? and token = ?"));
     deleteSessionStmnt->setUInt64(1, userID);
     deleteSessionStmnt->setString(2, token);
 
-    delete deleteSessionStmnt->executeQuery();
+    deleteSessionStmnt->execute();
+    return deleteSessionStmnt->getUpdateCount();
 }
 
 size_t MariaDBConnection::userIdFromName(const std::string& username){

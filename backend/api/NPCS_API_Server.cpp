@@ -98,22 +98,33 @@ int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID, int thre
     return -1;
 }
 
-const std::string TOKEN_COOKIE_START = "token=";
+static const std::string TOKEN_COOKIE_START = "token=";
+static const std::string BEARER_AUTH_SCHEME = "Bearer ";
 
-std::string getTokenFromRequest(const HTTP_Request& req){
-    if (req.headers.contains("Cookie")){
-        const std::string& cookieHeader = req.headers.at("Cookie");
-        size_t tokenStartPos = cookieHeader.find(TOKEN_COOKIE_START);
-        if (tokenStartPos == std::string::npos){
+std::string getTokenFromRequest(const HTTP_Request& req, std::string& error){
+    if (req.Has_Header("Cookie")){
+        std::stringstream cookieHeader(req.Get_Header("Cookie"));
+        for (std::string cookie; std::getline(cookieHeader, cookie, ';');){
+            cookie = tflib::trim(cookie);
+            if (cookie.find(TOKEN_COOKIE_START) != 0){
+                continue;
+            }
+            return cookie.substr(TOKEN_COOKIE_START.size());
+        }
+        error = "'token' cookie not supplied.";
+        return "";
+    }
+    else if (req.Has_Header("Authorization")){
+        const std::string& authHeader = req.Get_Header("Authorization");
+        size_t bearerPos = authHeader.find(BEARER_AUTH_SCHEME);
+        if (bearerPos != 0){
+            error = "Invalid authentication scheme. Only Bearer is supported. (ie. 'Bearer <token>')";
             return "";
         }
-        size_t cookieBegin = tokenStartPos + TOKEN_COOKIE_START.size();
-        return cookieHeader.substr(cookieBegin, 32);
-    }
-    else if (req.headers.contains("Authorization")){
-        return req.headers.at("Authorization");
+        return authHeader.substr(BEARER_AUTH_SCHEME.size());
     }
     else{
+        error = "No 'Cookie' or 'Authorization' header provided.";
         return "";
     }
 }
@@ -176,7 +187,15 @@ NPCS_API_Server::NPCS_API_Server() :
         response["success"] = false;
         std::string username = req.path_params.at("username");
 
-        std::string token = getTokenFromRequest(req);
+        std::string error;
+        std::string token = getTokenFromRequest(req, error);
+        if (error != ""){
+            response["message"] = error;
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return false;
+        }
+
         if (db.isTokenValid(username, token)){
             db.updateTokenLastUsed(username, token);
             res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
@@ -289,8 +308,23 @@ NPCS_API_Server::NPCS_API_Server() :
     });
 
     app.Add_Handler("DELETE", authorizedRoute, "/logout", [=, this](const HTTP_Request& req, HTTP_Response& res){
-        db.deleteUserSession(req.path_params.at("username"), getTokenFromRequest(req));
         json response;
+        response["success"] = false;
+        std::string error;
+        std::string token = getTokenFromRequest(req, error);
+        if (error != ""){
+            response["message"] = error;
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
+        bool success = db.deleteUserSession(req.path_params.at("username"), token);
+        if (!success){
+            response["message"] = "Unauthorized: Invalid token.";
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
         response["success"] = true;
         response["message"] = "OK";
         res.Send(response.dump());
@@ -413,7 +447,14 @@ NPCS_API_Server::NPCS_API_Server() :
         size_t userID = 0;
         if (request.contains("user")){
             std::string username = request["user"].get<std::string>();
-            std::string token = getTokenFromRequest(req);
+            std::string error;
+            std::string token = getTokenFromRequest(req, error);
+            if (error != ""){
+                response["message"] = error;
+                res.Set_Status(401);
+                res.Send(response.dump());
+                return;
+            }
             if (db.isTokenValid(username, token)){
                 db.updateTokenLastUsed(username, token);
                 userID = db.userIdFromName(username);

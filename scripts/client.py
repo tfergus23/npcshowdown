@@ -30,7 +30,7 @@ def flood_with_tournaments():
         thread.join()
 
 def bad_auth_request():
-    res = requests.get(f'{url}/user/admin', headers={"Authorization": "hello plz let me in"})
+    res = requests.get(f'{url}/user/admin/trainers', headers={})
     print(res.text)
 
 def get_admin_token():
@@ -41,4 +41,6 @@ def get_admin_token():
     res = requests.post(f'{url}/auth', json=body)
     print(res.text)
 
-flood_with_tournaments()
+#flood_with_tournaments()
+#get_admin_token()
+bad_auth_request()
