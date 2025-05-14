@@ -101,31 +101,37 @@ int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID, int thre
 static const std::string TOKEN_COOKIE_START = "token=";
 static const std::string BEARER_AUTH_SCHEME = "Bearer ";
 
-static std::string getTokenFromRequest(const HTTP_Request& req, std::string& error){
+static Credentials getCredentialsFromRequest(const HTTP_Request& req){
+    Credentials result;
     if (req.Has_Header("Cookie")){
+        result.type = ClientType::BROWSER;
         std::stringstream cookieHeader(req.Get_Header("Cookie"));
         for (std::string cookie; std::getline(cookieHeader, cookie, ';');){
             cookie = tflib::trim(cookie);
             if (cookie.find(TOKEN_COOKIE_START) != 0){
                 continue;
             }
-            return cookie.substr(TOKEN_COOKIE_START.size());
+            result.token = cookie.substr(TOKEN_COOKIE_START.size());
+            return result;
         }
-        error = "'token' cookie not supplied.";
-        return "";
+        result.error = "'token' cookie not supplied.";
+        return result;
     }
     else if (req.Has_Header("Authorization")){
+        result.type = ClientType::SCRIPT;
         const std::string& authHeader = req.Get_Header("Authorization");
         size_t bearerPos = authHeader.find(BEARER_AUTH_SCHEME);
         if (bearerPos != 0){
-            error = "Invalid authentication scheme. Only Bearer is supported. (ie. 'Bearer <token>')";
-            return "";
+            result.error = "Invalid authentication scheme. Only Bearer is supported. (ie. 'Bearer <token>')";
+            return result;
         }
-        return authHeader.substr(BEARER_AUTH_SCHEME.size());
+        result.token = authHeader.substr(BEARER_AUTH_SCHEME.size());
+        return result;
     }
     else{
-        error = "No 'Cookie' or 'Authorization' header provided.";
-        return "";
+        result.type = ClientType::UNKNOWN;
+        result.error = "No 'Cookie' or 'Authorization' header provided.";
+        return result;
     }
 }
 
@@ -187,18 +193,17 @@ NPCS_API_Server::NPCS_API_Server() :
         response["success"] = false;
         std::string username = req.path_params.at("username");
 
-        std::string error;
-        std::string token = getTokenFromRequest(req, error);
-        if (error != ""){
-            response["message"] = error;
+        auto creds = getCredentialsFromRequest(req);
+        if (creds.error != ""){
+            response["message"] = creds.error;
             res.Set_Status(401);
             res.Send(response.dump());
             return false;
         }
 
-        if (db.isTokenValid(username, token)){
-            db.updateTokenLastUsed(username, token);
-            res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
+        if (db.isTokenValid(username, creds.token)){
+            db.updateTokenLastUsed(username, creds.token);
+            if (creds.type == ClientType::BROWSER) res.headers["Set-Cookie"] = "token=" + creds.token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
             return true;
         }
         else{
@@ -314,15 +319,14 @@ NPCS_API_Server::NPCS_API_Server() :
     app.Add_Handler("DELETE", authorizedRoute, "/logout", [=, this](const HTTP_Request& req, HTTP_Response& res){
         json response;
         response["success"] = false;
-        std::string error;
-        std::string token = getTokenFromRequest(req, error);
-        if (error != ""){
-            response["message"] = error;
+        auto creds = getCredentialsFromRequest(req);
+        if (creds.error != ""){
+            response["message"] = creds.error;
             res.Set_Status(401);
             res.Send(response.dump());
             return;
         }
-        bool success = db.deleteUserSession(req.path_params.at("username"), token);
+        bool success = db.deleteUserSession(req.path_params.at("username"), creds.token);
         if (!success){
             response["message"] = "Unauthorized: Invalid token.";
             res.Set_Status(401);
@@ -451,16 +455,15 @@ NPCS_API_Server::NPCS_API_Server() :
         size_t userID = 0;
         if (request.contains("user")){
             std::string username = request["user"].get<std::string>();
-            std::string error;
-            std::string token = getTokenFromRequest(req, error);
-            if (error != ""){
-                response["message"] = error;
+            auto creds = getCredentialsFromRequest(req);
+            if (creds.error != ""){
+                response["message"] = creds.error;
                 res.Set_Status(401);
                 res.Send(response.dump());
                 return;
             }
-            if (db.isTokenValid(username, token)){
-                db.updateTokenLastUsed(username, token);
+            if (db.isTokenValid(username, creds.token)){
+                db.updateTokenLastUsed(username, creds.token);
                 userID = db.userIdFromName(username);
             }
             else{

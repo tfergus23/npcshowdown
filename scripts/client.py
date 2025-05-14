@@ -36,11 +36,20 @@ def bad_auth_request():
 def get_admin_token():
     body = {
         'username': 'admin',
-        'password': 'adminn'
+        'password': 'admin'
     }
     res = requests.post(f'{url}/auth', json=body)
     print(res.text)
 
+def try_admin_route():
+
+    res = requests.get(f'{url}/user/toad/errors', headers={'Authorization': 'Bearer 8f12233faf3888bee0aa793f64c45fe8'})
+    print (res.text)
+    res = requests.get(f'{url}/user/admin/errors?page=0&count=10', headers={'Authorization': 'Bearer 59f5b236b5a8b40fdc8ec011f223520a'})
+    print(res.headers)
+    print (res.text)
+
 #flood_with_tournaments()
-get_admin_token()
+try_admin_route()
 #bad_auth_request()
+#get_admin_token()

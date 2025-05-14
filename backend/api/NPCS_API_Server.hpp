@@ -26,6 +26,18 @@ private:
 
 };
 
+enum class ClientType : uint8_t{
+    UNKNOWN = 0,
+    SCRIPT,
+    BROWSER
+};
+
+struct Credentials{
+    std::string token;
+    std::string error;
+    ClientType type = ClientType::UNKNOWN;
+};
+
 class NPCS_API_Server{
 public:
     NPCS_API_Server();

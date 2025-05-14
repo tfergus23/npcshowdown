@@ -16,7 +16,7 @@ constexpr int MAX_TRAINER_NAME_SIZE     =    16;
 constexpr int MAX_POKEMON_NAME_SIZE     =    16;
 constexpr int MAX_TOURNAMENT_NAME_SIZE  =    32;
 constexpr int MAX_USER_NAME_SIZE        =    16;
-constexpr int MIN_PASSWORD_LENGTH       =    8;
+constexpr int MIN_PASSWORD_LENGTH       =     8;
 
 static const std::hash<std::string> hasher;
 static const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
