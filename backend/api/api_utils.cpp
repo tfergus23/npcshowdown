@@ -12,10 +12,14 @@
 #include <openssl/evp.h>
 #include "tflib/strings.h"
 
-const int MAX_NAME_SIZE = 16;
-const int MIN_PASSWORD_LENGTH = 8;
-const std::hash<std::string> hasher;
-const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
+constexpr int MAX_TRAINER_NAME_SIZE     =    16;
+constexpr int MAX_POKEMON_NAME_SIZE     =    16;
+constexpr int MAX_TOURNAMENT_NAME_SIZE  =    32;
+constexpr int MAX_USER_NAME_SIZE        =    16;
+constexpr int MIN_PASSWORD_LENGTH       =    8;
+
+static const std::hash<std::string> hasher;
+static const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
 
 std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName){
     std::string problems = "";
@@ -154,8 +158,8 @@ std::string validateTrainerJSON(const json& json, const std::string& trainerNumb
     }
 
     //Validate user errors
-    if (json["name"].get<std::string>().size() > MAX_NAME_SIZE){
-        problems += trainerFriendlyName + "'s name is too long, max " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
+    if (json["name"].get<std::string>().size() > MAX_TRAINER_NAME_SIZE){
+        problems += trainerFriendlyName + "'s name is too long, max " + std::to_string(MAX_TRAINER_NAME_SIZE) + " characters.\n";
     }
     else if(json["name"].get<std::string>() == ""){
         problems += trainerFriendlyName + " needs a name.\n";
@@ -270,8 +274,8 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
             break;
         }
     }
-    if (json["nickname"].get<std::string>().size() > MAX_NAME_SIZE){
-        problems += pokemonFriendlyName + "'s nickname is too long, max " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
+    if (json["nickname"].get<std::string>().size() > MAX_POKEMON_NAME_SIZE){
+        problems += pokemonFriendlyName + "'s nickname is too long, max " + std::to_string(MAX_POKEMON_NAME_SIZE) + " characters.\n";
     }
     return problems;
 }
@@ -305,6 +309,13 @@ std::string validateTournamentRequest(const json& json){
     
     if (json["rounds"].get<int>() < 1){
         return "Can't have a tournament with zero or fewer rounds.\n";
+    }
+
+    if (json.contains("name")){
+        std::string name = tflib::trim(json["name"].get<std::string>());
+        if (name.size() > MAX_TOURNAMENT_NAME_SIZE){
+            return "Tournament names cannot be longer than " + std::to_string(MAX_TOURNAMENT_NAME_SIZE) + " characters. (" + std::to_string(name.size()) + " supplied)";
+        }
     }
     
 
@@ -478,8 +489,8 @@ std::string validateCreateUserRequest(const json& json){
         problems += "Usernames cannot have spaces.\n";
     }
 
-    if (username.size() > MAX_NAME_SIZE){
-        problems += "Usernames cannot be longer than " + std::to_string(MAX_NAME_SIZE) + " characters.\n";
+    if (username.size() > MAX_USER_NAME_SIZE){
+        problems += "Usernames cannot be longer than " + std::to_string(MAX_USER_NAME_SIZE) + " characters.\n";
     }
 
     if (password.size() < MIN_PASSWORD_LENGTH){
