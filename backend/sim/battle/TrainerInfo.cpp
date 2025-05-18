@@ -10,7 +10,7 @@ TrainerInfo::TrainerInfo(const std::string& name, TrainerLevel level) : trainerL
 void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std::unordered_set<const Move*>& myMoves, const Move*& outMove, int& outDamage){
     for (auto move : myMoves){
         if (move->damageCategory == DamageCategory::STATUS){
-            return;
+            continue;
         }
         MoveUse moveUse(move, myPoke, enemyPoke, myPoke->battle);
         int avgDamage = calculateDirectDamage(&moveUse, true).damage;
