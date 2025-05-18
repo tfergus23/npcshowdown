@@ -6,11 +6,11 @@
 
 static const std::unordered_set<const Move*> poisoningMoves = {
     //ie.
-    //&MOVE_POISONPOWDER
+    //&MOVE_POISONPOWDER,
     //&MOVE_POISON_GAS
 };
 
-const Move* pickPoisoningMove(const std::unordered_set<const Move*>& myMoves){
+static const Move* pickPoisoningMove(const std::unordered_set<const Move*>& myMoves){
     for (auto move : myMoves){
         if (poisoningMoves.contains(move)){
             return move;
@@ -22,7 +22,7 @@ const Move* pickPoisoningMove(const std::unordered_set<const Move*>& myMoves){
 TrainerInfo::TrainerInfo(const std::string& name, TrainerLevel level) : trainerLevel{level}, name{name}
 {
 }
-void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std::unordered_set<const Move*>& myMoves, const Move*& outMove, int& outDamage){
+static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std::unordered_set<const Move*>& myMoves, const Move*& outMove, int& outDamage){
     for (auto move : myMoves){
         if (move->damageCategory == DamageCategory::STATUS){
             continue;
@@ -36,7 +36,13 @@ void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std::unorde
     }
 }
 
-const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* battle){
+static int typePoints(Pokemon* myPoke, Pokemon* enemyPoke){
+    int myOffense = (int) typeMatchup(myPoke->currentType[0], enemyPoke->currentType[0], enemyPoke->currentType[1]) + (int) typeMatchup(myPoke->currentType[1], enemyPoke->currentType[0], enemyPoke->currentType[1]);
+    int myDefense = (int) typeMatchup(enemyPoke->currentType[0], myPoke->currentType[0], myPoke->currentType[1]) + (int) typeMatchup(enemyPoke->currentType[1], myPoke->currentType[0], myPoke->currentType[1]);
+    return myOffense - myDefense;
+}
+
+static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* battle){
     std::unordered_set<const Move*> validMoves;
     bool isPlayer1 = myPoke == battle->player1ActivePokemon;
     auto& myTeam = isPlayer1 ?  battle->player1Team : battle->player2Team;
