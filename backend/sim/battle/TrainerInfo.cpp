@@ -4,6 +4,21 @@
 #include <unordered_set>
 #include "sim/utils/move_functions.hpp"
 
+static const std::unordered_set<const Move*> poisoningMoves = {
+    //ie.
+    //&MOVE_POISONPOWDER
+    //&MOVE_POISON_GAS
+};
+
+const Move* pickPoisoningMove(const std::unordered_set<const Move*>& myMoves){
+    for (auto move : myMoves){
+        if (poisoningMoves.contains(move)){
+            return move;
+        }
+    }
+    return nullptr;
+}
+
 TrainerInfo::TrainerInfo(const std::string& name, TrainerLevel level) : trainerLevel{level}, name{name}
 {
 }
@@ -34,18 +49,24 @@ const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* battle){
     }
     const Move* mostDamagingMove = nullptr;
     int mostDamage = 0;
-    float mostDamagePercent = (float) mostDamage / enemyPoke->getStat(Stat::HP);
     findMostDamagingMove(myPoke, enemyPoke, validMoves, mostDamagingMove, mostDamage);
+    float mostDamagePercent = (float) mostDamage / enemyPoke->getStat(Stat::HP);
 
     float myHealthPercent = ((float) myPoke->currentHealth / myPoke->getStat(Stat::HP)) * 100;
     float enemyHealthPercent = ((float) enemyPoke->currentHealth / enemyPoke->getStat(Stat::HP)) * 100;
 
     bool imFaster = myPoke->getStat(Stat::SPEED) > enemyPoke->getStat(Stat::SPEED);
+    int hitsToKO = mostDamage ? enemyPoke->currentHealth / mostDamage + 1 : INT_MAX;
 
-    if (mostDamagingMove != nullptr && mostDamage >= enemyPoke->currentHealth){
+    const Move* poisoningMove = pickPoisoningMove(validMoves);
+
+    if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && imFaster){
         return mostDamagingMove;
     }
-    else if (mostDamagingMove != nullptr){
+    else if (poisoningMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE && !enemyPoke->isType(Type::POISON)){
+        return poisoningMove;
+    }
+    else if (mostDamagingMove){
         return mostDamagingMove;
     }
     else{
@@ -79,7 +100,7 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
     switch (trainerLevel)
     {
     case TrainerLevel::FIRST_MOVE:
-        if (validMoves.size() <= 0){
+        if (validMoves.size() == 0){
             return &MOVE_STRUGGLE;
         }
         return validMoves[0];
@@ -135,7 +156,7 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
         }
         return pickSmartMove(myPoke, enemyPoke, battle);
     default:
-        battle->assertTrue(false, "Unimplemented trainer level: " + stringFromTrainerLevel(trainerLevel));
+        battle->assertTrue(false, "Unimplemented trainer level: " + std::to_string((int)trainerLevel));
     }
     return nullptr;
 }
