@@ -426,9 +426,12 @@ NPCS_API_Server::NPCS_API_Server() :
             return;
         }
 
+        std::string type = request["type"].get<std::string>();
+        json data = type == "events" ? battle.eventsJson() : json(battle.textLog());
+
         // Send back battle ID
         response["success"] = true;
-        response["data"] = battle.eventsJson();
+        response["data"] = data;
         response["message"] = "OK";
         res.Send(response.dump());
     });

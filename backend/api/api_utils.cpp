@@ -17,6 +17,7 @@ constexpr int MAX_POKEMON_NAME_SIZE     =    16;
 constexpr int MAX_TOURNAMENT_NAME_SIZE  =    32;
 constexpr int MAX_USER_NAME_SIZE        =    16;
 constexpr int MIN_PASSWORD_LENGTH       =     8;
+constexpr int MAX_POKEMON_LEVEL         =  1000;
 
 static const std::hash<std::string> hasher;
 static const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
@@ -127,9 +128,16 @@ std::string validateBattleRequest(const json& json){
     problems += checkForObject(json, "", "trainer1");
     problems += checkForObject(json, "", "trainer2");
     problems += checkForString(json, "", "seed");
+    problems += checkForString(json, "", "type");
 
     if (problems != ""){
         return problems;
+    }
+
+    std::string type = json["type"].get<std::string>();
+
+    if (type != "text" && type != "events"){
+        problems += "Invalid battle type: '" + type + "'. Only 'text' and 'events' allowed.";
     }
 
     problems += validateTrainerJSON(json["trainer1"], "1");
@@ -215,7 +223,7 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
             problems += pokemonFriendlyName + " has an invalid species: '" + json["species"].get<std::string>() + "'\n";
         }
     }
-    if (json["level"].get<int>() < 1 || json["level"].get<int>() > 100){
+    if (json["level"].get<int>() < 1 || json["level"].get<int>() > MAX_POKEMON_LEVEL){
         problems += pokemonFriendlyName + " has an invalid level.\n";
     }
     bool foundAMove = false;

@@ -147,8 +147,9 @@ export class CreateTrainerComponent {
   }
 
   showBattle(trainer1: Trainer, trainer2: Trainer, seed: string){
+    const type = "text";
     if (!trainer1 || ! trainer2) return;
-    this.battleService.postBattleRequest({trainer1, trainer2, seed}).subscribe((response) => {
+    this.battleService.postBattleRequest({trainer1, trainer2, seed, type}).subscribe((response) => {
       this.resultsView!.logView.log = response.data;
       this.resultsView!.logView.hidden = false;
     });

@@ -64,7 +64,7 @@
                     <div class="inline-label">Item: </div> <input type="text" list="itemList" (focusout)="this.autoCompleteItem($event)" [(ngModel)]="this.trainer.team[selectedIndex].itemName" [readOnly]="this.readOnly">
                 </div>
                 <div class="pokemon-input">
-                    <div class="inline-label">Level: </div> <input type="number" min="0" max="100" [(ngModel)]="this.trainer.team[selectedIndex].level" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
+                    <div class="inline-label">Level: </div> <input type="number" min="1" max="1000" [(ngModel)]="this.trainer.team[selectedIndex].level" [readOnly]="this.readOnly" (focusout)="this.callOnEdit()">
                 </div>
                 <div class="pokemon-input">
                     <div class="inline-label">Gender: </div>

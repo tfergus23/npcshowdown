@@ -43,7 +43,8 @@ export class CreateBattleComponent {
     this.battleService.postBattleRequest({
       trainer1: this.trainers.get(0)!.getJSON(),
       trainer2: this.trainers.get(1)!.getJSON(),
-      seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue
+      seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue,
+      type: "text"
     }).subscribe(
       (response) => {
         this.submittingBattle = false;
