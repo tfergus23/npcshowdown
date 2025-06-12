@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild } from 'pixi.js';
+import { Component, CSP_NONCE, ElementRef, ViewChild } from '@angular/core';
+import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild, DEPRECATED_SCALE_MODES } from 'pixi.js';
 
 const HORIZONTAL_PADDING_FACTOR = 4.5;
 const POKEMON_SCALE = 2.5;
+const HEALTHBAR_WIDTH = 225;
 
 interface EventLogPokemon{
   species: string,
@@ -76,14 +77,26 @@ export class BattleViewerComponent {
   trainer2Textures: Array<any> = [];
   poke1: Sprite = new Sprite();
   poke2: Sprite = new Sprite();
+  textBoxText: Text = new Text({
+    text: "",
+    style: {
+      fontFamily: 'Unageo-Bold',
+      fontSize: 25,
+      wordWrap: true,
+      wordWrapWidth: 800,
+      align: 'left'
+    }
+  })
   weatherLabel: Text = new Text({
     text: 'Weather:',
     style: {
       fontFamily: 'Unageo-Bold',
-      fontSize: 35
+      fontSize: 35,
     }
   });
   projectile: Sprite = new Sprite();
+  poke1Health: Sprite = new Sprite();
+  poke1MissingHealth: Sprite = new Sprite();
   app: Application = new Application();
 
   ngOnInit(){
@@ -124,10 +137,24 @@ export class BattleViewerComponent {
           this.projectile.scale.y = 0.35;
           this.app.stage.addChild(this.projectile);
 
+          this.poke1Health.texture = await Assets.load("/assets/battle_sprites/health.png");
+          this.poke1Health.anchor.set(0.5);
+          this.poke1Health.width = HEALTHBAR_WIDTH;
+          this.poke1Health.height = 25;
+          this.app.stage.addChild(this.poke1Health);
+
+          this.poke1MissingHealth.texture = await Assets.load("/assets/battle_sprites/missing_health.png");
+          this.poke1MissingHealth.anchor.set(0.5);
+          this.poke1Health.addChild(this.poke1MissingHealth);
+
           await Assets.load('/assets/Unageo-Bold.ttf');
 
           this.weatherLabel.anchor.set(0.5);
           this.app.stage.addChild(this.weatherLabel);
+
+          this.textBoxText.anchor.set(0.5);
+          this.app.stage.addChild(this.textBoxText);
+          //this.textBox.addChild(this.textBoxText);
 
           //this.startAnimation(this.poke2MeleeAttack);
           
@@ -158,6 +185,8 @@ export class BattleViewerComponent {
   poke1ScreenPos: Point = new Point(this.poke1Home.x, this.poke1Home.y);
   poke2ScreenPos: Point = new Point(this.poke2Home.x, this.poke2Home.y);
   projectilePos: Point = new Point(this.projectileHome.x, this.projectileHome.y);
+  textBoxTextScreenPos: Point = new Point(0.5, 0.70);
+  poke1HealthScreenPos: Point = new Point(this.poke1ScreenPos.x, this.poke1ScreenPos.y - 0.20);
 
   poke1MeleeAttack = new Animation([
     new Tween(this.poke1ScreenPos, new Point(this.poke2ScreenPos.x - 0.10, this.poke2ScreenPos.y), 700),
@@ -208,14 +237,36 @@ export class BattleViewerComponent {
   screenToWorldPos(point: Point) : Point{
     return new Point(this.app.screen.width * point.x, this.app.screen.height * point.y);
   }
-
+  totalTimeMS: number = 0;
   update(time: Ticker){
     this.addAnimations();
 
+    this.updateHealthBars();
+
     this.updateTweens(time.deltaMS);
+    
     this.updateAnimations();
+    this.updateTextScroll(time.deltaMS);
 
     this.updateWorldPositions();
+    this.totalTimeMS += time.deltaMS;
+  }
+
+  updateHealthBars(){
+    const currentHealth = 40;
+    const maxHealth = 100;
+    this.poke1MissingHealth.width = (HEALTHBAR_WIDTH - (currentHealth / maxHealth * HEALTHBAR_WIDTH)) / this.poke1Health.scale.x;
+    this.poke1MissingHealth.position.x = ((currentHealth / maxHealth * HEALTHBAR_WIDTH)) / 2 / this.poke1Health.scale.x;
+  }
+
+  currentText: string = "Bulbasaur used Vine Whip!";
+  nextCharTime: number = 0;
+  updateTextScroll(deltaMS: number){
+    const TIME_BETWEEN_CHARS_MS = 20;
+    if (this.textBoxText.text.length < this.currentText.length && this.totalTimeMS >= this.nextCharTime){
+      this.textBoxText.text += this.currentText[this.textBoxText.text.length];
+      this.nextCharTime = this.totalTimeMS + TIME_BETWEEN_CHARS_MS;
+    }
   }
 
   updateTweens(dt: number){
@@ -230,6 +281,8 @@ export class BattleViewerComponent {
     this.poke2.position = this.screenToWorldPos(this.poke2ScreenPos);
     this.weatherLabel.position = this.screenToWorldPos(this.weatherLabelScreenPos);
     this.projectile.position = this.screenToWorldPos(this.projectilePos);
+    this.textBoxText.position = this.screenToWorldPos(this.textBoxTextScreenPos);
+    this.poke1Health.position = this.screenToWorldPos(this.poke1HealthScreenPos);
   }
 
   updateAnimations(){
