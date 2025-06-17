@@ -1,9 +1,9 @@
 import { Component, CSP_NONCE, ElementRef, ViewChild } from '@angular/core';
 import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild, DEPRECATED_SCALE_MODES } from 'pixi.js';
 
-const HORIZONTAL_PADDING_FACTOR = 4.5;
 const POKEMON_SCALE = 2.5;
-const HEALTHBAR_WIDTH = 225;
+const HEALTHBAR_WIDTH = 200;
+const TEXTBOX_WIDTH = 400;
 
 interface EventLogPokemon{
   species: string,
@@ -59,32 +59,44 @@ export class BattleViewerComponent {
     events: [
       {
         type: 'RANGED_ATTACK',
-        message: 'Bulbasaur used Focus Blast!',
+        message: 'Crabominable used All-Out-Pummeling!',
         data: {
-          attackerIsPlayer1: true
+          attackerIsPlayer1: true,
+          damage: 100
         }
       },
       {
         type: 'MELEE_ATTACK',
+        message: 'Bulbasaur used Vine Whip!',
+        data: {
+          attackerIsPlayer1: false,
+          damage: 149
+        }
+      },
+      {
+        type: 'RANGED_ATTACK',
         message: 'Bulbasaur used Focus Blast!',
         data: {
-          attackerIsPlayer1: false
+          attackerIsPlayer1: true,
+          damage: 49
         }
-      }
+      },
     ]
   };
   trainer1Textures: Array<any> = [];
   trainer2Textures: Array<any> = [];
   poke1: Sprite = new Sprite();
   poke2: Sprite = new Sprite();
+  textBox: Sprite = new Sprite();
   textBoxText: Text = new Text({
     text: "",
     style: {
       fontFamily: 'Unageo-Bold',
       fontSize: 25,
       wordWrap: true,
-      wordWrapWidth: 800,
-      align: 'left'
+      wordWrapWidth: TEXTBOX_WIDTH,
+      align: 'left',
+      fill: 'white'
     }
   })
   weatherLabel: Text = new Text({
@@ -95,8 +107,10 @@ export class BattleViewerComponent {
     }
   });
   projectile: Sprite = new Sprite();
-  poke1Health: Sprite = new Sprite();
+  poke1HealthBar: Sprite = new Sprite();
   poke1MissingHealth: Sprite = new Sprite();
+  poke2HealthBar: Sprite = new Sprite();
+  poke2MissingHealth: Sprite = new Sprite();
   app: Application = new Application();
 
   ngOnInit(){
@@ -137,15 +151,30 @@ export class BattleViewerComponent {
           this.projectile.scale.y = 0.35;
           this.app.stage.addChild(this.projectile);
 
-          this.poke1Health.texture = await Assets.load("/assets/battle_sprites/health.png");
-          this.poke1Health.anchor.set(0.5);
-          this.poke1Health.width = HEALTHBAR_WIDTH;
-          this.poke1Health.height = 25;
-          this.app.stage.addChild(this.poke1Health);
+          this.poke1HealthBar.texture = await Assets.load("/assets/battle_sprites/health.png");
+          this.poke1HealthBar.anchor.set(0.5);
+          this.poke1HealthBar.width = HEALTHBAR_WIDTH;
+          this.poke1HealthBar.height = 25;
+          this.app.stage.addChild(this.poke1HealthBar);
 
           this.poke1MissingHealth.texture = await Assets.load("/assets/battle_sprites/missing_health.png");
           this.poke1MissingHealth.anchor.set(0.5);
-          this.poke1Health.addChild(this.poke1MissingHealth);
+          this.poke1HealthBar.addChild(this.poke1MissingHealth);
+
+          this.poke2HealthBar.texture = await Assets.load("/assets/battle_sprites/health.png");
+          this.poke2HealthBar.anchor.set(0.5);
+          this.poke2HealthBar.width = HEALTHBAR_WIDTH;
+          this.poke2HealthBar.height = 25;
+          this.app.stage.addChild(this.poke2HealthBar);
+
+          this.poke2MissingHealth.texture = await Assets.load("/assets/battle_sprites/missing_health.png");
+          this.poke2MissingHealth.anchor.set(0.5);
+          this.poke2HealthBar.addChild(this.poke2MissingHealth);
+
+          this.textBox.texture = await Assets.load("/assets/battle_sprites/textbox.png");
+          this.textBox.width = TEXTBOX_WIDTH;
+          this.textBox.anchor.set(0.5);
+          this.app.stage.addChild(this.textBox);
 
           await Assets.load('/assets/Unageo-Bold.ttf');
 
@@ -187,6 +216,7 @@ export class BattleViewerComponent {
   projectilePos: Point = new Point(this.projectileHome.x, this.projectileHome.y);
   textBoxTextScreenPos: Point = new Point(0.5, 0.70);
   poke1HealthScreenPos: Point = new Point(this.poke1ScreenPos.x, this.poke1ScreenPos.y - 0.20);
+  poke2HealthScreenPos: Point = new Point(this.poke2ScreenPos.x, this.poke2ScreenPos.y - 0.20);
 
   poke1MeleeAttack = new Animation([
     new Tween(this.poke1ScreenPos, new Point(this.poke2ScreenPos.x - 0.10, this.poke2ScreenPos.y), 700),
@@ -239,7 +269,8 @@ export class BattleViewerComponent {
   }
   totalTimeMS: number = 0;
   update(time: Ticker){
-    this.addAnimations();
+
+    this.updateCurrentEvent(time.deltaMS);
 
     this.updateHealthBars();
 
@@ -252,14 +283,22 @@ export class BattleViewerComponent {
     this.totalTimeMS += time.deltaMS;
   }
 
+  poke1Health: Point = new Point(this.battle.trainer1.team[0].maxHealth, this.battle.trainer1.team[0].maxHealth);
+  poke2Health: Point = new Point(this.battle.trainer2.team[0].maxHealth, this.battle.trainer2.team[0].maxHealth);
+
   updateHealthBars(){
-    const currentHealth = 40;
-    const maxHealth = 100;
-    this.poke1MissingHealth.width = (HEALTHBAR_WIDTH - (currentHealth / maxHealth * HEALTHBAR_WIDTH)) / this.poke1Health.scale.x;
-    this.poke1MissingHealth.position.x = ((currentHealth / maxHealth * HEALTHBAR_WIDTH)) / 2 / this.poke1Health.scale.x;
+    const poke1CurrentHealth = this.poke1Health.x;
+    const poke1MaxHealth = this.poke1Health.y;
+    this.poke1MissingHealth.width = (HEALTHBAR_WIDTH - (poke1CurrentHealth / poke1MaxHealth * HEALTHBAR_WIDTH)) / this.poke1HealthBar.scale.x;
+    this.poke1MissingHealth.position.x = ((poke1CurrentHealth / poke1MaxHealth * HEALTHBAR_WIDTH)) / 2 / this.poke1HealthBar.scale.x;
+
+    const poke2CurrentHealth = this.poke2Health.x;
+    const poke2MaxHealth = this.poke2Health.y;
+    this.poke2MissingHealth.width = (HEALTHBAR_WIDTH - (poke2CurrentHealth / poke2MaxHealth * HEALTHBAR_WIDTH)) / this.poke2HealthBar.scale.x;
+    this.poke2MissingHealth.position.x = ((poke2CurrentHealth / poke2MaxHealth * HEALTHBAR_WIDTH)) / 2 / this.poke2HealthBar.scale.x;
   }
 
-  currentText: string = "Bulbasaur used Vine Whip!";
+  currentText: string = this.battle.events[this.currentEvent].message;
   nextCharTime: number = 0;
   updateTextScroll(deltaMS: number){
     const TIME_BETWEEN_CHARS_MS = 20;
@@ -281,8 +320,10 @@ export class BattleViewerComponent {
     this.poke2.position = this.screenToWorldPos(this.poke2ScreenPos);
     this.weatherLabel.position = this.screenToWorldPos(this.weatherLabelScreenPos);
     this.projectile.position = this.screenToWorldPos(this.projectilePos);
+    this.textBox.position = this.screenToWorldPos(this.textBoxTextScreenPos);
     this.textBoxText.position = this.screenToWorldPos(this.textBoxTextScreenPos);
-    this.poke1Health.position = this.screenToWorldPos(this.poke1HealthScreenPos);
+    this.poke1HealthBar.position = this.screenToWorldPos(this.poke1HealthScreenPos);
+    this.poke2HealthBar.position = this.screenToWorldPos(this.poke2HealthScreenPos);
   }
 
   updateAnimations(){
@@ -300,6 +341,37 @@ export class BattleViewerComponent {
     animCopy.start(this.tweens);
   }
 
+  clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max);
+  }
+
+  startHealthTween(currentHealth: Point, healthChange: number, delayMS: number){
+    const HEALTH_MOVE_TIME_MS = 350;
+    let anim = new Animation([
+      new Tween(currentHealth, currentHealth, delayMS),
+      new Tween(currentHealth, new Point(this.clamp(currentHealth.x + healthChange, 0, currentHealth.y), currentHealth.y), HEALTH_MOVE_TIME_MS),
+    ]);
+    this.startAnimation(anim);
+  }
+
+  updateCurrentEvent(dt: number){
+    if (this.textBoxText.text.length < this.currentText.length){
+      this.updateTextScroll(dt);
+      if (this.textBoxText.text.length == this.currentText.length){
+        this.addAnimations();
+      }
+    }
+    else if (this.animations.length != 0){
+
+    }
+    else if (this.currentEvent < this.battle.events.length-1) {
+      this.currentEvent++;
+      this.textBoxText.text = "";
+      console.log(this.currentEvent);
+      this.currentText = this.battle.events[this.currentEvent].message;
+    }
+  }
+
   addAnimations(){
     if (this.animations.length != 0 || this.currentEvent >= this.battle.events.length) return;
     const event = this.battle.events[this.currentEvent];
@@ -307,16 +379,18 @@ export class BattleViewerComponent {
     switch (event.type){
       case "MELEE_ATTACK":
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1MeleeAttack : this.poke2MeleeAttack);
+        this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 1350);
         break;
       case "RANGED_ATTACK":
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1RangedAttack : this.poke2RangedAttack);
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1Projectile : this.poke2Projectile);
+        this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 900);
         break;
       default:
         console.error(`Unimplemented event type: ${event.type}`)
     }
 
-    this.currentEvent = (this.currentEvent + 1) % this.battle.events.length;
+    //this.currentEvent = (this.currentEvent + 1) % this.battle.events.length;
   }
 }
 
