@@ -2,7 +2,7 @@ import { Component, CSP_NONCE, ElementRef, ViewChild } from '@angular/core';
 import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild, DEPRECATED_SCALE_MODES } from 'pixi.js';
 
 const POKEMON_SCALE = 2.5;
-const HEALTHBAR_WIDTH = 200;
+const ACTIVE_HEALTHBAR_WIDTH = 200;
 const TEXTBOX_WIDTH = 400;
 
 interface EventLogPokemon{
@@ -40,7 +40,7 @@ export class BattleViewerComponent {
       name: 'Guy Dudebro',
       team: [
         {
-          species: 'bulbasaur',
+          species: 'Bulbasaur',
           maxHealth: 150,
           gender: "Male"
         }
@@ -50,7 +50,7 @@ export class BattleViewerComponent {
       name: 'Youngster Joey',
       team: [
         {
-          species: 'bulbasaur',
+          species: 'Bulbasaur',
           maxHealth: 150,
           gender: "Female"
         }
@@ -85,6 +85,8 @@ export class BattleViewerComponent {
   };
   trainer1Textures: Array<any> = [];
   trainer2Textures: Array<any> = [];
+  trainer1Health: Array<number> = [];
+  trainer2Health: Array<number> = [];
   poke1: Sprite = new Sprite();
   poke2: Sprite = new Sprite();
   textBox: Sprite = new Sprite();
@@ -108,12 +110,46 @@ export class BattleViewerComponent {
   });
   projectile: Sprite = new Sprite();
   poke1HealthBar: Sprite = new Sprite();
-  poke1MissingHealth: Sprite = new Sprite();
   poke2HealthBar: Sprite = new Sprite();
-  poke2MissingHealth: Sprite = new Sprite();
   app: Application = new Application();
 
+  setTrainer1Poke(index: number){
+    this.poke1Health.x = this.trainer1Health[index];
+    this.poke1Health.y = this.battle.trainer1.team[index].maxHealth
+    this.poke1.texture = this.trainer1Textures[index];
+  }
+
+  setTrainer2Poke(index: number){
+    this.poke2Health.x = this.trainer2Health[index];
+    this.poke2Health.y = this.battle.trainer2.team[index].maxHealth
+    this.poke2.texture = this.trainer2Textures[index];
+  }
+
+  async createActiveHealthBarSprite(){
+    let healthBar: Sprite = new Sprite();
+    let missingHealth: Sprite = new Sprite();
+
+    healthBar.texture = await Assets.load("/assets/battle_sprites/health.png");
+    healthBar.anchor.set(0.5);
+    healthBar.width = ACTIVE_HEALTHBAR_WIDTH;
+    healthBar.height = 25;
+    this.app.stage.addChild(healthBar);
+
+    missingHealth.texture = await Assets.load("/assets/battle_sprites/missing_health.png");
+    missingHealth.anchor.set(0.5);
+    healthBar.addChild(missingHealth);
+
+    return healthBar;
+  }
+
   ngOnInit(){
+    for (let i = 0; i < this.battle.trainer1.team.length; i++){
+      this.trainer1Health[i] = this.battle.trainer1.team[i].maxHealth;
+    }
+    for (let i = 0; i < this.battle.trainer2.team.length; i++){
+      this.trainer2Health[i] = this.battle.trainer2.team[i].maxHealth;
+    }
+
     setTimeout((async () =>
       {
           // Create a new application
@@ -125,21 +161,23 @@ export class BattleViewerComponent {
       
           // Append the application canvas to the document body
           this.pixiContainer.nativeElement.appendChild(this.app.canvas);
-      
-          /*
-          const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-          const bunny = new Sprite(texture);
-          bunny.anchor.set(0.5);
-          app.stage.addChild(bunny);
-          */
 
-          this.poke1.texture = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer1.team[0].species)}`);
+          for (let i = 0; i < this.battle.trainer1.team.length; i++){
+            this.trainer1Textures[i] = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer1.team[i].species)}`);
+          }
+          for (let i = 0; i < this.battle.trainer2.team.length; i++){
+            this.trainer2Textures[i] = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer2.team[i].species)}`);
+          }
+
+          //this.poke1.texture = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer1.team[0].species)}`);
+          this.setTrainer1Poke(0);
           this.poke1.anchor.set(0.5);
           this.poke1.scale.x = -POKEMON_SCALE;
           this.poke1.scale.y = POKEMON_SCALE;
           this.app.stage.addChild(this.poke1);
 
-          this.poke2.texture = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer2.team[0].species)}`);
+          //this.poke2.texture = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer2.team[0].species)}`);
+          this.setTrainer2Poke(0);
           this.poke2.anchor.set(0.5);
           this.poke2.scale.x = POKEMON_SCALE;
           this.poke2.scale.y = POKEMON_SCALE;
@@ -151,25 +189,9 @@ export class BattleViewerComponent {
           this.projectile.scale.y = 0.35;
           this.app.stage.addChild(this.projectile);
 
-          this.poke1HealthBar.texture = await Assets.load("/assets/battle_sprites/health.png");
-          this.poke1HealthBar.anchor.set(0.5);
-          this.poke1HealthBar.width = HEALTHBAR_WIDTH;
-          this.poke1HealthBar.height = 25;
-          this.app.stage.addChild(this.poke1HealthBar);
+          this.poke1HealthBar = await this.createActiveHealthBarSprite();
 
-          this.poke1MissingHealth.texture = await Assets.load("/assets/battle_sprites/missing_health.png");
-          this.poke1MissingHealth.anchor.set(0.5);
-          this.poke1HealthBar.addChild(this.poke1MissingHealth);
-
-          this.poke2HealthBar.texture = await Assets.load("/assets/battle_sprites/health.png");
-          this.poke2HealthBar.anchor.set(0.5);
-          this.poke2HealthBar.width = HEALTHBAR_WIDTH;
-          this.poke2HealthBar.height = 25;
-          this.app.stage.addChild(this.poke2HealthBar);
-
-          this.poke2MissingHealth.texture = await Assets.load("/assets/battle_sprites/missing_health.png");
-          this.poke2MissingHealth.anchor.set(0.5);
-          this.poke2HealthBar.addChild(this.poke2MissingHealth);
+          this.poke2HealthBar = await this.createActiveHealthBarSprite();
 
           this.textBox.texture = await Assets.load("/assets/battle_sprites/textbox.png");
           this.textBox.width = TEXTBOX_WIDTH;
@@ -183,12 +205,7 @@ export class BattleViewerComponent {
 
           this.textBoxText.anchor.set(0.5);
           this.app.stage.addChild(this.textBoxText);
-          //this.textBox.addChild(this.textBoxText);
-
-          //this.startAnimation(this.poke2MeleeAttack);
           
-      
-          // Listen for animate update
           this.app.ticker.add((time) =>
           {
             this.update(time);
@@ -272,7 +289,7 @@ export class BattleViewerComponent {
 
     this.updateCurrentEvent(time.deltaMS);
 
-    this.updateHealthBars();
+    this.updateActiveHealthBars();
 
     this.updateTweens(time.deltaMS);
     
@@ -283,19 +300,21 @@ export class BattleViewerComponent {
     this.totalTimeMS += time.deltaMS;
   }
 
-  poke1Health: Point = new Point(this.battle.trainer1.team[0].maxHealth, this.battle.trainer1.team[0].maxHealth);
-  poke2Health: Point = new Point(this.battle.trainer2.team[0].maxHealth, this.battle.trainer2.team[0].maxHealth);
+  poke1Health: Point = new Point();
+  poke2Health: Point = new Point();
 
-  updateHealthBars(){
+  updateActiveHealthBars(){
     const poke1CurrentHealth = this.poke1Health.x;
     const poke1MaxHealth = this.poke1Health.y;
-    this.poke1MissingHealth.width = (HEALTHBAR_WIDTH - (poke1CurrentHealth / poke1MaxHealth * HEALTHBAR_WIDTH)) / this.poke1HealthBar.scale.x;
-    this.poke1MissingHealth.position.x = ((poke1CurrentHealth / poke1MaxHealth * HEALTHBAR_WIDTH)) / 2 / this.poke1HealthBar.scale.x;
+    let poke1MissingHealth = this.poke1HealthBar.getChildAt<Sprite>(0);
+    poke1MissingHealth.width = (ACTIVE_HEALTHBAR_WIDTH - (poke1CurrentHealth / poke1MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / this.poke1HealthBar.scale.x;
+    poke1MissingHealth.position.x = ((poke1CurrentHealth / poke1MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / 2 / this.poke1HealthBar.scale.x;
 
     const poke2CurrentHealth = this.poke2Health.x;
     const poke2MaxHealth = this.poke2Health.y;
-    this.poke2MissingHealth.width = (HEALTHBAR_WIDTH - (poke2CurrentHealth / poke2MaxHealth * HEALTHBAR_WIDTH)) / this.poke2HealthBar.scale.x;
-    this.poke2MissingHealth.position.x = ((poke2CurrentHealth / poke2MaxHealth * HEALTHBAR_WIDTH)) / 2 / this.poke2HealthBar.scale.x;
+    let poke2MissingHealth = this.poke2HealthBar.getChildAt<Sprite>(0);
+    poke2MissingHealth.width = (ACTIVE_HEALTHBAR_WIDTH - (poke2CurrentHealth / poke2MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / this.poke2HealthBar.scale.x;
+    poke2MissingHealth.position.x = ((poke2CurrentHealth / poke2MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / 2 / this.poke2HealthBar.scale.x;
   }
 
   currentText: string = this.battle.events[this.currentEvent].message;
