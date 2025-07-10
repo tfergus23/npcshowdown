@@ -1,32 +1,13 @@
 import { Component, CSP_NONCE, ElementRef, ViewChild } from '@angular/core';
-import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild, DEPRECATED_SCALE_MODES } from 'pixi.js';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild, DEPRECATED_SCALE_MODES, Container } from 'pixi.js';
+import { Tween } from './Tween';
+import { Animation } from './Animation';
+import { BattleEventLog } from './BattleEventLog';
+import { POKEMON_SCALE, TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH } from './Constants';
+import { ActiveHealthBar } from './ActiveHealthBar';
 
-const POKEMON_SCALE = 2.5;
-const ACTIVE_HEALTHBAR_WIDTH = 200;
-const TEXTBOX_WIDTH = 400;
 
-interface EventLogPokemon{
-  species: string,
-  maxHealth: number;
-  gender: string;
-}
-
-interface EventLogTrainer{
-  name: string;
-  team: Array<EventLogPokemon>
-}
-
-interface EventLogEvent{
-  type: string;
-  message: string;
-  data: any;
-}
-
-interface BattleEventLog{
-  trainer1: EventLogTrainer;
-  trainer2: EventLogTrainer;
-  events: Array<EventLogEvent>;
-}
 
 @Component({
   selector: 'app-battle-viewer',
@@ -34,6 +15,9 @@ interface BattleEventLog{
   styleUrls: ['./battle-viewer.component.css']
 })
 export class BattleViewerComponent {
+  constructor(private router: Router, private activatedRoute: ActivatedRoute){}
+
+
   @ViewChild('pixiContainer', { static: true }) pixiContainer!: ElementRef;
   battle: BattleEventLog = {
     trainer1: {
@@ -85,10 +69,12 @@ export class BattleViewerComponent {
   };
   trainer1Textures: Array<any> = [];
   trainer2Textures: Array<any> = [];
-  trainer1Health: Array<number> = [];
-  trainer2Health: Array<number> = [];
+  //TODO: Redo this, these should be array of points
+  trainer1Health: Array<Point> = [];
+  trainer2Health: Array<Point> = [];
   poke1: Sprite = new Sprite();
   poke2: Sprite = new Sprite();
+  textBoxContaainer = new Container();
   textBox: Sprite = new Sprite();
   textBoxText: Text = new Text({
     text: "",
@@ -109,46 +95,33 @@ export class BattleViewerComponent {
     }
   });
   projectile: Sprite = new Sprite();
-  poke1HealthBar: Sprite = new Sprite();
-  poke2HealthBar: Sprite = new Sprite();
+  poke1HealthBar!: ActiveHealthBar;
+  poke2HealthBar!: ActiveHealthBar;
   app: Application = new Application();
 
   setTrainer1Poke(index: number){
-    this.poke1Health.x = this.trainer1Health[index];
-    this.poke1Health.y = this.battle.trainer1.team[index].maxHealth
+    this.poke1Health = this.trainer1Health[index];
     this.poke1.texture = this.trainer1Textures[index];
+    this.poke1HealthBar.nameText.text = this.battle.trainer1.team[index].species + (this.battle.trainer1.team[index].gender == "Male" ? '♂' : '♀');
   }
 
   setTrainer2Poke(index: number){
-    this.poke2Health.x = this.trainer2Health[index];
-    this.poke2Health.y = this.battle.trainer2.team[index].maxHealth
+    this.poke2Health = this.trainer2Health[index];
     this.poke2.texture = this.trainer2Textures[index];
-  }
-
-  async createActiveHealthBarSprite(){
-    let healthBar: Sprite = new Sprite();
-    let missingHealth: Sprite = new Sprite();
-
-    healthBar.texture = await Assets.load("/assets/battle_sprites/health.png");
-    healthBar.anchor.set(0.5);
-    healthBar.width = ACTIVE_HEALTHBAR_WIDTH;
-    healthBar.height = 25;
-    this.app.stage.addChild(healthBar);
-
-    missingHealth.texture = await Assets.load("/assets/battle_sprites/missing_health.png");
-    missingHealth.anchor.set(0.5);
-    healthBar.addChild(missingHealth);
-
-    return healthBar;
+    this.poke2HealthBar.nameText.text = this.battle.trainer2.team[index].species + (this.battle.trainer2.team[index].gender == "Male" ? '♂' : '♀');
   }
 
   ngOnInit(){
     for (let i = 0; i < this.battle.trainer1.team.length; i++){
-      this.trainer1Health[i] = this.battle.trainer1.team[i].maxHealth;
+      const max = this.battle.trainer1.team[i].maxHealth;
+      this.trainer1Health[i] = new Point(max, max);
     }
     for (let i = 0; i < this.battle.trainer2.team.length; i++){
-      this.trainer2Health[i] = this.battle.trainer2.team[i].maxHealth;
+      const max = this.battle.trainer2.team[i].maxHealth;
+      this.trainer2Health[i] = new Point(max, max);
     }
+    this.poke1Health = this.trainer1Health[0];
+    this.poke2Health = this.trainer2Health[0];
 
     setTimeout((async () =>
       {
@@ -169,14 +142,29 @@ export class BattleViewerComponent {
             this.trainer2Textures[i] = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer2.team[i].species)}`);
           }
 
-          //this.poke1.texture = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer1.team[0].species)}`);
+          const firstPokemonIndex = 0;
+          const trainer1Number = 0;
+          const trainer2Number = 1;
+          this.poke1HealthBar = new ActiveHealthBar(this.battle, firstPokemonIndex, trainer1Number, this.poke1Health, 
+            await Assets.load('/assets/battle_sprites/alive_poke.png'),
+            await Assets.load('/assets/battle_sprites/health.png'),
+            await Assets.load('/assets/battle_sprites/missing_health.png')
+          );
+          this.poke1HealthBar.addToStage(this.app.stage);
+
+          this.poke2HealthBar = new ActiveHealthBar(this.battle, firstPokemonIndex, trainer2Number, this.poke2Health, 
+            await Assets.load('/assets/battle_sprites/alive_poke.png'),
+            await Assets.load('/assets/battle_sprites/health.png'),
+            await Assets.load('/assets/battle_sprites/missing_health.png')
+          );
+          this.poke2HealthBar.addToStage(this.app.stage);
+
           this.setTrainer1Poke(0);
           this.poke1.anchor.set(0.5);
           this.poke1.scale.x = -POKEMON_SCALE;
           this.poke1.scale.y = POKEMON_SCALE;
           this.app.stage.addChild(this.poke1);
 
-          //this.poke2.texture = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer2.team[0].species)}`);
           this.setTrainer2Poke(0);
           this.poke2.anchor.set(0.5);
           this.poke2.scale.x = POKEMON_SCALE;
@@ -188,10 +176,6 @@ export class BattleViewerComponent {
           this.projectile.scale.x = 0.35;
           this.projectile.scale.y = 0.35;
           this.app.stage.addChild(this.projectile);
-
-          this.poke1HealthBar = await this.createActiveHealthBarSprite();
-
-          this.poke2HealthBar = await this.createActiveHealthBarSprite();
 
           this.textBox.texture = await Assets.load("/assets/battle_sprites/textbox.png");
           this.textBox.width = TEXTBOX_WIDTH;
@@ -205,7 +189,7 @@ export class BattleViewerComponent {
 
           this.textBoxText.anchor.set(0.5);
           this.app.stage.addChild(this.textBoxText);
-          
+
           this.app.ticker.add((time) =>
           {
             this.update(time);
@@ -224,8 +208,8 @@ export class BattleViewerComponent {
   tweens: Array<Tween> = new Array<Tween>();
   animations: Array<Animation> = new Array<Animation>();
 
-  poke1Home: Point = new Point(0.25, 0.5);
-  poke2Home: Point = new Point(0.75, 0.5);
+  poke1Home: Point = new Point(0.30, 0.5);
+  poke2Home: Point = new Point(0.70, 0.5);
   projectileHome: Point = new Point(-2, -2);
 
   poke1ScreenPos: Point = new Point(this.poke1Home.x, this.poke1Home.y);
@@ -289,7 +273,8 @@ export class BattleViewerComponent {
 
     this.updateCurrentEvent(time.deltaMS);
 
-    this.updateActiveHealthBars();
+    this.poke1HealthBar.update();
+    this.poke2HealthBar.update();
 
     this.updateTweens(time.deltaMS);
     
@@ -300,22 +285,8 @@ export class BattleViewerComponent {
     this.totalTimeMS += time.deltaMS;
   }
 
-  poke1Health: Point = new Point();
-  poke2Health: Point = new Point();
-
-  updateActiveHealthBars(){
-    const poke1CurrentHealth = this.poke1Health.x;
-    const poke1MaxHealth = this.poke1Health.y;
-    let poke1MissingHealth = this.poke1HealthBar.getChildAt<Sprite>(0);
-    poke1MissingHealth.width = (ACTIVE_HEALTHBAR_WIDTH - (poke1CurrentHealth / poke1MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / this.poke1HealthBar.scale.x;
-    poke1MissingHealth.position.x = ((poke1CurrentHealth / poke1MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / 2 / this.poke1HealthBar.scale.x;
-
-    const poke2CurrentHealth = this.poke2Health.x;
-    const poke2MaxHealth = this.poke2Health.y;
-    let poke2MissingHealth = this.poke2HealthBar.getChildAt<Sprite>(0);
-    poke2MissingHealth.width = (ACTIVE_HEALTHBAR_WIDTH - (poke2CurrentHealth / poke2MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / this.poke2HealthBar.scale.x;
-    poke2MissingHealth.position.x = ((poke2CurrentHealth / poke2MaxHealth * ACTIVE_HEALTHBAR_WIDTH)) / 2 / this.poke2HealthBar.scale.x;
-  }
+  poke1Health!: Point;
+  poke2Health!: Point;
 
   currentText: string = this.battle.events[this.currentEvent].message;
   nextCharTime: number = 0;
@@ -341,8 +312,8 @@ export class BattleViewerComponent {
     this.projectile.position = this.screenToWorldPos(this.projectilePos);
     this.textBox.position = this.screenToWorldPos(this.textBoxTextScreenPos);
     this.textBoxText.position = this.screenToWorldPos(this.textBoxTextScreenPos);
-    this.poke1HealthBar.position = this.screenToWorldPos(this.poke1HealthScreenPos);
-    this.poke2HealthBar.position = this.screenToWorldPos(this.poke2HealthScreenPos);
+    this.poke1HealthBar.container.position = this.screenToWorldPos(this.poke1HealthScreenPos);
+    this.poke2HealthBar.container.position = this.screenToWorldPos(this.poke2HealthScreenPos);
   }
 
   updateAnimations(){
@@ -408,77 +379,6 @@ export class BattleViewerComponent {
       default:
         console.error(`Unimplemented event type: ${event.type}`)
     }
-
-    //this.currentEvent = (this.currentEvent + 1) % this.battle.events.length;
   }
 }
 
-class Tween{
-  object: Point;
-  start: Point;
-  dest: Point;
-  elapsed: number = 0.0;
-  totalTime: number;
-  done: boolean = false;
-  started: boolean = false;
-  constructor(object: Point, dest: Point, time: number){
-    this.object = object;
-    this.start = new Point(object.x ,object.y);
-    this.dest = dest;
-    this.totalTime = time;
-  }
-
-  update(dt: number){
-    if (!this.started){
-      this.start = new Point(this.object.x, this.object.y);
-      this.started = true;
-    }
-    if (this.done) return;
-
-    this.elapsed += dt;
-    
-    if (this.elapsed >= this.totalTime){
-      this.object.x = this.dest.x;
-      this.object.y = this.dest.y;
-      this.done = true;
-      return;
-    }
-    let fullLength: Point = new Point(this.dest.x - this.start.x, this.dest.y - this.start.y);
-    let percentTraveled = this.elapsed / this.totalTime;
-    let distanceTraveled: Point = new Point(fullLength.x * percentTraveled, fullLength.y * percentTraveled);
-    this.object.x = this.start.x + distanceTraveled.x;
-    this.object.y = this.start.y + distanceTraveled.y;
-  }
-}
-
-class Animation{
-  tweens: Array<Tween>;
-  currentTweenIndex: number  = 0;
-  currentTweenRef: Tween;
-  done: boolean = false;
-  constructor(tweens: Array<Tween>){
-    this.tweens = tweens;
-    this.currentTweenRef = this.tweens[0];
-  }
-
-  start(stageTweens:Array<Tween>){
-    this.currentTweenRef = new Tween(new Point(0,0), new Point(0,0), 0);
-    Object.assign(this.currentTweenRef, this.tweens[this.currentTweenIndex]);
-    stageTweens.push(this.currentTweenRef);
-  }
-
-  update(stageTweens:Array<Tween>){
-    if (this.done) return;
-
-    if (this.currentTweenRef.done){
-      this.currentTweenIndex++;
-      if (this.currentTweenIndex >= this.tweens.length){
-        this.done = true;
-        return;
-      }
-      this.currentTweenRef = new Tween(new Point(0,0), new Point(0,0), 0);
-      Object.assign(this.currentTweenRef, this.tweens[this.currentTweenIndex]);
-      stageTweens.push(this.currentTweenRef);
-    }
-  }
-}
