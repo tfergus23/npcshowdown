@@ -181,14 +181,14 @@ export class BattleViewerComponent {
           const trainer1Number = 0;
           const trainer2Number = 1;
           this.poke1HealthBar = new ActiveHealthBar(this.battle, firstPokemonIndex, trainer1Number, this.poke1Health, 
-            await Assets.load('/assets/battle_sprites/alive_poke.png'),
+            await Assets.load('/assets/battle_sprites/healthbar_background.png'),
             await Assets.load('/assets/battle_sprites/health.png'),
             await Assets.load('/assets/battle_sprites/missing_health.png')
           );
           this.poke1HealthBar.addToStage(this.app.stage);
 
           this.poke2HealthBar = new ActiveHealthBar(this.battle, firstPokemonIndex, trainer2Number, this.poke2Health, 
-            await Assets.load('/assets/battle_sprites/alive_poke.png'),
+            await Assets.load('/assets/battle_sprites/healthbar_background.png'),
             await Assets.load('/assets/battle_sprites/health.png'),
             await Assets.load('/assets/battle_sprites/missing_health.png')
           );
