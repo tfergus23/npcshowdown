@@ -2,6 +2,8 @@ import { Text, Sprite, Point, Application, Container, ContainerChild, Texture } 
 import { BattleEventLog, EventLogTrainer } from "./BattleEventLog";
 import { TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH, ACTIVE_HEALTHBAR_HEIGHT } from "./Constants";
 
+const TEXT_COLOR = '#262626';
+
 export class ActiveHealthBar {
     nameText: Text;
     healthText: Text;
@@ -24,7 +26,7 @@ export class ActiveHealthBar {
                 wordWrap: true,
                 wordWrapWidth: TEXTBOX_WIDTH,
                 align: 'left',
-                fill: 'white'
+                fill: TEXT_COLOR
             }
         });
         this.nameText.position.x = -78;
@@ -41,7 +43,7 @@ export class ActiveHealthBar {
                 wordWrap: true,
                 wordWrapWidth: TEXTBOX_WIDTH,
                 align: 'left',
-                fill: 'white'
+                fill: TEXT_COLOR
             }
         });
         this.healthText.position.x = 105;

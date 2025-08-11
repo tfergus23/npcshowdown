@@ -241,14 +241,14 @@ export class BattleViewerComponent {
 
           await Assets.load('/assets/Unageo-Bold.ttf');
 
-          const WEAHTER_TEXT_DISTANCE = 20;
+          const WEAHTER_TEXT_VERTICAL_DISTANCE = 20;
 
           this.weatherLabel.anchor.set(0.5);
-          this.weatherLabel.position.y = -WEAHTER_TEXT_DISTANCE;
+          this.weatherLabel.position.y = -WEAHTER_TEXT_VERTICAL_DISTANCE;
           this.weatherContainer.addChild(this.weatherLabel);
 
           this.weatherText.anchor.set(0.5);
-          this.weatherText.position.y = WEAHTER_TEXT_DISTANCE;
+          this.weatherText.position.y = WEAHTER_TEXT_VERTICAL_DISTANCE;
           this.weatherContainer.addChild(this.weatherText);
 
           this.app.stage.addChild(this.weatherContainer);
