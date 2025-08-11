@@ -6,6 +6,7 @@ import { Animation } from './Animation';
 import { BattleEventLog } from './BattleEventLog';
 import { POKEMON_SCALE, TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH } from './Constants';
 import { ActiveHealthBar } from './ActiveHealthBar';
+import { PartyHealthBars } from './PartyHealthBars';
 
 
 
@@ -27,7 +28,32 @@ export class BattleViewerComponent {
           species: 'Bulbasaur',
           maxHealth: 150,
           gender: "Male"
-        }
+        },
+        {
+          species: 'Bulbasaur',
+          maxHealth: 150,
+          gender: "Male"
+        },
+                {
+          species: 'Bulbasaur',
+          maxHealth: 150,
+          gender: "Male"
+        },
+                {
+          species: 'Bulbasaur',
+          maxHealth: 150,
+          gender: "Male"
+        },
+                {
+          species: 'Bulbasaur',
+          maxHealth: 150,
+          gender: "Male"
+        },
+                {
+          species: 'Bulbasaur',
+          maxHealth: 150,
+          gender: "Male"
+        },
       ]
     },
     trainer2: {
@@ -69,7 +95,6 @@ export class BattleViewerComponent {
   };
   trainer1Textures: Array<any> = [];
   trainer2Textures: Array<any> = [];
-  //TODO: Redo this, these should be array of points
   trainer1Health: Array<Point> = [];
   trainer2Health: Array<Point> = [];
   poke1: Sprite = new Sprite();
@@ -97,6 +122,8 @@ export class BattleViewerComponent {
   projectile: Sprite = new Sprite();
   poke1HealthBar!: ActiveHealthBar;
   poke2HealthBar!: ActiveHealthBar;
+  party1HealthBars!: PartyHealthBars;
+  party2HealthBars!: PartyHealthBars;
   app: Application = new Application();
 
   setTrainer1Poke(index: number){
@@ -158,6 +185,28 @@ export class BattleViewerComponent {
             await Assets.load('/assets/battle_sprites/missing_health.png')
           );
           this.poke2HealthBar.addToStage(this.app.stage);
+
+          const PARTY_BARS_X_OFFSET = -0.017;
+
+          this.party1HealthBars = new PartyHealthBars(
+            await Assets.load('/assets/battle_sprites/health.png'),
+            await Assets.load('/assets/battle_sprites/missing_health.png'),
+            this.trainer1Health,
+            this.trainer1Textures,
+            new Point(PARTY_BARS_X_OFFSET, 0.5),
+            1
+          );
+          this.party1HealthBars.addToStage(this.app.stage);
+
+          this.party2HealthBars = new PartyHealthBars(
+            await Assets.load('/assets/battle_sprites/health.png'),
+            await Assets.load('/assets/battle_sprites/missing_health.png'),
+            this.trainer2Health,
+            this.trainer2Textures,
+            new Point(1 - PARTY_BARS_X_OFFSET, 0.5),
+            2
+          );
+          this.party2HealthBars.addToStage(this.app.stage);
 
           this.setTrainer1Poke(0);
           this.poke1.anchor.set(0.5);
@@ -275,6 +324,8 @@ export class BattleViewerComponent {
 
     this.poke1HealthBar.update();
     this.poke2HealthBar.update();
+    this.party1HealthBars.update();
+    this.party2HealthBars.update();
 
     this.updateTweens(time.deltaMS);
     
@@ -314,6 +365,8 @@ export class BattleViewerComponent {
     this.textBoxText.position = this.screenToWorldPos(this.textBoxTextScreenPos);
     this.poke1HealthBar.container.position = this.screenToWorldPos(this.poke1HealthScreenPos);
     this.poke2HealthBar.container.position = this.screenToWorldPos(this.poke2HealthScreenPos);
+    this.party1HealthBars.container.position = this.screenToWorldPos(this.party1HealthBars.screenSpacePos);
+    this.party2HealthBars.container.position = this.screenToWorldPos(this.party2HealthBars.screenSpacePos);
   }
 
   updateAnimations(){

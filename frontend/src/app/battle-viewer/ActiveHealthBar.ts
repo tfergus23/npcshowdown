@@ -1,7 +1,6 @@
 import { Text, Sprite, Point, Application, Container, ContainerChild, Texture } from "pixi.js";
 import { BattleEventLog, EventLogTrainer } from "./BattleEventLog";
 import { TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH, ACTIVE_HEALTHBAR_HEIGHT } from "./Constants";
-import { stagger } from "@angular/animations";
 
 export class ActiveHealthBar {
     nameText: Text;
@@ -38,7 +37,7 @@ export class ActiveHealthBar {
             text: `${this.health.x.toFixed(0).padStart(3, "0")}/${this.health.y.toFixed(0).padStart(3, "0")}`,
                 style: {
                 fontFamily: 'Unageo-Bold',
-                fontSize: 25,
+                fontSize: ACTIVE_HEALTHBAR_HEIGHT,
                 wordWrap: true,
                 wordWrapWidth: TEXTBOX_WIDTH,
                 align: 'left',

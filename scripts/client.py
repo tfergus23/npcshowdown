@@ -49,7 +49,7 @@ def try_admin_route():
     print(res.headers)
     print (res.text)
 
-#flood_with_tournaments()
-try_admin_route()
+flood_with_tournaments()
+#try_admin_route()
 #bad_auth_request()
 #get_admin_token()
