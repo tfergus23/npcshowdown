@@ -119,6 +119,14 @@ export class BattleViewerComponent {
       fontSize: 35,
     }
   });
+  weatherText: Text = new Text({
+    text: 'Clear',
+    style: {
+      fontFamily: 'Unageo-Bold',
+      fontSize: 35,
+    }
+  });
+  weatherContainer = new Container<ContainerChild>();
   projectile: Sprite = new Sprite();
   poke1HealthBar!: ActiveHealthBar;
   poke2HealthBar!: ActiveHealthBar;
@@ -186,14 +194,14 @@ export class BattleViewerComponent {
           );
           this.poke2HealthBar.addToStage(this.app.stage);
 
-          const PARTY_BARS_X_OFFSET = -0.017;
+          const PARTY_BARS_DISTANCE_FROM_EDGE = -0.017;
 
           this.party1HealthBars = new PartyHealthBars(
             await Assets.load('/assets/battle_sprites/health.png'),
             await Assets.load('/assets/battle_sprites/missing_health.png'),
             this.trainer1Health,
             this.trainer1Textures,
-            new Point(PARTY_BARS_X_OFFSET, 0.5),
+            new Point(PARTY_BARS_DISTANCE_FROM_EDGE, 0.5),
             1
           );
           this.party1HealthBars.addToStage(this.app.stage);
@@ -203,7 +211,7 @@ export class BattleViewerComponent {
             await Assets.load('/assets/battle_sprites/missing_health.png'),
             this.trainer2Health,
             this.trainer2Textures,
-            new Point(1 - PARTY_BARS_X_OFFSET, 0.5),
+            new Point(1 - PARTY_BARS_DISTANCE_FROM_EDGE, 0.5),
             2
           );
           this.party2HealthBars.addToStage(this.app.stage);
@@ -233,8 +241,17 @@ export class BattleViewerComponent {
 
           await Assets.load('/assets/Unageo-Bold.ttf');
 
+          const WEAHTER_TEXT_DISTANCE = 20;
+
           this.weatherLabel.anchor.set(0.5);
-          this.app.stage.addChild(this.weatherLabel);
+          this.weatherLabel.position.y = -WEAHTER_TEXT_DISTANCE;
+          this.weatherContainer.addChild(this.weatherLabel);
+
+          this.weatherText.anchor.set(0.5);
+          this.weatherText.position.y = WEAHTER_TEXT_DISTANCE;
+          this.weatherContainer.addChild(this.weatherText);
+
+          this.app.stage.addChild(this.weatherContainer);
 
           this.textBoxText.anchor.set(0.5);
           this.app.stage.addChild(this.textBoxText);
@@ -253,7 +270,7 @@ export class BattleViewerComponent {
     return poke.toLowerCase() + ".png";
   }
 
-  weatherLabelScreenPos: Point = new Point(0.5, 0.1);
+  weatherContainerScreenPos: Point = new Point(0.5, 0.1);
   tweens: Array<Tween> = new Array<Tween>();
   animations: Array<Animation> = new Array<Animation>();
 
@@ -359,7 +376,7 @@ export class BattleViewerComponent {
   updateWorldPositions(){
     this.poke1.position = this.screenToWorldPos(this.poke1ScreenPos);
     this.poke2.position = this.screenToWorldPos(this.poke2ScreenPos);
-    this.weatherLabel.position = this.screenToWorldPos(this.weatherLabelScreenPos);
+    this.weatherContainer.position = this.screenToWorldPos(this.weatherContainerScreenPos);
     this.projectile.position = this.screenToWorldPos(this.projectilePos);
     this.textBox.position = this.screenToWorldPos(this.textBoxTextScreenPos);
     this.textBoxText.position = this.screenToWorldPos(this.textBoxTextScreenPos);
