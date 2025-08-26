@@ -133,6 +133,7 @@ export class BattleViewerComponent {
   party1HealthBars!: PartyHealthBars;
   party2HealthBars!: PartyHealthBars;
   app: Application = new Application();
+  statusTextures: any = {};
 
   setTrainer1Poke(index: number){
     this.poke1Health = this.trainer1Health[index];
@@ -171,10 +172,10 @@ export class BattleViewerComponent {
           this.pixiContainer.nativeElement.appendChild(this.app.canvas);
 
           for (let i = 0; i < this.battle.trainer1.team.length; i++){
-            this.trainer1Textures[i] = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer1.team[i].species)}`);
+            this.trainer1Textures[i] = await Assets.load(`/assets/battle_sprites/pokemon/${this.determineFileName(this.battle.trainer1.team[i].species)}`);
           }
           for (let i = 0; i < this.battle.trainer2.team.length; i++){
-            this.trainer2Textures[i] = await Assets.load(`/assets/battle_sprites/${this.determineFileName(this.battle.trainer2.team[i].species)}`);
+            this.trainer2Textures[i] = await Assets.load(`/assets/battle_sprites/pokemon/${this.determineFileName(this.battle.trainer2.team[i].species)}`);
           }
 
           const firstPokemonIndex = 0;
@@ -255,6 +256,13 @@ export class BattleViewerComponent {
 
           this.textBoxText.anchor.set(0.5);
           this.app.stage.addChild(this.textBoxText);
+
+          this.statusTextures['Poison'] = await Assets.load('/assets/battle_sprites/status/poison.png');
+          this.statusTextures['Paralysis'] = await Assets.load('/assets/battle_sprites/status/paralysis.png');
+          this.statusTextures['Sleep'] = await Assets.load('/assets/battle_sprites/status/sleep.png');
+          this.statusTextures['Burn'] = await Assets.load('/assets/battle_sprites/status/burn.png');
+          this.statusTextures['Freeze'] = await Assets.load('/assets/battle_sprites/status/freeze.png');
+          this.statusTextures['Toxic'] = await Assets.load('/assets/battle_sprites/status/toxic.png');
 
           this.app.ticker.add((time) =>
           {

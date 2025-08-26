@@ -1,4 +1,4 @@
-import { Text, Sprite, Point, Application, Container, ContainerChild, Texture } from "pixi.js";
+import { Text, Sprite, Point, Application, Container, ContainerChild, Texture, Assets } from "pixi.js";
 import { BattleEventLog, EventLogTrainer } from "./BattleEventLog";
 import { TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH, ACTIVE_HEALTHBAR_HEIGHT } from "./Constants";
 
@@ -10,6 +10,7 @@ export class ActiveHealthBar {
     background: Sprite = new Sprite();
     healthBar: Sprite = new Sprite();
     missingHealthBar: Sprite = new Sprite();
+    statusSprite: Sprite = new Sprite();
 
     container: Container<ContainerChild> = new Container<ContainerChild>();
 
@@ -66,11 +67,16 @@ export class ActiveHealthBar {
         this.background.zIndex = -1;
         this.background.scale.set(3, 1);
 
+        this.statusSprite.visible = false;
+        this.statusSprite.scale.set(0.3);
+        this.statusSprite.position.x = 70;
+        this.statusSprite.position.y = 15;
+
         this.container.addChild(this.nameText);
         this.container.addChild(this.healthBar);
         this.container.addChild(this.healthText);
         this.container.addChild(this.background);
-        
+        this.container.addChild(this.statusSprite);
     }
 
     addToStage(stage: Container<ContainerChild>){
@@ -83,5 +89,15 @@ export class ActiveHealthBar {
         this.missingHealthBar.width = (ACTIVE_HEALTHBAR_WIDTH - (currentHealth / maxHealth * ACTIVE_HEALTHBAR_WIDTH)) / this.healthBar.scale.x;
         this.missingHealthBar.position.x = ((currentHealth / maxHealth * ACTIVE_HEALTHBAR_WIDTH)) / 2 / this.healthBar.scale.x;
         this.healthText.text = `${this.health.x.toFixed(0).padStart(3, "0")}/${this.health.y.toFixed(0).padStart(3, "0")}`;
+    }
+
+    setStatus(status: string, textures: any){
+        if (status == 'None'){
+            this.statusSprite.visible = false;
+        }
+        else{
+            this.statusSprite.visible = true;
+            this.statusSprite.texture = textures[status];
+        }
     }
 }
