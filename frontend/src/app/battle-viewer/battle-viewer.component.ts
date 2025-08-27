@@ -9,6 +9,13 @@ import { ActiveHealthBar } from './ActiveHealthBar';
 import { PartyHealthBars } from './PartyHealthBars';
 import { FieldEffectsText } from './FieldEffectsText';
 
+/*
+  TODO:
+  - Status on switch
+  - Clear volatiles on switch
+  - Get battle from url
+*/
+
 type Weather = 'Sun' | 'Rain' | 'Hail' | 'Sandstorm' | 'Clear';
 
 @Component({
@@ -26,34 +33,14 @@ export class BattleViewerComponent {
       name: 'Guy Dudebro',
       team: [
         {
-          species: 'Bulbasaur',
+          species: 'Tapu Koko',
           maxHealth: 150,
           gender: "Male"
         },
         {
-          species: 'Bulbasaur',
-          maxHealth: 150,
-          gender: "Male"
-        },
-                {
-          species: 'Bulbasaur',
-          maxHealth: 150,
-          gender: "Male"
-        },
-                {
-          species: 'Bulbasaur',
-          maxHealth: 150,
-          gender: "Male"
-        },
-                {
-          species: 'Bulbasaur',
-          maxHealth: 150,
-          gender: "Male"
-        },
-                {
-          species: 'Bulbasaur',
-          maxHealth: 150,
-          gender: "Male"
+          species: 'Dialga',
+          maxHealth: 250,
+          gender: "Genderless"
         },
       ]
     },
@@ -70,7 +57,7 @@ export class BattleViewerComponent {
     events: [
       {
         type: 'RANGED_ATTACK',
-        message: 'Crabominable used All-Out-Pummeling!',
+        message: 'Ho-oh used All-Out-Pummeling!',
         data: {
           attackerIsPlayer1: true,
           damage: 100
@@ -81,15 +68,66 @@ export class BattleViewerComponent {
         message: 'Bulbasaur used Vine Whip!',
         data: {
           attackerIsPlayer1: false,
-          damage: 149
+          damage: 150
         }
       },
       {
-        type: 'RANGED_ATTACK',
-        message: 'Bulbasaur used Focus Blast!',
+        type: 'POKEMON_FAINT',
+        message: 'Ho-oh fainted!',
         data: {
-          attackerIsPlayer1: true,
-          damage: 49
+          isPlayer1: true,
+        }
+      },
+      {
+        type: 'POKEMON_ENTER',
+        message: 'Go Dialga!',
+        data: {
+          isPlayer1: true,
+          newPokeIndex: 1
+        }
+      },
+      {
+        type: 'DAMAGE_TAKEN',
+        message: 'Dialga is hurt by the stealthy stealth rocks.',
+        data: {
+          recipientIsPlayer1: true,
+          damage: 20
+        }
+      },
+      {
+        type: 'DEBUG_MESSAGE',
+        message: 'This is a debug message.',
+        data: {}
+      },
+      {
+        type: 'HEALING_RECEIVED',
+        message: 'Dialga ate some snackies.',
+        data: {
+          recipientIsPlayer1: true,
+          healing: 20
+        }
+      },
+      {
+        type: 'WEATHER_CHANGE',
+        message: 'The sunlight became harsh!',
+        data: {
+          weather: 'Sun'
+        }
+      },
+      {
+        type: 'APPLY_VOLATILE',
+        message: 'Dialga contracted heatstroke!',
+        data: {
+          appliedToPlayer1: true,
+          effect: 'Heatstroke'
+        }
+      },
+      {
+        type: 'REMOVE_VOLATILE',
+        message: 'Paula used the wet towel!',
+        data: {
+          removedFromPlayer1: true,
+          effect: 'Heatstroke'
         }
       },
     ]
@@ -139,19 +177,32 @@ export class BattleViewerComponent {
   statusTextures: any = {};
   player1FieldEffects: FieldEffectsText = new FieldEffectsText(new Point(this.poke1Home.x,0.6));
   player2FieldEffects: FieldEffectsText = new FieldEffectsText(new Point(this.poke2Home.x,0.6));
+  delayPoint: Point = new Point(); // Quick and dirty way to add delay
+
+
+  genderSymbol(gender: string){
+    if (gender == "Male")
+      return '♂';
+    else if (gender == "Female"){
+      return '♀';
+    }
+    return '';
+  }
 
   setTrainer1Poke(index: number){
     this.poke1Health = this.trainer1Health[index];
     this.poke1.texture = this.trainer1Textures[index];
     this.poke1.visible = true;
-    this.poke1HealthBar.nameText.text = this.battle.trainer1.team[index].species + (this.battle.trainer1.team[index].gender == "Male" ? '♂' : '♀');
+    this.poke1HealthBar.nameText.text = this.battle.trainer1.team[index].species + this.genderSymbol(this.battle.trainer1.team[index].gender);
+    this.poke1HealthBar.health = this.poke1Health;
   }
 
   setTrainer2Poke(index: number){
     this.poke2Health = this.trainer2Health[index];
     this.poke2.texture = this.trainer2Textures[index];
     this.poke2.visible = true;
-    this.poke2HealthBar.nameText.text = this.battle.trainer2.team[index].species + (this.battle.trainer2.team[index].gender == "Male" ? '♂' : '♀');
+    this.poke2HealthBar.nameText.text = this.battle.trainer2.team[index].species + this.genderSymbol(this.battle.trainer2.team[index].gender);
+    this.poke2HealthBar.health = this.poke2Health;
   }
 
 
@@ -347,6 +398,13 @@ export class BattleViewerComponent {
     new Tween(this.projectilePos, new Point(this.projectileHome.x, this.projectileHome.y), 0),
   ]);
 
+  poke1Leave = new Animation([
+    new Tween(this.poke1ScreenPos, new Point(-0.25, this.poke2ScreenPos.y), 700),
+  ]);
+  poke1Enter = new Animation([
+    new Tween(this.poke1ScreenPos, new Point(this.poke1Home.x, this.poke2ScreenPos.y), 700),
+  ]);
+
   currentEvent: number = 0;
 
   screenToWorldPos(point: Point) : Point{
@@ -419,6 +477,13 @@ export class BattleViewerComponent {
     animCopy = Object.assign(animCopy, anim);
     this.animations.push(animCopy);
     animCopy.start(this.tweens);
+  }
+
+  beginDelay(delayMS: number){
+    let delayAnim = new Animation([
+      new Tween(this.delayPoint, this.delayPoint, delayMS),
+    ]);
+    this.startAnimation(delayAnim);
   }
 
   clamp(num: number, min: number, max: number) {
@@ -500,36 +565,42 @@ export class BattleViewerComponent {
       case "MELEE_ATTACK":
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1MeleeAttack : this.poke2MeleeAttack);
         this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 1350);
+        this.beginDelay(2700);
         break;
       case "RANGED_ATTACK":
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1RangedAttack : this.poke2RangedAttack);
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1Projectile : this.poke2Projectile);
         this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 900);
+        this.beginDelay(1500);
         break;
       case 'DAMAGE_TAKEN':
         this.startHealthTween(event.data.recipientIsPlayer1 ? this.poke1Health : this.poke2Health, -event.data.damage, 0);
+        this.beginDelay(1200);
         break;
       case 'HEALING_RECEIVED':
         this.startHealthTween(event.data.recipientIsPlayer1 ? this.poke1Health : this.poke2Health, event.data.healing, 0);
+        this.beginDelay(1200);
         break;
       case 'POKEMON_ENTER':{
         let newIndex = event.data.newPokeIndex;
         if (event.data.isPlayer1){
           this.setTrainer1Poke(newIndex);
+          this.startAnimation(this.poke1Enter);
         }
         else{
           this.setTrainer2Poke(newIndex);
         }
+        this.beginDelay(1200);
       }
         break;
       case 'POKEMON_LEAVE':{
-        let poke: Sprite = event.data.isPlayer1 ? this.poke1 : this.poke2;
-        poke.visible = false;
+        this.startAnimation(this.poke1Leave);
+        this.beginDelay(1000);
         break;
       }
       case 'POKEMON_FAINT':{
-        let poke: Sprite = event.data.isPlayer1 ? this.poke1 : this.poke2;
-        poke.visible = false;
+        this.startAnimation(this.poke1Leave);
+        this.beginDelay(1000);
         break;
       }
       case 'APPLY_STATUS':{
@@ -540,28 +611,36 @@ export class BattleViewerComponent {
       case 'APPLY_VOLATILE':{
         let health: ActiveHealthBar = event.data.appliedToPlayer1 ? this.poke1HealthBar : this.poke2HealthBar;
         health.addVolatile(event.data.effect);
+        this.beginDelay(1500);
         break;
       }
       case 'APPLY_FIELD_EFFECT':{
         let fieldEffects: FieldEffectsText = event.data.appliedToPlayer1 ? this.player1FieldEffects : this.player2FieldEffects;
         fieldEffects.addEffect(event.data.fieldEffect);
+        this.beginDelay(1500);
         break;
       }
       case 'REMOVE_VOLATILE':{
-        let health: ActiveHealthBar = event.data.appliedToPlayer1 ? this.poke1HealthBar : this.poke2HealthBar;
+        let health: ActiveHealthBar = event.data.removedFromPlayer1 ? this.poke1HealthBar : this.poke2HealthBar;
         health.removeVolatile(event.data.effect);
+        this.beginDelay(1500);
         break;
       }
       case 'REMOVE_FIELD_EFFECT':{
-        let fieldEffects: FieldEffectsText = event.data.appliedToPlayer1 ? this.player1FieldEffects : this.player2FieldEffects;
+        let fieldEffects: FieldEffectsText = event.data.removedFromPlayer1Side ? this.player1FieldEffects : this.player2FieldEffects;
         fieldEffects.removeEffect(event.data.fieldEffect);
+        this.beginDelay(1500);
         break;
       }
       case 'WEATHER_CHANGE':
         this.setWeather(event.data.weather);
+        this.beginDelay(1200);
         break;
       case 'STAT_CHANGE':
         //TODO
+        break;
+      case 'DEBUG_MESSAGE':
+        this.beginDelay(1000);
         break;
       default:
         console.error(`Unimplemented event type: ${event.type}`)

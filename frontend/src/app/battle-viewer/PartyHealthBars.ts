@@ -26,8 +26,10 @@ class PartyHealthBar {
         this.missingHealthBar.anchor.set(0.5);
         this.healthBar.addChild(this.missingHealthBar);
 
-        this.pokemon.position.x = player == 1 ? 80 : -175;
-        this.pokemon.position.y = -45;
+        this.pokemon.position.x = player == 1 ? 130 : -125;
+        this.pokemon.position.y = 0;
+        this.pokemon.anchor.set(0.5);
+        this.pokemon.scale.set(0.6);
 
         this.container.addChild(this.healthBar);
         this.container.addChild(this.pokemon);
