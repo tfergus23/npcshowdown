@@ -1,14 +1,15 @@
 import { Component, CSP_NONCE, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild, DEPRECATED_SCALE_MODES, Container } from 'pixi.js';
+import { Application, Assets, Point, Sprite, Ticker, Text, ContainerChild, DEPRECATED_SCALE_MODES, Container, Pool } from 'pixi.js';
 import { Tween } from './Tween';
 import { Animation } from './Animation';
 import { BattleEventLog } from './BattleEventLog';
-import { POKEMON_SCALE, TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH } from './Constants';
+import { POKEMON_SCALE, TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH, DEFAULT_BACKGROUND_COLOR, SUN_BACKGROUND_COLOR, SANDSTORM_BACKGROUND_COLOR, RAIN_BACKGROUND_COLOR, HAIL_BACKGROUND_COLOR } from './Constants';
 import { ActiveHealthBar } from './ActiveHealthBar';
 import { PartyHealthBars } from './PartyHealthBars';
+import { FieldEffectsText } from './FieldEffectsText';
 
-
+type Weather = 'Sun' | 'Rain' | 'Hail' | 'Sandstorm' | 'Clear';
 
 @Component({
   selector: 'app-battle-viewer',
@@ -93,6 +94,8 @@ export class BattleViewerComponent {
       },
     ]
   };
+  poke1Home: Point = new Point(0.30, 0.5);
+  poke2Home: Point = new Point(0.70, 0.5);
   trainer1Textures: Array<any> = [];
   trainer2Textures: Array<any> = [];
   trainer1Health: Array<Point> = [];
@@ -134,30 +137,8 @@ export class BattleViewerComponent {
   party2HealthBars!: PartyHealthBars;
   app: Application = new Application();
   statusTextures: any = {};
-  player1FieldEffectsText = new Text({
-    text: 'Stealth Rock, Spikes',
-    style: {
-        fontFamily: 'Unageo-Bold',
-        fontSize: 25,
-        wordWrap: true,
-        wordWrapWidth: TEXTBOX_WIDTH,
-        align: 'left',
-        fill: '#262626'
-    }
-  });
-  player2FieldEffectsText = new Text({
-    text: 'Stealth Rock, Spikes',
-    style: {
-        fontFamily: 'Unageo-Bold',
-        fontSize: 25,
-        wordWrap: true,
-        wordWrapWidth: TEXTBOX_WIDTH,
-        align: 'left',
-        fill: '#262626'
-    }
-  });
-  player1FieldEffectsList: Array<string> = new Array<string>();
-  player2FieldEffectsList: Array<string> = new Array<string>();
+  player1FieldEffects: FieldEffectsText = new FieldEffectsText(new Point(this.poke1Home.x,0.6));
+  player2FieldEffects: FieldEffectsText = new FieldEffectsText(new Point(this.poke2Home.x,0.6));
 
   setTrainer1Poke(index: number){
     this.poke1Health = this.trainer1Health[index];
@@ -170,6 +151,8 @@ export class BattleViewerComponent {
     this.poke2.texture = this.trainer2Textures[index];
     this.poke2HealthBar.nameText.text = this.battle.trainer2.team[index].species + (this.battle.trainer2.team[index].gender == "Male" ? '♂' : '♀');
   }
+
+
 
   ngOnInit(){
     for (let i = 0; i < this.battle.trainer1.team.length; i++){
@@ -190,7 +173,7 @@ export class BattleViewerComponent {
           
         
           // Initialize the application
-          await this.app.init({ background: '#8c8c8c', resizeTo: this.pixiContainer.nativeElement });
+          await this.app.init({ background: DEFAULT_BACKGROUND_COLOR, resizeTo: this.pixiContainer.nativeElement });
       
           // Append the application canvas to the document body
           this.pixiContainer.nativeElement.appendChild(this.app.canvas);
@@ -288,6 +271,9 @@ export class BattleViewerComponent {
           this.statusTextures['Frozen'] = await Assets.load('/assets/battle_sprites/status/frozen.png');
           this.statusTextures['Toxic'] = await Assets.load('/assets/battle_sprites/status/toxic.png');
 
+          this.player1FieldEffects.addToStage(this.app.stage);
+          this.player2FieldEffects.addToStage(this.app.stage);
+
           this.app.ticker.add((time) =>
           {
             this.update(time);
@@ -306,8 +292,6 @@ export class BattleViewerComponent {
   tweens: Array<Tween> = new Array<Tween>();
   animations: Array<Animation> = new Array<Animation>();
 
-  poke1Home: Point = new Point(0.30, 0.5);
-  poke2Home: Point = new Point(0.70, 0.5);
   projectileHome: Point = new Point(-2, -2);
 
   poke1ScreenPos: Point = new Point(this.poke1Home.x, this.poke1Home.y);
@@ -416,6 +400,8 @@ export class BattleViewerComponent {
     this.poke2HealthBar.container.position = this.screenToWorldPos(this.poke2HealthScreenPos);
     this.party1HealthBars.container.position = this.screenToWorldPos(this.party1HealthBars.screenSpacePos);
     this.party2HealthBars.container.position = this.screenToWorldPos(this.party2HealthBars.screenSpacePos);
+    this.player1FieldEffects.text.position = this.screenToWorldPos(this.player1FieldEffects.screenSpacePos);
+    this.player2FieldEffects.text.position = this.screenToWorldPos(this.player2FieldEffects.screenSpacePos);
   }
 
   updateAnimations(){
@@ -435,6 +421,27 @@ export class BattleViewerComponent {
 
   clamp(num: number, min: number, max: number) {
     return Math.min(Math.max(num, min), max);
+  }
+
+  setWeather(weather: Weather){
+    this.weatherText.text = weather;
+    switch (weather){
+      case 'Clear':
+        this.app.renderer.background.color = DEFAULT_BACKGROUND_COLOR;
+        break;
+      case 'Sun':
+        this.app.renderer.background.color = SUN_BACKGROUND_COLOR;
+        break;
+      case 'Rain':
+        this.app.renderer.background.color = RAIN_BACKGROUND_COLOR;
+        break;
+      case 'Hail':
+        this.app.renderer.background.color = HAIL_BACKGROUND_COLOR;
+        break;
+      case 'Sandstorm':
+        this.app.renderer.background.color = SANDSTORM_BACKGROUND_COLOR;
+        break;
+    }
   }
 
   startHealthTween(currentHealth: Point, healthChange: number, delayMS: number){
