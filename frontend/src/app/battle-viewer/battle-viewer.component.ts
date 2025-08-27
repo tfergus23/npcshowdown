@@ -134,6 +134,30 @@ export class BattleViewerComponent {
   party2HealthBars!: PartyHealthBars;
   app: Application = new Application();
   statusTextures: any = {};
+  player1FieldEffectsText = new Text({
+    text: 'Stealth Rock, Spikes',
+    style: {
+        fontFamily: 'Unageo-Bold',
+        fontSize: 25,
+        wordWrap: true,
+        wordWrapWidth: TEXTBOX_WIDTH,
+        align: 'left',
+        fill: '#262626'
+    }
+  });
+  player2FieldEffectsText = new Text({
+    text: 'Stealth Rock, Spikes',
+    style: {
+        fontFamily: 'Unageo-Bold',
+        fontSize: 25,
+        wordWrap: true,
+        wordWrapWidth: TEXTBOX_WIDTH,
+        align: 'left',
+        fill: '#262626'
+    }
+  });
+  player1FieldEffectsList: Array<string> = new Array<string>();
+  player2FieldEffectsList: Array<string> = new Array<string>();
 
   setTrainer1Poke(index: number){
     this.poke1Health = this.trainer1Health[index];
@@ -261,7 +285,7 @@ export class BattleViewerComponent {
           this.statusTextures['Paralysis'] = await Assets.load('/assets/battle_sprites/status/paralysis.png');
           this.statusTextures['Sleep'] = await Assets.load('/assets/battle_sprites/status/sleep.png');
           this.statusTextures['Burn'] = await Assets.load('/assets/battle_sprites/status/burn.png');
-          this.statusTextures['Freeze'] = await Assets.load('/assets/battle_sprites/status/freeze.png');
+          this.statusTextures['Frozen'] = await Assets.load('/assets/battle_sprites/status/frozen.png');
           this.statusTextures['Toxic'] = await Assets.load('/assets/battle_sprites/status/toxic.png');
 
           this.app.ticker.add((time) =>

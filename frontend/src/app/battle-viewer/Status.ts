@@ -1,0 +1,1 @@
+export type Status = 'None' | 'Poison' | 'Paralysis' | 'Sleep' | 'Burn' | 'Frozen' | 'Toxic';

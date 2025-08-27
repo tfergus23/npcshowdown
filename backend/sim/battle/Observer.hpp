@@ -2,6 +2,7 @@
 #include "sim/battle/Event.hpp"
 #include "sim/battle/EventArgs.hpp"
 #include "sim/battle/ObserverState.hpp"
+#include "sim/battle/Stat.hpp"
 
 class Pokemon;
 class Battle;

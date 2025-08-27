@@ -1,6 +1,7 @@
 import { Text, Sprite, Point, Application, Container, ContainerChild, Texture, Assets } from "pixi.js";
 import { BattleEventLog, EventLogTrainer } from "./BattleEventLog";
 import { TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH, ACTIVE_HEALTHBAR_HEIGHT } from "./Constants";
+import { Status } from "./Status";
 
 const TEXT_COLOR = '#262626';
 
@@ -11,6 +12,8 @@ export class ActiveHealthBar {
     healthBar: Sprite = new Sprite();
     missingHealthBar: Sprite = new Sprite();
     statusSprite: Sprite = new Sprite();
+    volatilesText: Text;
+    volatilesList: Array<string> = new Array<string>();
 
     container: Container<ContainerChild> = new Container<ContainerChild>();
 
@@ -70,13 +73,28 @@ export class ActiveHealthBar {
         this.statusSprite.visible = false;
         this.statusSprite.scale.set(0.3);
         this.statusSprite.position.x = 70;
-        this.statusSprite.position.y = 15;
+        this.statusSprite.position.y = -45;
+
+        this.volatilesText = new Text({
+            text: '',
+            style: {
+                fontFamily: 'Unageo-Bold',
+                fontSize: 25,
+                wordWrap: true,
+                wordWrapWidth: TEXTBOX_WIDTH,
+                align: 'left',
+                fill: TEXT_COLOR
+            }
+        });
+        this.volatilesText.position.x = -145;
+        this.volatilesText.position.y = 15;
 
         this.container.addChild(this.nameText);
         this.container.addChild(this.healthBar);
         this.container.addChild(this.healthText);
         this.container.addChild(this.background);
         this.container.addChild(this.statusSprite);
+        this.container.addChild(this.volatilesText);
     }
 
     addToStage(stage: Container<ContainerChild>){
@@ -91,7 +109,7 @@ export class ActiveHealthBar {
         this.healthText.text = `${this.health.x.toFixed(0).padStart(3, "0")}/${this.health.y.toFixed(0).padStart(3, "0")}`;
     }
 
-    setStatus(status: string, textures: any){
+    setStatus(status: Status, textures: any){
         if (status == 'None'){
             this.statusSprite.visible = false;
         }
@@ -99,5 +117,25 @@ export class ActiveHealthBar {
             this.statusSprite.visible = true;
             this.statusSprite.texture = textures[status];
         }
+    }
+
+    updateVolatilesText(){
+        this.volatilesText.text = '';
+        for (let i = 0; i < this.volatilesList.length; i++){
+            this.volatilesText.text += this.volatilesList[i];
+            if (i != this.volatilesList.length-1){
+                this.volatilesText.text += ", ";
+            }
+        }
+    }
+
+    addVolatile(volatile: string){
+        this.volatilesList.push(volatile);
+        this.updateVolatilesText();
+    }
+
+    removeVolatile(volatile: string){
+        this.volatilesList = this.volatilesList.filter(vol => vol != volatile);
+        this.updateVolatilesText();
     }
 }
