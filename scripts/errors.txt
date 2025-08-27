@@ -1,0 +1,16 @@
+Error: Couldn't get nidoran♀
+Error: Couldn't get nidoran♂
+Error: Couldn't get farfetch'd
+Error: Couldn't get mr. mime
+Error: Couldn't get ho-oh
+Error: Couldn't get mime jr.
+Error: Couldn't get porygon-z
+Error: Couldn't get flabébé
+Error: Couldn't get type: null
+Error: Couldn't get jangmo-o
+Error: Couldn't get hakamo-o
+Error: Couldn't get kommo-o
+Error: Couldn't get tapu koko
+Error: Couldn't get tapu lele
+Error: Couldn't get tapu bulu
+Error: Couldn't get tapu fini
