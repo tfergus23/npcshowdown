@@ -338,6 +338,8 @@ static const char* const eventTypeStrings[] = {
     "APPLY_STATUS",
     "APPLY_VOLATILE",
     "APPLY_FIELD_EFFECT",
+    "REMOVE_VOLATILE",
+    "REMOVE_FIELD_EFFECT",
     "WEATHER_CHANGE",
     "STAT_CHANGE",
     "DEBUG_MESSAGE"
@@ -405,6 +407,14 @@ json LogEvent::toJSON(){
         data["effect"] = m_data.applyVolatile.effect->name;
         data["appliedToPlayer1"] = m_data.applyVolatile.appliedToPlayer1;
         break;
+    case LogEventType::REMOVE_VOLATILE:
+        data["effect"] = m_data.removeVolatile.effect->name;
+        data["removedFromPlayer1"] = m_data.removeVolatile.removedFromPlayer1;
+        break;
+    case LogEventType::REMOVE_FIELD_EFFECT:
+        data["fieldEffect"] = m_data.removeFieldEffect.fieldEffect->name;
+        data["removedFromPlayer1Side"] = m_data.removeFieldEffect.removedFromPlayer1Side;
+        break;
     case LogEventType::APPLY_FIELD_EFFECT:
         data["fieldEffect"] = m_data.applyFieldEffect.fieldEffect->name;
         data["appliedToPlayer1Side"] = m_data.applyFieldEffect.appliedToPlayer1Side;
@@ -435,6 +445,8 @@ LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyVol
 LogEvent::LogEvent(LogEventType type, const std::string& message, const StatChangeData& data) :         m_type{type}, m_message{message}{ this->m_data.statChange = data; }
 LogEvent::LogEvent(LogEventType type, const std::string& message, const ApplyFieldEffectData& data) :   m_type{type}, m_message{message}{ this->m_data.applyFieldEffect = data; }
 LogEvent::LogEvent(LogEventType type, const std::string& message, const WeatherChangeData& data) :      m_type{type}, m_message{message}{ this->m_data.weatherChange = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const RemoveVolatileData& data) :     m_type{type}, m_message{message}{ this->m_data.removeVolatile = data; }
+LogEvent::LogEvent(LogEventType type, const std::string& message, const RemoveFieldEffectData& data) :  m_type{type}, m_message{message}{ this->m_data.removeFieldEffect = data; }
 
 void Battle::logMessage(std::string_view message){
     if (!doLogging) return;
@@ -479,6 +491,14 @@ void Battle::logApplyVolatile(std::string_view message, const ApplyVolatileData&
 void Battle::logApplyFieldEffect(std::string_view message, const ApplyFieldEffectData& data){
     if (!doLogging) return;
     m_EventLog.emplace_back(LogEventType::APPLY_FIELD_EFFECT, std::string(message), data);
+}
+void Battle::logRemoveVolatile(std::string_view message, const RemoveVolatileData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::REMOVE_VOLATILE, std::string(message), data);
+}
+void Battle::logRemoveFieldEffect(std::string_view message, const RemoveFieldEffectData& data){
+    if (!doLogging) return;
+    m_EventLog.emplace_back(LogEventType::REMOVE_FIELD_EFFECT, std::string(message), data);
 }
 void Battle::logChangeWeather(std::string_view message, const WeatherChangeData& data){
     if (!doLogging) return;

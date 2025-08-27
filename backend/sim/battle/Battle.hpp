@@ -34,6 +34,8 @@ enum class LogEventType {
     APPLY_STATUS,
     APPLY_VOLATILE,
     APPLY_FIELD_EFFECT,
+    REMOVE_VOLATILE,
+    REMOVE_FIELD_EFFECT,
     WEATHER_CHANGE,
     STAT_CHANGE,
     DEBUG_MESSAGE,
@@ -74,6 +76,16 @@ struct ApplyFieldEffectData {
     const FieldEffect* fieldEffect = &FIELD_EFFECT_NONE;
 };
 
+struct RemoveVolatileData {
+    bool removedFromPlayer1 = true;
+    const Effect* effect = &EFFECT_NONE;
+};
+
+struct RemoveFieldEffectData {
+    bool removedFromPlayer1Side = true;
+    const FieldEffect* fieldEffect = &FIELD_EFFECT_NONE;
+};
+
 struct WeatherChangeData {
     const Weather* weather = &WEATHER_NONE;
 };
@@ -94,6 +106,8 @@ union LogEventData {
     StatChangeData statChange;
     ApplyFieldEffectData applyFieldEffect;
     WeatherChangeData weatherChange;
+    RemoveVolatileData removeVolatile;
+    RemoveFieldEffectData removeFieldEffect;
 
     LogEventData(){}
 };
@@ -114,6 +128,8 @@ public:
     LogEvent(LogEventType type, const std::string& message, const ApplyFieldEffectData& data);
     LogEvent(LogEventType type, const std::string& message, const StatChangeData& data);
     LogEvent(LogEventType type, const std::string& message, const WeatherChangeData& data);
+    LogEvent(LogEventType type, const std::string& message, const RemoveVolatileData& data);
+    LogEvent(LogEventType type, const std::string& message, const RemoveFieldEffectData& data);
 private:
     LogEventType m_type;
     std::string m_message;
@@ -172,6 +188,8 @@ public:
     void logApplyStatus(std::string_view message, const ApplyStatusData& data);
     void logApplyVolatile(std::string_view message, const ApplyVolatileData& data);
     void logApplyFieldEffect(std::string_view message, const ApplyFieldEffectData& data);
+    void logRemoveVolatile(std::string_view message, const RemoveVolatileData& data);
+    void logRemoveFieldEffect(std::string_view message, const RemoveFieldEffectData& data);
     void logChangeWeather(std::string_view message, const WeatherChangeData& data);
     void logStatChange(std::string_view message, const StatChangeData& data);
     const std::vector<LogEvent>& eventLog();
