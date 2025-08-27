@@ -145,6 +145,9 @@ Gender Pokemon::getGender() const{
 
 int Pokemon::getStat(Stat stat, bool crit){
     int unboostedStat = getStatRaw(stat);
+    if (this != battle->player1ActivePokemon && this != battle->player2ActivePokemon){
+        return unboostedStat;
+    }
     int finalStatValue = unboostedStat;
     switch (stat)
     {
@@ -167,15 +170,19 @@ int Pokemon::getStat(Stat stat, bool crit){
     }
     case Stat::SPEED:
     {
-        float paralysisMod = 1.0f;
-        if (m_Status == &STATUS_PARALYSIS) paralysisMod = 0.5f;
-        finalStatValue = (int)floor((float)unboostedStat * paralysisMod * statStageMultiplier(boosts[(int)stat]));
+        finalStatValue = (int)floor((float)unboostedStat * statStageMultiplier(boosts[(int)stat]));
         break;
     }
     default:
         battle->assertTrue(false, "Unhandled stat: " + std::to_string((int)stat));
     }
-    finalStatValue = m_CurrentAbility->modifySubjectStat(stat, finalStatValue, this);
+    finalStatValue *= m_CurrentAbility->observer.modifySubjectStat(stat, this);
+    finalStatValue *= m_CurrentItem->observer.modifySubjectStat(stat, this);
+    finalStatValue *= m_Status->observer.modifySubjectStat(stat, this);
+    for (auto& [effect,state] : m_Effects){
+        finalStatValue *= effect->observer.modifySubjectStat(stat,this);
+    }
+    //TODO: field effects/weather
     return finalStatValue;
 }
 int Pokemon::getStatRaw(Stat stat) const{

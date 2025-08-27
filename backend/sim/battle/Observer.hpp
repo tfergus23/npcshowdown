@@ -20,4 +20,5 @@ public:
     void (*onPokemonEnter)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
     void (*onPokemonDeath)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
     void (*onPokemonAttacked)(Pokemon*,Battle*, const EventArgs&) = [](Pokemon* pokemon,Battle* battle, const EventArgs& e){};
+    float (*modifySubjectStat)(Stat,Pokemon*) = [](Stat stat, Pokemon* subject){return 1.0f;};
 };

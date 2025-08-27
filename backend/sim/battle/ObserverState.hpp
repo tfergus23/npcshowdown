@@ -1,4 +1,5 @@
 #pragma once
+#include <variant>
 
 class Pokemon;
 
@@ -16,9 +17,18 @@ struct SubstituteState{
     int health = 0;
 };
 
-union ObserverState{
-    BideState bideState;
-    TruantState truantState;
-    SubstituteState substituteState;
-    ObserverState(){}
+struct SleepState{
+    int remainingTurns = 0;
 };
+
+struct BadPoisonState{
+    int activeTurns = 0;
+};
+
+using ObserverState = std::variant<
+    BideState,
+    TruantState,
+    SubstituteState,
+    SleepState,
+    BadPoisonState
+>;

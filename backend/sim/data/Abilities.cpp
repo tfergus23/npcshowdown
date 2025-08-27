@@ -8,15 +8,15 @@
 using json = nlohmann::json;
 
 const Ability ABILITY_GUTS = {
-    .name = "Guts",
-    .modifySubjectStat = [](Stat stat,int statVal,Pokemon* subject){
+    .observer{
+    .modifySubjectStat = [](Stat stat, Pokemon* subject){
         if (stat == Stat::ATTACK && subject->getStatus() != &STATUS_NONE){
-            float newVal = (float) statVal * 1.5f;
-            subject->battle->debug("Guts active");
-            return (int) floor(newVal);
+            return 1.5f;
         } 
-        return statVal;
+        return 1.0f;
+    }
     },
+    .name = "Guts",
     .id = 62
 };
 
@@ -36,16 +36,16 @@ const Ability ABILITY_TORRENT = {
 const Ability ABILITY_TRUANT = {
     .observer = {
     .initialize = [](Pokemon* subject, Battle* battle){
-        subject->abilityState.truantState = TruantState();
+        subject->abilityState = TruantState();
     },
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
-        TruantState& state = subject->abilityState.truantState;
+        TruantState& state = std::get<TruantState>(subject->abilityState);
         if (args.moveUse->user == subject && state.isTruant && args.moveUse->move != &MOVE_SWITCH){
             args.moveUse->dontStart(subject->nickname + " is loafing around!");
         }
     },
     .afterMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
-        TruantState& state = subject->abilityState.truantState;
+        TruantState& state = std::get<TruantState>(subject->abilityState);
         if (args.moveUse->user == subject){
             state.isTruant = !state.isTruant;
         }

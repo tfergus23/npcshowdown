@@ -40,6 +40,7 @@ public:
     bool dealsFlatDamage = false;
     bool skillLink = false;
     bool soundBased = false;
+    bool usableWhileAsleep = false;
 
     void (*beforeChecks)(MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};
     void (*afterChecks) (MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};
