@@ -44,6 +44,7 @@ enum class LogEventType {
 
 struct AttackData{
     bool attackerIsPlayer1 = true;
+    int damage = 0;
 };
 
 struct DamageData{

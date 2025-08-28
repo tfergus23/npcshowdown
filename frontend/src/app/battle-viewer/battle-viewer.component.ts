@@ -8,12 +8,17 @@ import { POKEMON_SCALE, TEXTBOX_WIDTH, ACTIVE_HEALTHBAR_WIDTH, DEFAULT_BACKGROUN
 import { ActiveHealthBar } from './ActiveHealthBar';
 import { PartyHealthBars } from './PartyHealthBars';
 import { FieldEffectsText } from './FieldEffectsText';
+import { BattleService } from '../battle.service';
+import BattleRequest from 'src/BattleRequest';
 
 /*
   TODO:
   - Status on switch
   - Clear volatiles on switch
-  - Get battle from url
+  - Species should be nickname
+  - Nickname positioning
+  - Damage delay on attacks
+  - Improve resize behavior
 */
 
 type Weather = 'Sun' | 'Rain' | 'Hail' | 'Sandstorm' | 'Clear';
@@ -24,7 +29,7 @@ type Weather = 'Sun' | 'Rain' | 'Hail' | 'Sandstorm' | 'Clear';
   styleUrls: ['./battle-viewer.component.css']
 })
 export class BattleViewerComponent {
-  constructor(private router: Router, private activatedRoute: ActivatedRoute){}
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private battleService: BattleService){}
 
 
   @ViewChild('pixiContainer', { static: true }) pixiContainer!: ElementRef;
@@ -208,21 +213,22 @@ export class BattleViewerComponent {
 
 
   ngOnInit(){
-    for (let i = 0; i < this.battle.trainer1.team.length; i++){
-      const max = this.battle.trainer1.team[i].maxHealth;
-      this.trainer1Health[i] = new Point(max, max);
-    }
-    for (let i = 0; i < this.battle.trainer2.team.length; i++){
-      const max = this.battle.trainer2.team[i].maxHealth;
-      this.trainer2Health[i] = new Point(max, max);
-    }
-    this.poke1Health = this.trainer1Health[0];
-    this.poke2Health = this.trainer2Health[0];
-
-    setTimeout((async () =>
+    this.activatedRoute.queryParams.subscribe(params => {
+      let battleJson: BattleRequest = JSON.parse(params['battle']);
+      this.battleService.postBattleRequest(battleJson).subscribe(async (res) =>
       {
-          // Create a new application
-
+          this.battle = res.data;
+          this.currentText = this.battle.events[this.currentEvent].message;
+          for (let i = 0; i < this.battle.trainer1.team.length; i++){
+            const max = this.battle.trainer1.team[i].maxHealth;
+            this.trainer1Health[i] = new Point(max, max);
+          }
+          for (let i = 0; i < this.battle.trainer2.team.length; i++){
+            const max = this.battle.trainer2.team[i].maxHealth;
+            this.trainer2Health[i] = new Point(max, max);
+          }
+          this.poke1Health = this.trainer1Health[0];
+          this.poke2Health = this.trainer2Health[0];
           
         
           // Initialize the application
@@ -331,7 +337,12 @@ export class BattleViewerComponent {
           {
             this.update(time);
           });
-      }));
+      },
+      (error) =>{
+
+      });
+    });
+    //setTimeout(());
   }
 
   determineFileName(poke: string) : string{
@@ -404,6 +415,12 @@ export class BattleViewerComponent {
   poke1Enter = new Animation([
     new Tween(this.poke1ScreenPos, new Point(this.poke1Home.x, this.poke2ScreenPos.y), 700),
   ]);
+  poke2Leave = new Animation([
+    new Tween(this.poke2ScreenPos, new Point(1.25, this.poke2ScreenPos.y), 700),
+  ]);
+  poke2Enter = new Animation([
+    new Tween(this.poke2ScreenPos, new Point(this.poke2Home.x, this.poke2ScreenPos.y), 700),
+  ]);
 
   currentEvent: number = 0;
 
@@ -432,7 +449,7 @@ export class BattleViewerComponent {
   poke1Health!: Point;
   poke2Health!: Point;
 
-  currentText: string = this.battle.events[this.currentEvent].message;
+  currentText: string = "";
   nextCharTime: number = 0;
   updateTextScroll(deltaMS: number){
     const TIME_BETWEEN_CHARS_MS = 20;
@@ -538,40 +555,25 @@ export class BattleViewerComponent {
     }
   }
 
-  /*
-    MESSAGE,
-    RANGED_ATTACK,
-    MELEE_ATTACK,
-    DAMAGE_TAKEN,
-    HEALING_RECEIVED,
-    POKEMON_ENTER,
-    POKEMON_LEAVE,
-    POKEMON_FAINT,
-    APPLY_STATUS,
-    APPLY_VOLATILE,
-    APPLY_FIELD_EFFECT,
-    REMOVE_VOLATILE,
-    REMOVE_FIELD_EFFECT,
-    WEATHER_CHANGE,
-    STAT_CHANGE,
-    DEBUG_MESSAGE,
-  */
-
   addAnimations(){
     if (this.animations.length != 0 || this.currentEvent >= this.battle.events.length) return;
     const event = this.battle.events[this.currentEvent];
     
     switch (event.type){
+      case 'MESSAGE':
+        this.beginDelay(1000);
+        break;
       case "MELEE_ATTACK":
+        console.log(event.data.attackerIsPlayer1);
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1MeleeAttack : this.poke2MeleeAttack);
-        this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 1350);
-        this.beginDelay(2700);
+        //this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 1350);
+        //this.beginDelay(2700);
         break;
       case "RANGED_ATTACK":
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1RangedAttack : this.poke2RangedAttack);
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1Projectile : this.poke2Projectile);
-        this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 900);
-        this.beginDelay(1500);
+        //this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 900);
+        //this.beginDelay(1500);
         break;
       case 'DAMAGE_TAKEN':
         this.startHealthTween(event.data.recipientIsPlayer1 ? this.poke1Health : this.poke2Health, -event.data.damage, 0);
@@ -589,17 +591,18 @@ export class BattleViewerComponent {
         }
         else{
           this.setTrainer2Poke(newIndex);
+          this.startAnimation(this.poke2Enter);
         }
         this.beginDelay(1200);
       }
         break;
       case 'POKEMON_LEAVE':{
-        this.startAnimation(this.poke1Leave);
+        this.startAnimation(event.data.isPlayer1 ? this.poke1Leave : this.poke2Leave);
         this.beginDelay(1000);
         break;
       }
       case 'POKEMON_FAINT':{
-        this.startAnimation(this.poke1Leave);
+        this.startAnimation(event.data.isPlayer1 ? this.poke1Leave : this.poke2Leave);
         this.beginDelay(1000);
         break;
       }
@@ -638,6 +641,7 @@ export class BattleViewerComponent {
         break;
       case 'STAT_CHANGE':
         //TODO
+        this.beginDelay(1000);
         break;
       case 'DEBUG_MESSAGE':
         this.beginDelay(1000);

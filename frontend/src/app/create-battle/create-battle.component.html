@@ -8,9 +8,16 @@
 
     <app-error-box [errors]="this.errors"></app-error-box>
 
-    <div class="battle-seed" #seed>
+    <div class="standalone-field" #seed>
         <label>Seed (Optional): </label>
         <input (focusout)="this.saveEntries()">
+    </div>
+    <div class="standalone-field" #type>
+        <label>Battle Type: </label>
+        <select (focusout)="this.saveEntries()">
+            <option value="events">Battle Viewer</option>
+            <option value="text">Text Only</option>
+        </select>
     </div>
     <app-spinning-button [loadWhile]="whileSubmittingBattle" class="submit-battle-button" [click]="submit" [text]="'Simulate Battle!'"></app-spinning-button>
     <ul>

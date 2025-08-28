@@ -4,6 +4,7 @@ import { DataService } from '../data.service';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
 import { BattleService } from '../battle.service';
 import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.component';
+import BattleRequest from 'src/BattleRequest';
 
 const SERVICE_DOWN_RESPONSE = "Sorry, it looks like the service is down. Please try again some other time.";
 
@@ -16,6 +17,7 @@ export class CreateBattleComponent {
   dataLists?: DataLists;
   @ViewChildren(CreateTrainerComponent) trainers!: QueryList<CreateTrainerComponent>;
   @ViewChild('seed') seed!: ElementRef<HTMLElement>;
+  @ViewChild('type') type!: ElementRef<HTMLSelectElement>;
   errors: Array<string> = [];
   logLines: Array<string> = [];
   showingBattle: boolean = false;
@@ -40,17 +42,26 @@ export class CreateBattleComponent {
   submit = () => {
     this.submittingBattle = true;
     let seedValue = this.seed.nativeElement.querySelector('input')!.value.trim();
-    this.battleService.postBattleRequest({
+    let typeValue = this.type.nativeElement.querySelector('select')!.value.trim();
+    let request: BattleRequest = {
       trainer1: this.trainers.get(0)!.getJSON(),
       trainer2: this.trainers.get(1)!.getJSON(),
       seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue,
-      type: "text"
-    }).subscribe(
+      type: typeValue
+    };
+    this.battleService.postBattleRequest(request).subscribe(
       (response) => {
         this.submittingBattle = false;
         this.errors = [];
-        this.logView.log = response.data;
-        this.logView.hidden = false;
+        if (typeValue == "text"){
+          this.logView.log = response.data;
+          this.logView.hidden = false;
+        }
+        else{
+          let battleJson = encodeURIComponent(JSON.stringify(request));
+          this.logView.log = battleJson;
+          this.logView.hidden = false;
+        }
         
       },
       (error) => {

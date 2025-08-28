@@ -98,7 +98,7 @@ void Battle::swapMoves(){
 
 MoveUse* Battle::doMove(){
     MoveUse* move = &m_Turn[moveNumber];
-    if (moveNumber == 0) logMessage("----------------------Turn " + std::to_string(turns) + "----------------------");
+    if (moveNumber == 0) logMessage("---Turn " + std::to_string(turns) + "---");
     if (!move->user->isDead && (move->user == player1ActivePokemon || move->user == player2ActivePokemon)){
         move->doMove(&m_Turn[moveNumber == 0 ? 1 : 0]);
         if (move->changeLastMoveUsed){
@@ -376,10 +376,10 @@ json LogEvent::toJSON(){
     case LogEventType::MESSAGE:
         break;
     case LogEventType::RANGED_ATTACK:
-        data["attackerIsPlayer"] = m_data.attack.attackerIsPlayer1;
+        data["attackerIsPlayer1"] = m_data.attack.attackerIsPlayer1;
         break;
     case LogEventType::MELEE_ATTACK:
-        data["attackerIsPlayer"] = m_data.attack.attackerIsPlayer1;
+        data["attackerIsPlayer1"] = m_data.attack.attackerIsPlayer1;
         break;
     case LogEventType::DAMAGE_TAKEN:
         data["recipientIsPlayer1"] = m_data.damage.recipientIsPlayer1;
@@ -537,8 +537,8 @@ json Battle::eventsJson(){
         events.push_back(event.toJSON());
     }
     result["events"] = events;
-    result["player1"] = trainerEventJson(m_Player1, player1Team);
-    result["player2"] = trainerEventJson(m_Player2, player2Team);
+    result["trainer1"] = trainerEventJson(m_Player1, player1Team);
+    result["trainer2"] = trainerEventJson(m_Player2, player2Team);
     return result;
 }
 

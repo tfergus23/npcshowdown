@@ -30,11 +30,16 @@ hr{
     --spinner-size: 20px;
 }
 
-.battle-seed{
+.standalone-field{
     display: block;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
+}
+
+.standalone-field label{
+    display: inline-block;
+    width: 130px;
 }
 
 
@@ -57,7 +62,11 @@ input, select{
         width: 95%;
     }
 
-    .battle-seed input{
+    .standalone-field input{
+        width: 150px;
+    }
+
+    .standalone-field select{
         width: 150px;
     }
 }
