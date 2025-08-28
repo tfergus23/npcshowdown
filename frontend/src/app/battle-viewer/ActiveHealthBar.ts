@@ -33,9 +33,9 @@ export class ActiveHealthBar {
                 fill: TEXT_COLOR
             }
         });
-        this.nameText.position.x = -78;
+        this.nameText.position.x = -145;
         this.nameText.position.y = -30;
-        this.nameText.anchor.set(0.5);
+        this.nameText.anchor.set(0, 0.5);
 
         this.health = health;
 

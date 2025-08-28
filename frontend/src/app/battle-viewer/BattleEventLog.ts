@@ -1,5 +1,6 @@
 interface EventLogPokemon{
   species: string,
+  name: string,
   maxHealth: number;
   gender: string;
 }

@@ -521,6 +521,7 @@ static json trainerEventJson(const TrainerInfo& trainer, const std::array<Pokemo
         if (poke.empty) continue;
         json data;
         data["species"] = poke.species->name;
+        data["name"] = poke.nickname;
         data["level"] = poke.level;
         data["gender"] = genderToString.at(poke.getGender());
         data["maxHealth"] = poke.getStatRaw(Stat::HP);

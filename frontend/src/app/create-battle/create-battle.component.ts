@@ -5,6 +5,7 @@ import { CreateTrainerComponent } from '../create-trainer/create-trainer.compone
 import { BattleService } from '../battle.service';
 import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.component';
 import BattleRequest from 'src/BattleRequest';
+import { Router } from '@angular/router';
 
 const SERVICE_DOWN_RESPONSE = "Sorry, it looks like the service is down. Please try again some other time.";
 
@@ -24,7 +25,7 @@ export class CreateBattleComponent {
   submittingBattle: boolean = false;
   whileSubmittingBattle = () => {return this.submittingBattle;}
   @ViewChild('logView') logView!: BattleLogViewComponent
-  constructor(private dataService: DataService, private battleService: BattleService){
+  constructor(private dataService: DataService, private battleService: BattleService, private router: Router){
     this.dataService.getAllData().subscribe((response) => {
       if (!response.success) return;
       this.dataLists = response!.data;
@@ -59,8 +60,7 @@ export class CreateBattleComponent {
         }
         else{
           let battleJson = encodeURIComponent(JSON.stringify(request));
-          this.logView.log = battleJson;
-          this.logView.hidden = false;
+          this.router.navigate(['/battle-viewer'], {queryParams: {battle: battleJson}});
         }
         
       },

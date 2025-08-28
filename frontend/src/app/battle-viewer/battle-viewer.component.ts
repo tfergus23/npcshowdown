@@ -15,10 +15,12 @@ import BattleRequest from 'src/BattleRequest';
   TODO:
   - Status on switch
   - Clear volatiles on switch
-  - Species should be nickname
-  - Nickname positioning
   - Damage delay on attacks
   - Improve resize behavior
+  - Fixed delay after animations
+  - Increase textbox width
+  - Stat boost display
+  - Fix the really big pokemon
 */
 
 type Weather = 'Sun' | 'Rain' | 'Hail' | 'Sandstorm' | 'Clear';
@@ -40,12 +42,14 @@ export class BattleViewerComponent {
         {
           species: 'Tapu Koko',
           maxHealth: 150,
-          gender: "Male"
+          gender: "Male",
+          name: 'Tapu Koko'
         },
         {
           species: 'Dialga',
           maxHealth: 250,
-          gender: "Genderless"
+          gender: "Genderless",
+          name: 'Dialga'
         },
       ]
     },
@@ -55,7 +59,8 @@ export class BattleViewerComponent {
         {
           species: 'Bulbasaur',
           maxHealth: 150,
-          gender: "Female"
+          gender: "Female",
+          name: 'Bulbasaur'
         }
       ]
     },
@@ -198,7 +203,7 @@ export class BattleViewerComponent {
     this.poke1Health = this.trainer1Health[index];
     this.poke1.texture = this.trainer1Textures[index];
     this.poke1.visible = true;
-    this.poke1HealthBar.nameText.text = this.battle.trainer1.team[index].species + this.genderSymbol(this.battle.trainer1.team[index].gender);
+    this.poke1HealthBar.nameText.text = this.battle.trainer1.team[index].name + this.genderSymbol(this.battle.trainer1.team[index].gender);
     this.poke1HealthBar.health = this.poke1Health;
   }
 
@@ -206,7 +211,7 @@ export class BattleViewerComponent {
     this.poke2Health = this.trainer2Health[index];
     this.poke2.texture = this.trainer2Textures[index];
     this.poke2.visible = true;
-    this.poke2HealthBar.nameText.text = this.battle.trainer2.team[index].species + this.genderSymbol(this.battle.trainer2.team[index].gender);
+    this.poke2HealthBar.nameText.text = this.battle.trainer2.team[index].name + this.genderSymbol(this.battle.trainer2.team[index].gender);
     this.poke2HealthBar.health = this.poke2Health;
   }
 
@@ -214,7 +219,7 @@ export class BattleViewerComponent {
 
   ngOnInit(){
     this.activatedRoute.queryParams.subscribe(params => {
-      let battleJson: BattleRequest = JSON.parse(params['battle']);
+      let battleJson: BattleRequest = JSON.parse(decodeURIComponent(params['battle']));
       this.battleService.postBattleRequest(battleJson).subscribe(async (res) =>
       {
           this.battle = res.data;
@@ -358,54 +363,54 @@ export class BattleViewerComponent {
 
   projectileHome: Point = new Point(-2, -2);
 
-  poke1ScreenPos: Point = new Point(this.poke1Home.x, this.poke1Home.y);
-  poke2ScreenPos: Point = new Point(this.poke2Home.x, this.poke2Home.y);
+  poke1ScreenPos: Point = new Point(-0.25, this.poke1Home.y);
+  poke2ScreenPos: Point = new Point(1.25, this.poke2Home.y);
   projectilePos: Point = new Point(this.projectileHome.x, this.projectileHome.y);
   textBoxTextScreenPos: Point = new Point(0.5, 0.70);
-  poke1HealthScreenPos: Point = new Point(this.poke1ScreenPos.x, this.poke1ScreenPos.y - 0.20);
-  poke2HealthScreenPos: Point = new Point(this.poke2ScreenPos.x, this.poke2ScreenPos.y - 0.20);
+  poke1HealthScreenPos: Point = new Point(this.poke1Home.x, this.poke1Home.y - 0.20);
+  poke2HealthScreenPos: Point = new Point(this.poke2Home.x, this.poke2Home.y - 0.20);
 
   poke1MeleeAttack = new Animation([
-    new Tween(this.poke1ScreenPos, new Point(this.poke2ScreenPos.x - 0.10, this.poke2ScreenPos.y), 700),
-    new Tween(this.poke1ScreenPos, new Point(this.poke2ScreenPos.x - 0.15, this.poke2ScreenPos.y), 500),
-    new Tween(this.poke1ScreenPos, new Point(this.poke2ScreenPos.x, this.poke2ScreenPos.y), 150),
-    new Tween(this.poke1ScreenPos, new Point(this.poke2ScreenPos.x - 0.15, this.poke2ScreenPos.y), 150),
-    new Tween(this.poke1ScreenPos, new Point(this.poke2ScreenPos.x - 0.15, this.poke2ScreenPos.y), 50),
+    new Tween(this.poke1ScreenPos, new Point(this.poke2Home.x - 0.10, this.poke2Home.y), 700),
+    new Tween(this.poke1ScreenPos, new Point(this.poke2Home.x - 0.15, this.poke2Home.y), 500),
+    new Tween(this.poke1ScreenPos, new Point(this.poke2Home.x, this.poke2Home.y), 150),
+    new Tween(this.poke1ScreenPos, new Point(this.poke2Home.x - 0.15, this.poke2Home.y), 150),
+    new Tween(this.poke1ScreenPos, new Point(this.poke2Home.x - 0.15, this.poke2Home.y), 50),
     new Tween(this.poke1ScreenPos, this.poke1Home, 700),
   ]);
 
   poke2MeleeAttack = new Animation([
-    new Tween(this.poke2ScreenPos, new Point(this.poke1ScreenPos.x + 0.10, this.poke1ScreenPos.y), 700),
-    new Tween(this.poke2ScreenPos, new Point(this.poke1ScreenPos.x + 0.15, this.poke1ScreenPos.y), 500),
-    new Tween(this.poke2ScreenPos, new Point(this.poke1ScreenPos.x, this.poke1ScreenPos.y), 150),
-    new Tween(this.poke2ScreenPos, new Point(this.poke1ScreenPos.x + 0.15, this.poke1ScreenPos.y), 150),
-    new Tween(this.poke2ScreenPos, new Point(this.poke1ScreenPos.x + 0.15, this.poke1ScreenPos.y), 50),
+    new Tween(this.poke2ScreenPos, new Point(this.poke1Home.x + 0.10, this.poke1Home.y), 700),
+    new Tween(this.poke2ScreenPos, new Point(this.poke1Home.x + 0.15, this.poke1Home.y), 500),
+    new Tween(this.poke2ScreenPos, new Point(this.poke1Home.x, this.poke1Home.y), 150),
+    new Tween(this.poke2ScreenPos, new Point(this.poke1Home.x + 0.15, this.poke1Home.y), 150),
+    new Tween(this.poke2ScreenPos, new Point(this.poke1Home.x + 0.15, this.poke1Home.y), 50),
     new Tween(this.poke2ScreenPos, this.poke2Home, 700),
   ]);
 
   poke1RangedAttack = new Animation([
-    new Tween(this.poke1ScreenPos, new Point(this.poke1ScreenPos.x - 0.025, this.poke1ScreenPos.y), 400),
-    new Tween(this.poke1ScreenPos, new Point(this.poke1ScreenPos.x + 0.040, this.poke1ScreenPos.y), 150),
-    new Tween(this.poke1ScreenPos, new Point(this.poke1ScreenPos.x, this.poke1ScreenPos.y), 400),
+    new Tween(this.poke1ScreenPos, new Point(this.poke1Home.x - 0.025, this.poke1Home.y), 400),
+    new Tween(this.poke1ScreenPos, new Point(this.poke1Home.x + 0.040, this.poke1Home.y), 150),
+    new Tween(this.poke1ScreenPos, new Point(this.poke1Home.x, this.poke1Home.y), 400),
   ]);
 
   poke2RangedAttack = new Animation([
-    new Tween(this.poke2ScreenPos, new Point(this.poke2ScreenPos.x + 0.025, this.poke2ScreenPos.y), 400),
-    new Tween(this.poke2ScreenPos, new Point(this.poke2ScreenPos.x - 0.040, this.poke2ScreenPos.y), 150),
-    new Tween(this.poke2ScreenPos, new Point(this.poke2ScreenPos.x, this.poke2ScreenPos.y), 400),
+    new Tween(this.poke2ScreenPos, new Point(this.poke2Home.x + 0.025, this.poke2Home.y), 400),
+    new Tween(this.poke2ScreenPos, new Point(this.poke2Home.x - 0.040, this.poke2Home.y), 150),
+    new Tween(this.poke2ScreenPos, new Point(this.poke2Home.x, this.poke2Home.y), 400),
   ]);
 
   poke1Projectile = new Animation([
     new Tween(this.projectilePos, new Point(this.projectileHome.x, this.projectileHome.y), 550),
-    new Tween(this.projectilePos, new Point(this.poke1ScreenPos.x + 0.040, this.poke1ScreenPos.y), 0),
-    new Tween(this.projectilePos, new Point(this.poke2ScreenPos.x, this.poke2ScreenPos.y), 350),
+    new Tween(this.projectilePos, new Point(this.poke1Home.x + 0.040, this.poke1Home.y), 0),
+    new Tween(this.projectilePos, new Point(this.poke2Home.x, this.poke2Home.y), 350),
     new Tween(this.projectilePos, new Point(this.projectileHome.x, this.projectileHome.y), 0),
   ]);
 
   poke2Projectile = new Animation([
     new Tween(this.projectilePos, new Point(this.projectileHome.x, this.projectileHome.y), 550),
-    new Tween(this.projectilePos, new Point(this.poke2ScreenPos.x - 0.040, this.poke2ScreenPos.y), 0),
-    new Tween(this.projectilePos, new Point(this.poke1ScreenPos.x, this.poke1ScreenPos.y), 350),
+    new Tween(this.projectilePos, new Point(this.poke2Home.x - 0.040, this.poke2Home.y), 0),
+    new Tween(this.projectilePos, new Point(this.poke1Home.x, this.poke1Home.y), 350),
     new Tween(this.projectilePos, new Point(this.projectileHome.x, this.projectileHome.y), 0),
   ]);
 
@@ -609,6 +614,7 @@ export class BattleViewerComponent {
       case 'APPLY_STATUS':{
         let health: ActiveHealthBar = event.data.appliedToPlayer1 ? this.poke1HealthBar : this.poke2HealthBar;
         health.setStatus(event.data.status, this.statusTextures);
+        this.beginDelay(1000);
         break;
       }
       case 'APPLY_VOLATILE':{
