@@ -12,6 +12,7 @@
 #include <tchar.h>
 #include <stdio.h>
 #endif
+#include "tflib/strings.h"
 
 #ifdef _WIN32
 bool already_running(const char* lock_file_path) {
@@ -64,6 +65,36 @@ bool already_running(const char* lock_file_path) {
 }
 #endif
 
+inline void generateTypeAssertions(){
+    for (uint8_t i = 0; i < 19; i++){
+        for (uint8_t j = 0; j < 19; j++){
+            for (uint8_t k = j+1; k < 19; k++){
+                std::string attack = tflib::to_upper(typeString((Type) i));
+                std::string defend1 = tflib::to_upper(typeString((Type) j));
+                std::string defend2 = tflib::to_upper(typeString((Type) k));
+                float matchup = typeMatchup((Type) i, (Type) j, (Type) k);
+                std::string matchupString = "1.0f";
+                if (matchup == ULTRA_EFFECTIVE){
+                    matchupString = "ULTRA_EFFECTIVE";
+                }
+                else if (matchup == SUPER_EFFECTIVE){
+                    matchupString = "SUPER_EFFECTIVE";
+                }
+                else if (matchup == NOT_VERY_EFFECTIVE){
+                    matchupString = "NOT_VERY_EFFECTIVE";
+                }
+                else if (matchup == BARELY_EFFECTIVE){
+                    matchupString = "BARELY_EFFECTIVE";
+                }
+                else if (matchup == NOT_EFFECTIVE){
+                    matchupString = "NOT_EFFECTIVE";
+                }
+                std::cout << "static_assert(typeMatchup(Type::" + attack + ", Type::" + defend1 + ", Type::" + defend2 + ") == " + matchupString + ");\n";
+            }
+        }
+    }
+}
+
 int main(){
 #ifdef __linux__
     const char* lock_file = "/tmp/.npcs.lock";
@@ -84,7 +115,6 @@ int main(){
     mapIDsToMoves();
     mapIDsToSpecies();
     std::cout << "Done.\n";
-
     
     NPCS_API_Server server;
     return server.run();
