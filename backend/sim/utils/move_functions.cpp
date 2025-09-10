@@ -18,8 +18,8 @@ int dealDamage(int damage, MoveUse* moveUse){
     else{
         if (damage >= moveUse->target->currentHealth) damage = moveUse->canKill ? moveUse->target->currentHealth : moveUse->target->currentHealth -1;
         moveUse->target->currentHealth -= damage;
-        if (damage > 0) moveUse->battle->logDamageTaken(moveUse->target->nickname + " took " + std::to_string(damage) + " damage!", {.recipientIsPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .damage = damage});
-        moveUse->battle->killTheDead();
+        //if (damage > 0) moveUse->battle->logDamageTaken(moveUse->target->nickname + " took " + std::to_string(damage) + " damage!", {.recipientIsPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .damage = damage});
+        //moveUse->battle->killTheDead();
     }
     return damage;
 }
@@ -54,6 +54,10 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     }
     DealtDamage dealtDamage = calculateDirectDamage(moveUse, moveUse->battle->debugOptions.averageDamage);
     dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
+    moveUse->damageDone = dealtDamage.damage;
+    if (moveUse->damageDone > 0){
+        moveUse->logUsage();
+    }
     if (dealtDamage.damage > 0){
         if (logEffectiveness){
             moveUse->battle->assertTrue(dealtDamage.typeMod != NOT_EFFECTIVE, "Move tried to deal damage when NOT_EFFECTIVE");
@@ -69,7 +73,6 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
         }
     }
     moveUse->battle->raiseEvent(Event::POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
-    moveUse->damageDone = dealtDamage.damage;
     return dealtDamage.damage;
 }
 
@@ -142,6 +145,9 @@ int dealFlatDamage(int damage, MoveUse* moveUse) {
     int damageToDeal = (moveUse->target->currentHealth - damage < 0) ? moveUse->target->currentHealth : damage;
     int damageDone = dealDamage(damageToDeal, moveUse);
     moveUse->damageDone = damageDone;
+    if (moveUse->damageDone > 0){
+        moveUse->logUsage();
+    }
     moveUse->battle->raiseEvent(Event::POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
     return damageDone;
 }
@@ -150,7 +156,9 @@ bool selfDestruct(MoveUse* moveUse) {
         moveUse->battle->logMessage(moveUse->getFailMessage());
         return false;
     }
+    int health = moveUse->user->currentHealth;
     moveUse->user->currentHealth -= moveUse->user->currentHealth;
+    moveUse->battle->logDamageTaken(moveUse->user->nickname + " took " + std::to_string(health) + " damage!", {.recipientIsPlayer1 = moveUse->user == moveUse->battle->player1ActivePokemon, .damage = health});
     moveUse->battle->killTheDead();
     return true;
 }
@@ -159,7 +167,6 @@ int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle) {
     int damage = (int) floor(target->getStat(Stat::HP) * (percent / 100.0f));
     if (damage > target->currentHealth) damage = target->currentHealth;
     target->currentHealth -= damage;
-    if (damage > 0) battle->logDamageTaken(target->nickname + " took " + std::to_string(damage) + " damage.", {.recipientIsPlayer1 = target == battle->player1ActivePokemon, .damage = damage});
     return damage;
 }
 
@@ -168,6 +175,9 @@ int dealPercentDamage(float percent, MoveUse* moveUse) {
     int damage = (int)floor(moveUse->target->getStat(Stat::HP) * (percent / 100.0f));
     if (damage > moveUse->target->currentHealth) damage = moveUse->target->currentHealth;
     int damageDealt = dealDamage(damage, moveUse);
+    if (damageDealt > 0){
+        moveUse->logUsage();
+    }
     return damageDealt;
 }
 int giveHealing(int healing, Pokemon* recipient, Battle* battle) {
@@ -294,8 +304,8 @@ bool genderCompatible(Gender gender1, Gender gender2) {
     return gender1 != gender2;
 }
 void crash(Pokemon* user, Battle* battle) {
-    battle->logMessage(user->nickname + " kept going and crashed!");
-    dealResidualPercentDamage(50.0f, user, battle);
+    int dmg = dealResidualPercentDamage(50.0f, user, battle);
+    battle->logDamageTaken(user->nickname + " kept going and crashed!", {.recipientIsPlayer1 = user == battle->player1ActivePokemon, .damage = dmg});
 }
 
 int dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool logEffectiveness){

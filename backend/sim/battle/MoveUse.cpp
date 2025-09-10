@@ -24,25 +24,14 @@ void MoveUse::doMove(MoveUse* opponentMove){
         battle->logMessage(m_FailMessage);
         return;
     }
-    if (logUsed){
-        if (move->targetType == TargetType::OPPONENT){
-            if (move->contact){
-                battle->logMeleeAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
-            }
-            else{
-                battle->logRangedAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon});
-            }
-        }
-        else{
-            //TODO: Maybe make this it's own event
-            battle->logMessage(user->nickname + " used " + move->name + "!");
-        }
-    } 
+
     if (willFail){
+        logUsage();
         battle->logMessage(m_FailMessage);
         return;
     }
     if (target->isDead){
+        logUsage();
         battle->logMessage(m_FailMessage);
         return;
     }
@@ -51,6 +40,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
     }
     float typeMod = typeMatchup(effectiveType, target->currentType[0], target->currentType[1]);
     if (typeMod == NOT_EFFECTIVE && move->damageCategory != DamageCategory::STATUS && move->targetType == TargetType::OPPONENT){
+        logUsage();
         battle->logMessage("It doesn't affect " + target->nickname + "...");
         if (move->crashOnFail){
             crash(user, battle);
@@ -64,6 +54,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
     m_EffectiveAccuracy = move->accuracy * accuracyMultiplier * user->getCurrentAbility()->accuracyMultiplier;
     battle->debug("Accuracy: " + std::to_string(m_EffectiveAccuracy));
     if (move->accuracy != 0 && m_EffectiveAccuracy < (float) battle->randInt(1,101) && move->targetType == TargetType::OPPONENT){
+        logUsage();
         battle->logMessage(user->nickname + "'s attack missed!");
         if (move->crashOnFail){
             crash(user,battle);
@@ -110,6 +101,22 @@ bool compareMoves(const MoveUse* move1, const MoveUse* move2){
         if (move1Speed != move2Speed) return move1Speed > move2Speed;
         else{
             return move1->battle->randInt(0,2) == 0 ? true : false;
+        }
+    }
+}
+
+void MoveUse::logUsage(){
+    if (logUsed){
+        if (move->targetType == TargetType::OPPONENT && damageDone > 0){
+            if (move->contact){
+                battle->logMeleeAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon, .damage = damageDone});
+            }
+            else{
+                battle->logRangedAttack(user->nickname + " used " + move->name + "!", {.attackerIsPlayer1 = user == battle->player1ActivePokemon, .damage = damageDone});
+            }
+        }
+        else{
+            battle->logMessage(user->nickname + " used " + move->name + "!");
         }
     }
 }

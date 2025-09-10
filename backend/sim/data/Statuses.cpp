@@ -34,8 +34,8 @@ const Status STATUS_PARALYSIS {
 const Status STATUS_POISON{
     .observer{
     .endOfTurn = [](Pokemon* subject, Battle* battle, const EventArgs& e){
-        battle->logMessage(subject->nickname + " is hurt by poison!");
-        dealResidualPercentDamage(12.5f, subject, battle);
+        int dmg = dealResidualPercentDamage(12.5f, subject, battle);
+        battle->logDamageTaken(subject->nickname + " is hurt by poison!", {.recipientIsPlayer1 = subject == battle->player1ActivePokemon, .damage = dmg});
     }
     },
     .was = " was poisoned!",
@@ -81,8 +81,8 @@ const Status STATUS_BURN{
         }
     },
     .endOfTurn  = [](Pokemon* subject, Battle* battle, const EventArgs& e){
-        battle->logMessage(subject->nickname + " was hurt by it's burn!");
-        dealResidualPercentDamage(6.25f, subject,battle);
+        int dmg = dealResidualPercentDamage(6.25f, subject,battle);
+        battle->logDamageTaken(subject->nickname + " was hurt by it's burn!", {.recipientIsPlayer1 = subject == battle->player1ActivePokemon, .damage = dmg});
     }
     },
     .was = " was burned!",
@@ -112,10 +112,10 @@ const Status STATUS_BAD_POISON{
     .observer{
     .endOfTurn = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         BadPoisonState& state = std::get<BadPoisonState>(subject->abilityState);
-        battle->logMessage(subject->nickname + " is hurt by poison!");
         state.activeTurns++;
         float percentDamage = 100.0f * (state.activeTurns / 16.0f);
-        dealResidualPercentDamage(percentDamage, subject, battle);
+        int dmg = dealResidualPercentDamage(percentDamage, subject, battle);
+        battle->logDamageTaken(subject->nickname + " is hurt by poison!", {.recipientIsPlayer1 = subject == battle->player1ActivePokemon, .damage = dmg});
         
     },
     .onPokemonSwitch = [](Pokemon* subject, Battle* battle, const EventArgs& e){

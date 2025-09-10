@@ -20,7 +20,9 @@ import BattleRequest from 'src/BattleRequest';
   - Fixed delay after animations
   - Increase textbox width
   - Stat boost display
+  - Trainer name display
   - Fix the really big pokemon
+  - Seed display with easy copy
 */
 
 type Weather = 'Sun' | 'Rain' | 'Hail' | 'Sandstorm' | 'Clear';
@@ -433,22 +435,25 @@ export class BattleViewerComponent {
     return new Point(this.app.screen.width * point.x, this.app.screen.height * point.y);
   }
   totalTimeMS: number = 0;
+  timeScale: number = 2.0;
   update(time: Ticker){
 
-    this.updateCurrentEvent(time.deltaMS);
+    let dt: number = time.deltaMS * this.timeScale;
+
+    this.updateCurrentEvent(dt);
 
     this.poke1HealthBar.update();
     this.poke2HealthBar.update();
     this.party1HealthBars.update();
     this.party2HealthBars.update();
 
-    this.updateTweens(time.deltaMS);
+    this.updateTweens(dt);
     
     this.updateAnimations();
-    this.updateTextScroll(time.deltaMS);
+    this.updateTextScroll(dt);
 
     this.updateWorldPositions();
-    this.totalTimeMS += time.deltaMS;
+    this.totalTimeMS += dt;
   }
 
   poke1Health!: Point;
@@ -571,14 +576,14 @@ export class BattleViewerComponent {
       case "MELEE_ATTACK":
         console.log(event.data.attackerIsPlayer1);
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1MeleeAttack : this.poke2MeleeAttack);
-        //this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 1350);
-        //this.beginDelay(2700);
+        this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 1350);
+        this.beginDelay(2700);
         break;
       case "RANGED_ATTACK":
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1RangedAttack : this.poke2RangedAttack);
         this.startAnimation(event.data.attackerIsPlayer1 ? this.poke1Projectile : this.poke2Projectile);
-        //this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 900);
-        //this.beginDelay(1500);
+        this.startHealthTween(event.data.attackerIsPlayer1 ? this.poke2Health : this.poke1Health, -event.data.damage, 900);
+        this.beginDelay(1500);
         break;
       case 'DAMAGE_TAKEN':
         this.startHealthTween(event.data.recipientIsPlayer1 ? this.poke1Health : this.poke2Health, -event.data.damage, 0);

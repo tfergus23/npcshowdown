@@ -43,6 +43,8 @@ public:
     void failOnSemiInvulnerable(std::string_view message);
     char* getFailMessage();
     void setFailMessage(std::string_view newMessage);
+    // Logs as an attack if the move did damage, logs a basic message otherwise
+    void logUsage();
 private:
     static constexpr int FAIL_MESSAGE_LENGTH = 40;
     float m_EffectiveAccuracy;

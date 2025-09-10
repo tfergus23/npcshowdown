@@ -104,6 +104,7 @@ MoveUse* Battle::doMove(){
         if (move->changeLastMoveUsed){
             move->user->lastMoveUsed = move->move;
         }
+        killTheDead();
         if (move->move != &MOVE_SWITCH) raiseEvent(Event::AFTER_MOVE, EventArgs(nullptr, move));
     }
     return move;
@@ -377,9 +378,11 @@ json LogEvent::toJSON(){
         break;
     case LogEventType::RANGED_ATTACK:
         data["attackerIsPlayer1"] = m_data.attack.attackerIsPlayer1;
+        data["damage"] = m_data.attack.damage;
         break;
     case LogEventType::MELEE_ATTACK:
         data["attackerIsPlayer1"] = m_data.attack.attackerIsPlayer1;
+        data["damage"] = m_data.attack.damage;
         break;
     case LogEventType::DAMAGE_TAKEN:
         data["recipientIsPlayer1"] = m_data.damage.recipientIsPlayer1;
