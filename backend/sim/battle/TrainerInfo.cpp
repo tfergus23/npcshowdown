@@ -28,7 +28,7 @@ static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std:
             continue;
         }
         MoveUse moveUse(move, myPoke, enemyPoke, myPoke->battle);
-        int avgDamage = calculateDirectDamage(&moveUse, true).damage;
+        int avgDamage = MoveFunctions::calculateDirectDamage(&moveUse, true).damage;
         if (avgDamage > outDamage){
             outMove = move;
             outDamage = avgDamage;

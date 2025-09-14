@@ -15,7 +15,7 @@ const Item ITEM_LEFTOVERS = {
     .observer = {
         .endOfTurn = [](Pokemon* subject, Battle* battle, const EventArgs& args){
             //Heal Block doesn't allow you to heal... figure that out later
-            givePercentHealing(6.25f, subject, battle);
+            MoveFunctions::givePercentHealing(6.25f, subject, battle);
         }
     },
     .name = "Leftovers",

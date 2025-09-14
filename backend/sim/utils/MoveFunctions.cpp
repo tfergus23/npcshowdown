@@ -6,6 +6,8 @@
 #include "sim/data/Effects.hpp"
 #include "sim/data/Moves.hpp"
 
+using namespace MoveFunctions;
+
 static const std::string statNames[] = {
     "HP",
     "Attack",
@@ -34,7 +36,38 @@ int dealDamage(int damage, MoveUse* moveUse){
     return damage;
 }
 
-DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
+int calculateDamageBeforeMods(MoveUse* moveUse, bool crit) {
+    int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
+    Stat attackingStat = (Stat)moveUse->move->damageCategory;
+    Stat defendingStat = (Stat)((int)(moveUse->move->damageCategory) + 1);
+    moveUse->battle->assertTrue(attackingStat == Stat::ATTACK || attackingStat == Stat::SPATTACK, "Incorrectly calculated attackingStat");
+    moveUse->battle->assertTrue(defendingStat == Stat::DEFENSE || defendingStat == Stat::SPDEFENSE, "Incorrectly calculated defendingStat");
+    int attack = moveUse->user->getStat(attackingStat);
+    int defense = moveUse->target->getStat(defendingStat);
+    float div2 = (float)attack / (float)defense;
+    int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
+    int damage = div3 + 2;
+    return damage;
+}
+int calculateDamageBeforeMods(MoveUse* moveUse, bool crit, Stat attackingStat, Stat defendingStat) {
+    int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
+    int attack = moveUse->user->getStat(attackingStat);
+    int defense = moveUse->target->getStat(defendingStat);
+    float div2 = (float)attack / (float)defense;
+    int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
+    int damage = div3 + 2;
+    return damage;
+}
+
+int giveHealing(int healing, Pokemon* recipient, Battle* battle) {
+    int recipientHP = recipient->getStat(Stat::HP);
+    int healingToGive = (recipient->currentHealth + healing > recipientHP) ? recipientHP - recipient->currentHealth : healing;
+    recipient->currentHealth += healingToGive;
+    if (healingToGive > 0) battle->logHealing(recipient->nickname + " was healed for " + std::to_string(healing) + " health.", {.recipientIsPlayer1 = recipient == battle->player1ActivePokemon, .healing = healing});
+    return healingToGive;
+}
+
+DealtDamage MoveFunctions::calculateDirectDamage(MoveUse* moveUse, bool average){
     int critStage = moveUse->move->critRatio + ((moveUse->user->getCurrentItem() != &ITEM_NONE) ? moveUse->user->getCurrentItem()->critMod : 0) + moveUse->user->getCurrentAbility()->critMod + moveUse->user->triggeredCritMod;
     float critChance = critChanceFromStage(critStage);
     float critMod = 1.0f;
@@ -54,7 +87,7 @@ DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average){
     return result;
 }
 
-int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
+int MoveFunctions::dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     if (!moveUse->canDealDamage){
         if (!moveUse->loggedFailure){
             moveUse->battle->logMessage(moveUse->getFailMessage());
@@ -86,7 +119,7 @@ int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
     return dealtDamage.damage;
 }
 
-bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
+bool MoveFunctions::applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
     float sereneGraceMod = 1.0f;
     if (!(moveUse->battle->randInt(1,101) <= moveUse->move->secondaryEffectChance * sereneGraceMod && moveUse->damageDone > 0 && moveUse->target->currentHealth > 0)) return false;
     switch (moveUse->move->secondaryEffect)
@@ -144,7 +177,7 @@ bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
     }
 }
 
-int dealFlatDamage(int damage, MoveUse* moveUse) {
+int MoveFunctions::dealFlatDamage(int damage, MoveUse* moveUse) {
     if (!moveUse->canDealDamage) {
         if (!moveUse->loggedFailure) {
             moveUse->battle->logMessage(moveUse->getFailMessage());
@@ -161,7 +194,7 @@ int dealFlatDamage(int damage, MoveUse* moveUse) {
     moveUse->battle->raiseEvent(Event::POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
     return damageDone;
 }
-bool selfDestruct(MoveUse* moveUse) {
+bool MoveFunctions::selfDestruct(MoveUse* moveUse) {
     if (moveUse->cantSelfDestruct) {
         moveUse->battle->logMessage(moveUse->getFailMessage());
         return false;
@@ -173,7 +206,7 @@ bool selfDestruct(MoveUse* moveUse) {
     return true;
 }
 
-int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle) {
+int MoveFunctions::dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle) {
     int damage = (int) floor(target->getStat(Stat::HP) * (percent / 100.0f));
     if (damage > target->currentHealth) damage = target->currentHealth;
     target->currentHealth -= damage;
@@ -181,7 +214,7 @@ int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle) {
 }
 
 
-int dealPercentDamage(float percent, MoveUse* moveUse) {
+int MoveFunctions::dealPercentDamage(float percent, MoveUse* moveUse) {
     int damage = (int)floor(moveUse->target->getStat(Stat::HP) * (percent / 100.0f));
     if (damage > moveUse->target->currentHealth) damage = moveUse->target->currentHealth;
     int damageDealt = dealDamage(damage, moveUse);
@@ -190,23 +223,17 @@ int dealPercentDamage(float percent, MoveUse* moveUse) {
     }
     return damageDealt;
 }
-int giveHealing(int healing, Pokemon* recipient, Battle* battle) {
-    int recipientHP = recipient->getStat(Stat::HP);
-    int healingToGive = (recipient->currentHealth + healing > recipientHP) ? recipientHP - recipient->currentHealth : healing;
-    recipient->currentHealth += healingToGive;
-    if (healingToGive > 0) battle->logHealing(recipient->nickname + " was healed for " + std::to_string(healing) + " health.", {.recipientIsPlayer1 = recipient == battle->player1ActivePokemon, .healing = healing});
-    return healingToGive;
-}
-void givePercentHealing(float percent, Pokemon* recipient, Battle* battle) {
+
+void MoveFunctions::givePercentHealing(float percent, Pokemon* recipient, Battle* battle) {
     int recipientHP = recipient->getStat(Stat::HP);
     int healing = (int) floor(recipientHP * (percent / 100.0f));
     giveHealing(healing, recipient, battle);
 }
 //Not sure why this is like this... will wait and see
-void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle) {
+void MoveFunctions::giveFlatHealing(int healing, Pokemon* recipient, Battle* battle) {
     giveHealing(healing, recipient, battle);
 }
-bool applyStatus(const Status* status, MoveUse* moveUse, bool logFailure) {
+bool MoveFunctions::applyStatus(const Status* status, MoveUse* moveUse, bool logFailure) {
     if (moveUse->target->getStatus() != &STATUS_NONE) {
         if (logFailure) moveUse->battle->logMessage("But it failed!");
         return false;
@@ -237,7 +264,7 @@ bool applyStatus(const Status* status, MoveUse* moveUse, bool logFailure) {
     moveUse->battle->logApplyStatus(moveUse->target->nickname + status->was, {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .status = status});
     return true;
 }
-bool applyEffect(const Effect* effect, MoveUse* moveUse, bool logFailure) {
+bool MoveFunctions::applyEffect(const Effect* effect, MoveUse* moveUse, bool logFailure) {
     if (!moveUse->canApplyStatus || moveUse->target->isDead || moveUse->target->hasEffect(effect)) {
         if (logFailure && !moveUse->loggedFailure) {
             moveUse->battle->logMessage(moveUse->getFailMessage());
@@ -249,7 +276,7 @@ bool applyEffect(const Effect* effect, MoveUse* moveUse, bool logFailure) {
     moveUse->battle->logApplyVolatile(effect->was != "" ? moveUse->target->nickname + effect->was : "", {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = effect});
     return true;
 }
-bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange) {
+bool MoveFunctions::changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange) {
     int currentMod = pokemon->boosts[(int)stat];
     int actualChange = 0;
     if ((!moveUse->canLowerStats && change < 0) || (!moveUse->canRaiseStats && change > 0)) {
@@ -276,7 +303,7 @@ bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle,
     }
 
 }
-bool changeBattleWeather(const Weather* newWeather, Battle* battle) {
+bool MoveFunctions::changeBattleWeather(const Weather* newWeather, Battle* battle) {
     if (battle->weather != &WEATHER_NONE && battle->weather == newWeather) {
         battle->logMessage("But it failed!");
         return false;
@@ -287,38 +314,16 @@ bool changeBattleWeather(const Weather* newWeather, Battle* battle) {
         return true;
     }
 }
-int calculateDamageBeforeMods(MoveUse* moveUse, bool crit) {
-    int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
-    Stat attackingStat = (Stat)moveUse->move->damageCategory;
-    Stat defendingStat = (Stat)((int)(moveUse->move->damageCategory) + 1);
-    moveUse->battle->assertTrue(attackingStat == Stat::ATTACK || attackingStat == Stat::SPATTACK, "Incorrectly calculated attackingStat");
-    moveUse->battle->assertTrue(defendingStat == Stat::DEFENSE || defendingStat == Stat::SPDEFENSE, "Incorrectly calculated defendingStat");
-    int attack = moveUse->user->getStat(attackingStat);
-    int defense = moveUse->target->getStat(defendingStat);
-    float div2 = (float)attack / (float)defense;
-    int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
-    int damage = div3 + 2;
-    return damage;
-}
-int calculateDamageBeforeMods(MoveUse* moveUse, bool crit, Stat attackingStat, Stat defendingStat) {
-    int div1 = (int)floor((2 * moveUse->user->level) / 5.0f);
-    int attack = moveUse->user->getStat(attackingStat);
-    int defense = moveUse->target->getStat(defendingStat);
-    float div2 = (float)attack / (float)defense;
-    int div3 = (int)floor(((div1 + 2) * moveUse->effectivePower * div2) / 50.0f);
-    int damage = div3 + 2;
-    return damage;
-}
-bool genderCompatible(Gender gender1, Gender gender2) {
+bool MoveFunctions::genderCompatible(Gender gender1, Gender gender2) {
     if (gender1 == Gender::GENDERLESS || gender2 == Gender::GENDERLESS) return false;
     return gender1 != gender2;
 }
-void crash(Pokemon* user, Battle* battle) {
+void MoveFunctions::crash(Pokemon* user, Battle* battle) {
     int dmg = dealResidualPercentDamage(50.0f, user, battle);
     battle->logDamageTaken(user->nickname + " kept going and crashed!", {.recipientIsPlayer1 = user == battle->player1ActivePokemon, .damage = dmg});
 }
 
-int dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool logEffectiveness){
+int MoveFunctions::dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool logEffectiveness){
     int damage = dealDirectDamage(moveUse, logEffectiveness);
     if (damage > 0){
         int recoil = (int) ceil((float) damage * recoilMultiplier);
