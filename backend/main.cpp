@@ -13,6 +13,7 @@
 #include <stdio.h>
 #endif
 #include "tflib/strings.h"
+#include "tflib/arg_parser.h"
 
 #ifdef _WIN32
 bool already_running(const char* lock_file_path) {
@@ -95,7 +96,7 @@ inline void generateTypeAssertions(){
     }
 }
 
-int main(){
+int main(int argc, char** argv){
 #ifdef __linux__
     const char* lock_file = "/tmp/.npcs.lock";
 #endif
@@ -109,12 +110,21 @@ int main(){
 #ifndef NDEBUG
     std::cout.setf(std::ios::unitbuf);
 #endif
+    tflib::arg_parser args;
+    args.add_flag("test", 't');
+    args.parse(argc, argv);
+
     std::cout << "Creating ID mappings... ";
     mapIDsToAbilities();
     mapIDsToItems();
     mapIDsToMoves();
     mapIDsToSpecies();
     std::cout << "Done.\n";
+
+    // Just for making sure all globals initialize correctly and nothing goes wrong with mapping IDs
+    if (args.get_flag("test")){
+        return 0;
+    }
     
     NPCS_API_Server server;
     return server.run();
