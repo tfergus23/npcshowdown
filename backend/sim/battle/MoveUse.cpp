@@ -1,8 +1,8 @@
 #include "sim/battle/MoveUse.hpp"
 #include "Stat.hpp"
 #include "sim/battle/Battle.hpp"
-#include "sim/utils/move_functions.hpp"
-#include "sim/utils/stage_multipliers.hpp"
+#include "sim/utils/MoveFunctions.hpp"
+#include "sim/utils/StageMultipliers.hpp"
 #include "sim/data/Moves.hpp"
 
 

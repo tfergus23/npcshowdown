@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <nlohmann/json.hpp>
-#include "sim/utils/move_functions.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 using json = nlohmann::json;
 
 const Item ITEM_NONE = {

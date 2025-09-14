@@ -1,7 +1,7 @@
 #include "sim/data/Statuses.hpp"
 #include "sim/battle/Battle.hpp"
 #include "sim/data/Moves.hpp"
-#include "sim/utils/move_functions.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 #include "sim/data/Abilities.hpp"
 
 const Status STATUS_NONE{

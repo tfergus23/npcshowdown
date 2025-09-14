@@ -2,17 +2,13 @@
 #include "sim/battle/MoveUse.hpp"
 #include "sim/battle/Battle.hpp"
 
-
 struct DealtDamage{
     int damage;
     bool crit;
     float typeMod;
 };
 
-inline const std::string statNames[] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed", "Accuracy", "Evasiveness"};
-
-int dealDamage(int damage, MoveUse* moveUse);
-DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average=false);
+DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average);
 int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness = true);
 bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove);
 int dealFlatDamage(int damage, MoveUse* moveUse);

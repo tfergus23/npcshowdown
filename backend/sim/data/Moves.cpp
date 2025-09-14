@@ -1,5 +1,5 @@
 #include "sim/data/Moves.hpp"
-#include "sim/utils/move_functions.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 #include <vector>
 #include "nlohmann/json.hpp"
 

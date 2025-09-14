@@ -2,7 +2,7 @@
 #include <string.h>
 #include "sim/data/Moves.hpp"
 #include <unordered_set>
-#include "sim/utils/move_functions.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 
 static const std::unordered_set<const Move*> poisoningMoves = {
     //ie.

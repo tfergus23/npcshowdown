@@ -1,11 +1,21 @@
-#include "move_functions.hpp"
+#include "MoveFunctions.hpp"
 #include "sim/data/FieldEffects.hpp"
 #include "sim/data/Items.hpp"
-#include "sim/utils/stage_multipliers.hpp"
+#include "sim/utils/StageMultipliers.hpp"
 #include "sim/battle/Type.hpp"
 #include "sim/data/Effects.hpp"
 #include "sim/data/Moves.hpp"
 
+static const std::string statNames[] = {
+    "HP",
+    "Attack",
+    "Defense",
+    "Special Attack",
+    "Special Defense",
+    "Speed",
+    "Accuracy",
+    "Evasiveness"
+};
 
 int dealDamage(int damage, MoveUse* moveUse){
     bool isPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon;
