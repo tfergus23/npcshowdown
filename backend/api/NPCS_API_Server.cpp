@@ -572,7 +572,7 @@ NPCS_API_Server::NPCS_API_Server() :
                     const TournamentResults& tr = trQueryResult.value();
                     if (tr.ready){
                         response["success"] = true;
-                        response["data"] = tr.toJSON(db);
+                        response["data"] = tr.toJSON();
                         response["data"]["status"] = "done";
                         res.Send(response.dump());
                         return;
@@ -614,7 +614,7 @@ NPCS_API_Server::NPCS_API_Server() :
                 const TournamentResults& tr = trQueryResult.value();
                 if (tr.ready){
                     response["success"] = true;
-                    response["data"] = tr.toJSON(db);
+                    response["data"] = tr.toJSON();
                     response["data"]["status"] = "done";
                     res.Send(response.dump());
                     return;
@@ -775,7 +775,7 @@ NPCS_API_Server::NPCS_API_Server() :
         savedTournamentJSONs.reserve(savedTournaments.size());
 
         for (auto& tournament : savedTournaments){
-            savedTournamentJSONs.push_back(tournament.toJSON(db));
+            savedTournamentJSONs.push_back(tournament.toJSON());
         }
 
         json response;

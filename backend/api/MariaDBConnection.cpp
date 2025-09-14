@@ -12,7 +12,7 @@
 
 static std::mutex mostRecentKeyMutex;
 
-json TournamentResults::toJSON(MariaDBConnection& db) const{
+json TournamentResults::toJSON() const{
     json data;
     std::vector<json> trainerJSONs;
     std::vector<json> statJSONs;

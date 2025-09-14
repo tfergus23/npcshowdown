@@ -18,7 +18,7 @@ struct TournamentResults{
     size_t id = 0;
     bool ready = false;
 
-    json toJSON(MariaDBConnection& db) const;
+    json toJSON() const;
 };
 
 struct User{
