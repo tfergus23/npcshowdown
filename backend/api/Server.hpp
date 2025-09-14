@@ -44,6 +44,7 @@ public:
     ~Server();
     int run();
 private:
+    // Load config file first
     tflib::ini_file config = tflib::ini_file("npcs_config.ini",{
         {"", "tournament_threads", "8"},
         {"", "db_user", "root"},
@@ -62,7 +63,7 @@ private:
         {"", "max_signups_per_day", "3"},
     }, false);
 
-    //Config vars
+    // Config vars
     const int max_tournament_threads = getIntFromConfig(config, "tournament_threads");
     const int max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
     const std::string websiteURL = config.get("website_url");
@@ -74,6 +75,7 @@ private:
     const int maxTournamentsPerDay = getIntFromConfig(config, "max_tournaments_per_day");
     const int maxSignUpsPerDay = getIntFromConfig(config, "max_signups_per_day");
 
+    // Server state
     tfhttp::HTTP_Server app = tfhttp::HTTP_Server(tfhttp::HTTP_Server::Options{
         .port = (uint16_t)port
     });

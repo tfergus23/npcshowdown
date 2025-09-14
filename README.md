@@ -51,9 +51,10 @@ You can run the app locally with:
 ./run_dev.sh
 ```
 This will:
-- Build the backend executable
-- Start serving the frontend in dev mode
+- Build the backend executable (the script will stop here if the build is unsuccessful)
 - Start the database daemon
+- Start the backend executable
+- Start serving the frontend in dev mode
 
 By default, the website can be accessed at http://localhost:4200. Killing this script with ctrl-c or by closing the terminal will run `scripts/stop_app.sh`, which will kill the web, app, and database processes.
 
