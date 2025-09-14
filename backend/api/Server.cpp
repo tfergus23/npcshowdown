@@ -1,11 +1,11 @@
-#include "api/NPCS_API_Server.hpp"
+#include "api/Server.hpp"
 #include "nlohmann/json.hpp"
 #include "sim/battle/Battle.hpp"
 #include "sim/data/Abilities.hpp"
 #include "sim/data/Moves.hpp"
 #include <chrono>
 #include <thread>
-#include "api/api_utils.hpp"
+#include "./Utils.hpp"
 #include "sim/tournament/Tournament.hpp"
 #include <unordered_map>
 #include <unordered_set>
@@ -62,7 +62,7 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user, const std::string& name, const std::string& ip){
+size_t Server::createTournamentRequest(const json& json, size_t user, const std::string& name, const std::string& ip){
     size_t id = db.createEmptyTournament(user, name, ip);
     TournamentRequest request{
         .requestJson = json,
@@ -86,7 +86,7 @@ size_t NPCS_API_Server::createTournamentRequest(const json& json, size_t user, c
     return id;
 }
 
-int NPCS_API_Server::findTournamentPositionInQueue(size_t tournamentID, int threadNumber){
+int Server::findTournamentPositionInQueue(size_t tournamentID, int threadNumber){
     auto& queue = queuedTournaments[threadNumber];
     int pos = 0;
     for(const auto& request : queue){
@@ -145,7 +145,7 @@ inline void sendProblemResponse(std::string& problems, json& response, HTTP_Resp
     res.Send(response.dump());
 }
 
-NPCS_API_Server::NPCS_API_Server() :
+Server::Server() :
  SPECIES_DATA_RESPONSE{createSpeciesDataResponse()},
  ABILITY_DATA_RESPONSE{createAbilityDataResponse()},
  ITEM_DATA_RESPONSE{createItemDataResponse()},
@@ -1142,20 +1142,20 @@ NPCS_API_Server::NPCS_API_Server() :
     });
 }
 
-int NPCS_API_Server::run(){
+int Server::run(){
     startTournamentThreads();
     app.Listen();
     return 0;
 }
 
-std::string NPCS_API_Server::getToken(const std::string& username, const std::string& password){
+std::string Server::getToken(const std::string& username, const std::string& password){
     if (username == "admin" && password  == "admin"){
         return "admin:123";
     }
     return "";
 }
 
-void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
+void Server::waitForTournaments(uint32_t threadNumber){
     try{
     auto& queue = this->queuedTournaments[threadNumber];
     auto& queueMutex = this->queuedTournamentMutexes[threadNumber];
@@ -1226,20 +1226,20 @@ void NPCS_API_Server::waitForTournaments(uint32_t threadNumber){
     }
 }
 
-void NPCS_API_Server::startTournamentThreads(){
+void Server::startTournamentThreads(){
     for(int i = 0; i < max_tournament_threads; i++){
         std::cout << "Starting thread #" << i << '\n';
-        std::thread t(&NPCS_API_Server::waitForTournaments, this, i);
+        std::thread t(&Server::waitForTournaments, this, i);
         t.detach();
     }
 }
 
-NPCS_API_Server::~NPCS_API_Server(){
+Server::~Server(){
     delete[] queuedTournaments;
     delete[] queuedTournamentMutexes;
 }
 
-void NPCS_API_Server::testTrainerSerialization(){
+void Server::testTrainerSerialization(){
     std::vector<PokemonBlueprint> team = {
         {
             "Squirtle",
@@ -1285,7 +1285,7 @@ void NPCS_API_Server::testTrainerSerialization(){
     std::cout << t.hashCode() << '\n';
 }
 
-std::string NPCS_API_Server::getDomainFromURL(){
+std::string Server::getDomainFromURL(){
     size_t start = websiteURL.find("//");
     if (start == std::string::npos){
         start = 0;

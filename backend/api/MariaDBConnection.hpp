@@ -3,7 +3,7 @@
 #include "sim/tournament/BattleResult.hpp"
 #include "sim/tournament/Tournament.hpp"
 #include "conncpp.hpp"
-#include "api_utils.hpp"
+#include "./Utils.hpp"
 #include <optional>
 
 using json = nlohmann::json;
@@ -37,6 +37,8 @@ struct ErrorBattle{
 
 class MariaDBConnection{
 public:
+    MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions, const std::string& port);
+
     std::optional<Trainer> getTrainer(size_t id);
     std::optional<TournamentResults> getTournament(size_t id);
     bool tournamentExists(size_t id);
@@ -71,11 +73,10 @@ public:
     std::vector<ErrorBattle> getErrorBattles(uint32_t page, uint32_t count);
     bool deleteErrorBattle(size_t hash);
     size_t getTournamentsFromIPToday(const std::string& ip);
-
-    MariaDBConnection(const std::string& username, const std::string& password, const std::string& host, const std::string& database, int maxUserSessions, const std::string& port);
 private:
     std::unique_ptr<sql::Connection> conn;
     const int maxUserSessions = 1;
+
     void saveTeam(const std::vector<PokemonBlueprint>& team, size_t trainer);
     size_t executeInsertAndGetID(sql::PreparedStatement* stmnt);
     void executeInsert(sql::PreparedStatement* stmnt);

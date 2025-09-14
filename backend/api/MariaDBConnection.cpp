@@ -1,7 +1,7 @@
 #include "MariaDBConnection.hpp"
 #include <iostream>
 #include <mutex>
-#include "api_utils.hpp"
+#include "./Utils.hpp"
 #include "sim/battle/TrainerLevel.hpp"
 #include "sim/battle/Battle.hpp"
 #include "sim/data/Species.hpp"

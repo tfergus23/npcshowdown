@@ -1,4 +1,4 @@
-#include "api/NPCS_API_Server.hpp"
+#include "api/Server.hpp"
 #include "sim/data/Abilities.hpp"
 #include "sim/data/Moves.hpp"
 #include "sim/data/Items.hpp"
@@ -126,7 +126,7 @@ int main(int argc, char** argv){
         return 0;
     }
     
-    NPCS_API_Server server;
+    Server server;
     return server.run();
     
 }

@@ -38,10 +38,10 @@ struct Credentials{
     ClientType type = ClientType::UNKNOWN;
 };
 
-class NPCS_API_Server{
+class Server{
 public:
-    NPCS_API_Server();
-    ~NPCS_API_Server();
+    Server();
+    ~Server();
     int run();
 private:
     tflib::ini_file config = tflib::ini_file("npcs_config.ini",{
