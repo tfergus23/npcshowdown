@@ -4,6 +4,3 @@
 [submodule "backend/lib/tfhttp"]
 	path = backend/lib/tfhttp
 	url = git@github.com:tfergus23/tfhttp.git
-[submodule "backend/lib/tflib"]
-	path = backend/lib/tflib
-	url = git@github.com:tfergus23/tflib.git

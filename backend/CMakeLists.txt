@@ -91,7 +91,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/lib/json/single_include 
     ${PROJECT_SOURCE_DIR}/lib/tfhttp/include 
-    ${PROJECT_SOURCE_DIR}/lib/tflib/include 
+    ${PROJECT_SOURCE_DIR}/lib/tfhttp/lib/tflib/include 
     ${mariadb_connector_cpp_SOURCE_DIR}/include
 )
 
