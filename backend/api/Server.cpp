@@ -86,18 +86,6 @@ size_t Server::createTournamentRequest(const json& json, size_t user, const std:
     return id;
 }
 
-int Server::findTournamentPositionInQueue(size_t tournamentID, int threadNumber){
-    auto& queue = queuedTournaments[threadNumber];
-    int pos = 0;
-    for(const auto& request : queue){
-        if (request.id == tournamentID){
-            return pos;
-        }
-        pos++;
-    }
-    return -1;
-}
-
 static const std::string TOKEN_COOKIE_START = "token=";
 static const std::string BEARER_AUTH_SCHEME = "Bearer ";
 
@@ -552,7 +540,16 @@ Server::Server() :
         if (threadNumber >= 0){
             // Tournament is being run currently, look it up in the queue
             std::unique_lock lk(queuedTournamentMutexes[threadNumber]);
-            int position = findTournamentPositionInQueue(tournamentID, threadNumber);
+            auto& queue = queuedTournaments[threadNumber];
+            int position = -1;
+            for (int i = 0; i < queue.size(); i++){
+                const auto& request = queue[i];
+                if (request.id == tournamentID){
+                        position = i;
+                        break;
+                }
+            }
+
             if (position >= 0){
                 std::string message = position == 0 ? "Please wait. Your tournament is currently being simulated." : "Please wait. Your tournament is in queue at position " + std::to_string(position) + ".";
                 response["message"] = message;
@@ -1148,13 +1145,6 @@ int Server::run(){
     return 0;
 }
 
-std::string Server::getToken(const std::string& username, const std::string& password){
-    if (username == "admin" && password  == "admin"){
-        return "admin:123";
-    }
-    return "";
-}
-
 void Server::waitForTournaments(uint32_t threadNumber){
     try{
     auto& queue = this->queuedTournaments[threadNumber];
@@ -1237,52 +1227,6 @@ void Server::startTournamentThreads(){
 Server::~Server(){
     delete[] queuedTournaments;
     delete[] queuedTournamentMutexes;
-}
-
-void Server::testTrainerSerialization(){
-    std::vector<PokemonBlueprint> team = {
-        {
-            "Squirtle",
-            100,
-            {"Tackle","Tackle","Tackle","Tackle"},
-            "Torrent",
-            "Random",
-            {31,31,31,31,31,31},
-            "Adamant",
-            "Leftovers",
-            {255,255,255,255,255,255},
-            "Squirty"
-        },
-        {
-            "Charmander",
-            99,
-            {"Pound","Tackle","Karate Chop","Surf"},
-            "Guts",
-            "Female",
-            {31,31,31,31,31,31},
-            "Docile",
-            "Leftovers",
-            {255,255,255,255,255,3},
-            "Kalameet"
-        },
-    };
-    std::string name = "Test Guy";
-    TrainerLevel level = TrainerLevel::TRAINER;
-
-    Trainer t(name, team, level);
-
-    size_t id = db.saveTrainer(t, 1, 0);
-
-    Trainer tdb = db.getTrainer(id).value();
-    Trainer tjs(t.toJSON());
-
-    std::cout << t.toJSON().dump() << '\n';
-    std::cout << tdb.toJSON().dump() << '\n';
-    std::cout << tjs.toJSON().dump() << '\n';
-
-    assert(t.hashCode() == tdb.hashCode());
-    assert(tjs.hashCode() == tdb.hashCode());
-    std::cout << t.hashCode() << '\n';
 }
 
 std::string Server::getDomainFromURL(){

@@ -64,16 +64,16 @@ private:
     }, false);
 
     // Config vars
-    const int max_tournament_threads = config.get_int("tournament_threads");
-    const int max_trainers_per_user = config.get_int("max_trainers_per_user");
+    const int32_t max_tournament_threads = config.get_int("tournament_threads");
+    const int32_t max_trainers_per_user = config.get_int("max_trainers_per_user");
     const std::string websiteURL = config.get("website_url");
     const std::string domain = getDomainFromURL();
-    const int port = config.get_int("api_port");
+    const int32_t port = config.get_int("api_port");
     const bool serveStatic = config.get_int("serve_static");
     const std::string staticDir = config.get("static_dir");
-    const int keepTournamentDays = config.get_int("keep_tournament_days");
-    const int maxTournamentsPerDay = config.get_int("max_tournaments_per_day");
-    const int maxSignUpsPerDay = config.get_int("max_signups_per_day");
+    const int32_t keepTournamentDays = config.get_int("keep_tournament_days");
+    const int32_t maxTournamentsPerDay = config.get_int("max_tournaments_per_day");
+    const int32_t maxSignUpsPerDay = config.get_int("max_signups_per_day");
 
     // Server state
     tfhttp::HTTP_Server app = tfhttp::HTTP_Server(tfhttp::HTTP_Server::Options{
@@ -99,13 +99,8 @@ private:
     const std::string MOVE_DATA_RESPONSE;
     const std::string ALL_DATA_RESPONSE;
 
-    std::string getToken(const std::string& username, const std::string& password);
     std::string getDomainFromURL();
     void waitForTournaments(uint32_t threadNumber);
     size_t createTournamentRequest(const json& json, size_t user, const std::string& name, const std::string& ip);
     void startTournamentThreads();
-    int findTournamentPositionInQueue(size_t tournamentID, int threadNumber);
-    void testTrainerSerialization();
 };
-
-std::string createAllDataResponse();
