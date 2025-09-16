@@ -64,16 +64,16 @@ private:
     }, false);
 
     // Config vars
-    const int max_tournament_threads = getIntFromConfig(config, "tournament_threads");
-    const int max_trainers_per_user = getIntFromConfig(config, "max_trainers_per_user");
+    const int max_tournament_threads = config.get_int("tournament_threads");
+    const int max_trainers_per_user = config.get_int("max_trainers_per_user");
     const std::string websiteURL = config.get("website_url");
     const std::string domain = getDomainFromURL();
-    const int port = getIntFromConfig(config, "api_port");
-    const bool serveStatic = getIntFromConfig(config, "serve_static");
+    const int port = config.get_int("api_port");
+    const bool serveStatic = config.get_int("serve_static");
     const std::string staticDir = config.get("static_dir");
-    const int keepTournamentDays = getIntFromConfig(config, "keep_tournament_days");
-    const int maxTournamentsPerDay = getIntFromConfig(config, "max_tournaments_per_day");
-    const int maxSignUpsPerDay = getIntFromConfig(config, "max_signups_per_day");
+    const int keepTournamentDays = config.get_int("keep_tournament_days");
+    const int maxTournamentsPerDay = config.get_int("max_tournaments_per_day");
+    const int maxSignUpsPerDay = config.get_int("max_signups_per_day");
 
     // Server state
     tfhttp::HTTP_Server app = tfhttp::HTTP_Server(tfhttp::HTTP_Server::Options{
@@ -85,7 +85,7 @@ private:
     std::mutex threadCounterMutex;
     std::unordered_map<size_t,int> idToThread;
     std::mutex idToThreadMutex;
-    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), getIntFromConfig(config, "max_user_sessions"), config.get("db_port"));
+    MariaDBConnection db = MariaDBConnection(config.get("db_user"), config.get("db_password"), config.get("db_host"), config.get("db_name"), config.get_int("max_user_sessions"), config.get("db_port"));
     std::unordered_map<std::string, uint32_t> ipSignUps;
     std::mutex ipSignUpsMutex;
     std::unordered_map<std::string, FailedLoginState> ipFailedLogins;

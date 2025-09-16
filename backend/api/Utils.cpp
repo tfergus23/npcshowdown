@@ -443,19 +443,6 @@ std::string sha256(const std::string &input) {
     return result;
 }
 
-int getIntFromConfig(tflib::ini_file& config, const std::string& key){
-    if (!config.has_key(key)){
-        throw std::runtime_error("'"+ key + "' not specified in ini file.");
-    }
-    try{
-        int number = stoi(config.get(key));
-        return number;
-    }
-    catch (...){
-        throw std::runtime_error("Invalid number value for key '" + key + "' in ini file: " + config.get(key));
-    }
-}
-
 std::string validateSaveTournamentRequest(const json& json){
     std::string problems = "";
 
