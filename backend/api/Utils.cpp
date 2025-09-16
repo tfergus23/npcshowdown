@@ -11,6 +11,10 @@
 #include <fstream>
 #include <openssl/evp.h>
 #include "tflib/strings.h"
+#ifdef _WIN32
+#include <windows.h>
+#include <wincrypt.h>
+#endif
 
 constexpr int MAX_TRAINER_NAME_SIZE     =    16;
 constexpr int MAX_POKEMON_NAME_SIZE     =    16;
@@ -368,6 +372,7 @@ std::string charArrayToHex(const char* arr, int len) {
 }
 
 std::string generateUUID(){
+#ifdef __linux__
     std::ifstream random("/dev/random", std::ios::binary);
 
     if (!random) {
@@ -382,6 +387,24 @@ std::string generateUUID(){
     }
 
     return charArrayToHex(buffer.data(), buffer.size());
+#endif
+#ifdef _WIN32
+    std::vector<BYTE> buffer(16);
+
+    HCRYPTPROV hProv = 0;
+    if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+        throw std::runtime_error("CryptAcquireContext failed");
+    }
+
+    if (!CryptGenRandom(hProv, static_cast<DWORD>(16), buffer.data())) {
+        CryptReleaseContext(hProv, 0);
+        throw std::runtime_error("CryptGenRandom failed");
+    }
+
+    CryptReleaseContext(hProv, 0);
+
+    return charArrayToHex((char*)buffer.data(), buffer.size());
+#endif
 }
 
 std::string sha256(const std::string &input) {
