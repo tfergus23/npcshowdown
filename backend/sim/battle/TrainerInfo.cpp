@@ -2,7 +2,7 @@
 #include <string.h>
 #include "sim/data/Moves.hpp"
 #include <unordered_set>
-#include "sim/utils/move_functions.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 
 static const std::unordered_set<const Move*> poisoningMoves = {
     //ie.
@@ -28,7 +28,7 @@ static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std:
             continue;
         }
         MoveUse moveUse(move, myPoke, enemyPoke, myPoke->battle);
-        int avgDamage = calculateDirectDamage(&moveUse, true).damage;
+        int avgDamage = MoveFunctions::calculateDirectDamage(&moveUse, true).damage;
         if (avgDamage > outDamage){
             outMove = move;
             outDamage = avgDamage;

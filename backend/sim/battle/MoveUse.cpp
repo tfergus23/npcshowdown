@@ -1,8 +1,8 @@
 #include "sim/battle/MoveUse.hpp"
 #include "Stat.hpp"
 #include "sim/battle/Battle.hpp"
-#include "sim/utils/move_functions.hpp"
-#include "sim/utils/stage_multipliers.hpp"
+#include "sim/utils/MoveFunctions.hpp"
+#include "sim/utils/StageMultipliers.hpp"
 #include "sim/data/Moves.hpp"
 
 
@@ -36,14 +36,14 @@ void MoveUse::doMove(MoveUse* opponentMove){
         return;
     }
     if (isSelfDestruct){
-        selfDestruct(this);
+        MoveFunctions::selfDestruct(this);
     }
     float typeMod = typeMatchup(effectiveType, target->currentType[0], target->currentType[1]);
     if (typeMod == NOT_EFFECTIVE && move->damageCategory != DamageCategory::STATUS && move->targetType == TargetType::OPPONENT){
         logUsage();
         battle->logMessage("It doesn't affect " + target->nickname + "...");
         if (move->crashOnFail){
-            crash(user, battle);
+            MoveFunctions::crash(user, battle);
         }
         return;
     }
@@ -57,7 +57,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
         logUsage();
         battle->logMessage(user->nickname + "'s attack missed!");
         if (move->crashOnFail){
-            crash(user,battle);
+            MoveFunctions::crash(user,battle);
         }
         return;
     }

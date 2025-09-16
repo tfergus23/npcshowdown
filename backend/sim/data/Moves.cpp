@@ -1,5 +1,5 @@
 #include "sim/data/Moves.hpp"
-#include "sim/utils/move_functions.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 #include <vector>
 #include "nlohmann/json.hpp"
 
@@ -58,7 +58,7 @@ const Move MOVE_STRUGGLE = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamageWithRecoil(myMove, 1.0f / 4.0f, true);
+        MoveFunctions::dealDirectDamageWithRecoil(myMove, 1.0f / 4.0f, true);
     }
 };
 
@@ -84,7 +84,7 @@ const Move MOVE_POUND = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamage(myMove);
+        MoveFunctions::dealDirectDamage(myMove);
     }
 };
 
@@ -110,7 +110,7 @@ const Move MOVE_TACKLE = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamage(myMove);
+        MoveFunctions::dealDirectDamage(myMove);
     }
 };
 
@@ -136,7 +136,7 @@ const Move MOVE_KARATE_CHOP = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamage(myMove);
+        MoveFunctions::dealDirectDamage(myMove);
     }
 };
 
@@ -161,7 +161,7 @@ const Move MOVE_SURF = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamage(myMove);
+        MoveFunctions::dealDirectDamage(myMove);
     }
 };
 
@@ -186,8 +186,8 @@ const Move MOVE_FLAMETHROWER = {
     .kingsRock = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        int damage = dealDirectDamage(myMove);
-        if (damage > 0) applySecondaryEffect(myMove, opponentMove);
+        int damage = MoveFunctions::dealDirectDamage(myMove);
+        if (damage > 0) MoveFunctions::applySecondaryEffect(myMove, opponentMove);
     }
 };
 
@@ -206,7 +206,7 @@ const Move MOVE_CONFUSION_HIT = {
     .secondaryEffectValue = -1,
     .id = 0,
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        dealDirectDamage(myMove);
+        MoveFunctions::dealDirectDamage(myMove);
     }
 };
 

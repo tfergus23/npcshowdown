@@ -5,7 +5,7 @@
 #include "sim/battle/Nature.hpp"
 #include "sim/data/Moves.hpp"
 #include <iostream>
-#include "sim/utils/stage_multipliers.hpp"
+#include "sim/utils/StageMultipliers.hpp"
 #include "sim/data/Items.hpp"
 #include "sim/battle//Stat.hpp"
 #include "sim/battle/PokemonBlueprint.hpp"
