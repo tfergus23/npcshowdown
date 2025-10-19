@@ -22,18 +22,18 @@ using json = nlohmann::json;
 constexpr int MAX_ALLOWED_LOGIN_ATTEMPTS = 5;
 
 
-void preflightHandler(const HTTP_Request& req, HTTP_Response& res){
+void preflightHandler(const Request& req, Response& res){
     res.headers["Access-Control-Allow-Methods"] = ALLOWED_METHODS;
     res.headers["Access-Control-Allow-Headers"] = ALLOWED_HEADERS;
     res.Send("");
 }
 
-bool debugDelayMiddleware(const HTTP_Request& req, HTTP_Response& res){
+bool debugDelayMiddleware(const Request& req, Response& res){
     std::this_thread::sleep_for(std::chrono::seconds(1));
     return true;
 }
 
-bool jsonContentTypeMiddleware(const HTTP_Request& req, HTTP_Response& res){
+bool jsonContentTypeMiddleware(const Request& req, Response& res){
     res.headers["Content-Type"] = "application/json";
     return true;
 }
@@ -62,7 +62,7 @@ std::string createAllDataResponse(){
     return response.dump();
 }
 
-size_t Server::createTournamentRequest(const json& json, size_t user, const std::string& name, const std::string& ip){
+size_t npcs::Server::createTournamentRequest(const json& json, size_t user, const std::string& name, const std::string& ip){
     size_t id = db.createEmptyTournament(user, name, ip);
     TournamentRequest request{
         .requestJson = json,
@@ -89,7 +89,7 @@ size_t Server::createTournamentRequest(const json& json, size_t user, const std:
 static const std::string TOKEN_COOKIE_START = "token=";
 static const std::string BEARER_AUTH_SCHEME = "Bearer ";
 
-static Credentials getCredentialsFromRequest(const HTTP_Request& req){
+static Credentials getCredentialsFromRequest(const Request& req){
     Credentials result;
     if (req.Has_Header("Cookie")){
         result.type = ClientType::BROWSER;
@@ -123,7 +123,7 @@ static Credentials getCredentialsFromRequest(const HTTP_Request& req){
     }
 }
 
-inline void sendProblemResponse(std::string& problems, json& response, HTTP_Response& res){
+inline void sendProblemResponse(std::string& problems, json& response, Response& res){
     if (problems[problems.size() - 1] == '\n'){
         problems.pop_back();
     }
@@ -133,7 +133,7 @@ inline void sendProblemResponse(std::string& problems, json& response, HTTP_Resp
     res.Send(response.dump());
 }
 
-Server::Server() :
+npcs::Server::Server() :
  SPECIES_DATA_RESPONSE{createSpeciesDataResponse()},
  ABILITY_DATA_RESPONSE{createAbilityDataResponse()},
  ITEM_DATA_RESPONSE{createItemDataResponse()},
@@ -162,7 +162,7 @@ Server::Server() :
     Route* baseRoute = app.Create_Route("/api");
     Route* authorizedRoute = app.Create_Route("/api/user/:username");
 
-    auto addCORSHeaderMiddleware = [=, this](const HTTP_Request& req, HTTP_Response& res){
+    auto addCORSHeaderMiddleware = [=, this](const Request& req, Response& res){
         res.headers["Access-Control-Allow-Origin"] = websiteURL;
         res.headers["Access-Control-Allow-Credentials"] = "true";
         return true;
@@ -176,7 +176,7 @@ Server::Server() :
     authorizedRoute->Use(addCORSHeaderMiddleware);
 
     //Authorization
-    authorizedRoute->Use([=, this](const HTTP_Request& req, HTTP_Response& res){
+    authorizedRoute->Use([=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         std::string username = req.path_params.at("username");
@@ -216,7 +216,7 @@ Server::Server() :
     // If serving frontend
     if (serveStatic){
         app.Set_Static_Directory(staticDir);
-        app.Set_Default_Handler([=,this] (const HTTP_Request& req, HTTP_Response& res){
+        app.Set_Default_Handler([=,this] (const Request& req, Response& res){
             res.Send_File(staticDir + "/index.html");
         });
         std::cout << "Serving static files in " << staticDir << '\n';
@@ -226,7 +226,7 @@ Server::Server() :
     app.Add_Handler("OPTIONS", "*", preflightHandler);
 
     //Add API handlers 
-    app.Add_Handler("POST", baseRoute, "/auth", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", baseRoute, "/auth", [=, this](const Request& req, Response& res){
         json response;
         {
             std::unique_lock lk(ipFailedLoginsMutex);
@@ -278,7 +278,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", authorizedRoute, "/", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", authorizedRoute, "/", [=, this](const Request& req, Response& res){
         json response;
 
         auto dbUser = db.getUserData(req.path_params.at("username"));
@@ -304,7 +304,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("DELETE", authorizedRoute, "/logout", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("DELETE", authorizedRoute, "/logout", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         auto creds = getCredentialsFromRequest(req);
@@ -326,7 +326,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("PUT", authorizedRoute, "/password", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("PUT", authorizedRoute, "/password", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         json request;
@@ -371,15 +371,15 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", baseRoute, "/data/species", [=,this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/data/species", [=,this](const Request& req, Response& res){
         res.Send(SPECIES_DATA_RESPONSE);
     });
 
-    app.Add_Handler("GET", baseRoute, "/data", [=,this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/data", [=,this](const Request& req, Response& res){
         res.Send(ALL_DATA_RESPONSE);
     });
 
-    app.Add_Handler("POST", baseRoute, "/battle", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", baseRoute, "/battle", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -424,7 +424,7 @@ Server::Server() :
         res.Send(response.dump());
     });
     
-    app.Add_Handler("POST", baseRoute, "/tournament", [=,this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", baseRoute, "/tournament", [=,this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -487,7 +487,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", baseRoute, "/trainer/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/trainer/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         size_t trainerID = 0;
@@ -516,7 +516,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", baseRoute, "/tournament/:id", [=,this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", baseRoute, "/tournament/:id", [=,this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         size_t tournamentID = 0;
@@ -636,7 +636,7 @@ Server::Server() :
         }
     });
 
-    app.Add_Handler("GET", authorizedRoute, "/trainers", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", authorizedRoute, "/trainers", [=, this](const Request& req, Response& res){
         std::string username = req.path_params.at("username");
 
         std::vector<json> userTrainerJSONs = db.getUserTrainers(username);
@@ -649,7 +649,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("POST", authorizedRoute, "/trainer", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", authorizedRoute, "/trainer", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -690,7 +690,7 @@ Server::Server() :
 
     });
 
-    app.Add_Handler("PUT", authorizedRoute, "/trainer/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("PUT", authorizedRoute, "/trainer/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         size_t trainerID = 0;
@@ -737,7 +737,7 @@ Server::Server() :
         }
     });
 
-    app.Add_Handler("DELETE", authorizedRoute, "/trainer/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("DELETE", authorizedRoute, "/trainer/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         size_t trainerID = 0;
@@ -766,7 +766,7 @@ Server::Server() :
         }
     });
 
-    app.Add_Handler("GET", authorizedRoute, "/tournaments", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", authorizedRoute, "/tournaments", [=, this](const Request& req, Response& res){
         std::vector<TournamentResults> savedTournaments = db.getUserTournaments(req.path_params.at("username"));
         std::vector<json> savedTournamentJSONs;
         savedTournamentJSONs.reserve(savedTournaments.size());
@@ -783,7 +783,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("POST", authorizedRoute, "/tournament/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", authorizedRoute, "/tournament/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -824,7 +824,7 @@ Server::Server() :
         }
     });
 
-    app.Add_Handler("DELETE", authorizedRoute, "/tournament/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("DELETE", authorizedRoute, "/tournament/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         size_t tournamentID = 0;
@@ -853,7 +853,7 @@ Server::Server() :
         }
     });
 
-    app.Add_Handler("PUT", authorizedRoute, "/tournament/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("PUT", authorizedRoute, "/tournament/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         json request;
@@ -921,7 +921,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("POST", baseRoute, "/user", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", baseRoute, "/user", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -970,7 +970,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("DELETE", authorizedRoute, "/", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("DELETE", authorizedRoute, "/", [=, this](const Request& req, Response& res){
         std::string username = req.path_params.at("username");
 
         bool result = db.deleteUser(username);
@@ -989,7 +989,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", authorizedRoute, "/errors/count", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", authorizedRoute, "/errors/count", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
 
@@ -1009,7 +1009,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("GET", authorizedRoute, "/errors", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("GET", authorizedRoute, "/errors", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
 
@@ -1069,7 +1069,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("DELETE", authorizedRoute, "/error/:id", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("DELETE", authorizedRoute, "/error/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
 
@@ -1105,7 +1105,7 @@ Server::Server() :
         res.Send(response.dump());
     });
 
-    app.Add_Handler("POST", authorizedRoute, "/error", [=, this](const HTTP_Request& req, HTTP_Response& res){
+    app.Add_Handler("POST", authorizedRoute, "/error", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
         response["id"] = -1;
@@ -1139,13 +1139,13 @@ Server::Server() :
     });
 }
 
-int Server::run(){
+int npcs::Server::run(){
     startTournamentThreads();
     app.Listen();
     return 0;
 }
 
-void Server::waitForTournaments(uint32_t threadNumber){
+void npcs::Server::waitForTournaments(uint32_t threadNumber){
     try{
     auto& queue = this->queuedTournaments[threadNumber];
     auto& queueMutex = this->queuedTournamentMutexes[threadNumber];
@@ -1216,20 +1216,20 @@ void Server::waitForTournaments(uint32_t threadNumber){
     }
 }
 
-void Server::startTournamentThreads(){
+void npcs::Server::startTournamentThreads(){
     for(int i = 0; i < max_tournament_threads; i++){
         std::cout << "Starting thread #" << i << '\n';
-        std::thread t(&Server::waitForTournaments, this, i);
+        std::thread t(&npcs::Server::waitForTournaments, this, i);
         t.detach();
     }
 }
 
-Server::~Server(){
+npcs::Server::~Server(){
     delete[] queuedTournaments;
     delete[] queuedTournamentMutexes;
 }
 
-std::string Server::getDomainFromURL(){
+std::string npcs::Server::getDomainFromURL(){
     size_t start = websiteURL.find("//");
     if (start == std::string::npos){
         start = 0;

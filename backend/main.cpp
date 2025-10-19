@@ -126,7 +126,7 @@ int main(int argc, char** argv){
         return 0;
     }
     
-    Server server;
+    npcs::Server server;
     return server.run();
     
 }
