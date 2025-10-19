@@ -3,10 +3,11 @@ import { AppComponent, MessageType } from '../app.component';
 import { CreateTrainerComponent } from '../create-trainer/create-trainer.component';
 import { DataService } from '../data.service';
 import DataLists from 'src/DataLists';
-import Trainer, { createEmptyTrainer } from 'src/Trainer';
+import Trainer, { createEmptyTrainer, validateTrainer } from 'src/Trainer';
 import TournamentRequest from 'src/TournamentRequest';
 import { BattleService } from '../battle.service';
 import { UserTrainersModalComponent } from '../user-trainers-modal/user-trainers-modal.component';
+import { validFormats } from 'pixi.js';
 
 @Component({
   selector: 'app-create-tournament',
@@ -72,6 +73,7 @@ export class CreateTournamentComponent {
         file?.text().then(text => {
           try{
             let trainer: Trainer = JSON.parse(text) as Trainer;
+            validateTrainer(trainer);
             this.trainers.push(trainer);
             this.saveEntries();
             if (i+1 == files!.length){
