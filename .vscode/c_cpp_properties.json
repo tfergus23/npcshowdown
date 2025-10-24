@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/backend",
+                "${workspaceFolder}/backend/lib/json/single_include",
+                "${workspaceFolder}/backend/lib/tfhttp/include",
+                "${workspaceFolder}/backend/lib/tfhttp/lib/tflib/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++20",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
