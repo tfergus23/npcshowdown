@@ -32,7 +32,7 @@ NPC Showdown is a web app and API for simulating round-robin tournaments between
 ### Setup
 Clone the repository with:
 ```
-git clone --branch dev --single-branch git@github.com:tfergus23/npcshowdown.git --recurse-submodules
+git clone --branch dev git@github.com:tfergus23/npcshowdown.git --recurse-submodules
 ```
 And then run the setup script:
 ```
