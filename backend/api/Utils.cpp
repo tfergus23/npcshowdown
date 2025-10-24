@@ -24,7 +24,6 @@ constexpr int MIN_PASSWORD_LENGTH       =     8;
 constexpr int MAX_POKEMON_LEVEL         =  1000;
 
 static const std::hash<std::string> hasher;
-static const std::string API_AUTH_ENDPOINT = "http://npcshowdown.com/api/auth";
 
 std::string checkForString(const json& json, const std::string& prefix, const std::string& fieldName){
     std::string problems = "";
