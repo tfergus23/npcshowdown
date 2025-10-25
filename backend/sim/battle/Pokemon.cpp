@@ -130,7 +130,6 @@ void Pokemon::removeMarkedEffects(){
 }
 
 void Pokemon::applyEffect(const Effect* effect){
-    //TODO Implement the MoveEffects version here
     battle->assertTrue(!hasEffect(effect), "Tried to apply effect " + effect->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
     m_Effects[effect];
     effect->observer.initialize(this, battle);

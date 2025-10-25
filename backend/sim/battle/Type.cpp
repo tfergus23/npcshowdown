@@ -1,9 +1,6 @@
 #include "sim/battle/Type.hpp"
 #include <unordered_map>
 
-
-//enum class Type : uint8_t {NONE,NORMAL,FIRE,WATER,ELECTRIC,GRASS,ICE,FIGHTING,POISON,GROUND,FLYING,PSYCHIC,
-//BUG,ROCK,GHOST,DRAGON,DARK,STEEL,FAIRY};
 static const char* typeStrings[] = {
     "None",
     "Normal",

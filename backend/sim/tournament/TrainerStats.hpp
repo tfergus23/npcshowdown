@@ -10,8 +10,6 @@ public:
     int wins = 0;
     int losses = 0;
     int opponentRatingsTotal = 0;
-    //Index into the results list
-    //ssize_t bestWin = -1;
     BattleResult bestWin;
     int bestWinEloDiff = INT_MIN;
 

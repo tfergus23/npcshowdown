@@ -5,7 +5,7 @@ class MoveUse;
 
 class EventArgs{
 public:
-    Pokemon* const eventSubject; // Subject of event
-    MoveUse* const moveUse; //MoveUse if applicable
+    Pokemon* const eventSubject;
+    MoveUse* const moveUse;
     EventArgs(Pokemon* eventSubject, MoveUse* moveUse) : eventSubject{eventSubject}, moveUse{moveUse}{}
 };

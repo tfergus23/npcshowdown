@@ -35,7 +35,7 @@ TEST(DamageCalcTest, StandardSpecialAttack){
     Battle battle(t1,t2,0, {.averageDamage = true});
     battle.addMoves(&MOVE_SURF, &MOVE_TACKLE);
     battle.doMove();
-    int damage = battle.m_Turn[0].damageDone;
+    int damage = battle.turn[0].damageDone;
 
     EXPECT_EQ(damage, EXPECTED_DAMAGE);
 }

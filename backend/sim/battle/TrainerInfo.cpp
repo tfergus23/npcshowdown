@@ -101,8 +101,6 @@ const Move* TrainerInfo::pickMove(Pokemon* myPoke, Pokemon* enemyPoke, Battle* b
         }
     }
 
-
-    //TODO: The rest of these
     switch (trainerLevel)
     {
     case TrainerLevel::FIRST_MOVE:

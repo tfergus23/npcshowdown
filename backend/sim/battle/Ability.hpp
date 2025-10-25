@@ -11,5 +11,4 @@ public:
     float accuracyMultiplier = 1.0f;
     bool ignorable = false;
     short id = -1;
-protected:
 };

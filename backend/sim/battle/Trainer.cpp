@@ -19,7 +19,6 @@ trainerInfo{TrainerInfo(name, trainerLevel)}
 }
 
 Trainer::Trainer(json json) :
-//teamBlueprint{{PokemonBlueprint(json["team"][0]),PokemonBlueprint(json["team"][1]),PokemonBlueprint(json["team"][2]),PokemonBlueprint(json["team"][3]),PokemonBlueprint(json["team"][4]),PokemonBlueprint(json["team"][5])}},
 teamBlueprint{teamBluePrintFromJSON(json["team"])},
 trainerInfo{TrainerInfo(json["name"].get<std::string>(), trainerLevelFromString(json["trainerLevel"].get<std::string>()))}
 {

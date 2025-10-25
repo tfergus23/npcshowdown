@@ -1,3 +1,5 @@
 #pragma once
+#include "Stat.hpp"
 
-enum class DamageCategory{PHYSICAL=1, STATUS=0, SPECIAL=3};
+// These values are used to determine the correct attacking/defending stats
+enum class DamageCategory{PHYSICAL=(int)Stat::ATTACK, STATUS=0, SPECIAL=(int)Stat::SPATTACK};

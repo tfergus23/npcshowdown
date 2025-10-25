@@ -21,7 +21,6 @@ Tournament::Tournament(std::vector<Trainer>& trainers, int rounds, size_t seed) 
 
     int id = 0;
     for (auto& trainer : trainers){
-        //this->trainerStats.emplace_back().trainerIndex = id++; //TODO: Test this
         this->trainerStats.push_back(
             {
                 .trainerIndex = id++

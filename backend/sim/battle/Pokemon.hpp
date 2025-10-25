@@ -26,27 +26,14 @@ class Pokemon{
         int level;
         std::array<int,6> evs;
         std::array<int,6> ivs;
-        const Ability* getBaseAbility();
-        const Item* getBaseItem();
         std::array<const Move*,4> baseMoves;
-        Gender getGender() const;
         Nature nature;
 
 
         //Battle state
-        const Ability* getCurrentAbility();
-        void setCurrentAbility(const Ability* ability);
         ObserverState abilityState;
-        const Item* getCurrentItem();
-        void setCurrentItem(const Item* item);
         ObserverState itemState;
-        const Status* getStatus();
-        void applyStatus(const Status* status);
         ObserverState statusState;
-        bool hasEffect(const Effect* effect);
-        void removeEffect(const Effect* effect);
-        void applyEffect(const Effect* effect);
-        ObserverState* getEffectState(const Effect* effect);
         std::array<const Move*,4> currentMoves;
         int currentHealth;
         bool isDead = false;
@@ -59,39 +46,65 @@ class Pokemon{
         const Move* nextMove = nullptr;
         int nextMoveCounter = -1;
         std::array<Type,2> currentType;
-        void entrap();
-        void releaseTrap();
-        bool isTrapped();
-        //int disabledIndex = -1;
         const Move* lastMoveUsed = nullptr;
         bool empty = true;
 
         Pokemon();
         Pokemon(const PokemonBlueprint* blueprint, Battle* battle);
+
         int getStat(Stat stat, bool crit = false);
         int getStatRaw(Stat stat) const;
+
         void resetBoosts();
+
         void handleEvent(Event event, const EventArgs& args);
+
         bool shouldDie();
+
         bool outOfPP();
+
         bool isType(Type type);
+
         void disableMove(const Move* move);
         void enableMove(const Move* move);
         bool isMoveDisabled(const Move* move);
-        bool hasAbilityUnsuppressed(const Ability* ability);
 
+        bool hasAbilityUnsuppressed(const Ability* ability);
         void suppressAbility();
         void allowAbility();
         bool isAbilitySuppressed();
+
         void suppressItem();
         void allowItem();
         bool isItemSuppressed();
+
         void suppressStatus();
         void allowStatus();
         bool isStatusSuppressed();
 
+        void entrap();
+        void releaseTrap();
+        bool isTrapped();
+
+        bool hasEffect(const Effect* effect);
+        void removeEffect(const Effect* effect);
+        void applyEffect(const Effect* effect);
+        ObserverState* getEffectState(const Effect* effect);
+
+        const Status* getStatus();
+        void applyStatus(const Status* status);
+
+        const Item* getCurrentItem();
+        void setCurrentItem(const Item* item);
+
+        const Ability* getCurrentAbility();
+        void setCurrentAbility(const Ability* ability);
+
+        Gender getGender() const;
+
+        const Ability* getBaseAbility();
+        const Item* getBaseItem();
     private:
-        void onSwitch();
         const Ability* m_BaseAbility;
         const Ability* m_CurrentAbility;
         const Item* m_BaseItem = &ITEM_NONE;
@@ -99,11 +112,13 @@ class Pokemon{
         const Status* m_Status = &STATUS_NONE;
         std::unordered_map<const Effect*,ObserverState> m_Effects;
         std::vector<const Effect*> m_EffectsToRemove;
-        void removeMarkedEffects();
         Gender m_Gender;
         std::unordered_map<const Move*, int> m_DisabledMoves;
         int8_t m_Trappers = 0;
         int8_t m_AbilitySuppressors = 0;
         int8_t m_ItemSuppressors = 0;
         int8_t m_StatusSuppressors = 0;
+
+        void onSwitch();
+        void removeMarkedEffects();
 };

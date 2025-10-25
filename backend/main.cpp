@@ -20,7 +20,7 @@ bool already_running(const char* lock_file_path) {
     HANDLE hFile = CreateFileA(
         lock_file_path,
         GENERIC_READ | GENERIC_WRITE,
-        0, // No sharing = exclusive access
+        0,
         NULL,
         OPEN_ALWAYS,
         FILE_ATTRIBUTE_NORMAL,
@@ -28,24 +28,21 @@ bool already_running(const char* lock_file_path) {
     );
 
     if (hFile == INVALID_HANDLE_VALUE) {
-        return true; // Could not open the file
+        return true;
     }
 
     OVERLAPPED overlapped = {0};
     if (!LockFileEx(hFile, LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY, 0, MAXDWORD, MAXDWORD, &overlapped)) {
         CloseHandle(hFile);
-        return true; // Failed to acquire lock
+        return true;
     }
 
-    // Write PID to file
     DWORD pid = GetCurrentProcessId();
     char pid_str[32];
     int len = snprintf(pid_str, sizeof(pid_str), "%lu\n", pid);
     DWORD written;
     WriteFile(hFile, pid_str, len, &written, NULL);
 
-    // Do NOT close the file — closing releases the lock
-    // Keep it open for the life of the process
     return false;
 }
 #endif
@@ -65,36 +62,6 @@ bool already_running(const char* lock_file_path) {
     return false;
 }
 #endif
-
-inline void generateTypeAssertions(){
-    for (uint8_t i = 0; i < 19; i++){
-        for (uint8_t j = 0; j < 19; j++){
-            for (uint8_t k = j+1; k < 19; k++){
-                std::string attack = tflib::to_upper(typeString((Type) i));
-                std::string defend1 = tflib::to_upper(typeString((Type) j));
-                std::string defend2 = tflib::to_upper(typeString((Type) k));
-                float matchup = typeMatchup((Type) i, (Type) j, (Type) k);
-                std::string matchupString = "1.0f";
-                if (matchup == ULTRA_EFFECTIVE){
-                    matchupString = "ULTRA_EFFECTIVE";
-                }
-                else if (matchup == SUPER_EFFECTIVE){
-                    matchupString = "SUPER_EFFECTIVE";
-                }
-                else if (matchup == NOT_VERY_EFFECTIVE){
-                    matchupString = "NOT_VERY_EFFECTIVE";
-                }
-                else if (matchup == BARELY_EFFECTIVE){
-                    matchupString = "BARELY_EFFECTIVE";
-                }
-                else if (matchup == NOT_EFFECTIVE){
-                    matchupString = "NOT_EFFECTIVE";
-                }
-                std::cout << "static_assert(typeMatchup(Type::" + attack + ", Type::" + defend1 + ", Type::" + defend2 + ") == " + matchupString + ");\n";
-            }
-        }
-    }
-}
 
 int main(int argc, char** argv){
 #ifdef __linux__

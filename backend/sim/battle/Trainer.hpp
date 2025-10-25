@@ -9,15 +9,8 @@
 
 class Trainer{
 public:
-/*
-    std::string getTrainerClass();
-    std::string getName();
-    std::array<PokemonBlueprint, 6> getTeamBlueprint();
-    TrainerLevel getTrainerLevel();
-*/
     std::vector<PokemonBlueprint> teamBlueprint;
     TrainerInfo trainerInfo;
-
 
     Trainer(const std::string& name, const std::vector<PokemonBlueprint>& teamBlueprint, TrainerLevel trainerLevel);
     Trainer(json json);

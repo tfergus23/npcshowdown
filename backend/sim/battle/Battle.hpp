@@ -140,35 +140,33 @@ private:
 class Battle{
 public:
     DebugOptions debugOptions;
-    const TrainerInfo* getPlayer1() const;
-    const TrainerInfo* getPlayer2() const;
     std::array<Pokemon,6> player1Team;
     std::array<Pokemon,6> player2Team;
     Pokemon* player1ActivePokemon;
     Pokemon* player2ActivePokemon;
     int player1Switching = -1; //-1 indicates no switch. >= 0 indicates position of pokemon
     int player2Switching = -1;
+    MoveUse turn[2];
     bool isTurnOver = false;
     const Weather* weather = &WEATHER_NONE;
     int turns = 1;
     bool isBattleOver = false;
     bool isDraw = false;
     const TrainerInfo* winner;
-    //std::string battleLog = "";
     int weatherSuppressors = 0;
     int moveNumber = 0;
     bool doLogging = true;
     bool invalid = false;
     std::string errorMessage = "";
-
     //Used by the Use2MovesThenSwitch AI to count how many moves it used so far
     int player1SwitchCounter = 0;
     int player2SwitchCounter = 0;
 
+    Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions&& debugOptions = DebugOptions());
+    const TrainerInfo* getPlayer1() const;
+    const TrainerInfo* getPlayer2() const;
     int randInt(int min, int max);
     size_t getSeed();
-
-    Battle(const Trainer& trainer1, const Trainer& trainer2, size_t seed, const DebugOptions&& debugOptions = DebugOptions());
     void addMoves(const Move* move1, const Move* move2);
     MoveUse* doMove();
     Pokemon* switchPokemon(bool isPlayer1);
@@ -177,7 +175,6 @@ public:
     bool sideHasFieldEffect(bool side, const FieldEffect* fieldEffect);
     ObserverState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
-    //void log(std::string_view str);
     void logMessage(std::string_view message);
     void logRangedAttack(std::string_view message, const AttackData& data);
     void logMeleeAttack(std::string_view message, const AttackData& data);
@@ -198,15 +195,10 @@ public:
     std::string textLog();
     void debug(std::string_view str);
     void assertTrue(bool condition, std::string_view message = "");
-
-    //void raiseBeforeMove(MoveUse* moveUse);
-    //void raiseEndOfTurn();
     void raiseEvent(Event event, const EventArgs& args);
     void killTheDead();
     void setActivePokemon(bool isPlayer1, int newPokeIndex);
     void simulate();
-
-    MoveUse m_Turn[2];
 private:
     TrainerInfo m_Player1;
     TrainerInfo m_Player2;
@@ -221,18 +213,13 @@ private:
     std::vector<const FieldEffect*> m_EffectsToRemove1;
     std::vector<const FieldEffect*> m_EffectsToRemove2;
     std::vector<LogEvent> m_EventLog;
+
     void removeMarkedFieldEffects(bool side);
     void setPokemonHandlerOrder();
     void setMoveOrder();
     void swapMoves();
     void killPokemon(Pokemon* pokemon);
 };
-
-//void simulateBattle(Battle* battle);
-
-const bool IS_PLAYER_ONE = true;
-const bool IS_PLAYER_TWO = false;
-
 
 class BattleAssertionFailedException : public std::exception {
 public:

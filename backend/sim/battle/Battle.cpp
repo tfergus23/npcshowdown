@@ -18,11 +18,39 @@ m_Generator{std::default_random_engine(m_Seed)}
     for (int i = 0; i < trainer2.teamBlueprint.size(); i++){
         player2Team[i] = Pokemon(&trainer2.teamBlueprint[i], this);
     }
-    setActivePokemon(IS_PLAYER_ONE, 0);
-    setActivePokemon(IS_PLAYER_TWO, 0);
+    setActivePokemon(true, 0);
+    setActivePokemon(false, 0);
     setPokemonHandlerOrder();
     raiseEvent(Event::POKEMON_ENTER, EventArgs(m_FasterPokemon, nullptr));
     raiseEvent(Event::POKEMON_ENTER, EventArgs(m_SlowerPokemon, nullptr));
+}
+
+void Battle::simulate(){
+    try{
+        while (!this->isBattleOver){
+            const Move* player1Move = this->getPlayer1()->pickMove(this->player1ActivePokemon, this->player2ActivePokemon, this);
+            const Move* player2Move = this->getPlayer2()->pickMove(this->player2ActivePokemon, this->player1ActivePokemon, this);
+            this->addMoves(player1Move, player2Move);
+            while (!this->isTurnOver){
+                this->doMove();
+                this->switchIfNecessary();
+                if (this->moveNumber == 1){
+                    this->raiseEvent(Event::END_OF_TURN, EventArgs(nullptr, nullptr));
+                    this->switchIfNecessary();
+                }
+                else{
+                    this->moveNumber++;
+                }
+            }
+        }
+    }
+    catch (const std::exception& e){
+        this->invalid = true;
+        this->isTurnOver = true;
+        this->isBattleOver = true;
+        this->isDraw = true;
+        this->winner = this->getPlayer1(); //This could probably remain nullptr, but I'll keep it this for now
+    }
 }
 
 const TrainerInfo* Battle::getPlayer1() const {
@@ -33,12 +61,14 @@ const TrainerInfo* Battle::getPlayer2() const {
 }
 
 void Battle::debug(std::string_view message){
-    //TODO: Bring this back
+    if (debugOptions.debugLogging){
+        logMessage(message);
+    }
 }
 
 void Battle::assertTrue(bool condition, std::string_view message){
     if (!condition){
-        //log("Assertion failed! Stopping battle.");
+        logMessage("Assertion failed! Stopping battle.");
         errorMessage = std::string(message);
         throw BattleAssertionFailedException(message);
     }
@@ -58,7 +88,7 @@ size_t Battle::getSeed(){
 
 void Battle::setMoveUse(const Move* intendedMove, Pokemon* user, Pokemon* enemy, const TrainerInfo* trainer){
     bool isPlayer1 = trainer == &m_Player1;
-    MoveUse& moveUse = isPlayer1 ? m_Turn[0] : m_Turn[1];
+    MoveUse& moveUse = isPlayer1 ? turn[0] : turn[1];
     int& playerSwitching = isPlayer1 ? player1Switching : player2Switching;
     if (user->nextMove != nullptr){
         moveUse = MoveUse(user->nextMove, user, enemy, this);
@@ -77,30 +107,30 @@ void Battle::addMoves(const Move* move1, const Move* move2){
     setMoveUse(move1, player1ActivePokemon, player2ActivePokemon, &m_Player1);
     setMoveUse(move2, player2ActivePokemon, player1ActivePokemon, &m_Player2);
     setMoveOrder();
-    m_FasterPokemon = m_Turn[0].user;
-    m_SlowerPokemon = m_Turn[1].user;
+    m_FasterPokemon = turn[0].user;
+    m_SlowerPokemon = turn[1].user;
     
 }
 
 
 
 void Battle::setMoveOrder(){
-    if (!compareMoves(&m_Turn[0], &m_Turn[1])){
+    if (!compareMoves(&turn[0], &turn[1])){
         swapMoves();
     }
 }
 
 void Battle::swapMoves(){
-    MoveUse temp = m_Turn[0];
-    m_Turn[0] = m_Turn[1];
-    m_Turn[1] = temp;
+    MoveUse temp = turn[0];
+    turn[0] = turn[1];
+    turn[1] = temp;
 }
 
 MoveUse* Battle::doMove(){
-    MoveUse* move = &m_Turn[moveNumber];
+    MoveUse* move = &turn[moveNumber];
     if (moveNumber == 0) logMessage("---Turn " + std::to_string(turns) + "---");
     if (!move->user->isDead && (move->user == player1ActivePokemon || move->user == player2ActivePokemon)){
-        move->doMove(&m_Turn[moveNumber == 0 ? 1 : 0]);
+        move->doMove(&turn[moveNumber == 0 ? 1 : 0]);
         if (move->changeLastMoveUsed){
             move->user->lastMoveUsed = move->move;
         }
@@ -118,7 +148,7 @@ Pokemon* Battle::switchPokemon(bool isPlayer1){
     raiseEvent(Event::POKEMON_SWITCH, EventArgs(currentPoke, nullptr));
     setActivePokemon(isPlayer1, newPokePosition);
     raiseEvent(Event::POKEMON_ENTER, EventArgs(newPoke, nullptr));
-    if (m_Turn[1].move != &MOVE_SWITCH && m_Turn[1].target == currentPoke) m_Turn[1].target = newPoke;
+    if (turn[1].move != &MOVE_SWITCH && turn[1].target == currentPoke) turn[1].target = newPoke;
     newPokePosition = -1;
     setPokemonHandlerOrder();
     return newPoke;
@@ -126,10 +156,10 @@ Pokemon* Battle::switchPokemon(bool isPlayer1){
 
 void Battle::switchIfNecessary(){
     if (player1Switching >= 0){
-        switchPokemon(IS_PLAYER_ONE);
+        switchPokemon(true);
     }
     if (player2Switching >= 0){
-        switchPokemon(IS_PLAYER_TWO);
+        switchPokemon(false);
     }
 }
 
@@ -206,8 +236,8 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
 
 
         //Check if the battle is over
-        bool player1Dead = trainerBlackedOut(IS_PLAYER_ONE);
-        bool player2Dead = trainerBlackedOut(IS_PLAYER_TWO);
+        bool player1Dead = trainerBlackedOut(true);
+        bool player2Dead = trainerBlackedOut(false);
         if (player1Dead || player2Dead) {
             isBattleOver = true;
             if (player1Dead && player2Dead) {
@@ -292,34 +322,6 @@ void Battle::setActivePokemon(bool isPlayer1, int newPokeIndex){
         Pokemon* newPokemon = &player2Team[newPokeIndex];
         player2ActivePokemon = newPokemon;
         logPokemonEnter(m_Player2.name + " sent out " + newPokemon->nickname + "!", {.isPlayer1 = isPlayer1, .newPokeIndex = newPokeIndex});
-    }
-}
-
-void Battle::simulate(){
-    try{
-        while (!this->isBattleOver){
-            const Move* player1Move = this->getPlayer1()->pickMove(this->player1ActivePokemon, this->player2ActivePokemon, this);
-            const Move* player2Move = this->getPlayer2()->pickMove(this->player2ActivePokemon, this->player1ActivePokemon, this);
-            this->addMoves(player1Move, player2Move);
-            while (!this->isTurnOver){
-                this->doMove();
-                this->switchIfNecessary();
-                if (this->moveNumber == 1){
-                    this->raiseEvent(Event::END_OF_TURN, EventArgs(nullptr, nullptr));
-                    this->switchIfNecessary();
-                }
-                else{
-                    this->moveNumber++;
-                }
-            }
-        }
-    }
-    catch (const std::exception& e){
-        this->invalid = true;
-        this->isTurnOver = true;
-        this->isBattleOver = true;
-        this->isDraw = true;
-        this->winner = this->getPlayer1(); //This could probably remain nullptr, but I'll keep it this for now
     }
 }
 
