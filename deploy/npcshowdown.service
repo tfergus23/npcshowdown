@@ -1,0 +1,18 @@
+[Unit]
+Description=NPC Showdown API Service
+After=network.target mariadb.service
+Requires=mariadb.service
+
+[Service]
+ExecStart=/npcs/npcshowdown
+Restart=always
+RestartSec=5
+User=svcnpcshowdown
+Group=svcnpcshowdown
+WorkingDirectory=/npcs
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=npcshowdown
+
+[Install]
+WantedBy=multi-user.target
