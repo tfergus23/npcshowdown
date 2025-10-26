@@ -1,7 +1,6 @@
 ## App
 - view results add button doesn't return when you log back in
 - cooler battle view
-- max trainers per tournament
 - mobile pass
 - make sure name length limits are enforced correctly
 - sample trainers

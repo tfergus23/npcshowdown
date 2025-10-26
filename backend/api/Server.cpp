@@ -71,7 +71,7 @@ size_t npcs::Server::createTournamentRequest(const json& json, size_t user, cons
     };
     threadCounterMutex.lock();
     int threadNumber = tournamentRequestThreadCounter++;
-    tournamentRequestThreadCounter = tournamentRequestThreadCounter % max_tournament_threads;
+    tournamentRequestThreadCounter = tournamentRequestThreadCounter % maxTournamentThreads;
     threadCounterMutex.unlock();
     auto& queue = queuedTournaments[threadNumber];
     auto& mutex = queuedTournamentMutexes[threadNumber];
@@ -142,16 +142,16 @@ npcs::Server::Server() :
  ALL_DATA_RESPONSE{createAllDataResponse()}
  {
 
-    if (max_tournament_threads < 1){
+    if (maxTournamentThreads < 1){
         throw std::runtime_error("Invalid max tournament threads in ini file: " + config.get("tournament_threads"));
     }
 
-    if (max_trainers_per_user < 1){
+    if (maxTrainersPerUser < 1){
         throw std::runtime_error("Invalid max trainers per user in ini file: " + config.get("max_trainers_per_user"));
     }
 
-    queuedTournaments = new std::deque<TournamentRequest>[max_tournament_threads];
-    queuedTournamentMutexes = new std::mutex[max_tournament_threads];
+    queuedTournaments = new std::deque<TournamentRequest>[maxTournamentThreads];
+    queuedTournamentMutexes = new std::mutex[maxTournamentThreads];
 
     std::cout << "Deleting unsaved tournaments older than " << keepTournamentDays << " days...\n";
     int numDeletedTournaments = db.deleteOldTournaments(keepTournamentDays);
@@ -669,8 +669,8 @@ npcs::Server::Server() :
 
         size_t userID = db.userIdFromName(req.path_params.at("username"));
 
-        if (db.userTrainerCount(userID) >= max_trainers_per_user){
-            response["message"] = "Your user already has the maximum number of allowed trainers (" + std::to_string(max_trainers_per_user) + "). Please delete some to make room.";
+        if (db.userTrainerCount(userID) >= maxTrainersPerUser){
+            response["message"] = "Your user already has the maximum number of allowed trainers (" + std::to_string(maxTrainersPerUser) + "). Please delete some to make room.";
             response["success"] = false;
             response["id"] = -1;
             res.Set_Status(409);
@@ -1223,7 +1223,7 @@ void npcs::Server::waitForTournaments(uint32_t threadNumber){
 }
 
 void npcs::Server::startTournamentThreads(){
-    for(int i = 0; i < max_tournament_threads; i++){
+    for(int i = 0; i < maxTournamentThreads; i++){
         std::cout << "Starting thread #" << i << '\n';
         std::thread t(&npcs::Server::waitForTournaments, this, i);
         t.detach();

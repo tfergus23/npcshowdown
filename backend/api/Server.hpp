@@ -65,8 +65,8 @@ namespace npcs{
         }, false);
 
         // Config vars
-        const int32_t max_tournament_threads = config.get_int("tournament_threads");
-        const int32_t max_trainers_per_user = config.get_int("max_trainers_per_user");
+        const int32_t maxTournamentThreads = config.get_int("tournament_threads");
+        const int32_t maxTrainersPerUser = config.get_int("max_trainers_per_user");
         const std::string websiteURL = config.get("website_url");
         const std::string domain = getDomainFromURL();
         const int32_t port = config.get_int("api_port");
