@@ -62,7 +62,7 @@ jobs:
         tar -czvf ../npcs-latest.tar.gz ./static ./npcshowdown ./create-tables-prod.sql ./install_ubuntu.sh ./npcshowdown.conf ./npcshowdown.service ./deploy.sh
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: npcs-latest.tar.gz
         path: ./npcs-latest.tar.gz
