@@ -16,7 +16,7 @@ jobs:
     env:
         VERSION: 0.1.1
     steps:
-    - uses: actions/checkoutv4
+    - uses: actions/checkout@v4
     - name: Download Artifact
       uses: actions/download-artifact@v5
       with:
