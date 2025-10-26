@@ -31,7 +31,7 @@ echo "db_name=npcs_prod" >> npcs_config.ini
 echo "db_port=3306" >> npcs_config.ini
 echo "max_user_sessions=10" >> npcs_config.ini
 echo "max_trainers_per_user=150" >> npcs_config.ini
-echo "website_url=http://192.168.56.101" >> npcs_config.ini
+echo "website_url=https://npcshowdown.com" >> npcs_config.ini
 echo "api_port=8080" >> npcs_config.ini
 echo "serve_static=0" >> npcs_config.ini
 echo "static_dir=./static/" >> npcs_config.ini
@@ -88,3 +88,5 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 sudo chown -R www-data:www-data /npcs/static
+
+sudo apt install certbot python3-certbot-nginx
