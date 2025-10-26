@@ -191,7 +191,7 @@ npcs::Server::Server() :
 
         if (db.isTokenValid(username, creds.token)){
             db.updateTokenLastUsed(username, creds.token);
-            if (creds.type == ClientType::BROWSER) res.headers["Set-Cookie"] = "token=" + creds.token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
+            if (creds.type == ClientType::BROWSER) res.headers["Set-Cookie"] = "token=" + creds.token + "; Max-Age=31536000; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
             return true;
         }
         else{
@@ -270,7 +270,7 @@ npcs::Server::Server() :
             return;
         }
 
-        res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=2147483647; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
+        res.headers["Set-Cookie"] = "token=" + token + "; Max-Age=31536000; HttpOnly; Secure; Path=/; SameSite=Strict; Domain=" + domain;
 
         response["success"] = true;
         response["message"] = "OK";
