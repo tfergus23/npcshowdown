@@ -54,8 +54,9 @@ jobs:
         mkdir -p package
         cp ./backend/out/release/npcshowdown package/
         cp -r ./frontend/dist/npcshowdown package/static
+        cp deploy/* package/
         cd package
-        tar -czvf ../npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./static ./npcshowdown
+        tar -czvf ../npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./static ./npcshowdown ./create-tables-prod.sql ./install_ubuntu.sh ./npcshowdown.conf ./npcshowdown.service
     
     - name: Create Release
       id: create_release

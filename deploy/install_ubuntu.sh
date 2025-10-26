@@ -17,10 +17,7 @@ while true; do
 done
 
 mkdir -p /npcs
-mv npcs-ubuntu-x64-*.tar.gz /npcs
 cd /npcs
-tar -xzvf npcs-ubuntu-x64-*.tar.gz
-rm npcs-ubuntu-x64-*.tar.gz
 touch npcs_config.ini
 
 echo "tournament_threads=8" >> npcs_config.ini
@@ -39,14 +36,16 @@ echo "keep_tournament_days=7" >> npcs_config.ini
 echo "max_tournaments_per_day=10000" >> npcs_config.ini
 echo "max_signups_per_day=3" >> npcs_config.ini
 
+cd -
+cp -R ./static /npcs/
+cp npcshowdown /npcs/
+
 sudo useradd --system --no-create-home --shell /usr/sbin/nologin svcnpcshowdown
 
 sudo chown -R svcnpcshowdown:svcnpcshowdown /npcs
 sudo chmod -R 755 /npcs
 sudo chmod 500 npcshowdown
 sudo chmod 600 npcs_config.ini
-
-cd -
 
 sudo cp npcshowdown.service /etc/systemd/system/
 sudo systemctl daemon-reload
