@@ -72,7 +72,7 @@ jobs:
     - name: Deploy App
       run: |
         scp npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }}:~/npcs-new.tar.gz
-        ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }} ~/deploy.sh
+        ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }} '~/deploy.sh'
     
     - name: Create Release
       id: create_release
