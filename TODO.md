@@ -5,7 +5,6 @@
 - mobile pass
 - make sure name length limits are enforced correctly
 - sample trainers
-- favicon
 - about
 - saved tournaments sort options
 - add new trainer on trainer profile
