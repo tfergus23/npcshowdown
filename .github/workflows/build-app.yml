@@ -40,10 +40,11 @@ jobs:
     - name: Build Backend and Run Tests
       run: |
         cd backend
-        cmake --preset release
-        cd out/release
+        cmake --preset debug
+        cd out/debug
         cmake --build .
         ./npcs_tests
+        ./npcshowdown -t
         
     - name: Build Frontend
       run: |
@@ -51,18 +52,3 @@ jobs:
         npm install
         npm install -g @angular/cli
         ng build
-
-    - name: Package App
-      run: |
-        mkdir -p package
-        cp ./backend/out/release/npcshowdown package/
-        cp -r ./frontend/dist/npcshowdown package/static
-        cp deploy/* package/
-        cd package
-        tar -czvf ../npcs-latest.tar.gz ./static ./npcshowdown ./create-tables-prod.sql ./install_ubuntu.sh ./npcshowdown.conf ./npcshowdown.service ./deploy.sh
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: npcs-latest.tar.gz
-        path: ./npcs-latest.tar.gz
