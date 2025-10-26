@@ -44,8 +44,8 @@ sudo useradd --system --no-create-home --shell /usr/sbin/nologin svcnpcshowdown
 
 sudo chown -R svcnpcshowdown:svcnpcshowdown /npcs
 sudo chmod -R 755 /npcs
-sudo chmod 500 npcshowdown
-sudo chmod 600 npcs_config.ini
+sudo chmod 500 /npcs/npcshowdown
+sudo chmod 600 /npcs/npcs_config.ini
 
 sudo cp npcshowdown.service /etc/systemd/system/
 sudo systemctl daemon-reload
@@ -88,4 +88,4 @@ if [ $? -ne 0 ]; then
 fi
 sudo chown -R www-data:www-data /npcs/static
 
-sudo apt install certbot python3-certbot-nginx
+sudo apt install certbot python3-certbot-nginx -y

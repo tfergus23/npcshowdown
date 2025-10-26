@@ -1,6 +1,8 @@
 # NPC Showdown
 ⚔️ Pit NPC Pokemon trainers against each other in the ultimate tournament!
 
+[Website Link](https://npcshowdown.com/)
+
 ## Introduction
 NPC Showdown is a WIP web app and API for simulating round-robin tournaments between custom NPC Pokémon trainers. 
 ![create-tournament](images/create-tournament.png)
