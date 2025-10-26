@@ -1,4 +1,4 @@
-name: Release and deploy the application
+name: CD
 
 on:
   push:

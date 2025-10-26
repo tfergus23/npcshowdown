@@ -1,9 +1,16 @@
-name: Build, package, and upload the application
+name: CI
 
 on:
   push:
     branches:
       - dev
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/*'
+  pull_request:
+    branches:
+      - master
     paths:
       - 'backend/**'
       - 'frontend/**'
