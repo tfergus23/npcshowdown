@@ -7,9 +7,9 @@
 - about
 - saved tournaments sort options
 - add new trainer on trainer profile
+- pidgeot
 
 ## Sim
 - Implement all weathers
 - Implement all gen 1 moves
-- Implement attacking moves for each type/damage type
 - EVERYTHING ELSE

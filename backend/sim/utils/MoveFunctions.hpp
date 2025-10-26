@@ -10,8 +10,7 @@ struct DealtDamage{
 
 namespace MoveFunctions{
     DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average);
-    int dealDirectDamage(MoveUse* moveUse, bool logEffectiveness = true);
-    bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove);
+    int dealDirectDamage(MoveUse* moveUse, MoveUse* opponentMove, bool logEffectiveness = true);
     int dealFlatDamage(int damage, MoveUse* moveUse);
     bool selfDestruct(MoveUse* moveUse);
     int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle);
@@ -24,5 +23,5 @@ namespace MoveFunctions{
     bool changeBattleWeather(const Weather* newWeather, Battle* battle);
     bool genderCompatible(Gender gender1, Gender gender2);
     void crash(Pokemon* user, Battle* battle);
-    int dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool logEffectiveness = true);
+    int dealDirectDamageWithRecoil(MoveUse* moveUse, MoveUse* opponentMove, float recoilMultiplier, bool logEffectiveness = true);
 };

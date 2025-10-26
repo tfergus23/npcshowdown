@@ -21,7 +21,7 @@ static const std::string statNames[] = {
 
 int dealDamage(int damage, MoveUse* moveUse){
     bool isPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon;
-    if (moveUse->battle->sideHasFieldEffect(isPlayer1, &FIELD_EFFECT_SUBSTITUTE)){
+    if (moveUse->battle->sideHasFieldEffect(isPlayer1, &FIELD_EFFECT_SUBSTITUTE) && !moveUse->move->bypassSubstitute){
         SubstituteState& subState = std::get<SubstituteState>(*moveUse->battle->getFieldEffectState(isPlayer1, &FIELD_EFFECT_SUBSTITUTE));
         if (damage > subState.health) damage = subState.health;
         subState.health -= damage;
@@ -30,8 +30,6 @@ int dealDamage(int damage, MoveUse* moveUse){
     else{
         if (damage >= moveUse->target->currentHealth) damage = moveUse->canKill ? moveUse->target->currentHealth : moveUse->target->currentHealth -1;
         moveUse->target->currentHealth -= damage;
-        //if (damage > 0) moveUse->battle->logDamageTaken(moveUse->target->nickname + " took " + std::to_string(damage) + " damage!", {.recipientIsPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .damage = damage});
-        //moveUse->battle->killTheDead();
     }
     return damage;
 }
@@ -87,39 +85,10 @@ DealtDamage MoveFunctions::calculateDirectDamage(MoveUse* moveUse, bool average)
     return result;
 }
 
-int MoveFunctions::dealDirectDamage(MoveUse* moveUse, bool logEffectiveness){
-    if (!moveUse->canDealDamage){
-        if (!moveUse->loggedFailure){
-            moveUse->battle->logMessage(moveUse->getFailMessage());
-            moveUse->loggedFailure = true;
-        }
-        return 0;
+static bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
+    if (moveUse->damageDone <= 0){
+        return false;
     }
-    DealtDamage dealtDamage = calculateDirectDamage(moveUse, moveUse->battle->debugOptions.averageDamage);
-    dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
-    moveUse->damageDone = dealtDamage.damage;
-    if (moveUse->damageDone > 0){
-        moveUse->logUsage();
-    }
-    if (dealtDamage.damage > 0){
-        if (logEffectiveness){
-            moveUse->battle->assertTrue(dealtDamage.typeMod != NOT_EFFECTIVE, "Move tried to deal damage when NOT_EFFECTIVE");
-            if (dealtDamage.typeMod == SUPER_EFFECTIVE) moveUse->battle->logMessage("It's Super Effective!");
-            else if (dealtDamage.typeMod == ULTRA_EFFECTIVE) moveUse->battle->logMessage("It's ULTRA Effective!");
-            else if (dealtDamage.typeMod == NOT_VERY_EFFECTIVE) moveUse->battle->logMessage("It's not very effective...");
-            else if (dealtDamage.typeMod == BARELY_EFFECTIVE) moveUse->battle->logMessage("It's barely effective...");
-            else if (dealtDamage.typeMod == 1.0f);
-            else moveUse->battle->assertTrue(false, "Unhandled type effectiveness: " + std::to_string(dealtDamage.typeMod));
-        }
-        if (dealtDamage.crit){
-            moveUse->battle->logMessage("Critical hit!");
-        }
-    }
-    moveUse->battle->raiseEvent(Event::POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
-    return dealtDamage.damage;
-}
-
-bool MoveFunctions::applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
     float sereneGraceMod = 1.0f;
     if (!(moveUse->battle->randInt(1,101) <= moveUse->move->secondaryEffectChance * sereneGraceMod && moveUse->damageDone > 0 && moveUse->target->currentHealth > 0)) return false;
     switch (moveUse->move->secondaryEffect)
@@ -175,6 +144,39 @@ bool MoveFunctions::applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove
     default:
         return false;
     }
+}
+
+int MoveFunctions::dealDirectDamage(MoveUse* moveUse, MoveUse* opponentMove, bool logEffectiveness){
+    if (!moveUse->canDealDamage){
+        if (!moveUse->loggedFailure){
+            moveUse->battle->logMessage(moveUse->getFailMessage());
+            moveUse->loggedFailure = true;
+        }
+        return 0;
+    }
+    DealtDamage dealtDamage = calculateDirectDamage(moveUse, moveUse->battle->debugOptions.averageDamage);
+    dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
+    moveUse->damageDone = dealtDamage.damage;
+    if (moveUse->damageDone > 0){
+        moveUse->logUsage();
+    }
+    if (dealtDamage.damage > 0){
+        if (logEffectiveness){
+            moveUse->battle->assertTrue(dealtDamage.typeMod != NOT_EFFECTIVE, "Move tried to deal damage when NOT_EFFECTIVE");
+            if (dealtDamage.typeMod == SUPER_EFFECTIVE) moveUse->battle->logMessage("It's Super Effective!");
+            else if (dealtDamage.typeMod == ULTRA_EFFECTIVE) moveUse->battle->logMessage("It's ULTRA Effective!");
+            else if (dealtDamage.typeMod == NOT_VERY_EFFECTIVE) moveUse->battle->logMessage("It's not very effective...");
+            else if (dealtDamage.typeMod == BARELY_EFFECTIVE) moveUse->battle->logMessage("It's barely effective...");
+            else if (dealtDamage.typeMod == 1.0f);
+            else moveUse->battle->assertTrue(false, "Unhandled type effectiveness: " + std::to_string(dealtDamage.typeMod));
+        }
+        if (dealtDamage.crit){
+            moveUse->battle->logMessage("Critical hit!");
+        }
+    }
+    applySecondaryEffect(moveUse, opponentMove);
+    moveUse->battle->raiseEvent(Event::POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
+    return dealtDamage.damage;
 }
 
 int MoveFunctions::dealFlatDamage(int damage, MoveUse* moveUse) {
@@ -323,8 +325,8 @@ void MoveFunctions::crash(Pokemon* user, Battle* battle) {
     battle->logDamageTaken(user->nickname + " kept going and crashed!", {.recipientIsPlayer1 = user == battle->player1ActivePokemon, .damage = dmg});
 }
 
-int MoveFunctions::dealDirectDamageWithRecoil(MoveUse* moveUse, float recoilMultiplier, bool logEffectiveness){
-    int damage = dealDirectDamage(moveUse, logEffectiveness);
+int MoveFunctions::dealDirectDamageWithRecoil(MoveUse* moveUse, MoveUse* opponentMove, float recoilMultiplier, bool logEffectiveness){
+    int damage = dealDirectDamage(moveUse, opponentMove, logEffectiveness);
     if (damage > 0){
         int recoil = (int) ceil((float) damage * recoilMultiplier);
         int recoilDamage = (moveUse->user->currentHealth - recoil < 0) ? moveUse->user->currentHealth : recoil;

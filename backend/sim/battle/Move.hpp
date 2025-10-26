@@ -41,6 +41,7 @@ public:
     bool skillLink = false;
     bool soundBased = false;
     bool usableWhileAsleep = false;
+    bool bypassSubstitute = false;
 
     void (*beforeChecks)(MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};
     void (*afterChecks) (MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};

@@ -13,6 +13,7 @@ import { ViewResultsComponent } from '../view-results/view-results.component';
 import { UserService } from '../user.service';
 import { UserTrainersModalComponent } from '../user-trainers-modal/user-trainers-modal.component';
 import { UserTrainersComponent } from '../user-trainers/user-trainers.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-trainer',
@@ -49,7 +50,7 @@ export class CreateTrainerComponent {
   addingToProfile: boolean = false;
   whileAddingToProfile = () => {return this.addingToProfile};
 
-  constructor(public app: AppComponent, private battleService: BattleService, private userService: UserService){
+  constructor(public app: AppComponent, private battleService: BattleService, private userService: UserService, private router: Router){
   }
 
   public toggleCollapsible() {
@@ -58,17 +59,6 @@ export class CreateTrainerComponent {
 
   ngOnInit(){
     this.setImagePathStrings();
-    //TODO: make this work when route changes
-    /*
-    window.addEventListener('beforeunload', (event) => {
-      if (this.editing) {
-        event.preventDefault();
-        event.returnValue = ''; // Required for some older browsers
-        return '';
-      }
-      return '';
-    });
-    */
   }
 
   addPoke(){
@@ -149,6 +139,13 @@ export class CreateTrainerComponent {
   showBattle(trainer1: Trainer, trainer2: Trainer, seed: string){
     const type = "text";
     if (!trainer1 || ! trainer2) return;
+    let battleJson = {
+      trainer1: trainer1,
+      trainer2: trainer2,
+      seed: seed,
+      type: 'events'
+    };
+    this.router.navigate(['/battle-viewer'], {queryParams: {battle: encodeURIComponent(JSON.stringify(battleJson))}});
     this.battleService.postBattleRequest({trainer1, trainer2, seed, type}).subscribe((response) => {
       this.resultsView!.logView.log = response.data;
       this.resultsView!.logView.hidden = false;
