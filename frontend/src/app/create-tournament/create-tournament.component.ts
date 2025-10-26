@@ -101,7 +101,7 @@ export class CreateTournamentComponent {
     return matches * this.rounds;
   }
 
-  redirectToTournamentResults(tournamentID: number){
+  redirectToTournamentResults(tournamentID: string){
     let a = document.createElement("a");
     a.href = `/results/${tournamentID}`;
     a.click();

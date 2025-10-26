@@ -4,7 +4,6 @@
 - cooler battle view
 - max trainers per tournament
 - mobile pass
-- fix the BigInt problem
 - make sure name length limits are enforced correctly
 - sample trainers
 - update news

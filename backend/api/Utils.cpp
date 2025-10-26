@@ -442,14 +442,6 @@ std::string sha256(const std::string &input) {
     return result;
 }
 
-std::string validateSaveTournamentRequest(const json& json){
-    std::string problems = "";
-
-    problems += checkForInt(json, "", "tournamentID");
-
-    return problems;
-}
-
 std::string validateEmailUpdateRequest(const json& json){
     std::string problems = "";
 

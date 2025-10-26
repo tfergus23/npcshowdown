@@ -293,7 +293,7 @@ npcs::Server::Server() :
         auto& user = dbUser.value();
 
         json data;
-        data["id"] = user.id;
+        data["id"] = std::to_string(user.id);
         data["name"] = user.name;
         data["accountCreated"] = user.accountCreated;
         data["lastPasswordChange"] = user.lastPasswordChange;
@@ -382,7 +382,6 @@ npcs::Server::Server() :
     app.Add_Handler("POST", baseRoute, "/battle", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
-        response["id"] = -1;
         json request;
         try {
             request = json::parse(req.body);
@@ -417,7 +416,6 @@ npcs::Server::Server() :
         std::string type = request["type"].get<std::string>();
         json data = type == "events" ? battle.eventsJson() : json(battle.textLog());
 
-        // Send back battle ID
         response["success"] = true;
         response["data"] = data;
         response["message"] = "OK";
@@ -427,7 +425,7 @@ npcs::Server::Server() :
     app.Add_Handler("POST", baseRoute, "/tournament", [=,this](const Request& req, Response& res){
         json response;
         response["success"] = false;
-        response["id"] = -1;
+        response["id"] = "-1";
         json request;
         try {
             request = json::parse(req.body);
@@ -482,7 +480,7 @@ npcs::Server::Server() :
 
         // Send back tournament ID
         response["success"] = true;
-        response["id"] = id;
+        response["id"] = std::to_string(id);
         response["message"] = "OK";
         res.Send(response.dump());
     });
@@ -652,7 +650,7 @@ npcs::Server::Server() :
     app.Add_Handler("POST", authorizedRoute, "/trainer", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
-        response["id"] = -1;
+        response["id"] = "-1";
         json request;
         try {
             request = json::parse(req.body);
@@ -684,7 +682,7 @@ npcs::Server::Server() :
         
         response["message"] = "OK";
         response["success"] = true;
-        response["id"] = trainerID;
+        response["id"] = std::to_string(trainerID);
         res.Send(response.dump());
         return;
 
@@ -786,7 +784,7 @@ npcs::Server::Server() :
     app.Add_Handler("POST", authorizedRoute, "/tournament/:id", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
-        response["id"] = -1;
+        response["id"] = "-1";
 
         size_t tournamentID = 0;
         try{
@@ -812,7 +810,7 @@ npcs::Server::Server() :
             db.saveTournamentToUser(userID, tournamentID);
             response["success"] = true;
             response["message"] = "OK";
-            response["id"] = tournamentID;
+            response["id"] = std::to_string(tournamentID);
             res.Send(response.dump());
             return;
         }
@@ -910,7 +908,7 @@ npcs::Server::Server() :
 
         bool result = db.updateTournamentName(tournamentID, req.path_params.at("username"), newName);
         if (!result){
-            response["message"] = "Unauthorized: You can only change the name of tournaments you ran and you must have been logged in when you ran them.";
+            response["message"] = "Unauthorized: You can only change the name of tournaments you ran and you must have been logged in when you ran it.";
             res.Set_Status(401);
             res.Send(response.dump());
             return;
@@ -924,7 +922,7 @@ npcs::Server::Server() :
     app.Add_Handler("POST", baseRoute, "/user", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
-        response["id"] = -1;
+        response["id"] = "-1";
         json request;
         try {
             request = json::parse(req.body);
@@ -965,7 +963,7 @@ npcs::Server::Server() :
         ipSignUpsMutex.unlock();
 
         response["success"] = true;
-        response["id"] = userID;
+        response["id"] = std::to_string(userID);
         response["message"] = "OK";
         res.Send(response.dump());
     });
@@ -1108,7 +1106,6 @@ npcs::Server::Server() :
     app.Add_Handler("POST", authorizedRoute, "/error", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
-        response["id"] = -1;
         json request;
         try {
             request = json::parse(req.body);
@@ -1119,6 +1116,15 @@ npcs::Server::Server() :
             res.Send(response.dump());
             return;
         }
+
+        const User& user = db.getUserData(req.path_params.at("username")).value();
+        if (!user.isAdmin){
+            response["message"] = "You must be an admin to access this data.";
+            res.Set_Status(401);
+            res.Send(response.dump());
+            return;
+        }
+
         std::string problems = validateBattleRequest(request);
         if (problems != ""){
             sendProblemResponse(problems, response, res);

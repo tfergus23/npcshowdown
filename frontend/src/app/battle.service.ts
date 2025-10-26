@@ -25,12 +25,12 @@ export class BattleService {
     return response;
   }
 
-  public getTournamentResults(id: number) : Observable<GetResponse>{
+  public getTournamentResults(id: string) : Observable<GetResponse>{
     const response = this.http.get(this.config.getConfig().apiURL + `tournament/${id}`) as Observable<GetResponse>;
     return response;
   }
 
-  public getTournamentTrainer(id: number) : Observable<GetResponse>{
+  public getTournamentTrainer(id: string) : Observable<GetResponse>{
     const response = this.http.get(this.config.getConfig().apiURL + `trainer/${id}`) as Observable<GetResponse>;
     return response;
   }

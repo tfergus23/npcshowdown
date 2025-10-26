@@ -10,7 +10,7 @@ import { AppConfigService } from './app-config.service';
 
 interface UserResponse{
   name: string,
-  id: number,
+  id: string,
   success: boolean,
   token: string
 }
@@ -50,7 +50,7 @@ export class UserService {
     return response;
   }
 
-  addTournamentToUserProfile(username: string, tournamentID: number) : Observable<PostResponse>{
+  addTournamentToUserProfile(username: string, tournamentID: string) : Observable<PostResponse>{
     username = encodeURIComponent(username);
     const response = this.http.post<PostResponse>(`${this.config.getConfig().apiURL}user/${username}/tournament/${tournamentID}`, {}, {withCredentials: true});
     return response;
@@ -74,13 +74,13 @@ export class UserService {
     return response;
   }
 
-  deleteUserTrainer(username: string, trainer: number) : Observable<PutResponse>{
+  deleteUserTrainer(username: string, trainer: string) : Observable<PutResponse>{
     username = encodeURIComponent(username);
     const response = this.http.delete<PutResponse>(`${this.config.getConfig().apiURL}user/${username}/trainer/${trainer}`, {withCredentials: true});
     return response;
   }
 
-  deleteTournamentFromUserProfile(username: string, tournamentID: number) : Observable<PutResponse>{
+  deleteTournamentFromUserProfile(username: string, tournamentID: string) : Observable<PutResponse>{
     username = encodeURIComponent(username);
     const response = this.http.delete<PutResponse>(`${this.config.getConfig().apiURL}user/${username}/tournament/${tournamentID}`, {withCredentials: true});
     return response;
@@ -110,7 +110,7 @@ export class UserService {
     return response;
   }
 
-  updateTournamentName(tournament: number, username: string, newName: string) : Observable<PutResponse>{
+  updateTournamentName(tournament: string, username: string, newName: string) : Observable<PutResponse>{
     username = encodeURIComponent(username);
     const response = this.http.put<PutResponse>(`${this.config.getConfig().apiURL}user/${username}/tournament/${tournament}`,{newName: newName}, {withCredentials: true});
     return response;
