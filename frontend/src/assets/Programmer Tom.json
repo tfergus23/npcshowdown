@@ -1,0 +1,192 @@
+{
+    "team": [
+        {
+            "species": "Luxray",
+            "nickname": "",
+            "level": 100,
+            "moves": [
+                "Wild Charge",
+                "Close Combat",
+                "Ice Punch",
+                "Night Slash"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                0,
+                252,
+                4,
+                0,
+                252,
+                0
+            ]
+        },
+        {
+            "species": "Primarina",
+            "nickname": "",
+            "level": 100,
+            "moves": [
+                "Surf",
+                "Ice Beam",
+                "Moonblast",
+                "Waterfall"
+            ],
+            "abilityName": "Torrent",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Modest",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                0,
+                0,
+                252,
+                0,
+                4
+            ]
+        },
+        {
+            "species": "Infernape",
+            "nickname": "",
+            "level": 100,
+            "moves": [
+                "Flamethrower",
+                "Flare Blitz",
+                "Close Combat",
+                "Earthquake"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Naughty",
+            "itemName": "Leftovers",
+            "evs": [
+                0,
+                127,
+                0,
+                127,
+                0,
+                252
+            ]
+        },
+        {
+            "species": "Metagross",
+            "nickname": "",
+            "level": 100,
+            "moves": [
+                "Meteor Mash",
+                "Psycho Cut",
+                "Earthquake",
+                "Night Slash"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                252,
+                0,
+                0,
+                0,
+                4
+            ]
+        },
+        {
+            "species": "Serperior",
+            "nickname": "",
+            "level": 100,
+            "moves": [
+                "Energy Ball",
+                "Aura Sphere",
+                "Air Slash",
+                "Leaf Blade"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Modest",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                0,
+                0,
+                4,
+                0,
+                252
+            ]
+        },
+        {
+            "species": "Suicune",
+            "nickname": "",
+            "level": 100,
+            "moves": [
+                "Surf",
+                "Ice Beam",
+                "Psychic",
+                "Waterfall"
+            ],
+            "abilityName": "Torrent",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Modest",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                0,
+                0,
+                252,
+                0,
+                4
+            ]
+        }
+    ],
+    "name": "Programmer Tom",
+    "trainerLevel": "Boss"
+}

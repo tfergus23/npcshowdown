@@ -19,13 +19,13 @@ json TournamentResults::toJSON() const{
     for(int i = 0; i < trainerStats.size(); i++){
         auto& stat = trainerStats[i];
         statJSONs.push_back(stat.toJSON());
-        statJSONs[statJSONs.size()-1]["id"] = trainers[i];
+        statJSONs[statJSONs.size()-1]["id"] = std::to_string(trainers[i]);
     }
     data["results"] = statJSONs;
     if (user != ""){
         data["user"] = user;
     }
-    data["id"] = id;
+    data["id"] = std::to_string(id);
     data["name"] = name;
     data["dateRan"] = dateRan;
     return data;
@@ -553,7 +553,7 @@ std::vector<json> MariaDBConnection::getUserTrainers(const std::string& username
     result.reserve(results->rowsCount());
     while (results->next()){
         result.push_back(getTrainer(results->getUInt64(1)).value().toJSON());
-        result[result.size()-1]["id"] = results->getUInt64(1);
+        result[result.size()-1]["id"] = std::to_string(results->getUInt64(1));
     }
     return result;
 }

@@ -14,3 +14,4 @@ cp ./AppConfig.json /npcs/static/assets/
 rm ./AppConfig.json
 systemctl restart npcshowdown.service
 systemctl restart nginx
+chmod +x deploy.sh

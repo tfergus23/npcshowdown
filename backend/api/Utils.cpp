@@ -317,7 +317,6 @@ std::string validateTournamentRequest(const json& json){
         return "Need to have at least 2 trainers to have a tournament, " + std::to_string(json["trainers"].size()) + " supplied.\n";
     }
 
-    
     if (json["rounds"].get<int>() < 1){
         return "Can't have a tournament with zero or fewer rounds.\n";
     }
@@ -440,14 +439,6 @@ std::string sha256(const std::string &input) {
     }
 
     return result;
-}
-
-std::string validateSaveTournamentRequest(const json& json){
-    std::string problems = "";
-
-    problems += checkForInt(json, "", "tournamentID");
-
-    return problems;
 }
 
 std::string validateEmailUpdateRequest(const json& json){

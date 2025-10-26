@@ -64,7 +64,7 @@ export class ViewResultsComponent {
 
     // Using two arrow functions here because apparently functions have their own 'this'
     this.interval = window.setInterval(() => {
-      this.battleService.getTournamentResults(Number(this.tournamentID)).subscribe(
+      this.battleService.getTournamentResults(this.tournamentID as string).subscribe(
         (response) => {
           this.getTournamentSuccess(response);
         },
@@ -72,7 +72,7 @@ export class ViewResultsComponent {
           this.getTournamentError(error);
         });
     }, 1500);
-    this.battleService.getTournamentResults(Number(this.tournamentID)).subscribe(
+    this.battleService.getTournamentResults(this.tournamentID as string).subscribe(
       (response) => {
         this.getTournamentSuccess(response);
       },
@@ -255,7 +255,7 @@ export class ViewResultsComponent {
 
   addToRecents(){
     let stored = localStorage.getItem('recent-tournaments');
-    let newList = new Array<number>();
+    let newList = new Array<string>();
     if (stored != null){
       newList = JSON.parse(stored);
     }

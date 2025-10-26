@@ -2,14 +2,14 @@
 <app-user-trainers-modal [parent]="this" [selectMultiple]="true" #trainerModal></app-user-trainers-modal>
 <div class="container">
     <h1>Create a Tournament</h1>
-    <h2>Trainers</h2>
     <div class="add-buttons">
         <button [disabled]="this.importingTrainers" (click)="addEmptyTrainer()">Add New</button>
         <button [disabled]="this.importingTrainers" (click)="addFromFiles()">Add From File</button>
+        <button (click)="addSampleTrainers()">Add Sample Trainers</button>
         <button (click)="this.openTrainersModal()" [hidden]="this.app.loggedInUser == undefined">Add From My Trainers</button>
     </div>
-    <div *ngFor="let trainer of trainers; index as i" class="tournament-trainer-list">
-        <app-create-trainer [onEdit]="this.saveEntries" [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
+    <div *ngIf="trainers.length > 0" class="tournament-trainer-list">
+        <app-create-trainer *ngFor="let trainer of trainers; index as i" [onEdit]="this.saveEntries" [collapsed]="true" [dataLists]="this.dataLists" [parent]="this" [trainer]="trainer" [trainerNum]="(i+1).toString()"></app-create-trainer>
     </div>
     <div class="seed-field">
         <label class="seed-label">Rounds:</label>

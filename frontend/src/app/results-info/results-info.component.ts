@@ -12,7 +12,7 @@ export class ResultsInfoComponent {
   @Input() deleteable: boolean = false;
   @Input() parent: UserTournamentsComponent | undefined = undefined;
 
-  openDeleteModal(id: number){
+  openDeleteModal(id: string){
     this.parent?.openDeleteModal(id);
   }
 

@@ -11,7 +11,7 @@ import { UserService } from '../user.service';
 export class UserTournamentsComponent {
   resultSets: Array<TournamentResultSet> = new Array<TournamentResultSet>();
   showDeleteModal: boolean = false;
-  tournamentToDelete: number = 0;
+  tournamentToDelete: string = "0";
   fetchingTournaments: boolean = false;
   constructor(public app: AppComponent, private userService: UserService){
     this.getUserTournaments();
@@ -35,14 +35,14 @@ export class UserTournamentsComponent {
 
   }
 
-  openDeleteModal(tournamentID: number){
+  openDeleteModal(tournamentID: string){
     this.showDeleteModal = true;
     this.tournamentToDelete = tournamentID;
   }
 
   closeDeleteModal(){
     this.showDeleteModal = false;
-    this.tournamentToDelete = 0;
+    this.tournamentToDelete = "0";
   }
 
   deleteSelectedTournamentFromProfile(){

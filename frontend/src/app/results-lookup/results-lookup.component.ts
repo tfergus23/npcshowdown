@@ -5,7 +5,7 @@ import { AppComponent, MessageType } from '../app.component';
 import { isResultSet, TournamentResultSet } from 'src/TournamentResultSet';
 
 interface RecentTournament {
-  id: number;
+  id: string;
   index: number;
 }
 
@@ -24,9 +24,9 @@ export class ResultsLookupComponent {
   ngOnInit(){
     let storedRecents = localStorage.getItem('recent-tournaments');
     if (storedRecents != null){
-      let recentIDs: Array<number> = JSON.parse(storedRecents);
+      let recentIDs: Array<string> = JSON.parse(storedRecents);
       let recentTournaments: Array<RecentTournament> = new Array<RecentTournament>();
-      recentIDs.forEach((id: number, index: number) => {
+      recentIDs.forEach((id: string, index: number) => {
         recentTournaments.push({id: id, index: recentIDs.length - index - 1});
       });
       recentTournaments.forEach((recent) =>{
@@ -50,7 +50,7 @@ export class ResultsLookupComponent {
       return;
     }
     this.fetchingTournament = true;
-    this.battleService.getTournamentResults(Number(value)).subscribe((res) =>{
+    this.battleService.getTournamentResults(value).subscribe((res) =>{
       this.fetchingTournament = false;
       if (res.success){
         this.router.navigateByUrl(`/results/${value}`);

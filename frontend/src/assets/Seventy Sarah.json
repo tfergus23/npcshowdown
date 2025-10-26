@@ -1,0 +1,192 @@
+{
+    "team": [
+        {
+            "species": "Empoleon",
+            "nickname": "",
+            "level": 70,
+            "moves": [
+                "Surf",
+                "Ice Beam",
+                "Flash Cannon",
+                "Moonblast"
+            ],
+            "abilityName": "Torrent",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Modest",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                0,
+                0,
+                252,
+                0,
+                4
+            ]
+        },
+        {
+            "species": "Torterra",
+            "nickname": "",
+            "level": 70,
+            "moves": [
+                "Earthquake",
+                "Leaf Blade",
+                "Night Slash",
+                "Stone Edge"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                252,
+                4,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Infernape",
+            "nickname": "",
+            "level": 70,
+            "moves": [
+                "Flare Blitz",
+                "Close Combat",
+                "Earthquake",
+                "Stone Edge"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                4,
+                252,
+                0,
+                0,
+                0,
+                252
+            ]
+        },
+        {
+            "species": "Electivire",
+            "nickname": "",
+            "level": 70,
+            "moves": [
+                "Thunderbolt",
+                "Flash Cannon",
+                "Ice Beam",
+                "Wild Charge"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Modest",
+            "itemName": "Leftovers",
+            "evs": [
+                4,
+                0,
+                0,
+                252,
+                0,
+                252
+            ]
+        },
+        {
+            "species": "Staraptor",
+            "nickname": "",
+            "level": 70,
+            "moves": [
+                "Brave Bird",
+                "Return",
+                "Close Combat",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                4,
+                252,
+                0,
+                0,
+                0,
+                252
+            ]
+        },
+        {
+            "species": "Garchomp",
+            "nickname": "",
+            "level": 70,
+            "moves": [
+                "Earthquake",
+                "Dragon Claw",
+                "Stone Edge",
+                "Close Combat"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "",
+            "evs": [
+                4,
+                252,
+                0,
+                0,
+                0,
+                252
+            ]
+        }
+    ],
+    "name": "Seventy Sarah",
+    "trainerLevel": "Wild"
+}

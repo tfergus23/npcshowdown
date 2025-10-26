@@ -1,0 +1,192 @@
+{
+    "team": [
+        {
+            "species": "Samurott",
+            "nickname": "",
+            "level": 90,
+            "moves": [
+                "Waterfall",
+                "Ice Beam",
+                "Flash Cannon",
+                "Surf"
+            ],
+            "abilityName": "Torrent",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Naughty",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                252,
+                0,
+                4,
+                0,
+                4
+            ]
+        },
+        {
+            "species": "Serperior",
+            "nickname": "",
+            "level": 90,
+            "moves": [
+                "Earthquake",
+                "Leaf Blade",
+                "Night Slash",
+                "Stone Edge"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                252,
+                4,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Emboar",
+            "nickname": "",
+            "level": 90,
+            "moves": [
+                "Flare Blitz",
+                "Close Combat",
+                "Earthquake",
+                "Stone Edge"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                252,
+                252,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Eelektross",
+            "nickname": "",
+            "level": 90,
+            "moves": [
+                "Thunderbolt",
+                "Flash Cannon",
+                "Ice Beam",
+                "Wild Charge"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Modest",
+            "itemName": "Leftovers",
+            "evs": [
+                4,
+                0,
+                0,
+                252,
+                0,
+                252
+            ]
+        },
+        {
+            "species": "Unfezant",
+            "nickname": "",
+            "level": 90,
+            "moves": [
+                "Brave Bird",
+                "Return",
+                "Close Combat",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Adamant",
+            "itemName": "Leftovers",
+            "evs": [
+                4,
+                252,
+                0,
+                0,
+                0,
+                252
+            ]
+        },
+        {
+            "species": "Hydreigon",
+            "nickname": "",
+            "level": 90,
+            "moves": [
+                "Dark Pulse",
+                "Dragon Pulse",
+                "Ice Beam",
+                "Power Gem"
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Modest",
+            "itemName": "",
+            "evs": [
+                4,
+                0,
+                0,
+                252,
+                0,
+                252
+            ]
+        }
+    ],
+    "name": "Ninety Nancy",
+    "trainerLevel": "Wild"
+}

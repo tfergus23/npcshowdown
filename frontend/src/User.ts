@@ -3,7 +3,7 @@ import Trainer from "./Trainer";
 
 export default interface User{
     name: string;
-    id: number;
+    id: string;
     token: string;
     accountCreated: string,
     lastPasswordChange: string,
