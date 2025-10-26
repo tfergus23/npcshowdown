@@ -27,7 +27,14 @@ jobs:
         ssh-private-key: |
           ${{ secrets.TFLIB_SSH_KEY }}
           ${{ secrets.TFHTTP_SSH_KEY }}
-          ${{ secrets.PROD_SERVER_SSH_KEY }}
+
+    - name: Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.PROD_SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H ${{ secrets.PROD_SERVER_IP }} >> ~/.ssh/known_hosts
+        ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }} "echo Connected"
 
     - name: Init submodules
       run: git submodule update --init --recursive
