@@ -12,6 +12,8 @@ jobs:
   build:
     permissions: write-all
     runs-on: ubuntu-latest
+    env:
+      VERSION: 0.1.1
 
     steps:
     
@@ -24,6 +26,7 @@ jobs:
         ssh-private-key: |
           ${{ secrets.TFLIB_SSH_KEY }}
           ${{ secrets.TFHTTP_SSH_KEY }}
+          ${{ secrets.PROD_SERVER_SSH_KEY }}
 
     - name: Init submodules
       run: git submodule update --init --recursive
@@ -56,7 +59,12 @@ jobs:
         cp -r ./frontend/dist/npcshowdown package/static
         cp deploy/* package/
         cd package
-        tar -czvf ../npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz ./static ./npcshowdown ./create-tables-prod.sql ./install_ubuntu.sh ./npcshowdown.conf ./npcshowdown.service
+        tar -czvf ../npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz ./static ./npcshowdown ./create-tables-prod.sql ./install_ubuntu.sh ./npcshowdown.conf ./npcshowdown.service
+
+    - name: Deploy App
+      run: |
+        scp npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }}:~/npcs-new.tar.gz
+        ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }} ~/deploy.sh
     
     - name: Create Release
       id: create_release
@@ -64,8 +72,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v0.0.${{ github.run_number }}
-        release_name: Release v0.0.${{ github.run_number }}
+        tag_name: v${{ env.VERSION }}
+        release_name: Release v${{ env.VERSION }}
         prerelease: true
 
     - name: Publish release
@@ -74,6 +82,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz
-        asset_name: npcs-ubuntu-x64-v0.0.${{ github.run_number }}.tar.gz
+        asset_path: ./npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz
+        asset_name: npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz
         asset_content_type: application/octet-stream

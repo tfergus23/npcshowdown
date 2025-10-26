@@ -7,6 +7,9 @@
 - fix the BigInt problem
 - make sure name length limits are enforced correctly
 - sample trainers
+- update news
+- favicon
+- about
 
 ### Extra
 - saved tournaments sort options

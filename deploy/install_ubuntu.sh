@@ -16,6 +16,8 @@ while true; do
   unset dbpassword dbpassword2
 done
 
+chmod +x deploy.sh
+
 mkdir -p /npcs
 cd /npcs
 touch npcs_config.ini
