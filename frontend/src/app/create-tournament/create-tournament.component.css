@@ -13,8 +13,12 @@ h2 {
 }
 
 .add-buttons{
-    width: fit-content;
+    display: block;
+    width: 580px;
     margin: auto;
+    margin-bottom: 10px;
+    border: 3px solid var(--dark-background-color);
+    border-radius: 5px;
 }
 
 .add-buttons button{
@@ -27,6 +31,8 @@ h2 {
     margin: auto;
     width: 100%;
     height: fit-content;
+    margin-top: 20px;
+    margin-bottom: 40px;
 }
 
 .seed-field{
@@ -34,7 +40,8 @@ h2 {
     width: fit-content;
     height: fit-content;
     margin: auto;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .seed-label{
@@ -66,6 +73,7 @@ app-spinning-button{
     height: 50px;
     margin: auto;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 @media (max-width: 935px){

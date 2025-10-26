@@ -1,0 +1,192 @@
+{
+    "team": [
+        {
+            "species": "Squirtle",
+            "nickname": "",
+            "level": 10,
+            "moves": [
+                "Surf",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Torrent",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Bulbasaur",
+            "nickname": "",
+            "level": 10,
+            "moves": [
+                "Energy Ball",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "Leftovers",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Charmander",
+            "nickname": "",
+            "level": 10,
+            "moves": [
+                "Flamethrower",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Pikachu",
+            "nickname": "",
+            "level": 10,
+            "moves": [
+                "Thunderbolt",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Pidgey",
+            "nickname": "",
+            "level": 10,
+            "moves": [
+                "Brave Bird",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Diglett",
+            "nickname": "",
+            "level": 10,
+            "moves": [
+                "Earthquake",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    ],
+    "name": "Ten Timmy",
+    "trainerLevel": "Wild"
+}

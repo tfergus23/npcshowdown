@@ -1,0 +1,192 @@
+{
+    "team": [
+        {
+            "species": "Swampert",
+            "nickname": "",
+            "level": 30,
+            "moves": [
+                "Waterfall",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Torrent",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Sceptile",
+            "nickname": "",
+            "level": 30,
+            "moves": [
+                "Leaf Blade",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "Leftovers",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Blaziken",
+            "nickname": "",
+            "level": 30,
+            "moves": [
+                "Flare Blitz",
+                "Close Combat",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Magneton",
+            "nickname": "",
+            "level": 30,
+            "moves": [
+                "Thunderbolt",
+                "Flash Cannon",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Swellow",
+            "nickname": "",
+            "level": 30,
+            "moves": [
+                "Brave Bird",
+                "Return",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "Leftovers",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "species": "Trapinch",
+            "nickname": "",
+            "level": 30,
+            "moves": [
+                "Earthquake",
+                "",
+                "",
+                ""
+            ],
+            "abilityName": "Guts",
+            "gender": "Random",
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "nature": "Serious",
+            "itemName": "",
+            "evs": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        }
+    ],
+    "name": "Thirty Theo",
+    "trainerLevel": "Wild"
+}

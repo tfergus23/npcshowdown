@@ -8,6 +8,7 @@ import TournamentRequest from 'src/TournamentRequest';
 import { BattleService } from '../battle.service';
 import { UserTrainersModalComponent } from '../user-trainers-modal/user-trainers-modal.component';
 import { validFormats } from 'pixi.js';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-create-tournament',
@@ -27,7 +28,7 @@ export class CreateTournamentComponent {
   submittingTournament: boolean = false;
   whileSubmittingTournament = () => {return this.submittingTournament;};
 
-  constructor(public app: AppComponent, private dataService: DataService, private battleService: BattleService){}
+  constructor(public app: AppComponent, private dataService: DataService, private battleService: BattleService, private http: HttpClient){}
 
   ngOnInit() : void{
     this.dataService.getAllData().subscribe((response) => {
@@ -168,5 +169,14 @@ export class CreateTournamentComponent {
       this.rounds = entries.rounds;
       this.name = entries.name;
     }
+  }
+
+  addSampleTrainers(){
+    this.http.get<Trainer>('/assets/Programmer Tom.json').subscribe((trainer) => { this.trainers.push(trainer); });
+    this.http.get<Trainer>('/assets/Ninety Nancy.json').subscribe((trainer) => { this.trainers.push(trainer); });
+    this.http.get<Trainer>('/assets/Seventy Sarah.json').subscribe((trainer) => { this.trainers.push(trainer); });
+    this.http.get<Trainer>('/assets/Thirty Theo.json').subscribe((trainer) => { this.trainers.push(trainer); });
+    this.http.get<Trainer>('/assets/Twenty Trent.json').subscribe((trainer) => { this.trainers.push(trainer); });
+    this.http.get<Trainer>('/assets/Ten Timmy.json').subscribe((trainer) => { this.trainers.push(trainer); });
   }
 }
