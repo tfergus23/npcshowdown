@@ -1,0 +1,58 @@
+name: Release and deploy the application
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/*'
+
+jobs:
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    env:
+        VERSION: 0.1.1
+    steps:
+    - uses: actions/checkoutv4
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: npcs-latest.tar.gz
+        path: ./npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz
+    
+
+    - name: Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.PROD_SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H ${{ secrets.PROD_SERVER_IP }} >> ~/.ssh/known_hosts
+        ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }} "echo Connected"
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ env.VERSION }}
+        release_name: Release v${{ env.VERSION }}
+        prerelease: true
+
+    - name: Publish release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz
+        asset_name: npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz
+        asset_content_type: application/octet-stream
+
+    - name: Deploy App
+      run: |
+        scp npcs-ubuntu-x64-v${{ env.VERSION }}.tar.gz ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }}:~/npcs-new.tar.gz
+        ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_SERVER_IP }} '~/deploy.sh'
