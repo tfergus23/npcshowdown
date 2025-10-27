@@ -23,5 +23,5 @@ export function validateTrainer(trainer: Trainer){
     assert(typeof trainer.team == 'object');
     assert(typeof trainer.name == 'string');
     assert(typeof trainer.trainerLevel == 'string');
-    if (trainer.id) assert(typeof(trainer.id) == 'number');
+    if (trainer.id) assert(typeof(trainer.id) == 'string');
 }

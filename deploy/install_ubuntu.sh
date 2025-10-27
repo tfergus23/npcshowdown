@@ -71,6 +71,11 @@ sudo ufw enable
 sudo apt install mariadb-server -y
 sudo systemctl enable mariadb
 sudo mysql_secure_installation
+sudo echo >> /etc/mysql/my.cnf
+sudo echo "[mysqld]" >> /etc/mysql/my.cnf
+sudo echo "wait_timeout = 86400" >> /etc/mysql/my.cnf
+
+(sudo crontab -l 2>/dev/null; echo "0 9 * * * /sbin/shutdown -r now") | sudo crontab -
 
 echo >> create-tables-prod.sql
 echo "CREATE USER 'svcnpcshowdown'@'localhost' IDENTIFIED BY '$dbpassword';" >> create-tables-prod.sql
