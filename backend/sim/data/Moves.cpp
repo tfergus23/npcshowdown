@@ -1046,6 +1046,30 @@ const Move MOVE_PLAY_ROUGH = {
     }
 };
 
+const Move MOVE_TOXIC = {
+    .name = "Toxic",
+    .type = Type::POISON,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 90,
+    .maxPP = 16,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 92,
+    
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::applyStatus(&STATUS_BAD_POISON, myMove);
+    }
+};
+
 const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
@@ -1086,7 +1110,8 @@ const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_METEOR_MASH.name, &MOVE_METEOR_MASH},
     {MOVE_FLASH_CANNON.name, &MOVE_FLASH_CANNON},
     {MOVE_MOONBLAST.name, &MOVE_MOONBLAST},
-    {MOVE_PLAY_ROUGH.name, &MOVE_PLAY_ROUGH}
+    {MOVE_PLAY_ROUGH.name, &MOVE_PLAY_ROUGH},
+    {MOVE_TOXIC.name, &MOVE_TOXIC}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

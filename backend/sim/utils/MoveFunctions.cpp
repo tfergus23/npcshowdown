@@ -248,6 +248,7 @@ bool MoveFunctions::applyStatus(const Status* status, MoveUse* moveUse, bool log
         return false;
     }
     if (status == &STATUS_FROZEN && (moveUse->battle->weather == &WEATHER_SUN || moveUse->target->isType(Type::ICE))) {
+        if (logFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
     if (status == &STATUS_BURN && moveUse->target->isType(Type::FIRE)) {
