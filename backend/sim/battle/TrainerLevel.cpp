@@ -7,10 +7,12 @@
 using json = nlohmann::json;
 
 const std::unordered_map<std::string, TrainerLevel> stringToLevelMap = {
+#ifndef NDEBUG
     {"First Move", TrainerLevel::FIRST_MOVE},
     {"Use Two Moves then Switch", TrainerLevel::USE_2_MOVES_THEN_SWITCH},
-    {"Wild", TrainerLevel::WILD},
     {"Switcher", TrainerLevel::SWITCHER},
+#endif
+    {"Wild", TrainerLevel::WILD},
     {"Trainer", TrainerLevel::TRAINER},
     {"Boss", TrainerLevel::BOSS}
 };
