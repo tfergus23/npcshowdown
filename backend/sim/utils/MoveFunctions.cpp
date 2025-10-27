@@ -247,7 +247,7 @@ bool MoveFunctions::applyStatus(const Status* status, MoveUse* moveUse, bool log
         }
         return false;
     }
-    if (status == &STATUS_FROZEN && (moveUse->battle->weather == &WEATHER_SUN || moveUse->target->isType(Type::ICE))) {
+    if (status == &STATUS_FROZEN && (moveUse->battle->weather == &WEATHER_SUN || moveUse->target->isType(Type::ICE) || moveUse->target->isType(Type::FIRE))) {
         if (logFailure) moveUse->battle->logMessage("It doesn't affect " + moveUse->target->nickname + "...");
         return false;
     }
@@ -290,7 +290,7 @@ bool MoveFunctions::changeStatModifier(Stat stat, int change, Pokemon* pokemon, 
         actualChange = (currentMod + change <= 6) ? change : 6 - currentMod;
     }
     else {
-        actualChange = (currentMod + change <= 6) ? change : -6 - currentMod;
+        actualChange = (currentMod + change >= -6) ? change : -6 - currentMod;
     }
     pokemon->boosts[(int)stat] += actualChange;
     if (actualChange == 0 && change != 0) {

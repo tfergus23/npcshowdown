@@ -1070,6 +1070,133 @@ const Move MOVE_TOXIC = {
     }
 };
 
+const Move MOVE_SPORE = {
+    .name = "Spore",
+    .type = Type::GRASS,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 100,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 147,
+    
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+    .sporeBased = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->target->isType(Type::GRASS)){
+            myMove->battle->logMessage("It doesn't affect " + myMove->target->nickname + "...");
+        }
+        else{
+            MoveFunctions::applyStatus(&STATUS_SLEEP, myMove);
+        }
+    }
+};
+
+const Move MOVE_THUNDER_WAVE = {
+    .name = "Thunder Wave",
+    .type = Type::ELECTRIC,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 90,
+    .maxPP = 32,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 86,
+    
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::applyStatus(&STATUS_PARALYSIS, myMove);
+    }
+};
+
+const Move MOVE_WILL_O_WISP = {
+    .name = "Will-O-Wisp",
+    .type = Type::FIRE,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 85,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 261,
+    
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::applyStatus(&STATUS_BURN, myMove);
+    }
+};
+
+const Move MOVE_POISON_POWDER = {
+    .name = "Poison Powder",
+    .type = Type::POISON,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 75,
+    .maxPP = 56,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 77,
+    
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+    .sporeBased = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::applyStatus(&STATUS_POISON, myMove);
+    }
+};
+
+const Move MOVE_POISON_GAS = {
+    .name = "Poison Gas",
+    .type = Type::POISON,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 90,
+    .maxPP = 64,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 139,
+    
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::applyStatus(&STATUS_POISON, myMove);
+    }
+};
+
 const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
@@ -1111,7 +1238,12 @@ const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_FLASH_CANNON.name, &MOVE_FLASH_CANNON},
     {MOVE_MOONBLAST.name, &MOVE_MOONBLAST},
     {MOVE_PLAY_ROUGH.name, &MOVE_PLAY_ROUGH},
-    {MOVE_TOXIC.name, &MOVE_TOXIC}
+    {MOVE_TOXIC.name, &MOVE_TOXIC},
+    {MOVE_SPORE.name, &MOVE_SPORE},
+    {MOVE_THUNDER_WAVE.name, &MOVE_THUNDER_WAVE},
+    {MOVE_WILL_O_WISP.name, &MOVE_WILL_O_WISP},
+    {MOVE_POISON_POWDER.name, &MOVE_POISON_POWDER},
+    {MOVE_POISON_GAS.name, &MOVE_POISON_GAS}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

@@ -1189,7 +1189,8 @@ void npcs::Server::waitForTournaments(uint32_t threadNumber){
             json battleJson;
             battleJson["trainer1"] = trainers[errorBattle.trainer1].toJSON();
             battleJson["trainer2"] = trainers[errorBattle.trainer2].toJSON();
-            battleJson["seed"] = errorBattle.seed;
+            battleJson["seed"] = std::to_string(errorBattle.seed);
+            battleJson["type"] = "text";
             db.saveErrorBattle(battleJson.dump());
         }
         

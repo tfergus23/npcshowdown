@@ -25,6 +25,10 @@ struct BadPoisonState{
     int activeTurns = 0;
 };
 
+struct ConfusedState{
+    int activeTurns = 0;
+};
+
 using ObserverState = std::variant<
     BideState,
     TruantState,
