@@ -1,14 +1,14 @@
-#include "sim/data/Effects.hpp"
+#include "sim/data/Volatiles.hpp"
 #include "sim/battle/Battle.hpp"
 
-const Effect EFFECT_NONE;
+const Volatile VOLATILE_NONE;
 
-const Effect EFFECT_CONFUSED = {
+const Volatile VOLATILE_CONFUSED = {
     .name = "Confused",
     .was = " became confused!"
 };
 
-const Effect EFFECT_ROOST = {
+const Volatile VOLATILE_ROOST = {
     .observer = {
     .initialize = [](Pokemon* subject, Battle* battle){
         if (!subject->isType(Type::FLYING)) return;
@@ -19,7 +19,7 @@ const Effect EFFECT_ROOST = {
     },
     .endOfTurn = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         subject->currentType = subject->species->type;
-        subject->removeEffect(&EFFECT_ROOST);
+        subject->removeVolatile(&VOLATILE_ROOST);
     }
     },
     .name = "Roost",

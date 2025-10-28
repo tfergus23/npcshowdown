@@ -3,7 +3,7 @@
 #include "sim/battle/Observer.hpp"
 
 
-class Effect {
+class Volatile {
 public:
     Observer observer;
     std::string name;

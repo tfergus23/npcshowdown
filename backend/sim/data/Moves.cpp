@@ -1197,6 +1197,30 @@ const Move MOVE_POISON_GAS = {
     }
 };
 
+const Move MOVE_PROTECT = {
+    .name = "Protect",
+    .type = Type::NORMAL,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 0,
+    .maxPP = 64,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 139,
+    
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::applyStatus(&STATUS_POISON, myMove);
+    }
+};
+
 const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},

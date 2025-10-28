@@ -3,7 +3,7 @@
 #include "sim/data/Items.hpp"
 #include "sim/utils/StageMultipliers.hpp"
 #include "sim/battle/Type.hpp"
-#include "sim/data/Effects.hpp"
+#include "sim/data/Volatiles.hpp"
 #include "sim/data/Moves.hpp"
 
 using namespace MoveFunctions;
@@ -117,7 +117,7 @@ static bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
         return changeStatModifier(Stat::SPEED, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
     case SecondaryEffect::CONFUSE:
     {
-        bool success = applyEffect(&EFFECT_CONFUSED, moveUse, false);
+        bool success = applyVolatile(&VOLATILE_CONFUSED, moveUse, false);
         return success;
     }
     case SecondaryEffect::FLINCH:
@@ -267,16 +267,16 @@ bool MoveFunctions::applyStatus(const Status* status, MoveUse* moveUse, bool log
     moveUse->battle->logApplyStatus(moveUse->target->nickname + status->was, {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .status = status});
     return true;
 }
-bool MoveFunctions::applyEffect(const Effect* effect, MoveUse* moveUse, bool logFailure) {
-    if (!moveUse->canApplyStatus || moveUse->target->isDead || moveUse->target->hasEffect(effect)) {
+bool MoveFunctions::applyVolatile(const Volatile* vol, MoveUse* moveUse, bool logFailure) {
+    if (!moveUse->canApplyStatus || moveUse->target->isDead || moveUse->target->hasVolatile(vol)) {
         if (logFailure && !moveUse->loggedFailure) {
             moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return false;
     }
-    moveUse->target->applyEffect(effect);
-    moveUse->battle->logApplyVolatile(effect->was != "" ? moveUse->target->nickname + effect->was : "", {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = effect});
+    moveUse->target->applyVolatile(vol);
+    moveUse->battle->logApplyVolatile(vol->was != "" ? moveUse->target->nickname + vol->was : "", {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = vol});
     return true;
 }
 bool MoveFunctions::changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange) {
