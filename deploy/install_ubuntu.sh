@@ -77,10 +77,13 @@ sudo echo "wait_timeout = 86400" >> /etc/mysql/my.cnf
 
 (sudo crontab -l 2>/dev/null; echo "0 9 * * * /sbin/shutdown -r now") | sudo crontab -
 
+echo >> create-tables-prod.sql
+echo "CREATE USER 'svcnpcshowdown'@'localhost' IDENTIFIED BY '$dbpassword';" >> create-tables-prod.sql
+echo "GRANT ALL PRIVILEGES ON npcs_prod.* TO 'svcnpcshowdown'@'localhost';" >> create-tables-prod.sql
+echo "FLUSH PRIVILEGES;" >> create-tables-prod.sql
+
 sudo mariadb -u root < create-tables-prod.sql
-sudo mariadb -u root --execute "CREATE USER 'svcnpcshowdown'@'localhost' IDENTIFIED BY '$dbpassword';"
-sudo mariadb -u root --execute "GRANT ALL PRIVILEGES ON npcs_prod.* TO 'svcnpcshowdown'@'localhost';"
-sudo mariadb -u root --execute "FLUSH PRIVILEGES;"
+rm create-tables-prod.sql
 
 sudo apt install nginx -y
 sudo cp npcshowdown.conf /etc/nginx/sites-available/
