@@ -1191,7 +1191,7 @@ void npcs::Server::waitForTournaments(uint32_t threadNumber){
             battleJson["trainer2"] = trainers[errorBattle.trainer2].toJSON();
             battleJson["seed"] = std::to_string(errorBattle.seed);
             battleJson["type"] = "text";
-            db.saveErrorBattle(battleJson.dump());
+            //db.saveErrorBattle(battleJson.dump());
         }
         
         // Save tournament to DB
