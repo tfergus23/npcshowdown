@@ -2,17 +2,57 @@
 #include <string.h>
 #include "sim/data/Moves.hpp"
 #include <unordered_set>
+#include <set>
 #include "sim/utils/MoveFunctions.hpp"
 
-static const std::unordered_set<const Move*> poisoningMoves = {
-    //ie.
-    //&MOVE_POISONPOWDER,
-    //&MOVE_POISON_GAS
+static const std::vector<const Move*> poisoningMoves = {
+    &MOVE_TOXIC,
+    &MOVE_POISON_GAS,
+    &MOVE_POISON_POWDER
 };
 
-static const Move* pickPoisoningMove(const std::unordered_set<const Move*>& myMoves){
-    for (auto move : myMoves){
-        if (poisoningMoves.contains(move)){
+static const std::vector<const Move*> sleepMoves = {
+    &MOVE_SPORE
+};
+
+static const std::vector<const Move*> paralysisMoves = {
+    &MOVE_THUNDER_WAVE
+};
+
+static const std::vector<const Move*> burnMoves = {
+    &MOVE_WILL_O_WISP
+};
+
+static const Move* pickBestPoisoningMove(const std::unordered_set<const Move*>& myMoves){
+    for (auto move : poisoningMoves){
+        if (myMoves.contains(move)){
+            return move;
+        }
+    }
+    return nullptr;
+}
+
+static const Move* pickBestSleepMove(const std::unordered_set<const Move*>& myMoves){
+    for (auto move : sleepMoves){
+        if (myMoves.contains(move)){
+            return move;
+        }
+    }
+    return nullptr;
+}
+
+static const Move* pickBestParalysisMove(const std::unordered_set<const Move*>& myMoves){
+    for (auto move : paralysisMoves){
+        if (myMoves.contains(move)){
+            return move;
+        }
+    }
+    return nullptr;
+}
+
+static const Move* pickBestBurnMove(const std::unordered_set<const Move*>& myMoves){
+    for (auto move : burnMoves){
+        if (myMoves.contains(move)){
             return move;
         }
     }
@@ -36,9 +76,21 @@ static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std:
     }
 }
 
-static int typePoints(Pokemon* myPoke, Pokemon* enemyPoke){
-    int myOffense = (int) typeMatchup(myPoke->currentType[0], enemyPoke->currentType[0], enemyPoke->currentType[1]) + (int) typeMatchup(myPoke->currentType[1], enemyPoke->currentType[0], enemyPoke->currentType[1]);
-    int myDefense = (int) typeMatchup(enemyPoke->currentType[0], myPoke->currentType[0], myPoke->currentType[1]) + (int) typeMatchup(enemyPoke->currentType[1], myPoke->currentType[0], myPoke->currentType[1]);
+static void removeSporeBasedMoves(std::unordered_set<const Move*> moves){
+    tflib::static_vector<const Move*, 4> toRemove;
+    for (auto move : moves){
+        if (move->sporeBased){
+            toRemove.push_back(move);
+        }
+    }
+    for (auto move : toRemove){
+        moves.erase(move);
+    }
+}
+
+static float typePoints(Pokemon* myPoke, Pokemon* enemyPoke){
+    float myOffense = typeMatchup(myPoke->currentType[0], enemyPoke->currentType[0], enemyPoke->currentType[1]) + typeMatchup(myPoke->currentType[1], enemyPoke->currentType[0], enemyPoke->currentType[1]);
+    float myDefense = typeMatchup(enemyPoke->currentType[0], myPoke->currentType[0], myPoke->currentType[1]) + typeMatchup(enemyPoke->currentType[1], myPoke->currentType[0], myPoke->currentType[1]);
     return myOffense - myDefense;
 }
 
@@ -64,13 +116,29 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     bool imFaster = myPoke->getStat(Stat::SPEED) > enemyPoke->getStat(Stat::SPEED);
     int hitsToKO = mostDamage ? enemyPoke->currentHealth / mostDamage + 1 : INT_MAX;
 
-    const Move* poisoningMove = pickPoisoningMove(validMoves);
+    if (enemyPoke->isType(Type::GRASS)){
+        removeSporeBasedMoves(validMoves);
+    }
+
+    const Move* bestPoisoningMove = pickBestPoisoningMove(validMoves);
+    const Move* bestSleepMove = pickBestSleepMove(validMoves);
+    const Move* bestParalysisMove = pickBestParalysisMove(validMoves);
+    const Move* bestBurnMove = pickBestBurnMove(validMoves);
 
     if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && imFaster){
         return mostDamagingMove;
     }
-    else if (poisoningMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE && !enemyPoke->isType(Type::POISON)){
-        return poisoningMove;
+    else if (bestSleepMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE){
+        return bestSleepMove;
+    }
+    else if (bestPoisoningMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE && !enemyPoke->isType(Type::POISON)){
+        return bestPoisoningMove;
+    }
+    else if (bestParalysisMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE && !enemyPoke->isType(Type::ELECTRIC)){
+        return bestParalysisMove;
+    }
+    else if (bestBurnMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE && !enemyPoke->isType(Type::FIRE)){
+        return bestBurnMove;
     }
     else if (mostDamagingMove){
         return mostDamagingMove;
@@ -170,7 +238,35 @@ int TrainerInfo::pickPokemon(Pokemon* currentlyActivePokemon, Pokemon* enemyPoke
     tflib::static_vector<int,5> validSlots;
     getValidSwitches(currentlyActivePokemon, battle, validSlots);
     battle->assertTrue(validSlots.size() > 0, "pickPokemon called without any valid pokemon to switch to.");
-    return validSlots[battle->randInt(0, validSlots.size())];
+
+    switch (trainerLevel)
+    {
+    case TrainerLevel::BOSS:
+    case TrainerLevel::TRAINER:{
+        tflib::static_vector<float,5> scores;
+        for (auto slot : validSlots){
+            Pokemon* poke = &myTeam[slot];
+            float levelScore = (float) poke->level / enemyPoke->level;
+            float healthScore = (float) poke->currentHealth / (float) poke->getStatRaw(Stat::HP);
+            float statusScore = poke->getStatus() == &STATUS_NONE ? 1.0f : 0.75f;
+            float typeScore = typePoints(poke, enemyPoke);
+            scores.push_back(levelScore * typeScore * healthScore * statusScore);
+        }
+        float bestScore = std::numeric_limits<float>::lowest();
+        int bestScoreIndex = -1;
+        for (int i = 0; i < scores.size(); i++){
+            if (scores[i] > bestScore){
+                bestScoreIndex = i;
+                bestScore = scores[i];
+            }
+        }
+        battle->assertTrue(bestScoreIndex >= 0, "Didn't pick a pokemon correctly based on score.");
+        return validSlots[bestScoreIndex];
+    } break;
+    default:{
+        return validSlots[battle->randInt(0, validSlots.size())];
+    } break;
+    }
 }
 
 void TrainerInfo::getValidSwitches(Pokemon* currentlyActivePokemon, Battle* battle, tflib::static_vector<int,5>& outVec) const{

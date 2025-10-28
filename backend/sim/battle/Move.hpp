@@ -42,6 +42,7 @@ public:
     bool soundBased = false;
     bool usableWhileAsleep = false;
     bool bypassSubstitute = false;
+    bool sporeBased = false;
 
     void (*beforeChecks)(MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};
     void (*afterChecks) (MoveUse*, MoveUse*) = [](MoveUse* myMove, MoveUse* opponentMove){};

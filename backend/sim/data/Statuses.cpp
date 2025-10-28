@@ -46,6 +46,7 @@ const Status STATUS_POISON{
 const Status STATUS_SLEEP{
     .observer{
     .initialize = [](Pokemon* subject, Battle* battle){
+        subject->abilityState.emplace<SleepState>();
         SleepState& state =  std::get<SleepState>(subject->abilityState);
         state.remainingTurns = battle->randInt(1,4);
     },
@@ -110,6 +111,11 @@ const Status STATUS_FROZEN{
 
 const Status STATUS_BAD_POISON{
     .observer{
+    
+    .initialize = [](Pokemon* subject, Battle* battle){
+        subject->abilityState.emplace<BadPoisonState>();
+    },
+
     .endOfTurn = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         BadPoisonState& state = std::get<BadPoisonState>(subject->abilityState);
         state.activeTurns++;
@@ -118,6 +124,7 @@ const Status STATUS_BAD_POISON{
         battle->logDamageTaken(subject->nickname + " is hurt by poison!", {.recipientIsPlayer1 = subject == battle->player1ActivePokemon, .damage = dmg});
         
     },
+
     .onPokemonSwitch = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         if (e.eventSubject == subject){
             BadPoisonState& state = std::get<BadPoisonState>(subject->abilityState);

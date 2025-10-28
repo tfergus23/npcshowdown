@@ -50,6 +50,7 @@ void Battle::simulate(){
         this->isBattleOver = true;
         this->isDraw = true;
         this->winner = this->getPlayer1(); //This could probably remain nullptr, but I'll keep it this for now
+        this->errorMessage = e.what();
     }
 }
 

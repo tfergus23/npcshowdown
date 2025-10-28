@@ -61,6 +61,9 @@ void MoveUse::doMove(MoveUse* opponentMove){
         }
         return;
     }
+    if (move->damageCategory == DamageCategory::STATUS){
+        logUsage();
+    }
     move->afterChecks(this, opponentMove);
 }
 void MoveUse::fail(std::string_view message){
@@ -106,6 +109,8 @@ bool compareMoves(const MoveUse* move1, const MoveUse* move2){
 }
 
 void MoveUse::logUsage(){
+    if (loggedUsed) return;
+
     if (logUsed){
         if (move->targetType == TargetType::OPPONENT && damageDone > 0){
             if (move->contact){
@@ -118,5 +123,6 @@ void MoveUse::logUsage(){
         else{
             battle->logMessage(user->nickname + " used " + move->name + "!");
         }
+        loggedUsed = true;
     }
 }

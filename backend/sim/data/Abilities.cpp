@@ -33,10 +33,34 @@ const Ability ABILITY_TORRENT = {
     .id = 67
 };
 
+const Ability ABILITY_BLAZE = {
+    .observer = {
+    .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
+        if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(Stat::HP) <= (1.0f / 3.0f) && args.moveUse->effectiveType == Type::FIRE){
+            args.moveUse->damageMod *= 1.5f;
+        }
+    }
+    },
+    .name = "Blaze",
+    .id = 66
+};
+
+const Ability ABILITY_OVERGROW = {
+    .observer = {
+    .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
+        if (args.moveUse->user == subject && (float) args.moveUse->user->currentHealth / (float) args.moveUse->user->getStat(Stat::HP) <= (1.0f / 3.0f) && args.moveUse->effectiveType == Type::GRASS){
+            args.moveUse->damageMod *= 1.5f;
+        }
+    }
+    },
+    .name = "Overgrow",
+    .id = 65
+};
+
 const Ability ABILITY_TRUANT = {
     .observer = {
     .initialize = [](Pokemon* subject, Battle* battle){
-        subject->abilityState = TruantState();
+        subject->abilityState.emplace<TruantState>();
     },
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& args){
         TruantState& state = std::get<TruantState>(subject->abilityState);
@@ -55,15 +79,13 @@ const Ability ABILITY_TRUANT = {
     .id = 54
 };
 
-
-
-
-
 //Mapping string of name to ability
 const std::unordered_map<std::string,const Ability*> abilities = {
     {ABILITY_GUTS.name, &ABILITY_GUTS},
     {ABILITY_TORRENT.name, &ABILITY_TORRENT},
-    {ABILITY_TRUANT.name, &ABILITY_TRUANT}
+    {ABILITY_TRUANT.name, &ABILITY_TRUANT},
+    {ABILITY_BLAZE.name, &ABILITY_BLAZE},
+    {ABILITY_OVERGROW.name, &ABILITY_OVERGROW}
 };
 
 std::unordered_map<int16_t, const Ability*> idToAbility;

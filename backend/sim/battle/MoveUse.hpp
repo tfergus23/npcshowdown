@@ -25,6 +25,7 @@ public:
     bool changeLastMoveUsed = true;
     const Move* move;
     bool logUsed = true;
+    bool loggedUsed = false;
     int effectivePower = 0;
     Type effectiveType = Type::NONE;
 
