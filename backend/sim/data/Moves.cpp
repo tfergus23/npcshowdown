@@ -1203,21 +1203,41 @@ const Move MOVE_PROTECT = {
     .damageCategory = DamageCategory::STATUS,
     .power = 0,
     .accuracy = 0,
-    .maxPP = 64,
-    .priority = 0,
+    .maxPP = 16,
+    .priority = 4,
     .critRatio = 0,
-    .targetType = TargetType::OPPONENT,
+    .targetType = TargetType::SELF,
     .secondaryEffect = SecondaryEffect::NONE,
     .secondaryEffectChance = -1,
     .secondaryEffectValue = -1,
-    .id = 139,
-    
-    .protect = true,
-    .magicCoat = true,
-    .mirrorMove = true,
+    .id = 182,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
-        MoveFunctions::applyStatus(&STATUS_POISON, myMove);
+        // Fails if it goes second
+        if (myMove == &myMove->battle->turn[1]){
+            myMove->battle->logMessage("But it failed!");
+            return;
+        }
+
+        if (!myMove->user->hasVolatile(&VOLATILE_PROTECT_STATE)){
+            myMove->user->applyVolatile(&VOLATILE_PROTECT_STATE);
+        }
+
+        auto& state = std::get<ProtectState>(*myMove->user->getVolatileState(&VOLATILE_PROTECT_STATE));
+
+        float successChance = state.protectsInARow == 0 ? 100.0f : 100.0f * std::pow(1.0f / 3.0f, state.protectsInARow);
+
+        int rand = myMove->battle->randInt(1, 101);
+
+        if (rand <= (int) successChance){
+            myMove->user->applyVolatile(&VOLATILE_PROTECTED);
+            state.protectsInARow++;
+            myMove->battle->logMessage(myMove->user->nickname + " protected itself!");
+        }
+        else{
+            state.protectsInARow = 0;
+            myMove->battle->logMessage("But it failed!");
+        }
     }
 };
 
@@ -1267,7 +1287,8 @@ const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_THUNDER_WAVE.name, &MOVE_THUNDER_WAVE},
     {MOVE_WILL_O_WISP.name, &MOVE_WILL_O_WISP},
     {MOVE_POISON_POWDER.name, &MOVE_POISON_POWDER},
-    {MOVE_POISON_GAS.name, &MOVE_POISON_GAS}
+    {MOVE_POISON_GAS.name, &MOVE_POISON_GAS},
+    {MOVE_PROTECT.name, &MOVE_PROTECT}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

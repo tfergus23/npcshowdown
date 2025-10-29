@@ -262,9 +262,9 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
 }
 
 void Pokemon::onSwitch(){
-    setCurrentAbility(m_BaseAbility);
-    m_CurrentItem->observer.initialize(this, battle);
-    m_Status->observer.initialize(this, battle);
+    if (m_CurrentAbility != m_BaseAbility){
+        setCurrentAbility(m_BaseAbility);
+    }
     m_AbilitySuppressors = 0;
     m_ItemSuppressors = 0;
     m_StatusSuppressors = 0;
@@ -281,6 +281,7 @@ void Pokemon::onSwitch(){
         storedPP = -1;
         storedPPIndex = -1;
     }
+    m_Volatiles.clear();
 }
 
 bool Pokemon::shouldDie(){
