@@ -39,9 +39,6 @@ class Pokemon{
         bool isDead = false;
         int8_t boosts[8] = {0};
         int triggeredCritMod = 0;
-        int choiceLockedMove = -1;
-        int storedPP = -1; //Meant to be used by mimic to store the PP the user had before using Mimic
-        int storedPPIndex = -1;
         int currentPP[4];
         const Move* nextMove = nullptr;
         int nextMoveCounter = -1;
@@ -89,7 +86,16 @@ class Pokemon{
         bool hasVolatile(const Volatile* vol);
         void removeVolatile(const Volatile* vol);
         void applyVolatile(const Volatile* vol);
-        ObserverState* getVolatileState(const Volatile* vol);
+
+        template<typename T>
+        T& getVolatileState(const Volatile* vol){
+            return std::get<T>(m_Volatiles.at(vol));
+        }
+
+        template<typename T>
+        void initializeVolatileState(const Volatile* vol){
+            m_Volatiles.at(vol).emplace<T>();
+        }
 
         const Status* getStatus();
         void applyStatus(const Status* status);

@@ -1223,7 +1223,7 @@ const Move MOVE_PROTECT = {
             myMove->user->applyVolatile(&VOLATILE_PROTECT_STATE);
         }
 
-        auto& state = std::get<ProtectState>(*myMove->user->getVolatileState(&VOLATILE_PROTECT_STATE));
+        auto& state = myMove->user->getVolatileState<ProtectState>(&VOLATILE_PROTECT_STATE);
 
         float successChance = state.protectsInARow == 0 ? 100.0f : 100.0f * std::pow(1.0f / 3.0f, state.protectsInARow);
 

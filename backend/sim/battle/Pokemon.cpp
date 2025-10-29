@@ -130,12 +130,9 @@ void Pokemon::removeMarkedVolatiles(){
 }
 
 void Pokemon::applyVolatile(const Volatile* vol){
-    battle->assertTrue(!hasVolatile(vol), "Tried to apply volatile " + vol->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
+    battle->assertTrue(!hasVolatile(vol), "Tried to apply volatile " + vol->name +  " to " + nickname + ", but " + nickname + " already has that volatile.");
     m_Volatiles[vol];
     vol->observer.initialize(this, battle);
-}
-ObserverState* Pokemon::getVolatileState(const Volatile* vol){
-    return &m_Volatiles[vol];
 }
 
 Gender Pokemon::getGender() const{
@@ -269,18 +266,12 @@ void Pokemon::onSwitch(){
     m_ItemSuppressors = 0;
     m_StatusSuppressors = 0;
     resetBoosts();
-    choiceLockedMove = -1;
     m_Trappers = 0;
     lastMoveUsed = nullptr;
     triggeredCritMod = 0;
     currentType[0] = species->type[0];
     currentType[1] = species->type[1];
     currentMoves = baseMoves;
-    if (storedPP >= 0 && storedPPIndex >= 0){
-        currentPP[storedPPIndex] = storedPP;
-        storedPP = -1;
-        storedPPIndex = -1;
-    }
     m_Volatiles.clear();
 }
 

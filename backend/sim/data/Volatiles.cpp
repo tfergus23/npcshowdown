@@ -44,7 +44,7 @@ const Volatile VOLATILE_PROTECTED = {
 const Volatile VOLATILE_PROTECT_STATE = {
     .observer{
         .initialize = [](Pokemon* subject,  Battle* battle){
-            subject->getVolatileState(&VOLATILE_PROTECT_STATE)->emplace<ProtectState>();
+            subject->initializeVolatileState<ProtectState>(&VOLATILE_PROTECT_STATE);
         },
     }
 };
