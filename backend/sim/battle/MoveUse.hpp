@@ -28,6 +28,7 @@ public:
     bool loggedUsed = false;
     int effectivePower = 0;
     Type effectiveType = Type::NONE;
+    float effectiveAccuracy = 0.0f;
 
     //Flags
     bool isSelfDestruct = false;
@@ -48,7 +49,6 @@ public:
     void logUsage();
 private:
     static constexpr int FAIL_MESSAGE_LENGTH = 40;
-    float m_EffectiveAccuracy;
     char m_FailMessage[FAIL_MESSAGE_LENGTH] = "But it failed!";
 };
 

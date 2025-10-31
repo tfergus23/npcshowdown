@@ -57,7 +57,7 @@ CREATE TABLE pokemon (
         REFERENCES trainer(id) on delete cascade,
     position tinyint,
     species smallint,
-    level tinyint unsigned,
+    level smallint unsigned,
     move1 smallint,
     move2 smallint,
     move3 smallint,

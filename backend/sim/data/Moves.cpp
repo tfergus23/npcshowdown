@@ -281,8 +281,8 @@ const Move MOVE_CLOSE_COMBAT = {
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
         MoveFunctions::dealDirectDamage(myMove, opponentMove);
-        MoveFunctions::changeStatModifier(Stat::DEFENSE, -1, myMove->user, myMove->battle, myMove);
-        MoveFunctions::changeStatModifier(Stat::SPDEFENSE, -1, myMove->user, myMove->battle, myMove);
+        MoveFunctions::changeStatModifier(Stat::DEFENSE, -1, myMove->user, myMove);
+        MoveFunctions::changeStatModifier(Stat::SPDEFENSE, -1, myMove->user, myMove);
     }
 };
 
@@ -968,7 +968,7 @@ const Move MOVE_METEOR_MASH = {
         MoveFunctions::dealDirectDamage(myMove, opponentMove);
         int rand = myMove->battle->randInt(1,11);
         if (rand <= 2){
-            MoveFunctions::changeStatModifier(Stat::ATTACK, 1, myMove->user, myMove->battle, myMove);
+            MoveFunctions::changeStatModifier(Stat::ATTACK, 1, myMove->user, myMove);
         }
     }
 };
@@ -1064,6 +1064,12 @@ const Move MOVE_TOXIC = {
     .protect = true,
     .magicCoat = true,
     .mirrorMove = true,
+
+    .beforeChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->isType(Type::POISON)){
+            myMove->effectiveAccuracy = 0.0f;
+        }
+    },
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
         MoveFunctions::applyStatus(&STATUS_BAD_POISON, myMove);

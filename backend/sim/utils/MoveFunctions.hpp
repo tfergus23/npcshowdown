@@ -19,7 +19,7 @@ namespace MoveFunctions{
     void giveFlatHealing(int healing, Pokemon* recipient, Battle* battle);
     bool applyStatus(const Status* status, MoveUse* moveUse, bool logFailure=true);
     bool applyVolatile(const Volatile* vol, MoveUse* moveUse, bool logFailure=true);
-    bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange=true);
+    bool changeStatModifier(Stat stat, int change, Pokemon* pokemon, MoveUse* moveUse, bool logNoChange=true);
     bool changeBattleWeather(const Weather* newWeather, Battle* battle);
     bool genderCompatible(Gender gender1, Gender gender2);
     void crash(Pokemon* user, Battle* battle);

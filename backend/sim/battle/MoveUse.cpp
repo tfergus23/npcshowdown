@@ -7,7 +7,7 @@
 
 
 MoveUse::MoveUse(){}
-MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, m_EffectiveAccuracy{(float) move->accuracy}, effectivePower{move->power}, effectiveType{move->type}{
+MoveUse::MoveUse(const Move* move, Pokemon* user, Pokemon* target, Battle* battle) : move{move}, user{user}, target{target}, battle{battle}, effectiveAccuracy{(float) move->accuracy}, effectivePower{move->power}, effectiveType{move->type}{
     if (move->targetType == TargetType::SELF) this->target = user;
     m_FailMessage[FAIL_MESSAGE_LENGTH-1] = 0;
 }
@@ -51,9 +51,10 @@ void MoveUse::doMove(MoveUse* opponentMove){
     if (accuracyStage > 6) accuracyStage = 6;
     if (accuracyStage < -6) accuracyStage = -6;
     float accuracyMultiplier = accuracyStageMultiplier(accuracyStage);
-    m_EffectiveAccuracy = move->accuracy * accuracyMultiplier * user->getCurrentAbility()->accuracyMultiplier;
-    battle->debug("Accuracy: " + std::to_string(m_EffectiveAccuracy));
-    if (move->accuracy != 0 && m_EffectiveAccuracy < (float) battle->randInt(1,101) && move->targetType == TargetType::OPPONENT){
+
+    float actualAccuracy = effectiveAccuracy * accuracyMultiplier * user->getCurrentAbility()->accuracyMultiplier;
+    battle->debug("Accuracy: " + std::to_string(actualAccuracy));
+    if (effectiveAccuracy != 0 && actualAccuracy < (float) battle->randInt(1,101) && move->targetType == TargetType::OPPONENT){
         logUsage();
         battle->logMessage(user->nickname + "'s attack missed!");
         if (move->crashOnFail){

@@ -243,15 +243,23 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
             foundAMove = true;
         }
     }
+    
     if (!foundAMove){
         problems += pokemonFriendlyName + " has no moves.\n";
     }
-    try {
-        abilityFromString(json["abilityName"].get<std::string>());
+
+    if (json["abilityName"].get<std::string>() == ""){
+        problems += pokemonFriendlyName + " needs an ability.";
     }
-    catch(...){
-        problems += pokemonFriendlyName + "'s ability is invalid or unimplemented.\n";
+    else{
+        try {
+            abilityFromString(json["abilityName"].get<std::string>());
+        }
+        catch(...){
+            problems += pokemonFriendlyName + "'s ability is invalid or unimplemented.\n";
+        }
     }
+    
     std::string genderString = json["gender"].get<std::string>();
     if (genderString != "Random" && genderString != "Male" && genderString != "Female"){
         problems += pokemonFriendlyName + " has an invalid gender.\n";
