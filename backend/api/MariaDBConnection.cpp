@@ -62,7 +62,7 @@ std::optional<Trainer> MariaDBConnection::getTrainer(size_t id){
     {
         team.emplace_back(
             speciesFromID(teamResults->getShort(3))->name,
-            (uint8_t)teamResults->getUInt(4),
+            (uint16_t)teamResults->getUInt(4),
             std::array<std::string,4>{
                 moveFromID(teamResults->getShort(5))->name,
                 moveFromID(teamResults->getShort(6))->name,
