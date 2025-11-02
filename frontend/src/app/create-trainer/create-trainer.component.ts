@@ -236,6 +236,21 @@ export class CreateTrainerComponent {
 
   saveToUserProfile = () => {
     if (this.app.loggedInUser){
+      for (let i = 0; i < this.trainer.team.length; i++){
+        let poke = this.trainer.team[i];
+        for (let j = 0; j < poke.evs.length; j++){
+          if (poke.evs[j] == null){
+            this.app.showMessage('Pokemon ' + (i+1).toString() + ' has invalid EVs.\n', MessageType.ERROR);
+            return;
+          }
+        }
+        for (let j = 0; j < poke.ivs.length; j++){
+          if (poke.ivs[j] == null){
+            this.app.showMessage('Pokemon ' + (i+1).toString() + ' has invalid IVs.\n', MessageType.ERROR);
+            return;
+          }
+        }
+      }
       this.addingToProfile = true;
       this.userService.addTrainerToUserProfile(this.app.loggedInUser.name, this.trainer).subscribe((res) => {
         this.addingToProfile = false;
@@ -263,6 +278,21 @@ export class CreateTrainerComponent {
   }
 
   updateTrainer(){
+    for (let i = 0; i < this.trainer.team.length; i++){
+        let poke = this.trainer.team[i];
+        for (let j = 0; j < poke.evs.length; j++){
+          if (poke.evs[j] == null){
+            this.app.showMessage('Pokemon ' + (i+1).toString() + ' has invalid EVs.\n', MessageType.ERROR);
+            return;
+          }
+        }
+        for (let j = 0; j < poke.ivs.length; j++){
+          if (poke.ivs[j] == null){
+            this.app.showMessage('Pokemon ' + (i+1).toString() + ' has invalid IVs.\n', MessageType.ERROR);
+            return;
+          }
+        }
+    }
     this.userService.updateUserTrainer(localStorage.getItem('user') as string, this.trainer).subscribe((res) =>{
       if (res.success){
         this.readOnly = true;

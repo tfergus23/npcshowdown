@@ -6,6 +6,7 @@ import { BattleService } from '../battle.service';
 import { BattleLogViewComponent } from '../battle-log-view/battle-log-view.component';
 import BattleRequest from 'src/BattleRequest';
 import { Router } from '@angular/router';
+import { POKEMON_SCALE } from '../battle-viewer/Constants';
 
 const SERVICE_DOWN_RESPONSE = "Sorry, it looks like the service is down. Please try again some other time.";
 
@@ -50,6 +51,44 @@ export class CreateBattleComponent {
       seed: seedValue == "" ? Math.round((Math.random() * 2147483647)).toString() : seedValue,
       type: typeValue
     };
+
+    this.errors = [];
+
+    for (let i = 0; i < request.trainer1.team.length; i++){
+      let poke = request.trainer1.team[i];
+      for (let j = 0; j < poke.evs.length; j++){
+        if (poke.evs[j] == null){
+          this.errors.push('Trainer 1, Pokemon ' + (i+1).toString() + ' has invalid EVs.\n');
+          break;
+        }
+      }
+      for (let j = 0; j < poke.ivs.length; j++){
+        if (poke.ivs[j] == null){
+          this.errors.push('Trainer 1, Pokemon ' + (i+1).toString() + ' has invalid IVs.\n');
+        }
+      }
+    }
+
+    for (let i = 0; i < request.trainer2.team.length; i++){
+      let poke = request.trainer2.team[i];
+      for (let j = 0; j < poke.evs.length; j++){
+        if (poke.evs[j] == null){
+          this.errors.push('Trainer 2, Pokemon ' + (i+1).toString() + ' has invalid EVs.\n');
+          break;
+        }
+      }
+      for (let j = 0; j < poke.ivs.length; j++){
+        if (poke.ivs[j] == null){
+          this.errors.push('Trainer 2, Pokemon ' + (i+1).toString() + ' has invalid IVs.\n');
+        }
+      }
+    }
+
+    if (this.errors.length > 0){
+      this.submittingBattle = false;
+      return;
+    }
+
     this.battleService.postBattleRequest(request).subscribe(
       (response) => {
         this.submittingBattle = false;

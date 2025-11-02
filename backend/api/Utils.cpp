@@ -140,7 +140,7 @@ std::string validateBattleRequest(const json& json){
     std::string type = json["type"].get<std::string>();
 
     if (type != "text" && type != "events"){
-        problems += "Invalid battle type: '" + type + "'. Only 'text' and 'events' allowed.";
+        problems += "Invalid battle type: '" + type + "'. Only 'text' and 'events' allowed.\n";
     }
 
     problems += validateTrainerJSON(json["trainer1"], "1");
