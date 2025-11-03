@@ -2,7 +2,7 @@
 #include <functional>
 
 PokemonBlueprint::PokemonBlueprint() {}
-PokemonBlueprint::PokemonBlueprint(std::string species, uint8_t level, std::array<std::string,4> moves, std::string abilityName, std::string gender, std::array<uint8_t,6> ivs, std::string nature, std::string itemName, std::array<uint8_t,6> evs, std::string nickname) :
+PokemonBlueprint::PokemonBlueprint(std::string species, uint16_t level, std::array<std::string,4> moves, std::string abilityName, std::string gender, std::array<uint8_t,6> ivs, std::string nature, std::string itemName, std::array<uint8_t,6> evs, std::string nickname) :
     species{species},
     level{level},
     moves{moves},
@@ -18,7 +18,7 @@ PokemonBlueprint::PokemonBlueprint(std::string species, uint8_t level, std::arra
 
 PokemonBlueprint::PokemonBlueprint(json json) : 
     species{json["species"].get<std::string>()},
-    level{json["level"].get<uint8_t>()},
+    level{json["level"].get<uint16_t>()},
     moves{json["moves"].get<std::array<std::string,4>>()},
     abilityName{json["abilityName"].get<std::string>()},
     gender{json["gender"].get<std::string>()},

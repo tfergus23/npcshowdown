@@ -133,6 +133,13 @@ inline void sendProblemResponse(std::string& problems, json& response, Response&
     res.Send(response.dump());
 }
 
+inline void sendBadJsonResponse(json& response, tfhttp::Response& res, const json::parse_error& e){
+    response["success"] = false;
+    response["message"] = "Bad Request: " + std::string(e.what());
+    res.Set_Status(400);
+    res.Send(response.dump());
+}
+
 npcs::Server::Server() :
  SPECIES_DATA_RESPONSE{createSpeciesDataResponse()},
  ABILITY_DATA_RESPONSE{createAbilityDataResponse()},
@@ -244,10 +251,7 @@ npcs::Server::Server() :
             body = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["success"] = false;
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
         std::string problems = validateAuthRequestSchema(body);
@@ -334,9 +338,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
 
@@ -387,9 +389,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
         std::string problems = validateBattleRequest(request);
@@ -431,9 +431,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
         std::string problems = validateTournamentRequest(request);
@@ -656,9 +654,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
         std::string problems = validateTrainerJSON(request, "");
@@ -706,9 +702,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
         std::string problems = validateTrainerJSON(request, "");
@@ -859,9 +853,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
         std::string problems = checkForString(request, "", "newName");
@@ -928,9 +920,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
         std::string problems = validateCreateUserRequest(request);
@@ -1111,9 +1101,7 @@ npcs::Server::Server() :
             request = json::parse(req.body);
         }
         catch (const json::parse_error& e){
-            response["message"] = "Bad Request: " + std::string(e.what());
-            res.Set_Status(400);
-            res.Send(response.dump());
+            sendBadJsonResponse(response, res, e);
             return;
         }
 

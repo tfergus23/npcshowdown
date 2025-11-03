@@ -3,7 +3,7 @@
 #include "sim/data/Items.hpp"
 #include "sim/utils/StageMultipliers.hpp"
 #include "sim/battle/Type.hpp"
-#include "sim/data/Effects.hpp"
+#include "sim/data/Volatiles.hpp"
 #include "sim/data/Moves.hpp"
 
 using namespace MoveFunctions;
@@ -106,18 +106,18 @@ static bool applySecondaryEffect(MoveUse* moveUse, MoveUse* opponentMove){
     case SecondaryEffect::BAD_POISON:
         return applyStatus(&STATUS_BAD_POISON, moveUse, false);
     case SecondaryEffect::ATTACK_CHANGE:
-        return changeStatModifier(Stat::ATTACK, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
+        return changeStatModifier(Stat::ATTACK, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse, false);
     case SecondaryEffect::DEFENSE_CHANGE:
-        return changeStatModifier(Stat::DEFENSE, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
+        return changeStatModifier(Stat::DEFENSE, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse, false);
     case SecondaryEffect::SP_ATTACK_CHANGE:
-        return changeStatModifier(Stat::SPATTACK, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
+        return changeStatModifier(Stat::SPATTACK, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse, false);
     case SecondaryEffect::SP_DEFENSE_CHANGE:
-        return changeStatModifier(Stat::SPDEFENSE, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
+        return changeStatModifier(Stat::SPDEFENSE, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse, false);
     case SecondaryEffect::SPEED_CHANGE:
-        return changeStatModifier(Stat::SPEED, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse->battle, moveUse, false);
+        return changeStatModifier(Stat::SPEED, (int) moveUse->move->secondaryEffectValue, moveUse->target, moveUse, false);
     case SecondaryEffect::CONFUSE:
     {
-        bool success = applyEffect(&EFFECT_CONFUSED, moveUse, false);
+        bool success = applyVolatile(&VOLATILE_CONFUSED, moveUse, false);
         return success;
     }
     case SecondaryEffect::FLINCH:
@@ -267,19 +267,22 @@ bool MoveFunctions::applyStatus(const Status* status, MoveUse* moveUse, bool log
     moveUse->battle->logApplyStatus(moveUse->target->nickname + status->was, {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .status = status});
     return true;
 }
-bool MoveFunctions::applyEffect(const Effect* effect, MoveUse* moveUse, bool logFailure) {
-    if (!moveUse->canApplyStatus || moveUse->target->isDead || moveUse->target->hasEffect(effect)) {
+bool MoveFunctions::applyVolatile(const Volatile* vol, MoveUse* moveUse, bool logFailure) {
+    if (!moveUse->canApplyStatus || moveUse->target->isDead || moveUse->target->hasVolatile(vol)) {
         if (logFailure && !moveUse->loggedFailure) {
             moveUse->battle->logMessage(moveUse->getFailMessage());
             moveUse->loggedFailure = true;
         }
         return false;
     }
-    moveUse->target->applyEffect(effect);
-    moveUse->battle->logApplyVolatile(effect->was != "" ? moveUse->target->nickname + effect->was : "", {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = effect});
+    moveUse->target->applyVolatile(vol);
+    if (vol->was != ""){
+        moveUse->battle->logApplyVolatile(moveUse->target->nickname + vol->was, {.appliedToPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon, .effect = vol});
+    }
     return true;
 }
-bool MoveFunctions::changeStatModifier(Stat stat, int change, Pokemon* pokemon, Battle* battle, MoveUse* moveUse, bool logNoChange) {
+bool MoveFunctions::changeStatModifier(Stat stat, int change, Pokemon* pokemon, MoveUse* moveUse, bool logNoChange) {
+    Battle* battle = moveUse->battle;
     int currentMod = pokemon->boosts[(int)stat];
     int actualChange = 0;
     if ((!moveUse->canLowerStats && change < 0) || (!moveUse->canRaiseStats && change > 0)) {

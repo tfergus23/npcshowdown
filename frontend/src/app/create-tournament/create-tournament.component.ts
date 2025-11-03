@@ -117,6 +117,31 @@ export class CreateTournamentComponent {
       name: this.name,
       user: this.app.loggedInUser ? this.app.loggedInUser.name : undefined
     };
+
+    this.errors = []
+
+    request.trainers.forEach((trainer, trainerIndex) => {
+      let trainerNum = (trainerIndex+1).toString();
+      for (let i = 0; i < trainer.team.length; i++){
+        let poke = trainer.team[i];
+        for (let j = 0; j < poke.evs.length; j++){
+          if (poke.evs[j] == null){
+            this.errors.push(`Trainer ${trainerNum}, Pokemon ` + (i+1).toString() + ' has invalid EVs.\n');
+            break;
+          }
+        }
+        for (let j = 0; j < poke.ivs.length; j++){
+          if (poke.ivs[j] == null){
+            this.errors.push(`Trainer ${trainerNum}, Pokemon ` + (i+1).toString() + ' has invalid IVs.\n');
+          }
+        }
+      }
+    });
+
+    if (this.errors.length > 0){
+      return;
+    }
+    
     this.submittingTournament = true;
     this.battleService.postTournamentRequest(request).subscribe((res) =>{
       this.redirectToTournamentResults(res.id);

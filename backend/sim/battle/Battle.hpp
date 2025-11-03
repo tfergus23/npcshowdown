@@ -12,7 +12,7 @@
 #include "sim/battle/EventArgs.hpp"
 #include <random>
 #include <unordered_map>
-#include "sim/data/Effects.hpp"
+#include "sim/data/Volatiles.hpp"
 #include "sim/data/FieldEffects.hpp"
 
 class Trainer;
@@ -69,7 +69,7 @@ struct ApplyStatusData {
 
 struct ApplyVolatileData {
     bool appliedToPlayer1 = true;
-    const Effect* effect = &EFFECT_NONE;
+    const Volatile* effect = &VOLATILE_NONE;
 };
 
 struct ApplyFieldEffectData {
@@ -79,7 +79,7 @@ struct ApplyFieldEffectData {
 
 struct RemoveVolatileData {
     bool removedFromPlayer1 = true;
-    const Effect* effect = &EFFECT_NONE;
+    const Volatile* effect = &VOLATILE_NONE;
 };
 
 struct RemoveFieldEffectData {

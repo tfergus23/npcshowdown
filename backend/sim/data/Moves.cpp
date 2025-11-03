@@ -281,8 +281,8 @@ const Move MOVE_CLOSE_COMBAT = {
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
         MoveFunctions::dealDirectDamage(myMove, opponentMove);
-        MoveFunctions::changeStatModifier(Stat::DEFENSE, -1, myMove->user, myMove->battle, myMove);
-        MoveFunctions::changeStatModifier(Stat::SPDEFENSE, -1, myMove->user, myMove->battle, myMove);
+        MoveFunctions::changeStatModifier(Stat::DEFENSE, -1, myMove->user, myMove);
+        MoveFunctions::changeStatModifier(Stat::SPDEFENSE, -1, myMove->user, myMove);
     }
 };
 
@@ -968,7 +968,7 @@ const Move MOVE_METEOR_MASH = {
         MoveFunctions::dealDirectDamage(myMove, opponentMove);
         int rand = myMove->battle->randInt(1,11);
         if (rand <= 2){
-            MoveFunctions::changeStatModifier(Stat::ATTACK, 1, myMove->user, myMove->battle, myMove);
+            MoveFunctions::changeStatModifier(Stat::ATTACK, 1, myMove->user, myMove);
         }
     }
 };
@@ -1064,6 +1064,12 @@ const Move MOVE_TOXIC = {
     .protect = true,
     .magicCoat = true,
     .mirrorMove = true,
+
+    .beforeChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->isType(Type::POISON)){
+            myMove->effectiveAccuracy = 0.0f;
+        }
+    },
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
         MoveFunctions::applyStatus(&STATUS_BAD_POISON, myMove);
@@ -1197,6 +1203,50 @@ const Move MOVE_POISON_GAS = {
     }
 };
 
+const Move MOVE_PROTECT = {
+    .name = "Protect",
+    .type = Type::NORMAL,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 0,
+    .maxPP = 16,
+    .priority = 4,
+    .critRatio = 0,
+    .targetType = TargetType::SELF,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 182,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        // Fails if it goes second
+        if (myMove == &myMove->battle->turn[1]){
+            myMove->battle->logMessage("But it failed!");
+            return;
+        }
+
+        if (!myMove->user->hasVolatile(&VOLATILE_PROTECT_STATE)){
+            myMove->user->applyVolatile(&VOLATILE_PROTECT_STATE);
+        }
+
+        auto& state = myMove->user->getVolatileState<ProtectState>(&VOLATILE_PROTECT_STATE);
+
+        float successChance = state.protectsInARow == 0 ? 100.0f : 100.0f * std::pow(1.0f / 3.0f, state.protectsInARow);
+
+        int rand = myMove->battle->randInt(1, 101);
+
+        if (rand <= (int) successChance){
+            myMove->user->applyVolatile(&VOLATILE_PROTECTED);
+            state.protectsInARow++;
+            myMove->battle->logMessage(myMove->user->nickname + " protected itself!");
+        }
+        else{
+            state.protectsInARow = 0;
+            myMove->battle->logMessage("But it failed!");
+        }
+    }
+};
+
 const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
@@ -1243,7 +1293,8 @@ const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_THUNDER_WAVE.name, &MOVE_THUNDER_WAVE},
     {MOVE_WILL_O_WISP.name, &MOVE_WILL_O_WISP},
     {MOVE_POISON_POWDER.name, &MOVE_POISON_POWDER},
-    {MOVE_POISON_GAS.name, &MOVE_POISON_GAS}
+    {MOVE_POISON_GAS.name, &MOVE_POISON_GAS},
+    {MOVE_PROTECT.name, &MOVE_PROTECT}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

@@ -29,10 +29,16 @@ struct ConfusedState{
     int activeTurns = 0;
 };
 
+struct ProtectState{
+    int protectsInARow = 0;
+};
+
 using ObserverState = std::variant<
     BideState,
     TruantState,
     SubstituteState,
     SleepState,
-    BadPoisonState
+    BadPoisonState,
+    ConfusedState,
+    ProtectState
 >;

@@ -16,6 +16,7 @@ extern const Move MOVE_THUNDER_WAVE;
 extern const Move MOVE_WILL_O_WISP;
 extern const Move MOVE_POISON_POWDER;
 extern const Move MOVE_POISON_GAS;
+extern const Move MOVE_PROTECT;
 
 extern const Move* moveFromString(const std::string& moveName);
 std::string createMoveDataResponse();

@@ -116,26 +116,23 @@ void Pokemon::applyStatus(const Status* status){
     if (m_Status != &STATUS_NONE)
         m_Status->observer.initialize(this, battle);
 }
-bool Pokemon::hasEffect(const Effect* effect){
-    return m_Effects.count(effect) > 0;
+bool Pokemon::hasVolatile(const Volatile* vol){
+    return m_Volatiles.count(vol) > 0;
 }
-void Pokemon::removeEffect(const Effect* effect){
-    m_EffectsToRemove.push_back(effect);
+void Pokemon::removeVolatile(const Volatile* vol){
+    m_VolatilesToRemove.push_back(vol);
 }
-void Pokemon::removeMarkedEffects(){
-    for (auto effect : m_EffectsToRemove){
-        m_Effects.erase(effect);
+void Pokemon::removeMarkedVolatiles(){
+    for (auto vol : m_VolatilesToRemove){
+        m_Volatiles.erase(vol);
     }
-    m_EffectsToRemove.clear();
+    m_VolatilesToRemove.clear();
 }
 
-void Pokemon::applyEffect(const Effect* effect){
-    battle->assertTrue(!hasEffect(effect), "Tried to apply effect " + effect->name +  " to " + nickname + ", but " + nickname + " already has that effect.");
-    m_Effects[effect];
-    effect->observer.initialize(this, battle);
-}
-ObserverState* Pokemon::getEffectState(const Effect* effect){
-    return &m_Effects[effect];
+void Pokemon::applyVolatile(const Volatile* vol){
+    battle->assertTrue(!hasVolatile(vol), "Tried to apply volatile " + vol->name +  " to " + nickname + ", but " + nickname + " already has that volatile.");
+    m_Volatiles[vol];
+    vol->observer.initialize(this, battle);
 }
 
 Gender Pokemon::getGender() const{
@@ -178,8 +175,8 @@ int Pokemon::getStat(Stat stat, bool crit){
     finalStatValue *= m_CurrentAbility->observer.modifySubjectStat(stat, this);
     finalStatValue *= m_CurrentItem->observer.modifySubjectStat(stat, this);
     finalStatValue *= m_Status->observer.modifySubjectStat(stat, this);
-    for (auto& [effect,state] : m_Effects){
-        finalStatValue *= effect->observer.modifySubjectStat(stat,this);
+    for (auto& [vol,state] : m_Volatiles){
+        finalStatValue *= vol->observer.modifySubjectStat(stat,this);
     }
     //TODO: field effects/weather
     return finalStatValue;
@@ -238,11 +235,11 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
 
     if (!isAbilitySuppressed()) getCurrentAbility()->observer.handleEvent(event,this, battle, args);
     if (event == Event::END_OF_TURN) getCurrentAbility()->observer.handleEvent(Event::PRIORITY_END_OF_TURN, this, battle, args);
-    for (auto [effect,state] : m_Effects){
-        effect->observer.handleEvent(event, this, battle, args);
-        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, this, battle, args);
+    for (auto [vol,state] : m_Volatiles){
+        vol->observer.handleEvent(event, this, battle, args);
+        if (event == Event::END_OF_TURN) vol->observer.handleEvent(Event::PRIORITY_END_OF_TURN, this, battle, args);
     }
-    removeMarkedEffects();
+    removeMarkedVolatiles();
 
     if (args.eventSubject != this) return;
     switch (event)
@@ -262,25 +259,20 @@ void Pokemon::handleEvent(Event event, const EventArgs& args){
 }
 
 void Pokemon::onSwitch(){
-    setCurrentAbility(m_BaseAbility);
-    m_CurrentItem->observer.initialize(this, battle);
-    m_Status->observer.initialize(this, battle);
+    if (m_CurrentAbility != m_BaseAbility){
+        setCurrentAbility(m_BaseAbility);
+    }
     m_AbilitySuppressors = 0;
     m_ItemSuppressors = 0;
     m_StatusSuppressors = 0;
     resetBoosts();
-    choiceLockedMove = -1;
     m_Trappers = 0;
     lastMoveUsed = nullptr;
     triggeredCritMod = 0;
     currentType[0] = species->type[0];
     currentType[1] = species->type[1];
     currentMoves = baseMoves;
-    if (storedPP >= 0 && storedPPIndex >= 0){
-        currentPP[storedPPIndex] = storedPP;
-        storedPP = -1;
-        storedPPIndex = -1;
-    }
+    m_Volatiles.clear();
 }
 
 bool Pokemon::shouldDie(){
