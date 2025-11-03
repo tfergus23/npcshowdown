@@ -249,7 +249,7 @@ std::string validatePokemonJSON(const json& json,const std::string& trainerNumbe
     }
 
     if (json["abilityName"].get<std::string>() == ""){
-        problems += pokemonFriendlyName + " needs an ability.";
+        problems += pokemonFriendlyName + " needs an ability.\n";
     }
     else{
         try {
