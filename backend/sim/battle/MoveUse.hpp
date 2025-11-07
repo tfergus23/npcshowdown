@@ -3,7 +3,7 @@
 #include "sim/battle/Move.hpp"
 #include <string>
 
-
+// Represents the conditions under which a move is executed.
 class MoveUse{
 public:
     Battle* battle;
@@ -43,7 +43,7 @@ public:
     void dontStart(std::string_view message);
     void failOnDirectDamage(std::string_view message);
     void failOnSemiInvulnerable(std::string_view message);
-    char* getFailMessage();
+    const char* getFailMessage();
     void setFailMessage(std::string_view newMessage);
     // Logs as an attack if the move did damage, logs a basic message otherwise
     void logUsage();

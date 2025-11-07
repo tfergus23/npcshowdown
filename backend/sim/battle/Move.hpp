@@ -4,6 +4,7 @@
 #include "sim/battle/DamageCategory.hpp"
 #include "sim/battle/TargetType.hpp"
 #include "sim/battle/SecondaryEffect.hpp"
+#include <cstdint>
 
 class MoveUse;
 
@@ -21,6 +22,7 @@ public:
     SecondaryEffect secondaryEffect;
     float secondaryEffectChance;
     float secondaryEffectValue;
+    int flatDamage = 0; // If this is > 0, the move will deal flat damage instead of scaled.
     int16_t id = -1;
 
     //Flags

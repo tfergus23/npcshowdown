@@ -46,5 +46,13 @@ const Volatile VOLATILE_PROTECT_STATE = {
         .initialize = [](Pokemon* subject,  Battle* battle){
             subject->initializeVolatileState<ProtectState>(&VOLATILE_PROTECT_STATE);
         },
+
+        .afterMove = [](Pokemon* subject, Battle* battle, const EventArgs&e){
+            if (e.moveUse->user == subject && e.moveUse->move != &MOVE_PROTECT){
+                subject->getVolatileState<ProtectState>(&VOLATILE_PROTECT_STATE).protectsInARow = 0;
+            }
+        }
     }
 };
+
+const Volatile VOLATILE_LEECH_SEED;

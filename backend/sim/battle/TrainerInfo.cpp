@@ -64,7 +64,12 @@ TrainerInfo::TrainerInfo(const std::string& name, TrainerLevel level) : trainerL
 }
 static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std::unordered_set<const Move*>& myMoves, const Move*& outMove, int& outDamage){
     for (auto move : myMoves){
-        if (move->damageCategory == DamageCategory::STATUS){
+        if (move->damageCategory == DamageCategory::STATUS || move->power == 0){
+            continue;
+        }
+        if (move->flatDamage > 0 && move->flatDamage > outDamage && typeMatchup(move->type, enemyPoke->currentType[0], enemyPoke->currentType[1]) > 0.0f){
+            outDamage = move->flatDamage;
+            outMove = move;
             continue;
         }
         MoveUse moveUse(move, myPoke, enemyPoke, myPoke->battle);
@@ -76,7 +81,7 @@ static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std:
     }
 }
 
-static void removeSporeBasedMoves(std::unordered_set<const Move*> moves){
+static void removeSporeBasedMoves(std::unordered_set<const Move*>& moves){
     tflib::static_vector<const Move*, 4> toRemove;
     for (auto move : moves){
         if (move->sporeBased){
@@ -125,8 +130,23 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     const Move* bestParalysisMove = pickBestParalysisMove(validMoves);
     const Move* bestBurnMove = pickBestBurnMove(validMoves);
 
+    bool guranteedProtect = !myPoke->hasVolatile(&VOLATILE_PROTECT_STATE) || (myPoke->getVolatileState<ProtectState>(&VOLATILE_PROTECT_STATE).protectsInARow == 0);
+
+    bool haveResidualHealing = myPoke->getCurrentItem() == &ITEM_LEFTOVERS || (myPoke->isType(Type::POISON) && myPoke->getCurrentItem() == &ITEM_BLACK_SLUDGE) || enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED);
+
+    //TODO: when I add semi invulnerable moves
+    bool enemyPokeIsSemiInvulnerable = false;
+
     if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && imFaster){
         return mostDamagingMove;
+    }
+    else if ((validMoves.contains(&MOVE_PROTECT) && guranteedProtect) && (
+        //Reasons to use protect
+        (enemyPokeIsSemiInvulnerable) || 
+        (myHealthPercent <= 88.0f && haveResidualHealing) ||
+        (enemyPoke->getStatus() == &STATUS_POISON || (enemyPoke->getStatus() == &STATUS_BURN && enemyPoke->getCurrentItem() != &ITEM_LEFTOVERS) || enemyPoke->getStatus() == &STATUS_BAD_POISON)
+    )){
+        return &MOVE_PROTECT;
     }
     else if (bestSleepMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE){
         return bestSleepMove;

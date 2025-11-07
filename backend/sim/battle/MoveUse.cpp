@@ -86,7 +86,7 @@ void MoveUse::failOnSemiInvulnerable(std::string_view message){
     setFailMessage(message);
 }
 
-char* MoveUse::getFailMessage(){
+const char* MoveUse::getFailMessage(){
     return m_FailMessage;
 }
 void MoveUse::setFailMessage(std::string_view newMessage){
