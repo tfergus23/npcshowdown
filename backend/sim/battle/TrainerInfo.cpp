@@ -113,10 +113,10 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     const Move* mostDamagingMove = nullptr;
     int mostDamage = 0;
     findMostDamagingMove(myPoke, enemyPoke, validMoves, mostDamagingMove, mostDamage);
-    float mostDamagePercent = (float) mostDamage / enemyPoke->getStat(Stat::HP);
+    float mostDamagePercent = ((float) mostDamage / enemyPoke->getStat(Stat::HP)) * 100.0f;
 
-    float myHealthPercent = ((float) myPoke->currentHealth / myPoke->getStat(Stat::HP)) * 100;
-    float enemyHealthPercent = ((float) enemyPoke->currentHealth / enemyPoke->getStat(Stat::HP)) * 100;
+    float myHealthPercent = ((float) myPoke->currentHealth / myPoke->getStat(Stat::HP)) * 100.0f;
+    float enemyHealthPercent = ((float) enemyPoke->currentHealth / enemyPoke->getStat(Stat::HP)) * 100.0f;
 
     bool imFaster = myPoke->getStat(Stat::SPEED) > enemyPoke->getStat(Stat::SPEED);
     int hitsToKO = mostDamage ? enemyPoke->currentHealth / mostDamage + 1 : INT_MAX;
@@ -134,15 +134,14 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
 
     bool haveResidualHealing = myPoke->getCurrentItem() == &ITEM_LEFTOVERS || (myPoke->isType(Type::POISON) && myPoke->getCurrentItem() == &ITEM_BLACK_SLUDGE) || enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED);
 
-    //TODO: when I add semi invulnerable moves
-    bool enemyPokeIsSemiInvulnerable = false;
+    bool enemyPokeTwoTurnAttack = enemyPoke->nextMove != nullptr;
 
     if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && imFaster){
         return mostDamagingMove;
     }
     else if ((validMoves.contains(&MOVE_PROTECT) && guranteedProtect) && (
         //Reasons to use protect
-        (enemyPokeIsSemiInvulnerable) || 
+        (enemyPokeTwoTurnAttack) || 
         (myHealthPercent <= 88.0f && haveResidualHealing) ||
         (enemyPoke->getStatus() == &STATUS_POISON || (enemyPoke->getStatus() == &STATUS_BURN && enemyPoke->getCurrentItem() != &ITEM_LEFTOVERS) || enemyPoke->getStatus() == &STATUS_BAD_POISON)
     )){

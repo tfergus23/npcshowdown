@@ -573,8 +573,12 @@ const Move MOVE_EARTHQUAKE = {
     .protect = true,
     .mirrorMove = true,
     .kingsRock = true,
+    .hitsDig = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->target->hasVolatile(&VOLATILE_DIGGING)){
+            myMove->damageMod *= 2;
+        }
         MoveFunctions::dealDirectDamage(myMove, opponentMove);
     }
 };

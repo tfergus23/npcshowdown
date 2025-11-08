@@ -1,6 +1,7 @@
 #include "sim/data/Volatiles.hpp"
 #include "sim/battle/Battle.hpp"
 #include "sim/data/Moves.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 
 const Volatile VOLATILE_NONE;
 
@@ -55,4 +56,35 @@ const Volatile VOLATILE_PROTECT_STATE = {
     }
 };
 
-const Volatile VOLATILE_LEECH_SEED;
+const Volatile VOLATILE_LEECH_SEED = {
+.observer = {
+    .endOfTurn = [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        Pokemon* opponent = subject == battle->player1ActivePokemon ? battle->player2ActivePokemon : battle->player1ActivePokemon;
+        int damage = MoveFunctions::dealResidualPercentDamage(((1.0f / 8.0f)*100.0f), subject, battle);
+        MoveFunctions::giveFlatHealing(damage, opponent, battle);
+    }
+},
+    .name = "Leech Seed"
+};
+
+const Volatile VOLATILE_FLYING = {
+.observer = {
+    .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        if (e.moveUse->target == subject && e.moveUse->move->targetType == TargetType::OPPONENT && !e.moveUse->move->hitsFly){
+            e.moveUse->fail(e.moveUse->target->nickname + "'s attack missed!");
+        }
+    }
+},
+    .name = "Flying"
+};
+
+const Volatile VOLATILE_DIGGING = {
+.observer = {
+    .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        if (e.moveUse->target == subject && e.moveUse->move->targetType == TargetType::OPPONENT && !e.moveUse->move->hitsDig){
+            e.moveUse->fail(e.moveUse->target->nickname + "'s attack missed!");
+        }
+    }
+},
+    .name = "Digging"
+};
