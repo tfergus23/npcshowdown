@@ -139,13 +139,22 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && imFaster){
         return mostDamagingMove;
     }
-    else if ((validMoves.contains(&MOVE_PROTECT) && guranteedProtect) && (
+    else if ( // Need to meed the requirements to protect and have at least one reason to use it.
+        
+        //Requirements for protect
+        (validMoves.contains(&MOVE_PROTECT) && 
+        guranteedProtect && 
+        !(enemyPoke->getStatus() == &STATUS_SLEEP)) && 
+        (
         //Reasons to use protect
         (enemyPokeTwoTurnAttack) || 
         (myHealthPercent <= 88.0f && haveResidualHealing) ||
         (enemyPoke->getStatus() == &STATUS_POISON || (enemyPoke->getStatus() == &STATUS_BURN && enemyPoke->getCurrentItem() != &ITEM_LEFTOVERS) || enemyPoke->getStatus() == &STATUS_BAD_POISON)
     )){
         return &MOVE_PROTECT;
+    }
+    else if (validMoves.contains(&MOVE_LEECH_SEED) && hitsToKO > 2 && !enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED)){
+        return &MOVE_LEECH_SEED;
     }
     else if (bestSleepMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE){
         return bestSleepMove;

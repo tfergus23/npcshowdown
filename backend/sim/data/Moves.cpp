@@ -1251,7 +1251,38 @@ const Move MOVE_PROTECT = {
     }
 };
 
-const std::unordered_map<std::string, const Move*> moves = {
+const Move MOVE_LEECH_SEED = {
+    .name = "Leech Seed",
+    .type = Type::GRASS,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 90,
+    .maxPP = 16,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 73,
+
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+    .sporeBased = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->target->isType(Type::GRASS)){
+            myMove->battle->logMessage("But it failed!");
+        }
+        else{
+            MoveFunctions::applyVolatile(&VOLATILE_LEECH_SEED, myMove);
+        }
+    }
+};
+
+
+static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
     {MOVE_TACKLE.name, &MOVE_TACKLE},
@@ -1298,7 +1329,8 @@ const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_WILL_O_WISP.name, &MOVE_WILL_O_WISP},
     {MOVE_POISON_POWDER.name, &MOVE_POISON_POWDER},
     {MOVE_POISON_GAS.name, &MOVE_POISON_GAS},
-    {MOVE_PROTECT.name, &MOVE_PROTECT}
+    {MOVE_PROTECT.name, &MOVE_PROTECT},
+    {MOVE_LEECH_SEED.name, &MOVE_LEECH_SEED}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

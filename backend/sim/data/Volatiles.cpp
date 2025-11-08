@@ -61,10 +61,14 @@ const Volatile VOLATILE_LEECH_SEED = {
     .endOfTurn = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         Pokemon* opponent = subject == battle->player1ActivePokemon ? battle->player2ActivePokemon : battle->player1ActivePokemon;
         int damage = MoveFunctions::dealResidualPercentDamage(((1.0f / 8.0f)*100.0f), subject, battle);
-        MoveFunctions::giveFlatHealing(damage, opponent, battle);
+        if (damage > 0){
+            battle->logDamageTaken(subject->nickname + " had it's health drained!", {.recipientIsPlayer1 = (subject == battle->player1ActivePokemon), .damage = damage});
+            MoveFunctions::giveFlatHealing(damage, opponent, battle);
+        }
     }
 },
-    .name = "Leech Seed"
+    .name = "Leech Seed",
+    .was = " was seeded!"
 };
 
 const Volatile VOLATILE_FLYING = {
