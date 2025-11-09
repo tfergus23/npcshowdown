@@ -1398,6 +1398,29 @@ const Move MOVE_DIG = {
     }
 };
 
+const Move MOVE_IRON_HEAD = {
+    .name = "Iron Head",
+    .type = Type::STEEL,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 80,
+    .accuracy = 100,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::FLINCH,
+    .secondaryEffectChance = 30.0f,
+    .secondaryEffectValue = -1,
+    .id = 442,
+
+    .contact = true,
+    .protect = true,
+    .mirrorMove = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::dealDirectDamage(myMove, opponentMove);
+    }
+};
 
 static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
@@ -1450,7 +1473,8 @@ static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_LEECH_SEED.name, &MOVE_LEECH_SEED},
     {MOVE_FLY.name, &MOVE_FLY},
     {MOVE_THUNDER.name, &MOVE_THUNDER},
-    {MOVE_DIG.name, &MOVE_DIG}
+    {MOVE_DIG.name, &MOVE_DIG},
+    {MOVE_IRON_HEAD.name, &MOVE_IRON_HEAD}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;
