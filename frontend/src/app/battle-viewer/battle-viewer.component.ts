@@ -629,7 +629,7 @@ export class BattleViewerComponent {
         break;
       }
       case 'APPLY_FIELD_EFFECT':{
-        let fieldEffects: FieldEffectsText = event.data.appliedToPlayer1 ? this.player1FieldEffects : this.player2FieldEffects;
+        let fieldEffects: FieldEffectsText = event.data.appliedToPlayer1Side ? this.player1FieldEffects : this.player2FieldEffects;
         fieldEffects.addEffect(event.data.fieldEffect);
         this.beginDelay(1500);
         break;

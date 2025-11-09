@@ -22,7 +22,7 @@ static const std::string statNames[] = {
 int dealDamage(int damage, MoveUse* moveUse){
     bool isPlayer1 = moveUse->target == moveUse->battle->player1ActivePokemon;
     if (moveUse->battle->sideHasFieldEffect(isPlayer1, &FIELD_EFFECT_SUBSTITUTE) && !moveUse->move->bypassSubstitute){
-        SubstituteState& subState = std::get<SubstituteState>(*moveUse->battle->getFieldEffectState(isPlayer1, &FIELD_EFFECT_SUBSTITUTE));
+        SubstituteState& subState = moveUse->battle->getFieldEffectState<SubstituteState>(isPlayer1, &FIELD_EFFECT_SUBSTITUTE);
         if (damage > subState.health) damage = subState.health;
         subState.health -= damage;
         if (damage > 0) moveUse->battle->logMessage(moveUse->target->nickname + "'s Substitute absorbed the attack!");

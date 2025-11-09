@@ -167,15 +167,14 @@ void Battle::switchIfNecessary(){
 void Battle::addFieldEffect(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
     list[fieldEffect];
+    fieldEffect->observer.initialize(side ? player1ActivePokemon : player2ActivePokemon, this);
 }
+
 bool Battle::sideHasFieldEffect(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
     return list.count(fieldEffect) > 0;
 }
-ObserverState* Battle::getFieldEffectState(bool side, const FieldEffect* fieldEffect){
-    auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
-    return &list[fieldEffect];
-}
+
 void Battle::removeFieldEffect(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_EffectsToRemove1 : m_EffectsToRemove2;
     list.push_back(fieldEffect);
@@ -193,6 +192,8 @@ void Battle::removeMarkedFieldEffects(bool side){
 void Battle::raiseEvent(Event event, const EventArgs& args){
     assertTrue(event != Event::PRIORITY_END_OF_TURN, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
     bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
+    Pokemon* fasterPokemon = fasterPokemonIsPlayer1 ? player1ActivePokemon : player2ActivePokemon;
+    Pokemon* slowerPokemon = fasterPokemonIsPlayer1 ? player2ActivePokemon : player1ActivePokemon;
     auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
     auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
 
@@ -203,8 +204,8 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
     m_FasterPokemon->handleEvent(event, args);
     killTheDead();
     for (auto [effect, effectState] : fasterPokemonFieldEffects){
-        effect->observer.handleEvent(event, nullptr, this, args);
-        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, nullptr, this, args);
+        effect->observer.handleEvent(event, fasterPokemon, this, args);
+        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, slowerPokemon, this, args);
         killTheDead();
     }
     removeMarkedFieldEffects(fasterPokemonIsPlayer1);
@@ -213,8 +214,8 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
     m_SlowerPokemon->handleEvent(event, args);
     killTheDead();
     for (auto [effect, effectState]: slowerPokemonFieldEffects){
-        effect->observer.handleEvent(event, nullptr, this, args);
-        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, nullptr, this, args);
+        effect->observer.handleEvent(event, slowerPokemon, this, args);
+        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, slowerPokemon, this, args);
         killTheDead();
     }
     removeMarkedFieldEffects(!fasterPokemonIsPlayer1);

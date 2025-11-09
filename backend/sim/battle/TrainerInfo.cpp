@@ -170,6 +170,9 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     else if (bestBurnMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE && !enemyPoke->isType(Type::FIRE)){
         return bestBurnMove;
     }
+    else if (validMoves.contains(&MOVE_REFLECT) && !battle->sideHasFieldEffect(isPlayer1, &FIELD_EFFECT_REFLECT) && hitsToKO > 2){
+        return &MOVE_REFLECT;
+    }
     else if (mostDamagingMove){
         return mostDamagingMove;
     }
