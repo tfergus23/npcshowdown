@@ -151,7 +151,7 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
         //Reasons to use protect
         (enemyPokeTwoTurnAttack) || 
         (myHealthPercent <= 88.0f && haveResidualHealing) ||
-        (enemyPoke->getStatus() == &STATUS_POISON || (enemyPoke->getStatus() == &STATUS_BURN && enemyPoke->getCurrentItem() != &ITEM_LEFTOVERS) || enemyPoke->getStatus() == &STATUS_BAD_POISON)
+        (enemyPoke->getStatus() == &STATUS_POISON || (enemyPoke->getStatus() == &STATUS_BURN && enemyPoke->getCurrentItem() != &ITEM_LEFTOVERS) || enemyPoke->getStatus() == &STATUS_BAD_POISON || enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED))
     )){
         return &MOVE_PROTECT;
     }

@@ -1358,6 +1358,46 @@ const Move MOVE_THUNDER = {
     }
 };
 
+const Move MOVE_DIG = {
+    .name = "Dig",
+    .type = Type::GROUND,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 80,
+    .accuracy = 100,
+    .maxPP = 16,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 91,
+
+    .contact = true,
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .beforeChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            myMove->skipTypeCheck = true;
+            myMove->effectiveAccuracy = 0.0f;
+            myMove->target = myMove->user;
+            myMove->usesPP = false;
+        }
+    },
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            MoveFunctions::applyVolatile(&VOLATILE_DIGGING, myMove);
+            myMove->user->nextMove = &MOVE_DIG;
+        }
+        else{
+            MoveFunctions::dealDirectDamage(myMove, opponentMove);
+        }
+    }
+};
+
 
 static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
@@ -1409,7 +1449,8 @@ static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_PROTECT.name, &MOVE_PROTECT},
     {MOVE_LEECH_SEED.name, &MOVE_LEECH_SEED},
     {MOVE_FLY.name, &MOVE_FLY},
-    {MOVE_THUNDER.name, &MOVE_THUNDER}
+    {MOVE_THUNDER.name, &MOVE_THUNDER},
+    {MOVE_DIG.name, &MOVE_DIG}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;
