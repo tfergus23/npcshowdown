@@ -74,21 +74,37 @@ const Volatile VOLATILE_LEECH_SEED = {
 const Volatile VOLATILE_FLYING = {
 .observer = {
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
-        if (e.moveUse->target == subject && e.moveUse->move->targetType == TargetType::OPPONENT && !e.moveUse->move->hitsFly){
-            e.moveUse->fail(e.moveUse->target->nickname + "'s attack missed!");
+        if (e.moveUse->user != subject && e.moveUse->target == subject && e.moveUse->move->targetType == TargetType::OPPONENT && !e.moveUse->move->hitsFly){
+            e.moveUse->fail(e.moveUse->user->nickname + "'s attack missed!");
+        }
+    },
+
+    .afterMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        if (e.moveUse->user == subject && !e.moveUse->skipTypeCheck){ //skipTypeCheck is only set on the first turn
+            subject->removeVolatile(&VOLATILE_FLYING);
+            subject->nextMove = nullptr;
         }
     }
 },
-    .name = "Flying"
+    .name = "Flying",
+    .was = " flew up in the air!"
 };
 
 const Volatile VOLATILE_DIGGING = {
 .observer = {
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
-        if (e.moveUse->target == subject && e.moveUse->move->targetType == TargetType::OPPONENT && !e.moveUse->move->hitsDig){
-            e.moveUse->fail(e.moveUse->target->nickname + "'s attack missed!");
+        if (e.moveUse->user != subject && e.moveUse->target == subject && e.moveUse->move->targetType == TargetType::OPPONENT && !e.moveUse->move->hitsDig){
+            e.moveUse->fail(e.moveUse->user->nickname + "'s attack missed!");
+        }
+    },
+
+    .afterMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        if (e.moveUse->user == subject && !e.moveUse->skipTypeCheck){ //skipTypeCheck is only set on the first turn
+            subject->removeVolatile(&VOLATILE_DIGGING);
+            subject->nextMove = nullptr;
         }
     }
 },
-    .name = "Digging"
+    .name = "Underground",
+    .was = " dug underground!"
 };

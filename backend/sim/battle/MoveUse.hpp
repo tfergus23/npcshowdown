@@ -29,6 +29,7 @@ public:
     int effectivePower = 0;
     Type effectiveType = Type::NONE;
     float effectiveAccuracy = 0.0f;
+    bool skipTypeCheck = false;
 
     //Flags
     bool isSelfDestruct = false;

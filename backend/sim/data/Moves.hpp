@@ -18,6 +18,7 @@ extern const Move MOVE_POISON_POWDER;
 extern const Move MOVE_POISON_GAS;
 extern const Move MOVE_PROTECT;
 extern const Move MOVE_LEECH_SEED;
+extern const Move MOVE_FLY;
 
 extern const Move* moveFromString(const std::string& moveName);
 std::string createMoveDataResponse();

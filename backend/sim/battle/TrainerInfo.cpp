@@ -136,10 +136,12 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
 
     bool enemyPokeTwoTurnAttack = enemyPoke->nextMove != nullptr;
 
-    if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && imFaster){
+    bool enemyIsSemiInvulnerable = (enemyPoke->hasVolatile(&VOLATILE_FLYING) && !mostDamagingMove->hitsFly) || (enemyPoke->hasVolatile(&VOLATILE_DIGGING) && !mostDamagingMove->hitsDig);
+
+    if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && (imFaster && !enemyIsSemiInvulnerable)){
         return mostDamagingMove;
     }
-    else if ( // Need to meed the requirements to protect and have at least one reason to use it.
+    else if ( // Need to meet the requirements to protect and have at least one reason to use it.
         
         //Requirements for protect
         (validMoves.contains(&MOVE_PROTECT) && 

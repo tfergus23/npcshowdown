@@ -1281,6 +1281,83 @@ const Move MOVE_LEECH_SEED = {
     }
 };
 
+const Move MOVE_FLY = {
+    .name = "Fly",
+    .type = Type::FLYING,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 90,
+    .accuracy = 95,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 19,
+
+    .contact = true,
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .beforeChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            myMove->skipTypeCheck = true;
+            myMove->effectiveAccuracy = 0.0f;
+            myMove->target = myMove->user;
+            myMove->usesPP = false;
+        }
+    },
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            MoveFunctions::applyVolatile(&VOLATILE_FLYING, myMove);
+            myMove->user->nextMove = &MOVE_FLY;
+        }
+        else{
+            MoveFunctions::dealDirectDamage(myMove, opponentMove);
+        }
+    }
+};
+
+const Move MOVE_THUNDER = {
+    .name = "Thunder",
+    .type = Type::ELECTRIC,
+    .damageCategory = DamageCategory::SPECIAL,
+    .power = 110,
+    .accuracy = 70,
+    .maxPP = 16,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::PARALYZE,
+    .secondaryEffectChance = 30.0f,
+    .secondaryEffectValue = -1,
+    .id = 87,
+
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+    .hitsFly = true,
+
+    .beforeChecks = [] (MoveUse* myMove, MoveUse* opponentMove){
+        //TODO: Moves shouldn't have to check if weather is suppressed, but have to because beforeChecks runs before the beforeMove event... 
+        if (myMove->battle->weatherSuppressors == 0){
+            if (myMove->battle->weather == &WEATHER_SUN){
+                myMove->effectiveAccuracy = 50;
+            }
+            if (myMove->battle->weather == &WEATHER_RAIN){
+                myMove->effectiveAccuracy = 0;
+            }
+        }
+    },
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::dealDirectDamage(myMove, opponentMove);
+    }
+};
+
 
 static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
@@ -1330,7 +1407,9 @@ static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_POISON_POWDER.name, &MOVE_POISON_POWDER},
     {MOVE_POISON_GAS.name, &MOVE_POISON_GAS},
     {MOVE_PROTECT.name, &MOVE_PROTECT},
-    {MOVE_LEECH_SEED.name, &MOVE_LEECH_SEED}
+    {MOVE_LEECH_SEED.name, &MOVE_LEECH_SEED},
+    {MOVE_FLY.name, &MOVE_FLY},
+    {MOVE_THUNDER.name, &MOVE_THUNDER}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;
