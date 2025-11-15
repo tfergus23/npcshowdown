@@ -155,6 +155,9 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     )){
         return &MOVE_PROTECT;
     }
+    else if (validMoves.contains(&MOVE_STEALTH_ROCK) && hitsToKO > 1 && !battle->sideHasFieldEffect(!isPlayer1, &FIELD_EFFECT_STEALTH_ROCK)){
+        return &MOVE_STEALTH_ROCK;
+    }
     else if (validMoves.contains(&MOVE_LEECH_SEED) && hitsToKO > 2 && !enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED)){
         return &MOVE_LEECH_SEED;
     }

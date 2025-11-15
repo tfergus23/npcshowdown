@@ -1,5 +1,6 @@
 #include "sim/data/FieldEffects.hpp"
 #include "sim/battle/Battle.hpp"
+#include "sim/utils/MoveFunctions.hpp"
 
 const FieldEffect FIELD_EFFECT_NONE;
 const FieldEffect FIELD_EFFECT_SUBSTITUTE;
@@ -12,7 +13,6 @@ const FieldEffect FIELD_EFFECT_REFLECT = {
     },
     .beforeMove = [](Pokemon* subject, Battle* battle, const EventArgs& e){
         if (e.moveUse->target == subject && e.moveUse->move->damageCategory == DamageCategory::PHYSICAL){
-            battle->logMessage("reflect active");
             e.moveUse->damageMod *= (2732.0f/4096.0f); // This is the actual constant listed on bulbapedia...
         }
     },
@@ -36,4 +36,17 @@ const FieldEffect FIELD_EFFECT_REFLECT = {
     }
 },
     .name = "Reflect"
+};
+
+const FieldEffect FIELD_EFFECT_STEALTH_ROCK = {
+.observer = {
+    .onPokemonEnter= [](Pokemon* subject, Battle* battle, const EventArgs& e){
+        float percentDamage = 12.5f * typeMatchup(Type::ROCK, subject->currentType[0], subject->currentType[1]);
+        int damage = MoveFunctions::dealResidualPercentDamage(percentDamage, subject, battle);
+        if (damage > 0){
+            battle->logDamageTaken("Pointed stones dug into " + subject->nickname + "!", {.recipientIsPlayer1 = (subject == battle->player1ActivePokemon), .damage = damage});
+        }
+    }
+},
+    .name = "Stealth Rock"
 };

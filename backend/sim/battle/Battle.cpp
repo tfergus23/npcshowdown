@@ -36,7 +36,12 @@ void Battle::simulate(){
                 this->switchIfNecessary();
                 if (this->moveNumber == 1){
                     this->raiseEvent(Event::END_OF_TURN, EventArgs(nullptr, nullptr));
-                    this->switchIfNecessary();
+                    int sanityCheck = 0;
+                    while (!isBattleOver && (player1ActivePokemon->isDead || player2ActivePokemon->isDead)){
+                        this->switchIfNecessary();
+                        sanityCheck++;
+                        assertTrue(sanityCheck < 7, "Stuck in switchIfNecessary() loop.");
+                    }
                 }
                 else{
                     this->moveNumber++;
@@ -236,32 +241,24 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
         moveNumber = 0;
         turns++;
 
+        checkIfBattleOver();
 
-        //Check if the battle is over
-        bool player1Dead = trainerBlackedOut(true);
-        bool player2Dead = trainerBlackedOut(false);
-        if (player1Dead || player2Dead) {
-            isBattleOver = true;
-            if (player1Dead && player2Dead) {
-                isDraw = true;
-                logMessage("It's a draw!");
-            }
-            else {
-                winner = player1Dead ? &m_Player2 : &m_Player1;
-                logMessage("The winner is " + winner->name + "!");
-            }
-        }
-        if (turns > 200 && !isBattleOver){
-            isBattleOver = true;
-            isDraw = true;
-            logMessage("It's a draw!");
-        }
         if (!isBattleOver) {
             if (player1ActivePokemon->isDead) player1Switching = m_Player1.pickPokemon(player1ActivePokemon, player2ActivePokemon, this);
             if (player2ActivePokemon->isDead) player2Switching = m_Player2.pickPokemon(player2ActivePokemon, player1ActivePokemon, this);
         }
         break;
     }
+    case Event::POKEMON_ENTER:{
+        checkIfBattleOver();
+
+        if (!isBattleOver) {
+            if (player1ActivePokemon->isDead) player1Switching = m_Player1.pickPokemon(player1ActivePokemon, player2ActivePokemon, this);
+            if (player2ActivePokemon->isDead) player2Switching = m_Player2.pickPokemon(player2ActivePokemon, player1ActivePokemon, this);
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -324,6 +321,27 @@ void Battle::setActivePokemon(bool isPlayer1, int newPokeIndex){
         Pokemon* newPokemon = &player2Team[newPokeIndex];
         player2ActivePokemon = newPokemon;
         logPokemonEnter(m_Player2.name + " sent out " + newPokemon->nickname + "!", {.isPlayer1 = isPlayer1, .newPokeIndex = newPokeIndex});
+    }
+}
+
+void Battle::checkIfBattleOver(){
+    bool player1Dead = trainerBlackedOut(true);
+    bool player2Dead = trainerBlackedOut(false);
+    if (player1Dead || player2Dead) {
+        isBattleOver = true;
+        if (player1Dead && player2Dead) {
+            isDraw = true;
+            logMessage("It's a draw!");
+        }
+        else {
+            winner = player1Dead ? &m_Player2 : &m_Player1;
+            logMessage("The winner is " + winner->name + "!");
+        }
+    }
+    if (turns > 200 && !isBattleOver){
+        isBattleOver = true;
+        isDraw = true;
+        logMessage("It's a draw!");
     }
 }
 

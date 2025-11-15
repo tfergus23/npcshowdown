@@ -228,6 +228,7 @@ private:
     void setMoveOrder();
     void swapMoves();
     void killPokemon(Pokemon* pokemon);
+    void checkIfBattleOver();
 };
 
 class BattleAssertionFailedException : public std::exception {
