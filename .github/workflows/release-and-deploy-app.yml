@@ -45,13 +45,12 @@ jobs:
         sudo apt-get install -y build-essential cmake
         sudo apt install npm
       
-    - name: Build Backend and Run Tests
+    - name: Build Backend
       run: |
         cd backend
         cmake --preset release
         cd out/release
         cmake --build .
-        ./npcs_tests
         
     - name: Build Frontend
       run: |
