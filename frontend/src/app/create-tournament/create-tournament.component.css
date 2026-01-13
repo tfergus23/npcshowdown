@@ -91,3 +91,20 @@ app-spinning-button{
         width: 100px;
     }
 }
+
+@media (max-width: 595px){
+    h1 {
+        width: 100%;
+    }
+
+    .add-buttons{
+        width: 100%;
+    }
+
+    .add-buttons button{
+        margin: auto;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: block;
+    }
+}

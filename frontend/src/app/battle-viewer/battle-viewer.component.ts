@@ -152,7 +152,6 @@ export class BattleViewerComponent {
   trainer2Health: Array<Point> = [];
   poke1: Sprite = new Sprite();
   poke2: Sprite = new Sprite();
-  textBoxContaainer = new Container();
   textBox: Sprite = new Sprite();
   textBoxText: Text = new Text({
     text: "",
@@ -340,16 +339,57 @@ export class BattleViewerComponent {
           this.player1FieldEffects.addToStage(this.app.stage);
           this.player2FieldEffects.addToStage(this.app.stage);
 
+          this.app.renderer.on('resize', (width, height) => this.resizeCallback(width, height));
+
           this.app.ticker.add((time) =>
           {
             this.update(time);
           });
+
+          setTimeout(() => this.resizeCallback(this.app.canvas.width, this.app.canvas.height));
       },
       (error) =>{
 
       });
     });
     //setTimeout(());
+  }
+
+  resizeCallback(width: number, height: number){
+    console.log(`Resized to Width: ${width}, Height: ${height}`);
+
+    if (width < 1350){
+      this.party1HealthBars.disable();
+      this.party2HealthBars.disable();
+    }
+    else{
+      this.party1HealthBars.enable();
+      this.party2HealthBars.enable();
+    }
+
+    if (width < 765){
+      this.poke1HealthBar.scale(0.5);
+      this.poke2HealthBar.scale(0.5);
+      this.poke1.scale.set(-1.5, 1.5);
+      this.poke2.scale.set(1.5);
+      this.textBox.scale.set(0.75);
+      this.textBoxText.scale.set(0.75);
+    }
+    else{
+      this.poke1HealthBar.scale(1.0);
+      this.poke2HealthBar.scale(1.0);
+      this.poke1.scale.set(-POKEMON_SCALE, POKEMON_SCALE);
+      this.poke2.scale.set(POKEMON_SCALE);
+      this.textBox.scale.set(1);
+      this.textBoxText.scale.set(1);
+    }
+
+    if (width < 390){
+      this.poke1HealthBar.scale(0.40);
+      this.poke2HealthBar.scale(0.40);
+      this.poke1.scale.set(-1.25, 1.25);
+      this.poke2.scale.set(1.25);
+    }
   }
 
   determineFileName(poke: string) : string{
@@ -368,7 +408,7 @@ export class BattleViewerComponent {
   poke1ScreenPos: Point = new Point(-0.25, this.poke1Home.y);
   poke2ScreenPos: Point = new Point(1.25, this.poke2Home.y);
   projectilePos: Point = new Point(this.projectileHome.x, this.projectileHome.y);
-  textBoxTextScreenPos: Point = new Point(0.5, 0.70);
+  textBoxTextScreenPos: Point = new Point(0.5, 0.75);
   poke1HealthScreenPos: Point = new Point(this.poke1Home.x, this.poke1Home.y - 0.20);
   poke2HealthScreenPos: Point = new Point(this.poke2Home.x, this.poke2Home.y - 0.20);
 

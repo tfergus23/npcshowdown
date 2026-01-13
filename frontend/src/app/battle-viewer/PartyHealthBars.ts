@@ -74,4 +74,20 @@ export class PartyHealthBars {
             this.bars[i].update();
         }
     }
+
+    disable(){
+        this.bars.forEach((bar) =>{
+            bar.healthBar.visible = false;
+            bar.missingHealthBar.visible = false;
+            bar.pokemon.visible = false;
+        });
+    }
+
+    enable(){
+        this.bars.forEach((bar) =>{
+            bar.healthBar.visible = true;
+            bar.missingHealthBar.visible = true;
+            bar.pokemon.visible = true;
+        });
+    }
 }

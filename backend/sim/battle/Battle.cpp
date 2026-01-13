@@ -37,6 +37,7 @@ void Battle::simulate(){
                 if (this->moveNumber == 1){
                     this->raiseEvent(Event::END_OF_TURN, EventArgs(nullptr, nullptr));
                     int sanityCheck = 0;
+                    // If a pokemon dies as soon as it comes out, we have to switch again. Keep switching until both aren't dead.
                     while (!isBattleOver && (player1ActivePokemon->isDead || player2ActivePokemon->isDead)){
                         this->switchIfNecessary();
                         sanityCheck++;
@@ -54,7 +55,7 @@ void Battle::simulate(){
         this->isTurnOver = true;
         this->isBattleOver = true;
         this->isDraw = true;
-        this->winner = this->getPlayer1();
+        this->winner = nullptr;
         this->errorMessage = e.what();
     }
 }
