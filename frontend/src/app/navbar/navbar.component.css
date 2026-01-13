@@ -8,10 +8,6 @@
   --dropdown-text-size: 14px;
 }
 
-.navBar .logo{
-  padding-left: 20px;
-  padding-right: 20px;
-}
 
 .about{
   color: aqua;
@@ -192,7 +188,7 @@ app-spinner{
 
 @media (max-width: 745px) {
   .login input{
-    width: 80px;
+    width: 55px;
   }
   
   .login button{
@@ -216,5 +212,10 @@ app-spinner{
 
   .menu-dropdown {
     width: 75px;
+  }
+}
+@media (max-width: 350px) {
+  .logo-img{
+    display: none;
   }
 }

@@ -18,8 +18,8 @@ void MoveUse::doMove(MoveUse* opponentMove){
         battle->logPokemonLeave(trainer->name + " withdrew " + user->nickname + "!", {.isPlayer1 = battle->player1ActivePokemon == user});
         return;
     }
-    battle->raiseEvent(Event::BEFORE_MOVE, EventArgs(nullptr, this));
     move->beforeChecks(this, opponentMove);
+    battle->raiseEvent(Event::BEFORE_MOVE, EventArgs(nullptr, this));
     if (wontStart){
         battle->logMessage(m_FailMessage);
         return;
@@ -39,7 +39,7 @@ void MoveUse::doMove(MoveUse* opponentMove){
         MoveFunctions::selfDestruct(this);
     }
     float typeMod = typeMatchup(effectiveType, target->currentType[0], target->currentType[1]);
-    if (typeMod == NOT_EFFECTIVE && move->damageCategory != DamageCategory::STATUS && move->targetType == TargetType::OPPONENT){
+    if (!skipTypeCheck && typeMod == NOT_EFFECTIVE && move->damageCategory != DamageCategory::STATUS && move->targetType == TargetType::OPPONENT){
         logUsage();
         battle->logMessage("It doesn't affect " + target->nickname + "...");
         if (move->crashOnFail){
@@ -86,7 +86,7 @@ void MoveUse::failOnSemiInvulnerable(std::string_view message){
     setFailMessage(message);
 }
 
-char* MoveUse::getFailMessage(){
+const char* MoveUse::getFailMessage(){
     return m_FailMessage;
 }
 void MoveUse::setFailMessage(std::string_view newMessage){

@@ -22,6 +22,8 @@ const Item ITEM_LEFTOVERS = {
     .id = 1,
 };
 
+const Item ITEM_BLACK_SLUDGE;
+
 const std::unordered_map<std::string, const Item*> items = {
     {ITEM_NONE.name, &ITEM_NONE},
     {ITEM_LEFTOVERS.name, &ITEM_LEFTOVERS}

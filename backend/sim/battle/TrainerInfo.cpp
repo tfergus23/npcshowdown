@@ -64,7 +64,12 @@ TrainerInfo::TrainerInfo(const std::string& name, TrainerLevel level) : trainerL
 }
 static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std::unordered_set<const Move*>& myMoves, const Move*& outMove, int& outDamage){
     for (auto move : myMoves){
-        if (move->damageCategory == DamageCategory::STATUS){
+        if (move->damageCategory == DamageCategory::STATUS || move->power == 0){
+            continue;
+        }
+        if (move->flatDamage > 0 && move->flatDamage > outDamage && typeMatchup(move->type, enemyPoke->currentType[0], enemyPoke->currentType[1]) > 0.0f){
+            outDamage = move->flatDamage;
+            outMove = move;
             continue;
         }
         MoveUse moveUse(move, myPoke, enemyPoke, myPoke->battle);
@@ -76,7 +81,7 @@ static void findMostDamagingMove(Pokemon* myPoke, Pokemon* enemyPoke, const std:
     }
 }
 
-static void removeSporeBasedMoves(std::unordered_set<const Move*> moves){
+static void removeSporeBasedMoves(std::unordered_set<const Move*>& moves){
     tflib::static_vector<const Move*, 4> toRemove;
     for (auto move : moves){
         if (move->sporeBased){
@@ -108,10 +113,10 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     const Move* mostDamagingMove = nullptr;
     int mostDamage = 0;
     findMostDamagingMove(myPoke, enemyPoke, validMoves, mostDamagingMove, mostDamage);
-    float mostDamagePercent = (float) mostDamage / enemyPoke->getStat(Stat::HP);
+    float mostDamagePercent = ((float) mostDamage / enemyPoke->getStat(Stat::HP)) * 100.0f;
 
-    float myHealthPercent = ((float) myPoke->currentHealth / myPoke->getStat(Stat::HP)) * 100;
-    float enemyHealthPercent = ((float) enemyPoke->currentHealth / enemyPoke->getStat(Stat::HP)) * 100;
+    float myHealthPercent = ((float) myPoke->currentHealth / myPoke->getStat(Stat::HP)) * 100.0f;
+    float enemyHealthPercent = ((float) enemyPoke->currentHealth / enemyPoke->getStat(Stat::HP)) * 100.0f;
 
     bool imFaster = myPoke->getStat(Stat::SPEED) > enemyPoke->getStat(Stat::SPEED);
     int hitsToKO = mostDamage ? enemyPoke->currentHealth / mostDamage + 1 : INT_MAX;
@@ -125,8 +130,36 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     const Move* bestParalysisMove = pickBestParalysisMove(validMoves);
     const Move* bestBurnMove = pickBestBurnMove(validMoves);
 
-    if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && imFaster){
+    bool guranteedProtect = !myPoke->hasVolatile(&VOLATILE_PROTECT_STATE) || (myPoke->getVolatileState<ProtectState>(&VOLATILE_PROTECT_STATE).protectsInARow == 0);
+
+    bool haveResidualHealing = myPoke->getCurrentItem() == &ITEM_LEFTOVERS || (myPoke->isType(Type::POISON) && myPoke->getCurrentItem() == &ITEM_BLACK_SLUDGE) || enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED);
+
+    bool enemyPokeTwoTurnAttack = enemyPoke->nextMove != nullptr;
+
+    bool enemyIsSemiInvulnerable = (enemyPoke->hasVolatile(&VOLATILE_FLYING) && !mostDamagingMove->hitsFly) || (enemyPoke->hasVolatile(&VOLATILE_DIGGING) && !mostDamagingMove->hitsDig);
+
+    if (mostDamagingMove && mostDamage >= enemyPoke->currentHealth && (imFaster && !enemyIsSemiInvulnerable)){
         return mostDamagingMove;
+    }
+    else if ( // Need to meet the requirements to protect and have at least one reason to use it.
+        
+        //Requirements for protect
+        (validMoves.contains(&MOVE_PROTECT) && 
+        guranteedProtect && 
+        !(enemyPoke->getStatus() == &STATUS_SLEEP)) && 
+        (
+        //Reasons to use protect
+        (enemyPokeTwoTurnAttack) || 
+        (myHealthPercent <= 88.0f && haveResidualHealing) ||
+        (enemyPoke->getStatus() == &STATUS_POISON || (enemyPoke->getStatus() == &STATUS_BURN && enemyPoke->getCurrentItem() != &ITEM_LEFTOVERS) || enemyPoke->getStatus() == &STATUS_BAD_POISON || enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED))
+    )){
+        return &MOVE_PROTECT;
+    }
+    else if (validMoves.contains(&MOVE_STEALTH_ROCK) && hitsToKO > 1 && !battle->sideHasFieldEffect(!isPlayer1, &FIELD_EFFECT_STEALTH_ROCK)){
+        return &MOVE_STEALTH_ROCK;
+    }
+    else if (validMoves.contains(&MOVE_LEECH_SEED) && hitsToKO > 2 && !enemyPoke->hasVolatile(&VOLATILE_LEECH_SEED)){
+        return &MOVE_LEECH_SEED;
     }
     else if (bestSleepMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE){
         return bestSleepMove;
@@ -139,6 +172,9 @@ static const Move* pickSmartMove(Pokemon* myPoke, Pokemon* enemyPoke,  Battle* b
     }
     else if (bestBurnMove && hitsToKO > 3 && enemyPoke->getStatus() == &STATUS_NONE && !enemyPoke->isType(Type::FIRE)){
         return bestBurnMove;
+    }
+    else if (validMoves.contains(&MOVE_REFLECT) && !battle->sideHasFieldEffect(isPlayer1, &FIELD_EFFECT_REFLECT) && hitsToKO > 2){
+        return &MOVE_REFLECT;
     }
     else if (mostDamagingMove){
         return mostDamagingMove;

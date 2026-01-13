@@ -138,4 +138,8 @@ export class ActiveHealthBar {
         this.volatilesList = this.volatilesList.filter(vol => vol != volatile);
         this.updateVolatilesText();
     }
+
+    scale(newScale: number){
+        this.container.scale.set(newScale);
+    }
 }

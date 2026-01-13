@@ -3,6 +3,7 @@
 
 extern const Item ITEM_NONE;
 extern const Item ITEM_LEFTOVERS;
+extern const Item ITEM_BLACK_SLUDGE;
 
 const Item* itemFromString(const std::string& itemName);
 void mapIDsToItems();

@@ -573,8 +573,12 @@ const Move MOVE_EARTHQUAKE = {
     .protect = true,
     .mirrorMove = true,
     .kingsRock = true,
+    .hitsDig = true,
 
     .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->target->hasVolatile(&VOLATILE_DIGGING)){
+            myMove->damageMod *= 2;
+        }
         MoveFunctions::dealDirectDamage(myMove, opponentMove);
     }
 };
@@ -1247,7 +1251,236 @@ const Move MOVE_PROTECT = {
     }
 };
 
-const std::unordered_map<std::string, const Move*> moves = {
+const Move MOVE_LEECH_SEED = {
+    .name = "Leech Seed",
+    .type = Type::GRASS,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 90,
+    .maxPP = 16,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 73,
+
+    .protect = true,
+    .magicCoat = true,
+    .mirrorMove = true,
+    .sporeBased = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->target->isType(Type::GRASS)){
+            myMove->battle->logMessage("But it failed!");
+        }
+        else{
+            MoveFunctions::applyVolatile(&VOLATILE_LEECH_SEED, myMove);
+        }
+    }
+};
+
+const Move MOVE_FLY = {
+    .name = "Fly",
+    .type = Type::FLYING,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 90,
+    .accuracy = 95,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 19,
+
+    .contact = true,
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .beforeChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            myMove->skipTypeCheck = true;
+            myMove->effectiveAccuracy = 0.0f;
+            myMove->target = myMove->user;
+            myMove->usesPP = false;
+        }
+    },
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            MoveFunctions::applyVolatile(&VOLATILE_FLYING, myMove);
+            myMove->user->nextMove = &MOVE_FLY;
+        }
+        else{
+            MoveFunctions::dealDirectDamage(myMove, opponentMove);
+        }
+    }
+};
+
+const Move MOVE_THUNDER = {
+    .name = "Thunder",
+    .type = Type::ELECTRIC,
+    .damageCategory = DamageCategory::SPECIAL,
+    .power = 110,
+    .accuracy = 70,
+    .maxPP = 16,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::PARALYZE,
+    .secondaryEffectChance = 30.0f,
+    .secondaryEffectValue = -1,
+    .id = 87,
+
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+    .hitsFly = true,
+
+    .beforeChecks = [] (MoveUse* myMove, MoveUse* opponentMove){
+        //TODO: Moves shouldn't have to check if weather is suppressed, but have to because beforeChecks runs before the beforeMove event... 
+        if (myMove->battle->weatherSuppressors == 0){
+            if (myMove->battle->weather == &WEATHER_SUN){
+                myMove->effectiveAccuracy = 50;
+            }
+            if (myMove->battle->weather == &WEATHER_RAIN){
+                myMove->effectiveAccuracy = 0;
+            }
+        }
+    },
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::dealDirectDamage(myMove, opponentMove);
+    }
+};
+
+const Move MOVE_DIG = {
+    .name = "Dig",
+    .type = Type::GROUND,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 80,
+    .accuracy = 100,
+    .maxPP = 16,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 91,
+
+    .contact = true,
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .beforeChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            myMove->skipTypeCheck = true;
+            myMove->effectiveAccuracy = 0.0f;
+            myMove->target = myMove->user;
+            myMove->usesPP = false;
+        }
+    },
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        if (myMove->user->nextMove == nullptr){
+            MoveFunctions::applyVolatile(&VOLATILE_DIGGING, myMove);
+            myMove->user->nextMove = &MOVE_DIG;
+        }
+        else{
+            MoveFunctions::dealDirectDamage(myMove, opponentMove);
+        }
+    }
+};
+
+const Move MOVE_IRON_HEAD = {
+    .name = "Iron Head",
+    .type = Type::STEEL,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 80,
+    .accuracy = 100,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::FLINCH,
+    .secondaryEffectChance = 30.0f,
+    .secondaryEffectValue = -1,
+    .id = 442,
+
+    .contact = true,
+    .protect = true,
+    .mirrorMove = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::dealDirectDamage(myMove, opponentMove);
+    }
+};
+
+const Move MOVE_REFLECT = {
+    .name = "Reflect",
+    .type = Type::PSYCHIC,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 0,
+    .maxPP = 32,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::SELF,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 115,
+
+    .snatch = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        bool side = myMove->user == myMove->battle->player1ActivePokemon;
+        if (myMove->battle->sideHasFieldEffect(side, &FIELD_EFFECT_REFLECT)){
+            myMove->battle->logMessage("But it failed!");
+        }
+        else{
+            myMove->battle->addFieldEffect(side, &FIELD_EFFECT_REFLECT);
+            myMove->battle->logApplyFieldEffect(myMove->user->nickname + "'s team was protected by a magical barrier!", {.appliedToPlayer1Side = side, .fieldEffect = &FIELD_EFFECT_REFLECT});
+        }
+    }
+};
+
+const Move MOVE_STEALTH_ROCK = {
+    .name = "Stealth Rock",
+    .type = Type::ROCK,
+    .damageCategory = DamageCategory::STATUS,
+    .power = 0,
+    .accuracy = 0,
+    .maxPP = 32,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 446,
+
+    .magicCoat = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        bool side = myMove->user != myMove->battle->player1ActivePokemon;
+        if (myMove->battle->sideHasFieldEffect(side, &FIELD_EFFECT_STEALTH_ROCK)){
+            myMove->battle->logMessage("But it failed!");
+        }
+        else{
+            myMove->battle->addFieldEffect(side, &FIELD_EFFECT_STEALTH_ROCK);
+            myMove->battle->logApplyFieldEffect("Pointed stones dug into " + myMove->target->nickname + "'s team!", {.appliedToPlayer1Side = side, .fieldEffect = &FIELD_EFFECT_STEALTH_ROCK});
+        }
+    }
+};
+
+static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
     {MOVE_TACKLE.name, &MOVE_TACKLE},
@@ -1294,7 +1527,14 @@ const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_WILL_O_WISP.name, &MOVE_WILL_O_WISP},
     {MOVE_POISON_POWDER.name, &MOVE_POISON_POWDER},
     {MOVE_POISON_GAS.name, &MOVE_POISON_GAS},
-    {MOVE_PROTECT.name, &MOVE_PROTECT}
+    {MOVE_PROTECT.name, &MOVE_PROTECT},
+    {MOVE_LEECH_SEED.name, &MOVE_LEECH_SEED},
+    {MOVE_FLY.name, &MOVE_FLY},
+    {MOVE_THUNDER.name, &MOVE_THUNDER},
+    {MOVE_DIG.name, &MOVE_DIG},
+    {MOVE_IRON_HEAD.name, &MOVE_IRON_HEAD},
+    {MOVE_REFLECT.name, &MOVE_REFLECT},
+    {MOVE_STEALTH_ROCK.name, &MOVE_STEALTH_ROCK}
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

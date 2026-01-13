@@ -173,7 +173,16 @@ public:
     void switchIfNecessary();
     void addFieldEffect(bool side, const FieldEffect* fieldEffect);
     bool sideHasFieldEffect(bool side, const FieldEffect* fieldEffect);
-    ObserverState* getFieldEffectState(bool side, const FieldEffect* fieldEffect);
+    template <typename T>
+    T& getFieldEffectState(bool side, const FieldEffect* fieldEffect){
+        auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
+        return std::get<T>(list[fieldEffect]);
+    }
+    template <typename T>
+    void initializeFieldEffectState(bool side, const FieldEffect* fieldEffect){
+        auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
+        list[fieldEffect].emplace<T>();
+    }
     void removeFieldEffect(bool side, const FieldEffect* fieldEffect);
     void logMessage(std::string_view message);
     void logRangedAttack(std::string_view message, const AttackData& data);
@@ -219,6 +228,7 @@ private:
     void setMoveOrder();
     void swapMoves();
     void killPokemon(Pokemon* pokemon);
+    void checkIfBattleOver();
 };
 
 class BattleAssertionFailedException : public std::exception {

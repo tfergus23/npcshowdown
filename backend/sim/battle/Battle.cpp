@@ -36,7 +36,13 @@ void Battle::simulate(){
                 this->switchIfNecessary();
                 if (this->moveNumber == 1){
                     this->raiseEvent(Event::END_OF_TURN, EventArgs(nullptr, nullptr));
-                    this->switchIfNecessary();
+                    int sanityCheck = 0;
+                    // If a pokemon dies as soon as it comes out, we have to switch again. Keep switching until both aren't dead.
+                    while (!isBattleOver && (player1ActivePokemon->isDead || player2ActivePokemon->isDead)){
+                        this->switchIfNecessary();
+                        sanityCheck++;
+                        assertTrue(sanityCheck < 7, "Stuck in switchIfNecessary() loop.");
+                    }
                 }
                 else{
                     this->moveNumber++;
@@ -49,7 +55,7 @@ void Battle::simulate(){
         this->isTurnOver = true;
         this->isBattleOver = true;
         this->isDraw = true;
-        this->winner = this->getPlayer1();
+        this->winner = nullptr;
         this->errorMessage = e.what();
     }
 }
@@ -167,15 +173,14 @@ void Battle::switchIfNecessary(){
 void Battle::addFieldEffect(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
     list[fieldEffect];
+    fieldEffect->observer.initialize(side ? player1ActivePokemon : player2ActivePokemon, this);
 }
+
 bool Battle::sideHasFieldEffect(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
     return list.count(fieldEffect) > 0;
 }
-ObserverState* Battle::getFieldEffectState(bool side, const FieldEffect* fieldEffect){
-    auto& list = side ? m_Player1FieldEffects : m_Player2FieldEffects;
-    return &list[fieldEffect];
-}
+
 void Battle::removeFieldEffect(bool side, const FieldEffect* fieldEffect){
     auto& list = side ? m_EffectsToRemove1 : m_EffectsToRemove2;
     list.push_back(fieldEffect);
@@ -193,6 +198,8 @@ void Battle::removeMarkedFieldEffects(bool side){
 void Battle::raiseEvent(Event event, const EventArgs& args){
     assertTrue(event != Event::PRIORITY_END_OF_TURN, "Don't call raiseEvent with PRIORITY_END_OF_TURN.");
     bool fasterPokemonIsPlayer1 = m_FasterPokemon == player1ActivePokemon;
+    Pokemon* fasterPokemon = fasterPokemonIsPlayer1 ? player1ActivePokemon : player2ActivePokemon;
+    Pokemon* slowerPokemon = fasterPokemonIsPlayer1 ? player2ActivePokemon : player1ActivePokemon;
     auto& fasterPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player1FieldEffects : m_Player2FieldEffects;
     auto& slowerPokemonFieldEffects = fasterPokemonIsPlayer1 ? m_Player2FieldEffects : m_Player1FieldEffects;
 
@@ -203,8 +210,8 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
     m_FasterPokemon->handleEvent(event, args);
     killTheDead();
     for (auto [effect, effectState] : fasterPokemonFieldEffects){
-        effect->observer.handleEvent(event, nullptr, this, args);
-        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, nullptr, this, args);
+        effect->observer.handleEvent(event, fasterPokemon, this, args);
+        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, slowerPokemon, this, args);
         killTheDead();
     }
     removeMarkedFieldEffects(fasterPokemonIsPlayer1);
@@ -213,8 +220,8 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
     m_SlowerPokemon->handleEvent(event, args);
     killTheDead();
     for (auto [effect, effectState]: slowerPokemonFieldEffects){
-        effect->observer.handleEvent(event, nullptr, this, args);
-        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, nullptr, this, args);
+        effect->observer.handleEvent(event, slowerPokemon, this, args);
+        if (event == Event::END_OF_TURN) effect->observer.handleEvent(Event::PRIORITY_END_OF_TURN, slowerPokemon, this, args);
         killTheDead();
     }
     removeMarkedFieldEffects(!fasterPokemonIsPlayer1);
@@ -235,32 +242,24 @@ void Battle::raiseEvent(Event event, const EventArgs& args){
         moveNumber = 0;
         turns++;
 
+        checkIfBattleOver();
 
-        //Check if the battle is over
-        bool player1Dead = trainerBlackedOut(true);
-        bool player2Dead = trainerBlackedOut(false);
-        if (player1Dead || player2Dead) {
-            isBattleOver = true;
-            if (player1Dead && player2Dead) {
-                isDraw = true;
-                logMessage("It's a draw!");
-            }
-            else {
-                winner = player1Dead ? &m_Player2 : &m_Player1;
-                logMessage("The winner is " + winner->name + "!");
-            }
-        }
-        if (turns > 200 && !isBattleOver){
-            isBattleOver = true;
-            isDraw = true;
-            logMessage("It's a draw!");
-        }
         if (!isBattleOver) {
             if (player1ActivePokemon->isDead) player1Switching = m_Player1.pickPokemon(player1ActivePokemon, player2ActivePokemon, this);
             if (player2ActivePokemon->isDead) player2Switching = m_Player2.pickPokemon(player2ActivePokemon, player1ActivePokemon, this);
         }
         break;
     }
+    case Event::POKEMON_ENTER:{
+        checkIfBattleOver();
+
+        if (!isBattleOver) {
+            if (player1ActivePokemon->isDead) player1Switching = m_Player1.pickPokemon(player1ActivePokemon, player2ActivePokemon, this);
+            if (player2ActivePokemon->isDead) player2Switching = m_Player2.pickPokemon(player2ActivePokemon, player1ActivePokemon, this);
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -323,6 +322,27 @@ void Battle::setActivePokemon(bool isPlayer1, int newPokeIndex){
         Pokemon* newPokemon = &player2Team[newPokeIndex];
         player2ActivePokemon = newPokemon;
         logPokemonEnter(m_Player2.name + " sent out " + newPokemon->nickname + "!", {.isPlayer1 = isPlayer1, .newPokeIndex = newPokeIndex});
+    }
+}
+
+void Battle::checkIfBattleOver(){
+    bool player1Dead = trainerBlackedOut(true);
+    bool player2Dead = trainerBlackedOut(false);
+    if (player1Dead || player2Dead) {
+        isBattleOver = true;
+        if (player1Dead && player2Dead) {
+            isDraw = true;
+            logMessage("It's a draw!");
+        }
+        else {
+            winner = player1Dead ? &m_Player2 : &m_Player1;
+            logMessage("The winner is " + winner->name + "!");
+        }
+    }
+    if (turns > 200 && !isBattleOver){
+        isBattleOver = true;
+        isDraw = true;
+        logMessage("It's a draw!");
     }
 }
 

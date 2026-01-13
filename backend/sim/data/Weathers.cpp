@@ -7,3 +7,5 @@ const Weather WEATHER_SUN = {
     .beginText = "The sunlight became harsh!",
     .name = "Sun",
 };
+
+const Weather WEATHER_RAIN;
