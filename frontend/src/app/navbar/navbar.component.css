@@ -106,6 +106,7 @@
 .dropdown-content {
   position: absolute;
   right: 5px;
+  top: 60px;
   background-color: var(--dark-background-color);
   min-width: 160px;
   z-index: 1;
