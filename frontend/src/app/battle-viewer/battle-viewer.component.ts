@@ -346,6 +346,8 @@ export class BattleViewerComponent {
             this.update(time);
           });
 
+          this.app.canvas.style.touchAction = 'auto';
+
           setTimeout(() => this.resizeCallback(this.app.canvas.width, this.app.canvas.height));
       },
       (error) =>{
