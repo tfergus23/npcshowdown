@@ -1,9 +1,13 @@
+:root{
+  --navbar-height: 60px;
+}
+
 .navBar{
   background-color:var(--dark-background-color); 
   
   display: flex;
   align-items: center;
-  height: 60px;
+  height: var(--navbar-height);
 
   --dropdown-text-size: 14px;
 }
@@ -56,11 +60,9 @@
 }
 
 .sign-up{
-  margin-top: 22px;
-  margin-right: 10px;
   display: inline-block;
-  width: fit-content;
   color: var(--primary-color);
+  margin-right: 10px;
 }
 
 .sign-up:hover{
@@ -69,11 +71,9 @@
 }
 
 .navBar .user-container{
-  width: fit-content;
-  height: 100%;
-  display: block;
   margin-left: auto;
-
+  display: flex;
+  align-items: center;
 }
 
 .user-container input{
@@ -91,8 +91,6 @@
 }
 
 .login {
-  margin-top: 15px;
-  width: fit-content;
   display: inline-block;
 }
 
