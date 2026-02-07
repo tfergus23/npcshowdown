@@ -66,10 +66,11 @@ void Tournament::run(){
                     loserStats.losses++;
                     winnerStats.opponentRatingsTotal += loserStats.elo;
                     loserStats.opponentRatingsTotal += winnerStats.elo;
-                    winnerStats.calculateElo();
-                    loserStats.calculateElo();
                 }
             }
+        }
+        for (auto& stats : trainerStats){
+            stats.calculateElo();
         }
     }
     setBiggestUpsets();
