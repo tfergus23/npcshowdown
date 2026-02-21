@@ -154,14 +154,20 @@ int MoveFunctions::dealDirectDamage(MoveUse* moveUse, MoveUse* opponentMove, boo
         }
         return 0;
     }
-    DealtDamage dealtDamage = calculateDirectDamage(moveUse, moveUse->battle->debugOptions.averageDamage);
-    dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
+    DealtDamage dealtDamage;
+    if (moveUse->move->flatDamage > 0){
+        dealtDamage.damage = dealDamage(moveUse->move->flatDamage, moveUse);
+    }
+    else{
+        dealtDamage = calculateDirectDamage(moveUse, moveUse->battle->debugOptions.averageDamage);
+        dealtDamage.damage = dealDamage(dealtDamage.damage, moveUse);
+    }
     moveUse->damageDone = dealtDamage.damage;
     if (moveUse->damageDone > 0){
         moveUse->logUsage();
     }
     if (dealtDamage.damage > 0){
-        if (logEffectiveness){
+        if (logEffectiveness && !moveUse->move->flatDamage > 0){
             moveUse->battle->assertTrue(dealtDamage.typeMod != NOT_EFFECTIVE, "Move tried to deal damage when NOT_EFFECTIVE");
             if (dealtDamage.typeMod == SUPER_EFFECTIVE) moveUse->battle->logMessage("It's Super Effective!");
             else if (dealtDamage.typeMod == ULTRA_EFFECTIVE) moveUse->battle->logMessage("It's ULTRA Effective!");
@@ -179,23 +185,6 @@ int MoveFunctions::dealDirectDamage(MoveUse* moveUse, MoveUse* opponentMove, boo
     return dealtDamage.damage;
 }
 
-int MoveFunctions::dealFlatDamage(int damage, MoveUse* moveUse) {
-    if (!moveUse->canDealDamage) {
-        if (!moveUse->loggedFailure) {
-            moveUse->battle->logMessage(moveUse->getFailMessage());
-            moveUse->loggedFailure = true;
-        }
-        return 0;
-    }
-    int damageToDeal = (moveUse->target->currentHealth - damage < 0) ? moveUse->target->currentHealth : damage;
-    int damageDone = dealDamage(damageToDeal, moveUse);
-    moveUse->damageDone = damageDone;
-    if (moveUse->damageDone > 0){
-        moveUse->logUsage();
-    }
-    moveUse->battle->raiseEvent(Event::POKEMON_ATTACKED, EventArgs(nullptr, moveUse));
-    return damageDone;
-}
 bool MoveFunctions::selfDestruct(MoveUse* moveUse) {
     if (moveUse->cantSelfDestruct) {
         moveUse->battle->logMessage(moveUse->getFailMessage());

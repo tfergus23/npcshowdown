@@ -1480,6 +1480,54 @@ const Move MOVE_STEALTH_ROCK = {
     }
 };
 
+const Move MOVE_ROCK_THROW = {
+    .name = "Rock Throw",
+    .type = Type::ROCK,
+    .damageCategory = DamageCategory::PHYSICAL,
+    .power = 50,
+    .accuracy = 90,
+    .maxPP = 24,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::NONE,
+    .secondaryEffectChance = -1,
+    .secondaryEffectValue = -1,
+    .id = 88,
+
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::dealDirectDamage(myMove, opponentMove);
+    }
+};
+
+const Move MOVE_EMBER = {
+    .name = "Ember",
+    .type = Type::FIRE,
+    .damageCategory = DamageCategory::SPECIAL,
+    .power = 40,
+    .accuracy = 100,
+    .maxPP = 40,
+    .priority = 0,
+    .critRatio = 0,
+    .targetType = TargetType::OPPONENT,
+    .secondaryEffect = SecondaryEffect::BURN,
+    .secondaryEffectChance = 10.0f,
+    .secondaryEffectValue = -1,
+    .id = 52,
+
+    .protect = true,
+    .mirrorMove = true,
+    .kingsRock = true,
+
+    .afterChecks = [](MoveUse* myMove, MoveUse* opponentMove){
+        MoveFunctions::dealDirectDamage(myMove, opponentMove);
+    }
+};
+
 static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_NONE.name, &MOVE_NONE},
     {MOVE_POUND.name, &MOVE_POUND},
@@ -1534,7 +1582,9 @@ static const std::unordered_map<std::string, const Move*> moves = {
     {MOVE_DIG.name, &MOVE_DIG},
     {MOVE_IRON_HEAD.name, &MOVE_IRON_HEAD},
     {MOVE_REFLECT.name, &MOVE_REFLECT},
-    {MOVE_STEALTH_ROCK.name, &MOVE_STEALTH_ROCK}
+    {MOVE_STEALTH_ROCK.name, &MOVE_STEALTH_ROCK},
+    {MOVE_ROCK_THROW.name, &MOVE_ROCK_THROW},
+    {MOVE_EMBER.name, &MOVE_EMBER},
 };
 
 static std::unordered_map<int16_t, const Move*> idToMoveMap;

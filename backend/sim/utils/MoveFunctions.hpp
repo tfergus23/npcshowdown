@@ -3,15 +3,14 @@
 #include "sim/battle/Battle.hpp"
 
 struct DealtDamage{
-    int damage;
-    bool crit;
-    float typeMod;
+    int damage = 0;
+    bool crit = false;
+    float typeMod = 1.0f;
 };
 
 namespace MoveFunctions{
     DealtDamage calculateDirectDamage(MoveUse* moveUse, bool average);
     int dealDirectDamage(MoveUse* moveUse, MoveUse* opponentMove, bool logEffectiveness = true);
-    int dealFlatDamage(int damage, MoveUse* moveUse);
     bool selfDestruct(MoveUse* moveUse);
     int dealResidualPercentDamage(float percent, Pokemon* target, Battle* battle);
     int dealPercentDamage(float percent, MoveUse* moveUse);

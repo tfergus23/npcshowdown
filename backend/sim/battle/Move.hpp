@@ -22,7 +22,7 @@ public:
     SecondaryEffect secondaryEffect;
     float secondaryEffectChance;
     float secondaryEffectValue;
-    int flatDamage = 0; // If this is > 0, the move will deal flat damage instead of scaled.
+    int flatDamage = 0; // If this is > 0, the move will deal flat damage instead of scaled. 
     int16_t id = -1;
 
     //Flags
@@ -39,7 +39,6 @@ public:
     bool hitsDig = false;
     bool minimize = false;
     bool breaksScreen = false;
-    bool dealsFlatDamage = false;
     bool skillLink = false;
     bool soundBased = false;
     bool usableWhileAsleep = false;

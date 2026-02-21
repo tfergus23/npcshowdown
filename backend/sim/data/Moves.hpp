@@ -21,6 +21,8 @@ extern const Move MOVE_LEECH_SEED;
 extern const Move MOVE_FLY;
 extern const Move MOVE_REFLECT;
 extern const Move MOVE_STEALTH_ROCK;
+extern const Move MOVE_ROCK_THROW;
+extern const Move MOVE_EMBER;
 
 extern const Move* moveFromString(const std::string& moveName);
 std::string createMoveDataResponse();
