@@ -333,6 +333,16 @@ npcs::Server::Server() :
     app.Add_Handler("PUT", authorizedRoute, "/password", [=, this](const Request& req, Response& res){
         json response;
         response["success"] = false;
+        {
+            std::unique_lock lk(ipFailedLoginsMutex);
+            if (!ipFailedLogins[req.ip].canTryAgain()){
+                response["message"] = "Too many failed logins from your IP. Please wait before trying again.";
+                response["success"] = false;
+                res.Set_Status(429);
+                res.Send(response.dump());
+                return;
+            }
+        }
         json request;
         try {
             request = json::parse(req.body);
@@ -352,15 +362,19 @@ npcs::Server::Server() :
         std::string currentPassword = request["currentPassword"].get<std::string>();
         std::string newPassword = request["newPassword"].get<std::string>();
 
-        if (currentPassword == newPassword){
-            response["message"] = "New password is the same as the old password.";
+        if (!db.isUserPasswordCorrect(req.path_params.at("username"), currentPassword)){
+            {
+                std::unique_lock lk(ipFailedLoginsMutex);
+                ipFailedLogins[req.ip].increment();
+            }
+            response["message"] = "Incorrect password.";
             res.Set_Status(400);
             res.Send(response.dump());
             return;
         }
 
-        if (!db.isUserPasswordCorrect(req.path_params.at("username"), currentPassword)){
-            response["message"] = "Incorrect password.";
+        if (currentPassword == newPassword){
+            response["message"] = "New password is the same as the old password.";
             res.Set_Status(400);
             res.Send(response.dump());
             return;

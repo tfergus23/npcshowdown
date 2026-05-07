@@ -47,7 +47,12 @@ export class AppComponent {
     },(error) => {
       this.gettingUserData = false;
       this.logoutUser();
-      this.showMessage(error.error.message, MessageType.ERROR);
+      if (error.status == 401){
+        this.showMessage("Session expired. Please log in again.", MessageType.ERROR);
+      }
+      else{
+        this.showMessage(error.error.message, MessageType.ERROR);
+      }
     });
   }
 

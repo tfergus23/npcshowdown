@@ -73,10 +73,10 @@ export class UserProfileComponent {
       }
     },
     (error) => {
-      if (error.status == 401){
+      if (error.status == 401 && error.error.message.toLowerCase().includes("authoriz")){
         this.closePasswordModal(new MouseEvent(''));
         this.app.logoutUser();
-        this.app.showMessage("Session expired", MessageType.ERROR);
+        this.app.showMessage("Session expired. Please log in again.", MessageType.ERROR);
       }
       else{
         this.app.showMessage(error.error.message, MessageType.ERROR);
